@@ -7,8 +7,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import BookingEmbed from "@/components/BookingEmbed"
 import { BOOKING_URL } from "@/config/booking"
-
-
+import { useState } from "react"
 
 const container = {
   hidden: { opacity: 0 },
@@ -38,12 +37,7 @@ export default function Accueil() {
 
       <main className="relative z-10 max-w-6xl mx-auto px-6 pt-16 pb-28">
         {/* HERO */}
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="show"
-          className="max-w-3xl"
-        >
+        <motion.div variants={container} initial="hidden" animate="show" className="max-w-3xl">
           <motion.div variants={item} className="flex items-center gap-3">
             <Badge className="bg-white/10 text-white border border-white/15 hover:bg-white/10">
               Québec • Secondaire 1 à 5
@@ -51,10 +45,7 @@ export default function Accueil() {
             <span className="text-sm text-white/60">Maths • Sciences • Examens</span>
           </motion.div>
 
-          <motion.h1
-            variants={item}
-            className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight"
-          >
+          <motion.h1 variants={item} className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight">
             Méthode Secondaire
             <span className="block text-white/70">apprendre vite, comprendre pour vrai.</span>
           </motion.h1>
@@ -65,10 +56,12 @@ export default function Accueil() {
           </motion.p>
 
           <motion.div variants={item} className="mt-8 flex flex-wrap gap-3">
-            <Button className="relative rounded-2xl px-6 py-6 text-base bg-white text-black hover:bg-white/90 overflow-hidden">
-              <span className="pointer-events-none absolute inset-0 rounded-2xl blur-xl bg-white/20 opacity-0 hover:opacity-100 transition" />
-              <span className="relative">Réserver une séance</span>
-            </Button>
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+              <Button className="relative rounded-2xl px-6 py-6 text-base bg-white text-black hover:bg-white/90 overflow-hidden">
+                <span className="pointer-events-none absolute inset-0 rounded-2xl blur-xl bg-white/20 opacity-0 hover:opacity-100 transition" />
+                <span className="relative">Réserver une séance</span>
+              </Button>
+            </a>
 
             <Button
               variant="outline"
@@ -88,12 +81,7 @@ export default function Accueil() {
 
         {/* FEATURES */}
         <section id="programmes" className="mt-16">
-          <motion.div
-            variants={container}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-80px" }}
-          >
+          <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}>
             <motion.div variants={item} className="flex items-end justify-between gap-6 flex-wrap">
               <div>
                 <h2 className="text-2xl font-semibold">Programmes</h2>
@@ -107,18 +95,9 @@ export default function Accueil() {
             </motion.div>
 
             <motion.div variants={item} className="mt-6 grid md:grid-cols-3 gap-4">
-              <Feature
-                title="Explications ultra claires"
-                desc="On simplifie sans perdre la rigueur. Tu comprends le pourquoi."
-              />
-              <Feature
-                title="Méthode structurée"
-                desc="Plan de match, exercices ciblés, progression visible."
-              />
-              <Feature
-                title="Préparation examens"
-                desc="Stratégie, exercices type, gestion du temps — pour performer."
-              />
+              <Feature title="Explications ultra claires" desc="On simplifie sans perdre la rigueur. Tu comprends le pourquoi." />
+              <Feature title="Méthode structurée" desc="Plan de match, exercices ciblés, progression visible." />
+              <Feature title="Préparation examens" desc="Stratégie, exercices type, gestion du temps — pour performer." />
             </motion.div>
 
             <motion.div variants={item} className="mt-8">
@@ -157,12 +136,7 @@ export default function Accueil() {
 
         {/* PRICING */}
         <section id="prix" className="mt-20">
-          <motion.div
-            variants={container}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-80px" }}
-          >
+          <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}>
             <motion.div variants={item}>
               <h2 className="text-2xl font-semibold">Tarifs</h2>
               <p className="mt-2 text-white/70 max-w-2xl">
@@ -172,12 +146,7 @@ export default function Accueil() {
 
             <motion.div variants={item} className="mt-6 grid md:grid-cols-3 gap-4">
               <Pricing title="À la carte" price="75$/h" bullets={["Flexible", "Ponctuel", "En ligne ou présence"]} />
-              <Pricing
-                title="Hebdomadaire"
-                price="70$/h"
-                highlight
-                bullets={["Place réservée", "Suivi régulier", "Progrès rapides"]}
-              />
+              <Pricing title="Hebdomadaire" price="70$/h" highlight bullets={["Place réservée", "Suivi régulier", "Progrès rapides"]} />
               <Pricing title="Intensif" price="Sur demande" bullets={["Avant examens", "2–4 semaines", "Ciblé"]} />
             </motion.div>
           </motion.div>
@@ -185,12 +154,7 @@ export default function Accueil() {
 
         {/* CONTACT */}
         <section id="contact" className="mt-20">
-          <motion.div
-            variants={container}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-80px" }}
-          >
+          <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}>
             <motion.div variants={item}>
               <h2 className="text-2xl font-semibold">Contact</h2>
               <p className="mt-2 text-white/70 max-w-2xl">
@@ -203,32 +167,26 @@ export default function Accueil() {
               {/* LEFT: Contact info */}
               <MotionCard className="rounded-3xl border-white/15 bg-white/5 text-white p-6">
                 <div className="text-sm text-white/60">Zone</div>
-                <div className="mt-1 font-medium">Montréal • Laval • En ligne</div>
+                <div className="mt-1 font-medium">Québec entier • En ligne</div>
 
                 <div className="mt-5 text-sm text-white/60">Email</div>
-                <a
-                  className="mt-1 inline-block font-medium hover:underline"
-                  href="mailto:ajoute-ton-email@exemple.com"
-                >
-                  ajoute-ton-email@exemple.com
+                <a className="mt-1 inline-block font-medium hover:underline" href="mailto:chahineralph@gmail.com">
+                  chahineralph@gmail.com
                 </a>
 
                 <div className="mt-5 text-sm text-white/60">Téléphone</div>
-                <a
-                  className="mt-1 inline-block font-medium hover:underline"
-                  href="tel:+15145551234"
-                >
-                  +1 (514) 555-1234
+                <a className="mt-1 inline-block font-medium hover:underline" href="tel:+15149520709">
+                  +1 (514) 952-0709
                 </a>
 
                 <div className="mt-6 grid sm:grid-cols-2 gap-3">
-                  <a href="tel:+15145551234" className="block">
+                  <a href="tel:+15149520709" className="block">
                     <Button className="w-full rounded-2xl bg-white text-black hover:bg-white/90">
                       Appeler
                     </Button>
                   </a>
 
-                  <a href="mailto:ajoute-ton-email@exemple.com" className="block">
+                  <a href="mailto:chahineralph@gmail.com" className="block">
                     <Button
                       variant="outline"
                       className="w-full rounded-2xl border-white/20 text-white bg-transparent hover:bg-white/10"
@@ -251,58 +209,9 @@ export default function Accueil() {
                 </div>
               </MotionCard>
 
-              {/* RIGHT: Message form (for now -> mailto) */}
+              {/* RIGHT: Real form + inline success */}
               <MotionCard className="rounded-3xl border-white/15 bg-white/5 text-white p-6">
-                <form
-                  className="space-y-3"
-                  onSubmit={(e) => {
-                    e.preventDefault()
-                    const form = new FormData(e.currentTarget)
-                    const nom = form.get("nom") || ""
-                    const email = form.get("email") || ""
-                    const sujet = form.get("sujet") || ""
-                    const message = form.get("message") || ""
-
-                    const body =
-                      `Nom: ${nom}\n` +
-                      `Email: ${email}\n` +
-                      `Niveau/Matière: ${sujet}\n\n` +
-                      `${message}`
-
-                    const mailto = `mailto:ajoute-ton-email@exemple.com?subject=${encodeURIComponent(
-                      "Méthode Secondaire — Demande"
-                    )}&body=${encodeURIComponent(body)}`
-
-                    window.location.href = mailto
-                  }}
-                >
-                  <Input
-                    name="nom"
-                    className="bg-black/40 border-white/15 text-white placeholder:text-white/40"
-                    placeholder="Nom"
-                  />
-                  <Input
-                    name="email"
-                    className="bg-black/40 border-white/15 text-white placeholder:text-white/40"
-                    placeholder="Email"
-                  />
-                  <Input
-                    name="sujet"
-                    className="bg-black/40 border-white/15 text-white placeholder:text-white/40"
-                    placeholder="Sec + matière (ex: Sec 4 maths)"
-                  />
-                  <Textarea
-                    name="message"
-                    className="min-h-[120px] bg-black/40 border-white/15 text-white placeholder:text-white/40"
-                    placeholder="Ton message"
-                  />
-                  <Button type="submit" className="rounded-2xl bg-white text-black hover:bg-white/90 w-full">
-                    Envoyer
-                  </Button>
-                  <div className="text-xs text-white/50">
-                    (Ça ouvre ton app email avec le message prêt à envoyer.)
-                  </div>
-                </form>
+                <ContactForm />
               </MotionCard>
             </motion.div>
 
@@ -330,12 +239,109 @@ export default function Accueil() {
           </motion.div>
         </section>
 
-
         <footer className="mt-20 pt-10 border-t border-white/10 text-sm text-white/50">
           © {new Date().getFullYear()} Méthode Secondaire — Tous droits réservés.
         </footer>
       </main>
     </div>
+  )
+}
+
+function ContactForm() {
+  const [status, setStatus] = useState("idle") // idle | sending | success | error
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setStatus("sending")
+
+    const form = e.currentTarget
+    const data = new FormData(form)
+
+    try {
+      const res = await fetch("https://formspree.io/f/mzddpkaz", {
+        method: "POST",
+        body: data,
+        headers: { Accept: "application/json" },
+      })
+
+      if (res.ok) {
+        setStatus("success")
+        form.reset()
+      } else {
+        setStatus("error")
+      }
+    } catch {
+      setStatus("error")
+    }
+  }
+
+  if (status === "success") {
+    return (
+      <div className="flex flex-col items-center justify-center h-full text-center py-10">
+        <div className="text-2xl font-semibold text-white">Message envoyé ✅</div>
+        <p className="mt-3 text-white/70">Je te réponds rapidement.</p>
+        <Button
+          type="button"
+          variant="outline"
+          className="mt-6 rounded-2xl border-white/20 text-white bg-transparent hover:bg-white/10"
+          onClick={() => setStatus("idle")}
+        >
+          Envoyer un autre message
+        </Button>
+      </div>
+    )
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-3">
+      <Input
+        name="nom"
+        required
+        className="bg-black/40 border-white/15 text-white placeholder:text-white/40"
+        placeholder="Nom"
+      />
+
+      <Input
+        name="email"
+        type="email"
+        required
+        className="bg-black/40 border-white/15 text-white placeholder:text-white/40"
+        placeholder="Email"
+      />
+
+      <Input
+        name="sujet"
+        required
+        className="bg-black/40 border-white/15 text-white placeholder:text-white/40"
+        placeholder="Sec + matière (ex: Sec 4 maths)"
+      />
+
+      <Textarea
+        name="message"
+        required
+        className="min-h-[120px] bg-black/40 border-white/15 text-white placeholder:text-white/40"
+        placeholder="Ton message"
+      />
+
+      <input type="hidden" name="_subject" value="Nouvelle demande – Méthode Secondaire" />
+      <input type="hidden" name="_template" value="table" />
+
+      <Button
+        type="submit"
+        disabled={status === "sending"}
+        className="rounded-2xl bg-white text-black hover:bg-white/90 w-full disabled:opacity-60"
+      >
+        {status === "sending" ? "Envoi..." : "Envoyer"}
+      </Button>
+
+      {status === "error" && (
+        <div className="text-xs text-red-400">
+          Erreur lors de l’envoi. Réessaie ou contacte-moi par email/téléphone.
+        </div>
+      )}
+
+      <div className="text-xs text-white/50">Réponse rapide • Aucune info partagée</div>
+    </form>
   )
 }
 
@@ -360,8 +366,9 @@ function Feature({ title, desc }) {
 function Pricing({ title, price, bullets, highlight }) {
   return (
     <MotionCard
-      className={`rounded-3xl p-6 text-white ${highlight ? "border-white/30 bg-white/10" : "border-white/15 bg-white/5"
-        }`}
+      className={`rounded-3xl p-6 text-white ${
+        highlight ? "border-white/30 bg-white/10" : "border-white/15 bg-white/5"
+      }`}
     >
       <div className="flex items-center justify-between">
         <div className="font-medium">{title}</div>
@@ -377,10 +384,11 @@ function Pricing({ title, price, bullets, highlight }) {
         ))}
       </ul>
       <Button
-        className={`mt-6 w-full rounded-2xl ${highlight
+        className={`mt-6 w-full rounded-2xl ${
+          highlight
             ? "bg-white text-black hover:bg-white/90"
             : "bg-white/5 border border-white/15 hover:bg-white/10 text-white"
-          }`}
+        }`}
       >
         Choisir
       </Button>
