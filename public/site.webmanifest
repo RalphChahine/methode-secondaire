@@ -1,19 +1,22 @@
 {
   "name": "Méthode Secondaire",
   "short_name": "Méthode Sec.",
+  "description": "Tutorat en mathématiques et en sciences pour le secondaire 1 à 5 au Québec.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#071631",
+  "theme_color": "#071631",
   "icons": [
     {
-      "src": "/android-chrome-192x192.png",
+      "src": "/web-app-manifest-192x192.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "/android-chrome-512x512.png",
+      "src": "/web-app-manifest-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
-  ],
-  "theme_color": "#0b2a4a",
-  "background_color": "#0b2a4a",
-  "display": "standalone"
+  ]
 }

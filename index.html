@@ -1,60 +1,102 @@
 <!doctype html>
-<html lang="fr" class="dark">
+<html lang="fr-CA">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Méthode Secondaire | Tutorat en maths et sciences au secondaire</title>
+    <meta
+      name="description"
+      content="Tutorat privé en mathématiques et en sciences pour le secondaire 1 à 5 au Québec. Révision claire, méthode structurée et réservation simple."
+    />
+    <meta
+      name="keywords"
+      content="tutorat maths secondaire, tutorat sciences secondaire, cours privés secondaire Québec, préparation examens ministériels, soutien scolaire Montréal"
+    />
+    <meta
+      name="robots"
+      content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+    />
+    <meta name="author" content="Méthode Secondaire" />
+    <meta name="theme-color" content="#071631" />
 
-  <!-- Title & SEO -->
-  <title>Méthode Secondaire | Tutorat maths et sciences — Québec</title>
-  <meta name="description"
-    content="Tutorat en mathématiques et sciences (secondaire 1 à 5) au Québec. En ligne ou en présentiel (Montréal/Laval). Méthode claire, structurée et efficace." />
+    <link rel="canonical" href="https://methode-secondaire.vercel.app/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-  <!-- Canonical -->
-  <link rel="canonical" href="https://methode-secondaire.vercel.app/" />
+    <meta property="og:locale" content="fr_CA" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Méthode Secondaire" />
+    <meta property="og:title" content="Méthode Secondaire | Tutorat en maths et sciences au secondaire" />
+    <meta
+      property="og:description"
+      content="Tutorat privé en mathématiques et en sciences pour le secondaire 1 à 5 au Québec. Révision claire, méthode structurée et réservation simple."
+    />
+    <meta property="og:url" content="https://methode-secondaire.vercel.app/" />
+    <meta property="og:image" content="https://methode-secondaire.vercel.app/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Visuel Méthode Secondaire" />
 
-  <!-- Open Graph (Facebook, WhatsApp, iMessage, Discord) -->
-  <meta property="og:locale" content="fr_CA" />
-  <meta property="og:type" content="website" />
-  <meta property="og:site_name" content="Méthode Secondaire" />
-  <meta property="og:title" content="Méthode Secondaire | Tutorat secondaire — Québec" />
-  <meta property="og:description"
-    content="Cours de maths et sciences (secondaire 1 à 5). Réservation simple. Méthode claire et structurée." />
-  <meta property="og:url" content="https://methode-secondaire.vercel.app/" />
-  <meta property="og:image" content="/og.jpg" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Méthode Secondaire | Tutorat en maths et sciences au secondaire" />
+    <meta
+      name="twitter:description"
+      content="Tutorat privé en mathématiques et en sciences pour le secondaire 1 à 5 au Québec."
+    />
+    <meta name="twitter:image" content="https://methode-secondaire.vercel.app/og-image.png" />
 
-  <!-- Twitter / X -->
-  <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="Méthode Secondaire | Tutorat — Québec" />
-  <meta name="twitter:description" content="Maths & sciences — secondaire 1 à 5. Réservation en ligne." />
-  <meta name="twitter:image" content="/og.jpg" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="preload" href="/Methode_Secondaire.png" as="image" />
 
-  <!-- Favicons -->
-  <link rel="icon" href="/favicon.ico" sizes="any" />
-  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-  <link rel="manifest" href="/site.webmanifest" />
-  <!-- Preload YOUR logo -->
-  <link rel="preload" href="/Methode_Secondaire.png" as="image" />
-</head>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "EducationalOrganization",
+        "name": "Méthode Secondaire",
+        "url": "https://methode-secondaire.vercel.app/",
+        "logo": "https://methode-secondaire.vercel.app/Methode_Secondaire.png",
+        "image": "https://methode-secondaire.vercel.app/og-image.png",
+        "description": "Tutorat privé en mathématiques et en sciences pour les élèves du secondaire au Québec.",
+        "email": "chahineralph@gmail.com",
+        "telephone": "+15149520709",
+        "areaServed": [
+          { "@type": "AdministrativeArea", "name": "Québec" },
+          { "@type": "City", "name": "Montréal" },
+          { "@type": "City", "name": "Laval" }
+        ]
+      }
+    </script>
+  </head>
 
-<body>
-  <!-- React root -->
-  <div id="root"></div>
+  <body>
+    <div id="root"></div>
 
-  <!-- Fallback branding if JS is disabled (SEO-safe) -->
-  <noscript>
-    <header style="text-align:center; padding:2rem;">
-      <img src="/Methode_Secondaire.png" alt="Méthode Secondaire — Tutorat maths et sciences" width="180"
-        height="180" />
-      <h1>Méthode Secondaire</h1>
-      <p>Tutorat en mathématiques et sciences — Québec</p>
-    </header>
-  </noscript>
+    <noscript>
+      <section style="max-width: 720px; margin: 0 auto; padding: 48px 24px; font-family: Arial, sans-serif; color: #071631;">
+        <img
+          src="/Methode_Secondaire.png"
+          alt="Méthode Secondaire"
+          width="180"
+          height="180"
+          style="display:block; margin:0 auto 24px;"
+        />
+        <h1 style="font-size: 40px; margin-bottom: 12px;">Méthode Secondaire</h1>
+        <p style="font-size: 18px; line-height: 1.7;">
+          Tutorat privé en mathématiques et en sciences pour le secondaire 1 à 5 au Québec.
+        </p>
+        <p style="font-size: 16px; line-height: 1.7;">
+          Contact : <a href="mailto:chahineralph@gmail.com">chahineralph@gmail.com</a> •
+          <a href="tel:+15149520709"> +1 (514) 952-0709</a>
+        </p>
+      </section>
+    </noscript>
 
-  <script type="module" src="/src/main.jsx"></script>
-</body>
-
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

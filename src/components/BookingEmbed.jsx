@@ -1,17 +1,20 @@
+import { BOOKING_URL } from "@/config/booking"
+
 export default function BookingEmbed() {
   return (
-    <div className="relative rounded-3xl bg-white p-3 shadow-2xl">
-      {/* subtle glow */}
-      <div className="pointer-events-none absolute -inset-1 rounded-3xl bg-white/40 blur-xl opacity-30" />
+    <div className="glass-panel relative overflow-hidden rounded-[32px] p-3">
+      <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent" />
 
-      <div className="relative overflow-hidden rounded-2xl">
+      <div className="overflow-hidden rounded-[24px] border border-slate-200/70 bg-white shadow-2xl">
         <iframe
-          src="https://calendar.app.google/o7Qmq62Gqg2dQCe16"
+          src={BOOKING_URL}
           width="100%"
-          height="700"
+          height="720"
           frameBorder="0"
+          loading="lazy"
+          referrerPolicy="strict-origin-when-cross-origin"
           scrolling="no"
-          title="Réserver un rendez-vous"
+          title="Réserver une séance avec Méthode Secondaire"
         />
       </div>
     </div>

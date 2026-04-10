@@ -1,129 +1,220 @@
-import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Link } from "react-router-dom"
+import {
+  ArrowRight,
+  BadgeCheck,
+  FlaskConical,
+  Gauge,
+  NotebookPen,
+  Zap,
+} from "lucide-react"
+
 import MotionCard from "@/components/MotionCard"
+import Seo from "@/components/Seo"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { BOOKING_URL } from "@/config/booking"
+import { siteConfig } from "@/lib/seo"
 
-const container = {
-  hidden: { opacity: 0 },
-  show: {
-    opacity: 1,
-    transition: { staggerChildren: 0.08, delayChildren: 0.05 },
+const modules = [
+  {
+    icon: FlaskConical,
+    title: "Chimie et réactions",
+    description: "Comprendre la matière, les transformations et les calculs sans rester dans le par coeur flou.",
   },
-}
+  {
+    icon: Gauge,
+    title: "Physique et mouvement",
+    description: "Relier les formules aux situations concrètes pour que les problèmes deviennent beaucoup plus lisibles.",
+  },
+  {
+    icon: Zap,
+    title: "Électricité et énergie",
+    description: "Mettre de l'ordre dans les concepts pour mieux suivre les circuits, les grandeurs et les relations.",
+  },
+  {
+    icon: NotebookPen,
+    title: "Labos et questions à développement",
+    description: "Structurer l'analyse, justifier clairement et éviter les pertes de points sur la rédaction.",
+  },
+]
 
-const item = {
-  hidden: { opacity: 0, y: 14 },
-  show: { opacity: 1, y: 0 },
+const gains = [
+  "Voir la logique derrière les formules au lieu de les subir.",
+  "Relier les concepts aux schémas, unités et situations concrètes.",
+  "Répondre plus clairement aux questions d'examen et de labo.",
+]
+
+const approach = [
+  {
+    title: "Visualiser les concepts",
+    description: "On simplifie les phénomènes avec des schémas, des comparaisons et des repères faciles à retenir.",
+  },
+  {
+    title: "Relier les notions",
+    description: "On montre comment les concepts, les unités et les formules se tiennent entre eux.",
+  },
+  {
+    title: "Appliquer avec précision",
+    description: "On pratique sur les bons formats de questions pour rendre la résolution plus naturelle.",
+  },
+]
+
+const sciencesSchema = {
+  "@context": "https://schema.org",
+  "@type": "Service",
+  name: "Tutorat de sciences au secondaire",
+  provider: {
+    "@type": "EducationalOrganization",
+    name: siteConfig.siteName,
+    url: siteConfig.siteUrl,
+    telephone: siteConfig.phone,
+    email: siteConfig.email,
+  },
+  areaServed: [
+    { "@type": "AdministrativeArea", name: "Québec" },
+    { "@type": "City", name: "Montréal" },
+    { "@type": "City", name: "Laval" },
+  ],
+  serviceType: "Tutorat privé de sciences pour le secondaire 1 à 5",
 }
 
 export default function Sciences() {
   return (
-    <div className="relative min-h-screen bg-black text-white overflow-hidden">
-      {/* Glow */}
+    <div className="relative overflow-hidden">
+      <Seo
+        title="Tutorat de sciences au secondaire | Méthode Secondaire"
+        description="Tutorat de sciences au secondaire 1 à 5 au Québec. Physique, chimie, électricité, labos et préparation d'examens avec une méthode claire."
+        path="/sciences"
+        keywords="tutorat sciences secondaire, cours privés sciences Québec, aide physique secondaire, aide chimie secondaire, préparation examen sciences"
+        jsonLd={sciencesSchema}
+      />
+
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-40 -left-40 h-[480px] w-[480px] rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute top-20 -right-40 h-[480px] w-[480px] rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute bottom-[-240px] left-1/2 h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-white/5 blur-3xl" />
+        <div className="absolute -right-14 top-16 h-72 w-72 rounded-full bg-[#73d6ff]/16 blur-3xl" />
+        <div className="absolute left-0 top-20 h-72 w-72 rounded-full bg-[#f5c977]/12 blur-3xl" />
       </div>
 
-      <main className="relative z-10 max-w-6xl mx-auto px-6 pt-16 pb-28">
-        {/* HERO */}
-        <motion.div variants={container} initial="hidden" animate="show" className="max-w-3xl">
-          <motion.div variants={item} className="flex items-center gap-3">
-            <Badge className="bg-white/10 text-white border border-white/15">
-              Sciences
+      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
+        <section className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
+          <div className="max-w-3xl">
+            <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
+              Sciences • Secondaire 1 à 5
             </Badge>
-            <span className="text-sm text-white/60">Secondaire 1 à 5</span>
-          </motion.div>
 
-          <motion.h1 variants={item} className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight">
-            Comprendre la science,
-            <span className="block text-white/70">pas juste la mémoriser.</span>
-          </motion.h1>
+            <h1 className="balanced-copy mt-7 font-display text-5xl font-semibold leading-[0.95] text-white sm:text-6xl">
+              La science devient plus simple
+              <span className="text-shine"> quand elle devient visuelle, logique et concrète.</span>
+            </h1>
 
-          <motion.p variants={item} className="mt-5 text-lg text-white/70">
-            Physique, chimie, électricité — on rend ça clair, visuel et logique.
-            Parfait pour devoirs, labos et examens.
-          </motion.p>
-
-          <motion.div variants={item} className="mt-8">
-            <Button className="rounded-2xl bg-white text-black hover:bg-white/90 px-6 py-6">
-              Réserver un cours de sciences
-            </Button>
-          </motion.div>
-        </motion.div>
-
-        {/* TOPICS */}
-        <section className="mt-20">
-          <motion.h2
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-2xl font-semibold"
-          >
-            Contenu couvert
-          </motion.h2>
-
-          <div className="mt-6 grid md:grid-cols-3 gap-4">
-            <TopicCard
-              title="Secondaire 1–2"
-              topics={[
-                "Méthode scientifique",
-                "Mesures & unités",
-                "Énergie & transformations",
-                "Écosystèmes (selon niveau)",
-              ]}
-            />
-            <TopicCard
-              title="Secondaire 3"
-              topics={[
-                "Chimie de base (atomes, molécules)",
-                "Forces & mouvement (intro)",
-                "Graphes & interprétation",
-                "Problèmes guidés",
-              ]}
-            />
-            <TopicCard
-              title="Secondaire 4–5"
-              topics={[
-                "Physique (mécanique, électricité)",
-                "Chimie (moles, réactions, stœchiométrie)",
-                "Labos + analyse",
-                "Préparation examens",
-              ]}
-            />
-          </div>
-        </section>
-
-        {/* METHOD */}
-        <section className="mt-20">
-          <motion.h2
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-2xl font-semibold"
-          >
-            Approche en 3 étapes
-          </motion.h2>
-
-          <div className="mt-6 grid md:grid-cols-3 gap-4">
-            <Step step="01" title="Visualiser" desc="Schémas simples pour comprendre les concepts." />
-            <Step step="02" title="Appliquer" desc="Exercices ciblés + méthodes de résolution." />
-            <Step step="03" title="Réussir" desc="Questions type examens + gestion du temps." />
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="mt-24">
-          <MotionCard className="rounded-3xl border-white/20 bg-white/10 p-8 text-center">
-            <div className="text-2xl font-semibold">On fait ça simple et logique.</div>
-            <p className="mt-3 text-white/70 max-w-2xl mx-auto">
-              On identifie ce qui bloque, on clarifie avec des exemples, puis on pratique jusqu’à ce que ça devienne naturel.
+            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/72">
+              L'objectif n'est pas de mémoriser un bloc de notions sans lien. L'objectif, c'est de faire
+              apparaître la logique derrière les phénomènes, les formules et les réponses attendues.
             </p>
-            <div className="mt-6">
-              <Button className="rounded-2xl bg-white text-black hover:bg-white/90 px-8 py-6">
-                Réserver maintenant
+
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button
+                asChild
+                className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
+              >
+                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                  Réserver un cours de sciences
+                  <ArrowRight className="h-4 w-4" />
+                </a>
               </Button>
+
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+              >
+                <Link to="/#contact">Poser une question</Link>
+              </Button>
+            </div>
+          </div>
+
+          <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
+            <div className="text-sm uppercase tracking-[0.24em] text-white/45">Ce que le suivi change</div>
+            <div className="mt-3 font-display text-3xl font-semibold">Moins de mémorisation brute, plus de compréhension</div>
+
+            <ul className="mt-6 space-y-4">
+              {gains.map((gain) => (
+                <li key={gain} className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4">
+                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                  <span className="text-sm leading-7 text-white/78">{gain}</span>
+                </li>
+              ))}
+            </ul>
+          </MotionCard>
+        </section>
+
+        <section className="pt-20">
+          <SectionHeader
+            eyebrow="Contenu couvert"
+            title="Les blocs où les sciences demandent souvent un vrai accompagnement"
+            description="On travaille les chapitres qui se transforment vite en surcharge quand les concepts, les unités et les questions s'empilent."
+          />
+
+          <div className="mt-8 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+            {modules.map((module) => (
+              <MotionCard key={module.title} className="rounded-[28px] border-white/10 bg-[#091a3a]/85 p-6 text-white">
+                <div className="inline-flex rounded-2xl bg-white/10 p-3 text-[#f5c977]">
+                  <module.icon className="h-5 w-5" />
+                </div>
+                <h2 className="mt-5 font-display text-2xl font-semibold">{module.title}</h2>
+                <p className="mt-3 text-sm leading-7 text-white/72">{module.description}</p>
+              </MotionCard>
+            ))}
+          </div>
+        </section>
+
+        <section className="pt-20">
+          <SectionHeader
+            eyebrow="Approche"
+            title="Trois réflexes qui rendent les sciences beaucoup plus lisibles"
+            description="On part toujours du même principe: si l'élève voit mieux, relie mieux et applique mieux, la matière devient beaucoup moins lourde."
+          />
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-3">
+            {approach.map((step, index) => (
+              <MotionCard key={step.title} className="glass-panel rounded-[30px] border-white/10 bg-white/[0.04] p-7 text-white">
+                <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">Étape 0{index + 1}</div>
+                <h2 className="mt-4 font-display text-3xl font-semibold">{step.title}</h2>
+                <p className="mt-3 text-sm leading-7 text-white/72">{step.description}</p>
+              </MotionCard>
+            ))}
+          </div>
+        </section>
+
+        <section className="pt-20">
+          <MotionCard className="rounded-[34px] border-white/10 bg-[linear-gradient(135deg,rgba(115,214,255,0.14),rgba(255,255,255,0.06))] p-8 text-white sm:p-10">
+            <div className="max-w-3xl">
+              <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white/85">
+                Pour révision, suivi ou examen
+              </div>
+              <h2 className="mt-5 font-display text-4xl font-semibold sm:text-5xl">
+                Quand la logique apparaît, les sciences deviennent beaucoup moins intimidantes.
+              </h2>
+              <p className="mt-4 text-base leading-8 text-white/75 sm:text-lg">
+                Que le besoin soit en chimie, en physique ou en préparation d'évaluation, on peut remettre
+                les concepts à leur place rapidement.
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Button
+                  asChild
+                  className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
+                >
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    Réserver maintenant
+                  </a>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                >
+                  <Link to="/">Retour à l'accueil</Link>
+                </Button>
+              </div>
             </div>
           </MotionCard>
         </section>
@@ -132,28 +223,14 @@ export default function Sciences() {
   )
 }
 
-function TopicCard({ title, topics }) {
+function SectionHeader({ eyebrow, title, description }) {
   return (
-    <MotionCard className="rounded-3xl border-white/15 bg-white/5 p-6">
-      <div className="text-lg font-semibold">{title}</div>
-      <ul className="mt-4 space-y-2 text-sm text-white/70">
-        {topics.map((t) => (
-          <li key={t} className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-white/60" />
-            {t}
-          </li>
-        ))}
-      </ul>
-    </MotionCard>
-  )
-}
-
-function Step({ step, title, desc }) {
-  return (
-    <MotionCard className="rounded-3xl border-white/15 bg-white/5 p-6">
-      <div className="text-sm text-white/50">Étape {step}</div>
-      <div className="mt-1 text-xl font-semibold">{title}</div>
-      <div className="mt-2 text-sm text-white/70">{desc}</div>
-    </MotionCard>
+    <div className="max-w-3xl">
+      <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">{eyebrow}</div>
+      <h2 className="balanced-copy mt-4 font-display text-4xl font-semibold text-white sm:text-5xl">
+        {title}
+      </h2>
+      <p className="mt-4 text-base leading-8 text-white/72 sm:text-lg">{description}</p>
+    </div>
   )
 }

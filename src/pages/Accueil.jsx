@@ -1,13 +1,36 @@
+import { useState } from "react"
 import { motion } from "framer-motion"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
+import { Link } from "react-router-dom"
+import {
+  ArrowRight,
+  BadgeCheck,
+  BrainCircuit,
+  Calculator,
+  CalendarDays,
+  Check,
+  ChevronRight,
+  Clock3,
+  FlaskConical,
+  GraduationCap,
+  Mail,
+  MapPin,
+  NotebookPen,
+  Phone,
+  ShieldCheck,
+  Sparkles,
+  Target,
+  TrendingUp,
+} from "lucide-react"
+
+import BookingEmbed from "@/components/BookingEmbed"
 import MotionCard from "@/components/MotionCard"
+import Seo from "@/components/Seo"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Separator } from "@/components/ui/separator"
-import BookingEmbed from "@/components/BookingEmbed"
 import { BOOKING_URL } from "@/config/booking"
-import { useState } from "react"
+import { absoluteUrl, siteConfig } from "@/lib/seo"
 
 const container = {
   hidden: { opacity: 0 },
@@ -18,258 +41,640 @@ const container = {
 }
 
 const item = {
-  hidden: { opacity: 0, y: 14 },
+  hidden: { opacity: 0, y: 18 },
   show: { opacity: 1, y: 0 },
 }
 
+const heroStats = [
+  { label: "Niveaux couverts", value: "Secondaire 1 à 5" },
+  { label: "Formats", value: "En ligne ou présentiel" },
+  { label: "Objectif", value: "Comprendre, pratiquer, réussir" },
+]
+
+const pillars = [
+  {
+    icon: BrainCircuit,
+    title: "Clarté immédiate",
+    description:
+      "On simplifie la matière sans la vider de son sens. L'élève comprend ce qu'il fait et pourquoi il le fait.",
+  },
+  {
+    icon: Target,
+    title: "Méthode réutilisable",
+    description:
+      "On construit une vraie façon de résoudre, de relire et de s'organiser pour que les progrès restent après la séance.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Progression visible",
+    description:
+      "On cible les blocages importants, on pratique ce qui compte, et on avance avec un cap beaucoup plus net.",
+  },
+]
+
+const subjectCards = [
+  {
+    title: "Mathématiques",
+    icon: Calculator,
+    to: "/maths",
+    description:
+      "Algèbre, fonctions, géométrie, trigonométrie et préparation aux examens avec une méthode simple à appliquer.",
+    bullets: ["Résolution d'équations", "Lecture des problèmes", "Examens ministériels"],
+  },
+  {
+    title: "Sciences",
+    icon: FlaskConical,
+    to: "/sciences",
+    description:
+      "Physique, chimie, électricité et analyse de laboratoire pour transformer la matière en logique claire.",
+    bullets: ["Concepts et formules", "Questions à développement", "Labos et révision ciblée"],
+  },
+]
+
+const workflow = [
+  {
+    step: "01",
+    title: "Diagnostiquer vite",
+    description:
+      "On repère ce qui bloque vraiment: notions floues, erreurs de méthode, manque de confiance ou préparation d'examen.",
+  },
+  {
+    step: "02",
+    title: "Expliquer avec précision",
+    description:
+      "On remet les concepts dans le bon ordre avec des exemples courts, visuels et mémorables.",
+  },
+  {
+    step: "03",
+    title: "Pratiquer de façon ciblée",
+    description:
+      "On choisit les exercices qui font progresser, pas juste ceux qui remplissent le temps.",
+  },
+  {
+    step: "04",
+    title: "Consolider pour la semaine",
+    description:
+      "Chaque séance laisse un plan clair pour continuer sans repartir à zéro au prochain cours.",
+  },
+]
+
+const situations = [
+  {
+    icon: GraduationCap,
+    title: "Avant un examen important",
+    description: "Quand il faut remettre les idées en place rapidement et retrouver une vraie confiance.",
+  },
+  {
+    icon: NotebookPen,
+    title: "Quand la matière s'accumule",
+    description: "Pour reprendre les bases, clarifier les notions et éviter que les retards deviennent lourds.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Quand l'élève comprend mal en classe",
+    description: "On reformule, on recadre et on trouve l'explication qui finit par cliquer.",
+  },
+  {
+    icon: Sparkles,
+    title: "Quand on veut passer un cap",
+    description: "Pour gagner en autonomie, viser plus haut et rendre les devoirs beaucoup moins stressants.",
+  },
+]
+
+const pricing = [
+  {
+    title: "Séance flexible",
+    price: "75 $ / h",
+    accent: "Idéal pour une révision ponctuelle ou un besoin précis.",
+    bullets: ["Réservation au besoin", "Maths ou sciences", "En ligne ou présentiel"],
+  },
+  {
+    title: "Suivi hebdomadaire",
+    price: "70 $ / h",
+    accent: "La formule la plus efficace pour bâtir une progression durable.",
+    bullets: ["Créneau régulier", "Suivi clair", "Excellente option pendant l'année"],
+    highlight: true,
+  },
+  {
+    title: "Bloc intensif",
+    price: "Sur demande",
+    accent: "Pour une période courte avant examens, reprise de matière ou remise à niveau.",
+    bullets: ["Plan serré", "Priorités bien ciblées", "Format adaptable"],
+  },
+]
+
+const faqItems = [
+  {
+    question: "Le tutorat est-il seulement pour les élèves en difficulté ?",
+    answer:
+      "Non. Le suivi aide autant à débloquer une matière difficile qu'à consolider une bonne base, préparer un examen ou viser un meilleur rendement.",
+  },
+  {
+    question: "Travaillez-vous seulement en ligne ?",
+    answer:
+      "Les deux formats sont possibles. Le service est offert en ligne partout au Québec, avec disponibilité en présentiel selon le secteur.",
+  },
+  {
+    question: "Faites-vous des suivis avant les examens ministériels ?",
+    answer:
+      "Oui. On peut monter un plan de révision ciblé, revoir les notions prioritaires, faire des exercices type examen et travailler la gestion du temps.",
+  },
+  {
+    question: "Quels niveaux sont couverts ?",
+    answer:
+      "Le tutorat couvre le secondaire 1 à 5 en mathématiques et en sciences, avec une approche alignée sur le programme du Québec.",
+  },
+]
+
+const homeSchemas = [
+  {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    name: siteConfig.siteName,
+    url: siteConfig.siteUrl,
+    logo: absoluteUrl("/Methode_Secondaire.png"),
+    image: absoluteUrl("/og-image.png"),
+    email: siteConfig.email,
+    telephone: siteConfig.phone,
+    description:
+      "Tutorat privé en mathématiques et en sciences pour les élèves du secondaire au Québec.",
+    areaServed: [
+      { "@type": "AdministrativeArea", name: "Québec" },
+      { "@type": "City", name: "Montréal" },
+      { "@type": "City", name: "Laval" },
+    ],
+    sameAs: [BOOKING_URL],
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Tutorat secondaire en mathématiques et sciences",
+    serviceType: "Tutorat privé pour élèves du secondaire",
+    areaServed: [
+      { "@type": "AdministrativeArea", name: "Québec" },
+      { "@type": "City", name: "Montréal" },
+      { "@type": "City", name: "Laval" },
+    ],
+    provider: {
+      "@type": "EducationalOrganization",
+      name: siteConfig.siteName,
+      url: siteConfig.siteUrl,
+      telephone: siteConfig.phone,
+      email: siteConfig.email,
+    },
+    offers: pricing.map((plan) => ({
+      "@type": "Offer",
+      name: plan.title,
+      priceCurrency: "CAD",
+      description: plan.accent,
+      ...(plan.price.includes("$") ? { price: plan.price.replace(/[^0-9]/g, "") } : {}),
+    })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((entry) => ({
+      "@type": "Question",
+      name: entry.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: entry.answer,
+      },
+    })),
+  },
+]
+
 export default function Accueil() {
   return (
-    <div className="relative min-h-screen bg-black text-white overflow-hidden">
-      {/* Ambient glow */}
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-48 -left-48 h-[520px] w-[520px] rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute top-24 -right-48 h-[520px] w-[520px] rounded-full bg-white/10 blur-3xl" />
-        <div className="absolute bottom-[-260px] left-1/2 h-[680px] w-[900px] -translate-x-1/2 rounded-full bg-white/5 blur-3xl" />
+    <div className="relative overflow-hidden">
+      <Seo
+        title="Méthode Secondaire | Tutorat en maths et sciences au secondaire"
+        description="Tutorat privé en mathématiques et en sciences pour le secondaire 1 à 5 au Québec. Révision claire, méthode structurée, réservation simple."
+        path="/"
+        keywords="tutorat maths secondaire, tutorat sciences secondaire, cours privés mathématiques Québec, soutien scolaire secondaire Montréal, préparation examens ministériels"
+        jsonLd={homeSchemas}
+      />
+
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="mesh-background absolute inset-0 opacity-[0.12]" />
+        <div className="absolute -left-24 top-32 h-72 w-72 rounded-full bg-[#7ab4ff]/20 blur-3xl" />
+        <div className="absolute right-0 top-20 h-80 w-80 rounded-full bg-[#f5c977]/14 blur-3xl" />
+        <div className="absolute bottom-0 left-1/2 h-[34rem] w-[44rem] -translate-x-1/2 rounded-full bg-[#4a8bff]/10 blur-3xl" />
       </div>
 
-      {/* Subtle grid */}
-      <div className="pointer-events-none absolute inset-0 opacity-20 [background-image:linear-gradient(to_right,rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:48px_48px]" />
+      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-8 sm:px-6 lg:px-8 lg:pb-28 lg:pt-14">
+        <section className="scroll-mt-32">
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="grid items-center gap-10 lg:grid-cols-[1.05fr,0.95fr]"
+          >
+            <div className="max-w-3xl">
+              <motion.div variants={item} className="flex flex-wrap items-center gap-3">
+                <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
+                  Québec • Secondaire 1 à 5
+                </Badge>
+                <span className="text-sm text-white/65">Maths, sciences et préparation d'examens</span>
+              </motion.div>
 
-      <main className="relative z-10 max-w-6xl mx-auto px-6 pt-16 pb-28">
-        {/* HERO */}
-        <motion.div variants={container} initial="hidden" animate="show" className="max-w-3xl">
-          <motion.div variants={item} className="flex items-center gap-3">
-            <Badge className="bg-white/10 text-white border border-white/15 hover:bg-white/10">
-              Québec • Secondaire 1 à 5
-            </Badge>
-            <span className="text-sm text-white/60">Maths • Sciences • Examens</span>
+              <motion.h1
+                variants={item}
+                className="balanced-copy mt-7 max-w-4xl font-display text-5xl font-semibold leading-[0.95] text-white sm:text-6xl lg:text-7xl"
+              >
+                Le tutorat qui remet les idées en place,
+                <span className="text-shine"> la méthode en marche</span>
+                <span className="block text-white/80">et la confiance du bon côté.</span>
+              </motion.h1>
+
+              <motion.p
+                variants={item}
+                className="balanced-copy mt-6 max-w-2xl text-lg leading-8 text-white/72 sm:text-xl"
+              >
+                Méthode Secondaire aide les élèves du secondaire à mieux comprendre les maths et les
+                sciences, à pratiquer intelligemment et à arriver prêts aux évaluations, sans rester
+                bloqués dans le flou ou le stress.
+              </motion.p>
+
+              <motion.div variants={item} className="mt-8 flex flex-wrap gap-3">
+                <Button
+                  asChild
+                  className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] shadow-[0_18px_45px_rgba(245,201,119,0.28)] hover:bg-[#f7d38f]"
+                >
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    Réserver une première séance
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                  onClick={() => document.getElementById("methode")?.scrollIntoView({ behavior: "smooth" })}
+                >
+                  Voir la méthode
+                </Button>
+              </motion.div>
+
+              <motion.div variants={item} className="mt-10 grid gap-3 sm:grid-cols-3">
+                {heroStats.map((stat) => (
+                  <div key={stat.label} className="glass-panel rounded-[24px] px-4 py-4 text-left">
+                    <div className="text-xs uppercase tracking-[0.22em] text-white/45">{stat.label}</div>
+                    <div className="mt-2 text-sm font-semibold text-white">{stat.value}</div>
+                  </div>
+                ))}
+              </motion.div>
+            </div>
+
+            <motion.div variants={item} className="relative">
+              <div className="glass-panel section-frame relative overflow-hidden rounded-[34px] p-6 sm:p-8">
+                <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
+
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div>
+                    <div className="text-sm uppercase tracking-[0.24em] text-white/45">Une séance type</div>
+                    <div className="mt-2 font-display text-3xl font-semibold text-white">
+                      Clair, ciblé, rassurant
+                    </div>
+                  </div>
+                  <div className="rounded-full border border-[#f5c977]/30 bg-[#f5c977]/12 px-4 py-2 text-sm text-[#f8deb0]">
+                    Réponse rapide
+                  </div>
+                </div>
+
+                <div className="mt-8 space-y-4">
+                  {[
+                    "On identifie les notions floues et les erreurs qui reviennent.",
+                    "On réexplique avec une logique simple et mémorable.",
+                    "On pratique avec des exercices vraiment utiles.",
+                    "On termine avec un plan clair pour la suite.",
+                  ].map((step) => (
+                    <div
+                      key={step}
+                      className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
+                    >
+                      <div className="mt-1 rounded-full bg-[#f5c977] p-1.5 text-[#071631]">
+                        <Check className="h-4 w-4" />
+                      </div>
+                      <p className="text-sm leading-7 text-white/78">{step}</p>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-[24px] border border-white/10 bg-[#0b214d]/80 p-5">
+                    <div className="flex items-center gap-2 text-sm text-white/55">
+                      <CalendarDays className="h-4 w-4 text-[#f5c977]" />
+                      Réservation simple
+                    </div>
+                    <div className="mt-2 text-lg font-semibold text-white">Calendrier en ligne</div>
+                    <p className="mt-2 text-sm leading-7 text-white/70">
+                      Choix rapide du créneau, sans allers-retours compliqués.
+                    </p>
+                  </div>
+
+                  <div className="rounded-[24px] border border-white/10 bg-white/5 p-5">
+                    <div className="flex items-center gap-2 text-sm text-white/55">
+                      <MapPin className="h-4 w-4 text-[#f5c977]" />
+                      Format flexible
+                    </div>
+                    <div className="mt-2 text-lg font-semibold text-white">En ligne ou en présentiel</div>
+                    <p className="mt-2 text-sm leading-7 text-white/70">
+                      Partout au Québec en ligne, avec présence possible selon le secteur.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
           </motion.div>
+        </section>
 
-          <motion.h1 variants={item} className="mt-6 text-4xl md:text-6xl font-semibold tracking-tight">
-            Méthode Secondaire
-            <span className="block text-white/70">apprendre vite, comprendre pour vrai.</span>
-          </motion.h1>
+        <motion.section
+          id="methode"
+          className="scroll-mt-32 pt-20"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <SectionHeader
+            eyebrow="Pourquoi ça fonctionne"
+            title="Une méthode pensée pour faire baisser le stress et monter la maîtrise"
+            description="Le but n'est pas seulement de passer au travers d'un exercice. Le but, c'est que l'élève sache quoi faire quand il sera seul devant la prochaine question."
+          />
 
-          <motion.p variants={item} className="mt-5 text-lg text-white/70">
-            Une approche claire et structurée pour réussir en mathématiques et en sciences.
-            En ligne ou en présentiel.
-          </motion.p>
+          <div className="mt-8 grid gap-4 lg:grid-cols-3">
+            {pillars.map((pillar) => (
+              <MotionCard
+                key={pillar.title}
+                className="glass-panel rounded-[30px] border-white/10 bg-white/[0.04] p-7 text-white"
+              >
+                <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
+                  <pillar.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-5 font-display text-2xl font-semibold">{pillar.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-white/72">{pillar.description}</p>
+              </MotionCard>
+            ))}
+          </div>
+        </motion.section>
 
-          <motion.div variants={item} className="mt-8 flex flex-wrap gap-3">
-            <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-              <Button className="relative rounded-2xl px-6 py-6 text-base bg-white text-black hover:bg-white/90 overflow-hidden">
-                <span className="pointer-events-none absolute inset-0 rounded-2xl blur-xl bg-white/20 opacity-0 hover:opacity-100 transition" />
-                <span className="relative">Réserver une séance</span>
-              </Button>
-            </a>
+        <motion.section
+          className="scroll-mt-32 pt-20"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <SectionHeader
+            eyebrow="Parcours de séance"
+            title="Une progression simple à suivre, même quand la matière semble dense"
+            description="Chaque étape sert à réduire la confusion et à remettre l'élève en position de réussite."
+          />
 
-            <Button
-              variant="outline"
-              className="rounded-2xl px-6 py-6 text-base border-white/20 text-white bg-transparent hover:bg-white/10"
-              onClick={() => document.getElementById("programmes")?.scrollIntoView({ behavior: "smooth" })}
-            >
-              Voir les programmes
-            </Button>
-          </motion.div>
+          <div className="mt-8 grid gap-4 lg:grid-cols-4">
+            {workflow.map((step) => (
+              <MotionCard
+                key={step.step}
+                className="rounded-[28px] border-white/10 bg-[#0a1d43]/75 p-6 text-white"
+              >
+                <div className="text-sm uppercase tracking-[0.26em] text-[#f5c977]">Étape {step.step}</div>
+                <h3 className="mt-4 font-display text-2xl font-semibold">{step.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-white/72">{step.description}</p>
+              </MotionCard>
+            ))}
+          </div>
+        </motion.section>
 
-          <motion.div variants={item} className="mt-10 grid grid-cols-3 gap-3 max-w-md">
-            <MiniStat label="Clarté" value="⭐⭐⭐⭐⭐" />
-            <MiniStat label="Méthode" value="Structurée" />
-            <MiniStat label="Suivi" value="Hebdo" />
-          </motion.div>
-        </motion.div>
+        <motion.section
+          id="tarifs"
+          className="scroll-mt-32 pt-20"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <SectionHeader
+            eyebrow="Tarifs"
+            title="Des formules simples pour avancer au bon rythme"
+            description="Le suivi hebdomadaire est généralement la meilleure option pour garder une progression régulière et beaucoup moins de stress entre les séances."
+          />
 
-        {/* FEATURES */}
-        <section id="programmes" className="mt-16">
-          <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}>
-            <motion.div variants={item} className="flex items-end justify-between gap-6 flex-wrap">
-              <div>
-                <h2 className="text-2xl font-semibold">Programmes</h2>
-                <p className="mt-2 text-white/70 max-w-2xl">
-                  Aligné au programme du Québec (Sec 1 à 5). On comprend, on pratique, on réussit.
+          <div className="mt-8 grid gap-4 xl:grid-cols-3">
+            {pricing.map((plan) => (
+              <MotionCard
+                key={plan.title}
+                className={`rounded-[32px] p-7 text-white ${
+                  plan.highlight
+                    ? "border-[#f5c977]/35 bg-[linear-gradient(180deg,rgba(245,201,119,0.18),rgba(255,255,255,0.08))]"
+                    : "border-white/10 bg-white/[0.04]"
+                }`}
+              >
+                <div className="flex items-center justify-between gap-4">
+                  <div className="font-display text-2xl font-semibold">{plan.title}</div>
+                  {plan.highlight && (
+                    <Badge className="rounded-full border-0 bg-[#f5c977] px-3 py-1 text-[#071631] hover:bg-[#f5c977]">
+                      Recommandé
+                    </Badge>
+                  )}
+                </div>
+
+                <div className="mt-5 font-display text-5xl font-semibold">{plan.price}</div>
+                <p className="mt-4 text-sm leading-7 text-white/72">{plan.accent}</p>
+
+                <ul className="mt-6 space-y-3 text-sm text-white/80">
+                  {plan.bullets.map((bullet) => (
+                    <li key={bullet} className="flex items-start gap-3">
+                      <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  asChild
+                  className={`mt-8 w-full rounded-full py-6 ${
+                    plan.highlight
+                      ? "bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]"
+                      : "bg-white/8 text-white hover:bg-white/12"
+                  }`}
+                >
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    Choisir cette formule
+                  </a>
+                </Button>
+              </MotionCard>
+            ))}
+          </div>
+        </motion.section>
+
+        <motion.section
+          id="faq"
+          className="scroll-mt-32 pt-20"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <SectionHeader
+            eyebrow="FAQ"
+            title="Les questions qu'on se pose souvent avant de réserver"
+            description="Tout est pensé pour rendre la prise de contact simple, rapide et rassurante."
+          />
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+            {faqItems.map((faq) => (
+              <details
+                key={faq.question}
+                className="glass-panel rounded-[28px] border border-white/10 px-6 py-5 text-white"
+              >
+                <summary className="cursor-pointer list-none font-display text-xl font-semibold">
+                  {faq.question}
+                </summary>
+                <p className="mt-4 text-sm leading-7 text-white/72">{faq.answer}</p>
+              </details>
+            ))}
+          </div>
+        </motion.section>
+
+        <motion.section
+          id="contact"
+          className="scroll-mt-32 pt-20"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <SectionHeader
+            eyebrow="Contact et réservation"
+            title="Réserver doit être la partie la plus simple du processus"
+            description="Par téléphone, par email, via le formulaire ou directement avec le calendrier en ligne."
+          />
+
+          <div className="mt-8 grid gap-4 xl:grid-cols-[0.95fr,1.05fr]">
+            <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
+              <div className="text-sm uppercase tracking-[0.24em] text-white/45">Prendre contact</div>
+              <h3 className="mt-3 font-display text-3xl font-semibold">Rapide, simple, sans friction</h3>
+
+              <div className="mt-7 space-y-4">
+                <ContactLine icon={Phone} href="tel:+15149520709" label="+1 (514) 952-0709" />
+                <ContactLine
+                  icon={Mail}
+                  href="mailto:chahineralph@gmail.com"
+                  label="chahineralph@gmail.com"
+                />
+                <ContactLine icon={MapPin} label="En ligne partout au Québec, présentiel selon le secteur" />
+                <ContactLine icon={Clock3} label="Réponse rapide et réservation facile" />
+              </div>
+
+              <div className="mt-8 grid gap-3 sm:grid-cols-2">
+                <Button
+                  asChild
+                  className="rounded-full bg-[#f5c977] py-6 text-[#071631] hover:bg-[#f7d38f]"
+                >
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    Réserver
+                  </a>
+                </Button>
+
+                <Button
+                  asChild
+                  variant="outline"
+                  className="rounded-full border-white/15 bg-white/5 py-6 text-white hover:bg-white/10 hover:text-white"
+                >
+                  <a href="tel:+15149520709">Appeler</a>
+                </Button>
+              </div>
+
+              <div className="mt-8 rounded-[24px] border border-white/10 bg-[#0b214d]/80 p-5">
+                <div className="text-sm uppercase tracking-[0.22em] text-white/45">Bon à savoir</div>
+                <p className="mt-3 text-sm leading-7 text-white/72">
+                  Le suivi hebdomadaire donne souvent les meilleurs résultats: moins d'accumulation,
+                  plus de structure et beaucoup moins de panique avant les évaluations.
                 </p>
               </div>
-              <Badge className="bg-white/10 text-white border border-white/15 hover:bg-white/10">
-                En ligne • Présentiel
-              </Badge>
-            </motion.div>
+            </MotionCard>
 
-            <motion.div variants={item} className="mt-6 grid md:grid-cols-3 gap-4">
-              <Feature title="Explications ultra claires" desc="On simplifie sans perdre la rigueur. Tu comprends le pourquoi." />
-              <Feature title="Méthode structurée" desc="Plan de match, exercices ciblés, progression visible." />
-              <Feature title="Préparation examens" desc="Stratégie, exercices type, gestion du temps — pour performer." />
-            </motion.div>
-
-            <motion.div variants={item} className="mt-8">
-              <Separator className="bg-white/10" />
-            </motion.div>
-
-            <motion.div variants={item} className="mt-8 grid md:grid-cols-2 gap-4">
-              <MotionCard className="rounded-3xl border-white/15 bg-white/5 text-white p-6">
-                <div className="text-sm text-white/60">Mathématiques</div>
-                <div className="mt-2 text-xl font-semibold">Algèbre • Fonctions • Géométrie</div>
-                <ul className="mt-4 space-y-2 text-sm text-white/70">
-                  {["Résolution d’équations", "Fonctions & graphes", "Problèmes & stratégies"].map((t) => (
-                    <li key={t} className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-white/60" />
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </MotionCard>
-
-              <MotionCard className="rounded-3xl border-white/15 bg-white/5 text-white p-6">
-                <div className="text-sm text-white/60">Sciences</div>
-                <div className="mt-2 text-xl font-semibold">Physique • Chimie • Électricité</div>
-                <ul className="mt-4 space-y-2 text-sm text-white/70">
-                  {["Forces & mouvement", "Réactions & matière", "Circuits & concepts"].map((t) => (
-                    <li key={t} className="flex items-center gap-2">
-                      <span className="h-1.5 w-1.5 rounded-full bg-white/60" />
-                      {t}
-                    </li>
-                  ))}
-                </ul>
-              </MotionCard>
-            </motion.div>
-          </motion.div>
-        </section>
-
-        {/* PRICING */}
-        <section id="prix" className="mt-20">
-          <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}>
-            <motion.div variants={item}>
-              <h2 className="text-2xl font-semibold">Tarifs</h2>
-              <p className="mt-2 text-white/70 max-w-2xl">
-                Choisis la formule qui correspond à ton rythme. Le suivi hebdo est le plus efficace.
+            <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
+              <div className="text-sm uppercase tracking-[0.24em] text-white/45">Formulaire</div>
+              <h3 className="mt-3 font-display text-3xl font-semibold">Décrire le besoin en une minute</h3>
+              <p className="mt-3 text-sm leading-7 text-white/70">
+                Indiquez le niveau, la matière et le contexte. Une réponse rapide suit.
               </p>
-            </motion.div>
 
-            <motion.div variants={item} className="mt-6 grid md:grid-cols-3 gap-4">
-              <Pricing title="À la carte" price="75$/h" bullets={["Flexible", "Ponctuel", "En ligne ou présence"]} />
-              <Pricing title="Hebdomadaire" price="70$/h" highlight bullets={["Place réservée", "Suivi régulier", "Progrès rapides"]} />
-              <Pricing title="Intensif" price="Sur demande" bullets={["Avant examens", "2–4 semaines", "Ciblé"]} />
-            </motion.div>
-          </motion.div>
-        </section>
-
-        {/* CONTACT */}
-        <section id="contact" className="mt-20">
-          <motion.div variants={container} initial="hidden" whileInView="show" viewport={{ once: true, margin: "-80px" }}>
-            <motion.div variants={item}>
-              <h2 className="text-2xl font-semibold">Contact</h2>
-              <p className="mt-2 text-white/70 max-w-2xl">
-                Appelle-moi, écris-moi, ou réserve directement. Réponse rapide.
-              </p>
-            </motion.div>
-
-            {/* Info + form */}
-            <motion.div variants={item} className="mt-6 grid lg:grid-cols-2 gap-4">
-              {/* LEFT: Contact info */}
-              <MotionCard className="rounded-3xl border-white/15 bg-white/5 text-white p-6">
-                <div className="text-sm text-white/60">Zone</div>
-                <div className="mt-1 font-medium">Québec entier • En ligne</div>
-
-                <div className="mt-5 text-sm text-white/60">Email</div>
-                <a className="mt-1 inline-block font-medium hover:underline" href="mailto:chahineralph@gmail.com">
-                  chahineralph@gmail.com
-                </a>
-
-                <div className="mt-5 text-sm text-white/60">Téléphone</div>
-                <a className="mt-1 inline-block font-medium hover:underline" href="tel:+15149520709">
-                  +1 (514) 952-0709
-                </a>
-
-                <div className="mt-6 grid sm:grid-cols-2 gap-3">
-                  <a href="tel:+15149520709" className="block">
-                    <Button className="w-full rounded-2xl bg-white text-black hover:bg-white/90">
-                      Appeler
-                    </Button>
-                  </a>
-
-                  <a href="mailto:chahineralph@gmail.com" className="block">
-                    <Button
-                      variant="outline"
-                      className="w-full rounded-2xl border-white/20 text-white bg-transparent hover:bg-white/10"
-                    >
-                      Email
-                    </Button>
-                  </a>
-                </div>
-
-                <div className="mt-3">
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer" className="block">
-                    <Button className="w-full rounded-2xl bg-white text-black hover:bg-white/90">
-                      Réserver (Google Calendar)
-                    </Button>
-                  </a>
-                </div>
-
-                <div className="mt-3 text-xs text-white/50">
-                  Astuce: le suivi hebdomadaire donne les meilleurs résultats.
-                </div>
-              </MotionCard>
-
-              {/* RIGHT: Real form + inline success */}
-              <MotionCard className="rounded-3xl border-white/15 bg-white/5 text-white p-6">
+              <div className="mt-6">
                 <ContactForm />
-              </MotionCard>
-            </motion.div>
-
-            {/* Booking embed (full width) */}
-            <motion.div variants={item} className="mt-6">
-              <div className="flex items-center justify-between gap-4 flex-wrap">
-                <div>
-                  <div className="text-lg font-semibold">Réserver en ligne</div>
-                  <div className="text-sm text-white/60">Choisis un moment qui te convient.</div>
-                </div>
-                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                  <Button
-                    variant="outline"
-                    className="rounded-2xl border-white/20 text-white bg-transparent hover:bg-white/10"
-                  >
-                    Ouvrir en plein écran
-                  </Button>
-                </a>
               </div>
+            </MotionCard>
+          </div>
 
-              <div className="mt-4">
-                <BookingEmbed />
-              </div>
-            </motion.div>
-          </motion.div>
-        </section>
-
-        <footer className="mt-20 pt-10 border-t border-white/10 text-sm text-white/50">
-          © {new Date().getFullYear()} Méthode Secondaire — Tous droits réservés.
-        </footer>
+          <div className="mt-6">
+            <BookingEmbed />
+          </div>
+        </motion.section>
       </main>
     </div>
   )
 }
 
-function ContactForm() {
-  const [status, setStatus] = useState("idle") // idle | sending | success | error
+function SectionHeader({ eyebrow, title, description }) {
+  return (
+    <div className="max-w-3xl">
+      <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">{eyebrow}</div>
+      <h2 className="balanced-copy mt-4 font-display text-4xl font-semibold text-white sm:text-5xl">
+        {title}
+      </h2>
+      <p className="mt-4 text-base leading-8 text-white/72 sm:text-lg">{description}</p>
+    </div>
+  )
+}
 
-  async function handleSubmit(e) {
-    e.preventDefault()
+function ContactLine({ icon: Icon, href, label }) {
+  const content = (
+    <>
+      <div className="rounded-2xl bg-white/10 p-3 text-[#f5c977]">
+        <Icon className="h-4 w-4" />
+      </div>
+      <span className="text-sm text-white/80">{label}</span>
+    </>
+  )
+
+  if (href) {
+    return (
+      <a
+        href={href}
+        className="flex items-center gap-4 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4 transition hover:bg-white/10"
+      >
+        {content}
+      </a>
+    )
+  }
+
+  return (
+    <div className="flex items-center gap-4 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4">
+      {content}
+    </div>
+  )
+}
+
+function ContactForm() {
+  const [status, setStatus] = useState("idle")
+
+  async function handleSubmit(event) {
+    event.preventDefault()
     setStatus("sending")
 
-    const form = e.currentTarget
+    const form = event.currentTarget
     const data = new FormData(form)
 
     try {
-      const res = await fetch("https://formspree.io/f/mzddpkaz", {
+      const response = await fetch("https://formspree.io/f/mzddpkaz", {
         method: "POST",
         body: data,
         headers: { Accept: "application/json" },
       })
 
-      if (res.ok) {
-        setStatus("success")
-        form.reset()
-      } else {
-        setStatus("error")
+      if (!response.ok) {
+        throw new Error("Submission failed")
       }
+
+      setStatus("success")
+      form.reset()
     } catch {
       setStatus("error")
     }
@@ -277,13 +682,18 @@ function ContactForm() {
 
   if (status === "success") {
     return (
-      <div className="flex flex-col items-center justify-center h-full text-center py-10">
-        <div className="text-2xl font-semibold text-white">Message envoyé ✅</div>
-        <p className="mt-3 text-white/70">Je te réponds rapidement.</p>
+      <div className="rounded-[28px] border border-white/10 bg-[#0a1d43]/80 px-6 py-10 text-center">
+        <div className="inline-flex rounded-full bg-[#f5c977] p-3 text-[#071631]">
+          <Check className="h-5 w-5" />
+        </div>
+        <div className="mt-5 font-display text-3xl font-semibold text-white">Message envoyé</div>
+        <p className="mt-3 text-sm leading-7 text-white/72">
+          La demande a bien été transmise. Une réponse rapide suit.
+        </p>
         <Button
           type="button"
           variant="outline"
-          className="mt-6 rounded-2xl border-white/20 text-white bg-transparent hover:bg-white/10"
+          className="mt-6 rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
           onClick={() => setStatus("idle")}
         >
           Envoyer un autre message
@@ -293,105 +703,70 @@ function ContactForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <Input
-        name="nom"
-        required
-        className="bg-black/40 border-white/15 text-white placeholder:text-white/40"
-        placeholder="Nom"
-      />
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <Field label="Nom">
+        <Input
+          name="nom"
+          required
+          className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
+          placeholder="Nom de l'élève ou du parent"
+        />
+      </Field>
 
-      <Input
-        name="email"
-        type="email"
-        required
-        className="bg-black/40 border-white/15 text-white placeholder:text-white/40"
-        placeholder="Email"
-      />
+      <Field label="Email">
+        <Input
+          name="email"
+          type="email"
+          required
+          className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
+          placeholder="adresse@email.com"
+        />
+      </Field>
 
-      <Input
-        name="sujet"
-        required
-        className="bg-black/40 border-white/15 text-white placeholder:text-white/40"
-        placeholder="Sec + matière (ex: Sec 4 maths)"
-      />
+      <Field label="Niveau et matière">
+        <Input
+          name="sujet"
+          required
+          className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
+          placeholder="Ex. secondaire 4 maths ou secondaire 5 sciences"
+        />
+      </Field>
 
-      <Textarea
-        name="message"
-        required
-        className="min-h-[120px] bg-black/40 border-white/15 text-white placeholder:text-white/40"
-        placeholder="Ton message"
-      />
+      <Field label="Message">
+        <Textarea
+          name="message"
+          required
+          className="min-h-[140px] rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
+          placeholder="Décrivez brièvement la situation ou l'objectif."
+        />
+      </Field>
 
-      <input type="hidden" name="_subject" value="Nouvelle demande – Méthode Secondaire" />
+      <input type="hidden" name="_subject" value="Nouvelle demande - Méthode Secondaire" />
       <input type="hidden" name="_template" value="table" />
 
       <Button
         type="submit"
         disabled={status === "sending"}
-        className="rounded-2xl bg-white text-black hover:bg-white/90 w-full disabled:opacity-60"
+        className="w-full rounded-full bg-[#f5c977] py-6 text-[#071631] hover:bg-[#f7d38f]"
       >
-        {status === "sending" ? "Envoi..." : "Envoyer"}
+        {status === "sending" ? "Envoi en cours..." : "Envoyer la demande"}
       </Button>
 
       {status === "error" && (
-        <div className="text-xs text-red-400">
-          Erreur lors de l’envoi. Réessaie ou contacte-moi par email/téléphone.
+        <div className="rounded-2xl border border-red-400/25 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+          Une erreur est survenue pendant l'envoi. Vous pouvez réessayer ou contacter directement par
+          téléphone ou par email.
         </div>
       )}
-
-      <div className="text-xs text-white/50">Réponse rapide • Aucune info partagée</div>
     </form>
   )
 }
 
-function MiniStat({ label, value }) {
+function Field({ label, children }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-      <div className="text-xs text-white/60">{label}</div>
-      <div className="mt-1 text-sm font-medium">{value}</div>
-    </div>
-  )
-}
-
-function Feature({ title, desc }) {
-  return (
-    <MotionCard className="rounded-3xl border-white/15 bg-white/5 text-white p-6">
-      <div className="text-xl font-semibold">{title}</div>
-      <div className="mt-2 text-sm text-white/70">{desc}</div>
-    </MotionCard>
-  )
-}
-
-function Pricing({ title, price, bullets, highlight }) {
-  return (
-    <MotionCard
-      className={`rounded-3xl p-6 text-white ${
-        highlight ? "border-white/30 bg-white/10" : "border-white/15 bg-white/5"
-      }`}
-    >
-      <div className="flex items-center justify-between">
-        <div className="font-medium">{title}</div>
-        {highlight && <Badge className="bg-white text-black border-0">Recommandé</Badge>}
-      </div>
-      <div className="mt-4 text-3xl font-semibold">{price}</div>
-      <ul className="mt-4 space-y-2 text-sm text-white/70">
-        {bullets.map((b) => (
-          <li key={b} className="flex items-center gap-2">
-            <span className="h-1.5 w-1.5 rounded-full bg-white/60" />
-            {b}
-          </li>
-        ))}
-      </ul>
-      <Button
-        className={`mt-6 w-full rounded-2xl ${
-          highlight
-            ? "bg-white text-black hover:bg-white/90"
-            : "bg-white/5 border border-white/15 hover:bg-white/10 text-white"
-        }`}
-      >
-        Choisir
-      </Button>
-    </MotionCard>
+    <label className="block">
+      <span className="mb-2 block text-sm text-white/70">{label}</span>
+      {children}
+    </label>
   )
 }
