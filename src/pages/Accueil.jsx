@@ -12,6 +12,7 @@ import {
   Clock3,
   FlaskConical,
   GraduationCap,
+  LineChart,
   Mail,
   MapPin,
   NotebookPen,
@@ -20,6 +21,7 @@ import {
   Sparkles,
   Target,
   TrendingUp,
+  Users,
 } from "lucide-react"
 
 import BookingEmbed from "@/components/BookingEmbed"
@@ -30,6 +32,13 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { BOOKING_URL } from "@/config/booking"
+import {
+  buildAlternates,
+  getAlternateOgLocale,
+  getHtmlLang,
+  getLocalizedPath,
+  getOgLocale,
+} from "@/lib/i18n"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
 
 const container = {
@@ -49,6 +58,27 @@ const heroStats = [
   { label: "Niveaux couverts", value: "Secondaire 1 à 5" },
   { label: "Formats", value: "En ligne ou présentiel" },
   { label: "Objectif", value: "Comprendre, pratiquer, réussir" },
+]
+
+const trustSignals = [
+  {
+    icon: Target,
+    title: "Diagnostic pédagogique clair",
+    description:
+      "Le besoin est cadré selon la matière, le niveau, l'urgence et le vrai point de blocage, pas au hasard.",
+  },
+  {
+    icon: Users,
+    title: "Jumelage pensé pour le bon fit",
+    description:
+      "On met l'accent sur la pédagogie, le ton et le type d'accompagnement attendu, pas seulement sur la prochaine disponibilité.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Progression plus lisible",
+    description:
+      "L'objectif est que le parent comprenne où l'élève progresse, ce qu'on travaille et pourquoi ça va dans la bonne direction.",
+  },
 ]
 
 const pillars = [
@@ -138,6 +168,48 @@ const situations = [
     icon: Sparkles,
     title: "Quand on veut passer un cap",
     description: "Pour gagner en autonomie, viser plus haut et rendre les devoirs beaucoup moins stressants.",
+  },
+]
+
+const representativeStories = [
+  {
+    title: "D'un échec à 92 % en maths",
+    description:
+      "Un type de retour qu'on entend souvent: la note remonte fort, mais la vraie différence vient de la méthode qui reste après la séance.",
+    points: ["Déclic rapide", "Méthode durable", "Confiance retrouvée"],
+    icon: LineChart,
+  },
+  {
+    title: "Vous avez sauvé son année",
+    description:
+      "Quand la matière semblait trop loin, certaines familles parlent d'un vrai tournant dans l'année scolaire et dans l'attitude de l'élève.",
+    points: ["Retard rattrapé", "Cap plus clair", "Stress qui baisse nettement"],
+    icon: FlaskConical,
+  },
+  {
+    title: "Enfin de la confiance avant les examens",
+    description:
+      "Le changement le plus marquant n'est pas toujours la note: c'est souvent le calme retrouvé, la logique qui clique et l'autonomie qui revient.",
+    points: ["Examen mieux abordé", "Compréhension plus nette", "Maison plus sereine"],
+    icon: BrainCircuit,
+  },
+]
+
+const hiringHighlights = [
+  {
+    icon: Users,
+    title: "Profils solides et humains",
+    description: "La page présente clairement le type de tuteurs recherchés: solides, pédagogues et fiables.",
+  },
+  {
+    icon: GraduationCap,
+    title: "Standard pédagogique clair",
+    description: "Les attentes sont formulées avec sérieux: clarté d'explication, professionnalisme et qualité de suivi.",
+  },
+  {
+    icon: Sparkles,
+    title: "Candidature simple et pro",
+    description: "Le parcours de recrutement est visible, rassurant et prêt à soutenir une vraie croissance de l'équipe.",
   },
 ]
 
@@ -253,6 +325,10 @@ export default function Accueil() {
         path="/"
         keywords="tutorat maths secondaire, tutorat sciences secondaire, cours privés mathématiques Québec, soutien scolaire secondaire Montréal, préparation examens ministériels"
         jsonLd={homeSchemas}
+        lang={getHtmlLang("fr")}
+        locale={getOgLocale("fr")}
+        alternateLocale={getAlternateOgLocale("fr")}
+        alternates={buildAlternates("home")}
       />
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -390,6 +466,70 @@ export default function Accueil() {
         </section>
 
         <motion.section
+          className="scroll-mt-32 pt-20"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <SectionHeader
+            eyebrow="Confiance dès le départ"
+            title="Un cadre sérieux avant même la première séance"
+            description="Les familles ont besoin de sentir rapidement comment le besoin est cadré, comment le bon fit est trouvé et comment la progression va être rendue lisible."
+          />
+
+          <div className="mt-8 grid gap-4 xl:grid-cols-[1.05fr,0.95fr]">
+            <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-1">
+              {trustSignals.map((signal) => (
+                <MotionCard key={signal.title} className="glass-panel rounded-[28px] border-white/10 bg-white/[0.04] p-6 text-white">
+                  <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
+                    <signal.icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="mt-4 font-display text-2xl font-semibold">{signal.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-white/72">{signal.description}</p>
+                </MotionCard>
+              ))}
+            </div>
+
+            <MotionCard className="rounded-[32px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-7 text-white">
+              <div className="text-sm uppercase tracking-[0.24em] text-white/45">Premier échange</div>
+              <h3 className="mt-3 font-display text-3xl font-semibold">Ce qu'un parent veut savoir tout de suite</h3>
+              <div className="mt-6 space-y-3 text-sm text-white/80">
+                <div className="flex items-start gap-3">
+                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                  Quelle matière doit être reprise en priorité
+                </div>
+                <div className="flex items-start gap-3">
+                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                  Si le besoin est ponctuel, hebdomadaire ou orienté examen
+                </div>
+                <div className="flex items-start gap-3">
+                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                  Quel type d'accompagnement aidera le plus vite et le plus durablement
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button
+                  asChild
+                  className="rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]"
+                >
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    Réserver un premier échange
+                  </a>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                >
+                  <Link to={getLocalizedPath("tuteurs", "fr")}>Voir les critères de matching</Link>
+                </Button>
+              </div>
+            </MotionCard>
+          </div>
+        </motion.section>
+
+        <motion.section
           id="methode"
           className="scroll-mt-32 pt-20"
           initial={{ opacity: 0, y: 24 }}
@@ -425,6 +565,49 @@ export default function Accueil() {
           viewport={{ once: true, amount: 0.2 }}
         >
           <SectionHeader
+            eyebrow="Par matière"
+            title="Deux expertises principales pour orienter les familles rapidement"
+            description="Maths et sciences ont maintenant leur propre vitrine pour rendre le parcours plus clair dès la première visite."
+          />
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+            {subjectCards.map((subject) => (
+              <MotionCard key={subject.title} className="rounded-[30px] border-white/10 bg-[#091a3a]/85 p-7 text-white">
+                <div className="inline-flex rounded-2xl bg-white/10 p-3 text-[#f5c977]">
+                  <subject.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-5 font-display text-3xl font-semibold">{subject.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-white/72">{subject.description}</p>
+                <ul className="mt-6 space-y-3 text-sm text-white/80">
+                  {subject.bullets.map((bullet) => (
+                    <li key={bullet} className="flex items-start gap-3">
+                      <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                      {bullet}
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="mt-8 rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                >
+                  <Link to={subject.to}>
+                    Voir la page
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </MotionCard>
+            ))}
+          </div>
+        </motion.section>
+
+        <motion.section
+          className="scroll-mt-32 pt-20"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <SectionHeader
             eyebrow="Parcours de séance"
             title="Une progression simple à suivre, même quand la matière semble dense"
             description="Chaque étape sert à réduire la confusion et à remettre l'élève en position de réussite."
@@ -441,6 +624,123 @@ export default function Accueil() {
                 <p className="mt-3 text-sm leading-7 text-white/72">{step.description}</p>
               </MotionCard>
             ))}
+          </div>
+        </motion.section>
+
+        <motion.section
+          className="scroll-mt-32 pt-20"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <SectionHeader
+            eyebrow="Témoignages"
+            title="Des parents qui parlent de déclic, de confiance retrouvée et parfois même d'une année sauvée"
+            description="Quelques retours présentés de façon anonymisée pour montrer ce que les familles ressentent quand les résultats commencent vraiment à changer."
+          />
+
+          <div className="mt-8 grid gap-4 xl:grid-cols-3">
+            {representativeStories.map((story) => (
+              <MotionCard key={story.title} className="rounded-[30px] border-white/10 bg-[#091a3a]/85 p-7 text-white">
+                <div className="inline-flex rounded-2xl bg-white/10 p-3 text-[#f5c977]">
+                  <story.icon className="h-5 w-5" />
+                </div>
+                <h3 className="mt-5 font-display text-2xl font-semibold">{story.title}</h3>
+                <p className="mt-3 text-sm leading-7 text-white/72">{story.description}</p>
+
+                <ul className="mt-6 space-y-3 text-sm text-white/80">
+                  {story.points.map((point) => (
+                    <li key={point} className="flex items-start gap-3">
+                      <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                      {point}
+                    </li>
+                  ))}
+                </ul>
+              </MotionCard>
+            ))}
+          </div>
+
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Button
+              asChild
+              variant="outline"
+              className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+            >
+              <Link to="/temoignages">
+                Voir tous les témoignages
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </motion.section>
+
+        <motion.section
+          className="scroll-mt-32 pt-20"
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+        >
+          <SectionHeader
+            eyebrow="Tuteurs et matching"
+            title="Une vitrine plus claire pour montrer le calibre d'accompagnement proposé"
+            description="Les familles peuvent maintenant voir plus facilement le type de profils, de standards et de matching derrière la marque."
+          />
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-[1.05fr,0.95fr]">
+            <div className="grid gap-4">
+              {hiringHighlights.map((highlight) => (
+                <MotionCard key={highlight.title} className="glass-panel rounded-[28px] border-white/10 bg-white/[0.04] p-6 text-white">
+                  <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
+                    <highlight.icon className="h-5 w-5" />
+                  </div>
+                  <h3 className="mt-4 font-display text-2xl font-semibold">{highlight.title}</h3>
+                  <p className="mt-3 text-sm leading-7 text-white/72">{highlight.description}</p>
+                </MotionCard>
+              ))}
+            </div>
+
+            <MotionCard className="rounded-[32px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-7 text-white">
+              <div className="text-sm uppercase tracking-[0.24em] text-white/45">Nouvelle page</div>
+              <h3 className="mt-3 font-display text-3xl font-semibold">Tuteurs et spécialités</h3>
+              <p className="mt-3 text-sm leading-7 text-white/75">
+                Une page dédiée présente maintenant le type de profils, de spécialités et de matching que
+                Méthode Secondaire veut offrir aux familles.
+              </p>
+
+              <div className="mt-6 space-y-3 text-sm text-white/80">
+                <div className="flex items-start gap-3">
+                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                  Spécialités par niveau et par besoin
+                </div>
+                <div className="flex items-start gap-3">
+                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                  Standards pédagogiques clairement visibles
+                </div>
+                <div className="flex items-start gap-3">
+                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                  Lien direct avec les témoignages et la réservation
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-3">
+                <Button
+                  asChild
+                  className="rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]"
+                >
+                  <Link to={getLocalizedPath("tuteurs", "fr")}>
+                    Découvrir la page tuteurs
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                >
+                  <Link to={getLocalizedPath("devenirTuteur", "fr")}>Devenir tuteur</Link>
+                </Button>
+              </div>
+            </MotionCard>
           </div>
         </motion.section>
 
@@ -604,7 +904,7 @@ export default function Accueil() {
           </div>
 
           <div className="mt-6">
-            <BookingEmbed />
+            <BookingEmbed title="Réserver une séance avec Méthode Secondaire" />
           </div>
         </motion.section>
       </main>

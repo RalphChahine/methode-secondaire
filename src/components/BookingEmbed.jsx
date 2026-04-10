@@ -1,6 +1,8 @@
 import { BOOKING_URL } from "@/config/booking"
 
-export default function BookingEmbed() {
+export default function BookingEmbed({
+  title = "Réserver une séance avec Méthode Secondaire",
+}) {
   return (
     <div className="glass-panel relative overflow-hidden rounded-[32px] p-3">
       <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent" />
@@ -14,7 +16,7 @@ export default function BookingEmbed() {
           loading="lazy"
           referrerPolicy="strict-origin-when-cross-origin"
           scrolling="no"
-          title="Réserver une séance avec Méthode Secondaire"
+          title={title}
         />
       </div>
     </div>

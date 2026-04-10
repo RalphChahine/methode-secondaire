@@ -38,12 +38,16 @@ export default function Seo({
   image = siteConfig.defaultImage,
   type = "website",
   jsonLd,
+  lang = "fr-CA",
+  locale = siteConfig.locale,
+  alternateLocale,
+  alternates = [],
 }) {
   const canonicalUrl = absoluteUrl(path)
   const imageUrl = image.startsWith("http") ? image : absoluteUrl(image)
 
   useEffect(() => {
-    document.documentElement.setAttribute("lang", "fr-CA")
+    document.documentElement.setAttribute("lang", lang)
     document.title = title
 
     upsertMeta("name", "description", description)
@@ -56,7 +60,10 @@ export default function Seo({
     )
     upsertMeta("name", "theme-color", "#071631")
 
-    upsertMeta("property", "og:locale", siteConfig.locale)
+    upsertMeta("property", "og:locale", locale)
+    if (alternateLocale) {
+      upsertMeta("property", "og:locale:alternate", alternateLocale)
+    }
     upsertMeta("property", "og:type", type)
     upsertMeta("property", "og:site_name", siteConfig.siteName)
     upsertMeta("property", "og:title", title)
@@ -73,6 +80,23 @@ export default function Seo({
     upsertLink("canonical", canonicalUrl)
 
     document.head
+      .querySelectorAll('link[data-seo-managed-alternate="true"]')
+      .forEach((element) => element.remove())
+
+    alternates.forEach((entry) => {
+      if (!entry?.href || !entry?.hrefLang) {
+        return
+      }
+
+      const element = document.createElement("link")
+      element.rel = "alternate"
+      element.hreflang = entry.hrefLang
+      element.href = entry.href
+      element.dataset.seoManagedAlternate = "true"
+      document.head.appendChild(element)
+    })
+
+    document.head
       .querySelectorAll('script[data-seo-managed="true"]')
       .forEach((element) => element.remove())
 
@@ -85,7 +109,19 @@ export default function Seo({
       script.textContent = JSON.stringify(entry)
       document.head.appendChild(script)
     })
-  }, [canonicalUrl, description, imageUrl, jsonLd, keywords, title, type])
+  }, [
+    alternateLocale,
+    alternates,
+    canonicalUrl,
+    description,
+    imageUrl,
+    jsonLd,
+    keywords,
+    lang,
+    locale,
+    title,
+    type,
+  ])
 
   return null
 }
