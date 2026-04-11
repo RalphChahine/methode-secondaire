@@ -6,6 +6,7 @@ import SiteLayout from "@/layouts/SiteLayout"
 const Accueil = lazy(() => import("@/pages/Accueil"))
 const AccueilEn = lazy(() => import("@/pages/AccueilEn"))
 const DevenirTuteur = lazy(() => import("@/pages/DevenirTuteur"))
+const LocalLanding = lazy(() => import("@/pages/LocalLanding"))
 const Maths = lazy(() => import("@/pages/Maths"))
 const Sciences = lazy(() => import("@/pages/Sciences"))
 const Temoignages = lazy(() => import("@/pages/Temoignages"))
@@ -35,6 +36,12 @@ export default function App() {
             <Route path="/en/testimonials" element={<Temoignages />} />
             <Route path="/tuteurs" element={<Tuteurs />} />
             <Route path="/en/tutors" element={<Tuteurs />} />
+            <Route path="/tutorat-montreal" element={<LocalLanding />} />
+            <Route path="/en/montreal-tutoring" element={<LocalLanding />} />
+            <Route path="/tutorat-laval" element={<LocalLanding />} />
+            <Route path="/en/laval-tutoring" element={<LocalLanding />} />
+            <Route path="/tutorat-en-ligne-quebec" element={<LocalLanding />} />
+            <Route path="/en/quebec-online-tutoring" element={<LocalLanding />} />
             <Route path="/reussites" element={<Navigate to="/temoignages" replace />} />
             <Route path="/en/success-stories" element={<Navigate to="/en/testimonials" replace />} />
             <Route path="/devenir-tuteur" element={<DevenirTuteur />} />

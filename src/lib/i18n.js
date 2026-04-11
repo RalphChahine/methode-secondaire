@@ -7,6 +7,9 @@ export const routeCatalog = {
   temoignages: { fr: "/temoignages", en: "/en/testimonials" },
   tuteurs: { fr: "/tuteurs", en: "/en/tutors" },
   devenirTuteur: { fr: "/devenir-tuteur", en: "/en/become-a-tutor" },
+  montreal: { fr: "/tutorat-montreal", en: "/en/montreal-tutoring" },
+  laval: { fr: "/tutorat-laval", en: "/en/laval-tutoring" },
+  quebecOnline: { fr: "/tutorat-en-ligne-quebec", en: "/en/quebec-online-tutoring" },
 }
 
 const routeEntries = Object.entries(routeCatalog)

@@ -11,6 +11,11 @@ import {
   Users,
 } from "lucide-react"
 
+import {
+  GuaranteeSection,
+  OperationalPromisesSection,
+  TutorRosterSection,
+} from "@/components/ConversionSections"
 import MotionCard from "@/components/MotionCard"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
@@ -352,6 +357,9 @@ export default function Tuteurs() {
           </div>
         </section>
 
+        <TutorRosterSection locale={locale} className="pt-20" />
+        <GuaranteeSection locale={locale} className="pt-20" />
+
         <section className="pt-20">
           <SectionHeader
             eyebrow={copy.standardsEyebrow}
@@ -400,6 +408,8 @@ export default function Tuteurs() {
             </MotionCard>
           </div>
         </section>
+
+        <OperationalPromisesSection locale={locale} className="pt-20" />
 
         <section className="pt-20">
           <SectionHeader

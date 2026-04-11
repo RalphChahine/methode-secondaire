@@ -25,6 +25,12 @@ import {
 } from "lucide-react"
 
 import BookingEmbed from "@/components/BookingEmbed"
+import {
+  GuaranteeSection,
+  LocalSeoSection,
+  OperationalPromisesSection,
+  VerifiedReviewsSection,
+} from "@/components/ConversionSections"
 import MotionCard from "@/components/MotionCard"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
@@ -529,6 +535,8 @@ export default function Accueil() {
           </div>
         </motion.section>
 
+        <GuaranteeSection locale="fr" className="pt-20" />
+
         <motion.section
           id="methode"
           className="scroll-mt-32 pt-20"
@@ -557,6 +565,8 @@ export default function Accueil() {
             ))}
           </div>
         </motion.section>
+
+        <VerifiedReviewsSection locale="fr" className="pt-20" limit={4} />
 
         <motion.section
           className="scroll-mt-32 pt-20"
@@ -743,6 +753,9 @@ export default function Accueil() {
             </MotionCard>
           </div>
         </motion.section>
+
+        <OperationalPromisesSection locale="fr" className="pt-20" />
+        <LocalSeoSection locale="fr" className="pt-20" />
 
         <motion.section
           id="tarifs"

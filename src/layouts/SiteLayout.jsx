@@ -48,6 +48,9 @@ export default function SiteLayout() {
         science: "Science tutoring",
         testimonials: "Testimonials",
         tutors: "Tutors",
+        montreal: "Montreal tutoring",
+        laval: "Laval tutoring",
+        onlineQuebec: "Online tutoring in Quebec",
         contact: "Contact",
         bookingLine: "Online booking",
         cityLine: "Online, Montreal and Laval",
@@ -79,6 +82,9 @@ export default function SiteLayout() {
         science: "Tutorat sciences",
         testimonials: "Témoignages",
         tutors: "Tuteurs",
+        montreal: "Tutorat Montréal",
+        laval: "Tutorat Laval",
+        onlineQuebec: "Tutorat en ligne Québec",
         contact: "Contact",
         bookingLine: "Réservation en ligne",
         cityLine: "En ligne, Montréal et Laval",
@@ -116,15 +122,15 @@ export default function SiteLayout() {
   return (
     <div className="min-h-screen">
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#071631]/75 backdrop-blur-xl">
-        <div className="mx-auto flex h-20 w-full max-w-7xl items-center justify-between gap-4 px-5 sm:px-6 lg:px-8">
-          <Link to={getLocalizedPath("home", locale)} className="flex items-center gap-3">
-            <div className="grid h-12 w-12 place-items-center rounded-[18px] border border-white/15 bg-white/10 text-white shadow-lg shadow-black/10">
-              <span className="font-display text-lg font-bold tracking-[-0.08em]">MS</span>
+        <div className="mx-auto flex min-h-[4.75rem] w-full max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:h-20 sm:gap-4 sm:px-6 sm:py-0 lg:px-8">
+          <Link to={getLocalizedPath("home", locale)} className="flex min-w-0 flex-1 items-center gap-3">
+            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[18px] border border-white/15 bg-white/10 text-white shadow-lg shadow-black/10 sm:h-12 sm:w-12">
+              <span className="font-display text-base font-bold tracking-[-0.08em] sm:text-lg">MS</span>
             </div>
 
-            <div className="leading-tight">
-              <div className="font-display text-lg font-semibold text-white">Méthode Secondaire</div>
-              <div className="text-xs uppercase tracking-[0.22em] text-white/55">{copy.brandTag}</div>
+            <div className="min-w-0 leading-tight">
+              <div className="truncate font-display text-base font-semibold text-white sm:text-lg">Méthode Secondaire</div>
+              <div className="hidden text-xs uppercase tracking-[0.22em] text-white/55 sm:block">{copy.brandTag}</div>
             </div>
           </Link>
 
@@ -157,14 +163,14 @@ export default function SiteLayout() {
             </Button>
           </div>
 
-          <div className="flex items-center gap-2 lg:hidden">
-            <LanguageToggle />
+          <div className="flex shrink-0 items-center gap-2 lg:hidden">
+            <LanguageToggle className="shrink-0" />
 
             <Sheet>
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
-                  className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                  className="h-11 w-11 rounded-full border-white/15 bg-white/5 p-0 text-white hover:bg-white/10 hover:text-white"
                   aria-label={isEnglish ? "Open menu" : "Ouvrir le menu"}
                 >
                   <Menu className="h-5 w-5" />
@@ -257,6 +263,15 @@ export default function SiteLayout() {
               </Link>
               <Link to={getLocalizedPath("tuteurs", locale)} className="transition hover:text-white">
                 {copy.tutors}
+              </Link>
+              <Link to={getLocalizedPath("montreal", locale)} className="transition hover:text-white">
+                {copy.montreal}
+              </Link>
+              <Link to={getLocalizedPath("laval", locale)} className="transition hover:text-white">
+                {copy.laval}
+              </Link>
+              <Link to={getLocalizedPath("quebecOnline", locale)} className="transition hover:text-white">
+                {copy.onlineQuebec}
               </Link>
               <Link to={getLocalizedPath("devenirTuteur", locale)} className="transition hover:text-white">
                 {copy.joinTutor}

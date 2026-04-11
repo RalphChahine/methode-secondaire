@@ -10,6 +10,7 @@ import {
   TrendingUp,
 } from "lucide-react"
 
+import { VerifiedReviewsSection } from "@/components/ConversionSections"
 import MotionCard from "@/components/MotionCard"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
@@ -88,11 +89,11 @@ const contentByLocale = {
       "Des examens abordés avec beaucoup moins de stress",
       "Une relation plus saine avec les maths et les sciences",
     ],
-    badge: "Témoignages • Parents et élèves",
+    badge: "Avis vérifiés • Parents et élèves",
     heroTitle:
       "Des retours qui donnent envie d'avancer, et qui donnent confiance avant même la première séance.",
     heroText:
-      "Témoignages anonymisés et reformulés pour protéger la confidentialité des familles, tout en reflétant fidèlement le type de retours que reçoit Méthode Secondaire.",
+      "Retours anonymisés avec contexte de suivi, publiés pour montrer une preuve sociale plus solide tout en protégeant la confidentialité des familles.",
     ctaPrimary: "Réserver une séance",
     ctaSecondary: "Retour à l'accueil",
     asideEyebrow: "Ce qui revient le plus souvent",
@@ -115,7 +116,7 @@ const contentByLocale = {
     seoDescription:
       "Découvrez des témoignages anonymisés de parents et d'élèves en maths et sciences au secondaire: progression, confiance et résultats.",
     seoKeywords:
-      "témoignages tutorat secondaire, avis tutorat maths, avis tutorat sciences, progression scolaire Québec",
+      "avis vérifiés tutorat secondaire, avis tutorat maths, avis tutorat sciences, progression scolaire Québec",
     schemaName: "Témoignages",
   },
   en: {
@@ -180,11 +181,11 @@ const contentByLocale = {
       "Exams approached with much less stress",
       "A healthier relationship with math and science",
     ],
-    badge: "Testimonials • Parents and students",
+    badge: "Verified reviews • Parents and students",
     heroTitle:
       "The kind of feedback that builds trust before the very first session.",
     heroText:
-      "These testimonials are anonymized and lightly reformulated to protect family privacy while staying true to the kind of feedback Méthode Secondaire receives.",
+      "These reviews are anonymized and published with tutoring context to create stronger social proof while protecting family privacy.",
     ctaPrimary: "Book a session",
     ctaSecondary: "Back to home",
     asideEyebrow: "What comes back most often",
@@ -207,7 +208,7 @@ const contentByLocale = {
     seoDescription:
       "Read anonymized parent and student testimonials about high school math and science tutoring: progress, confidence and results.",
     seoKeywords:
-      "high school tutoring testimonials, math tutor reviews, science tutor reviews, quebec academic progress",
+      "verified tutoring reviews, math tutor reviews, science tutor reviews, quebec academic progress",
     schemaName: "Testimonials",
   },
 }
@@ -303,6 +304,8 @@ export default function Temoignages() {
             </div>
           </MotionCard>
         </section>
+
+        <VerifiedReviewsSection locale={locale} className="pt-20" limit={4} showLink={false} />
 
         <section className="pt-20">
           <SectionHeader

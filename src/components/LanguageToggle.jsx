@@ -11,12 +11,12 @@ export default function LanguageToggle({ className = "" }) {
 
   return (
     <div
-      className={`inline-flex items-center rounded-full border border-white/15 bg-white/5 p-1 text-sm text-white/70 ${className}`.trim()}
+      className={`inline-flex items-center rounded-full border border-white/15 bg-white/5 p-0.5 text-xs text-white/70 sm:p-1 sm:text-sm ${className}`.trim()}
       aria-label="Language switcher"
     >
       <Link
         to={frPath}
-        className={`rounded-full px-3 py-1.5 transition ${
+        className={`rounded-full px-2.5 py-1 transition sm:px-3 sm:py-1.5 ${
           locale === "fr" ? "bg-white text-[#071631]" : "hover:bg-white/10 hover:text-white"
         }`}
       >
@@ -24,7 +24,7 @@ export default function LanguageToggle({ className = "" }) {
       </Link>
       <Link
         to={enPath}
-        className={`rounded-full px-3 py-1.5 transition ${
+        className={`rounded-full px-2.5 py-1 transition sm:px-3 sm:py-1.5 ${
           locale === "en" ? "bg-white text-[#071631]" : "hover:bg-white/10 hover:text-white"
         }`}
       >
