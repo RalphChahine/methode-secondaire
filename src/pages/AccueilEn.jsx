@@ -53,9 +53,9 @@ const trustSignals = [
   },
   {
     icon: Users,
-    title: "Matching designed for fit",
+    title: "Support chosen with care",
     description:
-      "The process focuses on teaching style, student needs and the right kind of support, not just the next open slot.",
+      "The process focuses on teaching style, student needs and the kind of support that will help most, not just the next open slot.",
   },
   {
     icon: ShieldCheck,
@@ -221,19 +221,33 @@ export default function AccueilEn() {
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button asChild className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]">
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    Book a first session
-                    <ArrowRight className="h-4 w-4" />
+                  <a href={`tel:${siteConfig.phone}`}>
+                    <Phone className="h-4 w-4" />
+                    Call for a diagnostic
                   </a>
                 </Button>
 
                 <Button
+                  asChild
                   variant="outline"
                   className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                >
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    <CalendarDays className="h-4 w-4" />
+                    Book a session
+                  </a>
+                </Button>
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-white/68">
+                <span>The best first step is often a quick 15-minute call to talk through the situation.</span>
+                <button
+                  type="button"
+                  className="text-white transition hover:text-[#f5c977]"
                   onClick={() => document.getElementById("methode")?.scrollIntoView({ behavior: "smooth" })}
                 >
                   See the method
-                </Button>
+                </button>
               </div>
 
               <div className="mt-10 grid gap-3 sm:grid-cols-3">
@@ -280,7 +294,7 @@ export default function AccueilEn() {
           <SectionHeader
             eyebrow="Trust from the start"
             title="A serious framework before the first session even begins"
-            description="Families want to feel quickly how the need will be clarified, how the right fit is chosen and how progress will stay visible."
+            description="Families want to feel quickly how the need will be clarified, how the support will be chosen and how progress will stay visible."
           />
           <div className="mt-8 grid gap-4 xl:grid-cols-[1.05fr,0.95fr]">
             <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-1">
@@ -315,12 +329,16 @@ export default function AccueilEn() {
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <Button asChild className="rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    Book a first conversation
+                  <a href={`tel:${siteConfig.phone}`}>
+                    <Phone className="h-4 w-4" />
+                    Call to talk it through
                   </a>
                 </Button>
                 <Button asChild variant="outline" className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white">
-                  <Link to={getLocalizedPath("tuteurs", "en")}>See the matching standards</Link>
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    <CalendarDays className="h-4 w-4" />
+                    Book a session
+                  </a>
                 </Button>
               </div>
             </MotionCard>
@@ -417,17 +435,17 @@ export default function AccueilEn() {
 
         <section className="pt-20">
           <SectionHeader
-            eyebrow="Tutors and matching"
-            title="A clearer way to show the caliber of support families can expect"
-            description="The tutors page now explains the specialties, matching logic and teaching standards behind the brand."
+            eyebrow="Our team"
+            title="Clear tutor profiles that help families choose with confidence"
+            description="Families can better understand the support style, subject strengths and level of care they can expect."
           />
           <div className="mt-8 grid gap-4 lg:grid-cols-[1.05fr,0.95fr]">
             <div className="grid gap-4">
               {[
                 {
                   icon: Users,
-                  title: "Strong and human profiles",
-                  description: "The site clearly shows the kind of tutors the brand wants to match with families.",
+                  title: "Strong and reassuring profiles",
+                  description: "Families can quickly understand the kind of tutor who may support their child.",
                 },
                 {
                   icon: ShieldCheck,
@@ -436,8 +454,8 @@ export default function AccueilEn() {
                 },
                 {
                   icon: Sparkles,
-                  title: "Trust earlier in the journey",
-                  description: "That trust reduces hesitation and improves conversion.",
+                  title: "Confidence before the first session",
+                  description: "A clearer presentation makes the next step feel easier and more natural.",
                 },
               ].map((entry) => (
                 <MotionCard key={entry.title} className="glass-panel rounded-[28px] border-white/10 bg-white/[0.04] p-6 text-white">
@@ -451,15 +469,15 @@ export default function AccueilEn() {
             </div>
 
             <MotionCard className="rounded-[32px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-7 text-white">
-              <div className="text-sm uppercase tracking-[0.24em] text-white/45">New page</div>
+              <div className="text-sm uppercase tracking-[0.24em] text-white/45">Meet the team</div>
               <h3 className="mt-3 font-display text-3xl font-semibold">Tutors and specialties</h3>
               <p className="mt-3 text-sm leading-7 text-white/75">
-                A dedicated page now explains the type of tutor specialties, academic fit and matching standard behind the brand.
+                Explore tutor profiles, specialties and teaching styles to understand which type of support feels most appropriate.
               </p>
               <div className="mt-8">
                 <Button asChild className="rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
                   <Link to={getLocalizedPath("tuteurs", "en")}>
-                    Explore the tutors page
+                    Meet our tutors
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
@@ -534,25 +552,34 @@ export default function AccueilEn() {
         <section id="contact" className="scroll-mt-32 pt-20">
           <SectionHeader
             eyebrow="Contact and booking"
-            title="Booking should be the easiest part of the process"
-            description="By phone, by email, through the form or directly through the online calendar."
+            title="Talking first is often the easiest way to start"
+            description="A short phone call usually clarifies the need faster, and the booking calendar stays available right after if you want to move ahead immediately."
           />
           <div className="mt-8 grid gap-4 xl:grid-cols-[0.95fr,1.05fr]">
             <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
-              <div className="text-sm uppercase tracking-[0.24em] text-white/45">Get in touch</div>
-              <h3 className="mt-3 font-display text-3xl font-semibold">Fast, simple, frictionless</h3>
+              <div className="text-sm uppercase tracking-[0.24em] text-white/45">Recommended first step</div>
+              <h3 className="mt-3 font-display text-3xl font-semibold">Talk first, book right after if you want</h3>
+              <p className="mt-3 text-sm leading-7 text-white/72">
+                The call is there to clarify the subject, grade level, urgency and best format before opening the calendar.
+              </p>
               <div className="mt-7 space-y-4">
-                <ContactLine icon={Phone} href="tel:+15149520709" label="+1 (514) 952-0709" />
+                <ContactLine icon={Phone} href={`tel:${siteConfig.phone}`} label={siteConfig.phoneDisplay} />
                 <ContactLine icon={Mail} href="mailto:chahineralph@gmail.com" label="chahineralph@gmail.com" />
                 <ContactLine icon={MapPin} label="Online across Quebec, in person depending on area" />
-                <ContactLine icon={Clock3} label="Fast replies and simple booking" />
+                <ContactLine icon={Clock3} label="Short diagnostic call, fast replies and simple booking afterwards" />
               </div>
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
                 <Button asChild className="rounded-full bg-[#f5c977] py-6 text-[#071631] hover:bg-[#f7d38f]">
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">Book now</a>
+                  <a href={`tel:${siteConfig.phone}`}>
+                    <Phone className="h-4 w-4" />
+                    Call now
+                  </a>
                 </Button>
                 <Button asChild variant="outline" className="rounded-full border-white/15 bg-white/5 py-6 text-white hover:bg-white/10 hover:text-white">
-                  <a href="tel:+15149520709">Call</a>
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    <CalendarDays className="h-4 w-4" />
+                    Book a session
+                  </a>
                 </Button>
               </div>
             </MotionCard>

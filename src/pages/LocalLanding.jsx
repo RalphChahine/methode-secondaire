@@ -23,15 +23,51 @@ import {
 } from "@/lib/i18n"
 import { siteConfig } from "@/lib/seo"
 
-export default function LocalLanding() {
+export default function LocalLanding({ forcedRouteKey }) {
   const location = useLocation()
   const locale = getLocaleFromPath(location.pathname)
-  const routeKey = getRouteKeyFromPath(location.pathname)
+  const routeKey = forcedRouteKey || getRouteKeyFromPath(location.pathname)
   const page = localPageConfigs[routeKey]?.[locale]
   const path = getLocalizedPath(routeKey, locale)
 
   if (!page) {
-    return null
+    return (
+      <div className="relative overflow-hidden">
+        <main className="mx-auto w-full max-w-5xl px-5 pb-20 pt-16 sm:px-6 lg:px-8">
+          <MotionCard className="rounded-[32px] border-white/10 bg-white/[0.05] p-8 text-white">
+            <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
+              {locale === "en" ? "Page unavailable" : "Page indisponible"}
+            </div>
+            <h1 className="mt-4 font-display text-4xl font-semibold">
+              {locale === "en"
+                ? "This page is temporarily unavailable."
+                : "Cette page est momentanément indisponible."}
+            </h1>
+            <p className="mt-4 max-w-3xl text-base leading-8 text-white/72">
+              {locale === "en"
+                ? "You can continue with the main tutoring pages or explore the tutor profiles while we guide you to the best next step."
+                : "Vous pouvez continuer avec les pages principales ou consulter les profils tuteurs pendant que nous vous guidons vers la meilleure suite."}
+            </p>
+            <div className="mt-8 flex flex-wrap gap-3">
+              <Button asChild className="rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
+                <Link to={getLocalizedPath("home", locale)}>
+                  {locale === "en" ? "Back to home" : "Retour à l'accueil"}
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+              >
+                <Link to={getLocalizedPath("tuteurs", locale)}>
+                  {locale === "en" ? "See tutors" : "Voir les tuteurs"}
+                </Link>
+              </Button>
+            </div>
+          </MotionCard>
+        </main>
+      </div>
+    )
   }
 
   const schemas = [
@@ -116,9 +152,8 @@ export default function LocalLanding() {
                 asChild
                 className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
               >
-                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                  {locale === "en" ? "Book a first conversation" : "Réserver un premier échange"}
-                  <ArrowRight className="h-4 w-4" />
+                <a href={`tel:${siteConfig.phone}`}>
+                  {locale === "en" ? "Call for a diagnostic" : "Appeler pour un diagnostic"}
                 </a>
               </Button>
 
@@ -127,21 +162,28 @@ export default function LocalLanding() {
                 variant="outline"
                 className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
               >
-                <Link to={getLocalizedPath("tuteurs", locale)}>
-                  {locale === "en" ? "See tutors" : "Voir les tuteurs"}
-                </Link>
+                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                  <ArrowRight className="h-4 w-4" />
+                  {locale === "en" ? "Book a session" : "Réserver une séance"}
+                </a>
               </Button>
             </div>
+
+            <p className="mt-4 text-sm leading-7 text-white/68">
+              {locale === "en"
+                ? "A short phone call is often the easiest way to explain the situation before booking."
+                : "Un court appel est souvent la façon la plus simple d'expliquer la situation avant de réserver."}
+            </p>
           </div>
 
           <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
             <div className="text-sm uppercase tracking-[0.24em] text-white/45">
-              {locale === "en" ? "Local relevance" : "Pertinence locale"}
+              {locale === "en" ? "What families appreciate" : "Ce que les familles apprécient"}
             </div>
             <div className="mt-3 font-display text-3xl font-semibold">
               {locale === "en"
-                ? `Why this page matters for ${page.city}`
-                : `Pourquoi cette page compte pour ${page.city}`}
+                ? `A clear, reassuring experience for families in ${page.city}`
+                : `Un accompagnement clair et rassurant pour les familles de ${page.city}`}
             </div>
 
             <ul className="mt-6 space-y-4 text-sm text-white/80">
@@ -155,8 +197,8 @@ export default function LocalLanding() {
 
             <div className="mt-6 rounded-[24px] border border-white/10 bg-[#081a38]/80 px-5 py-5 text-sm leading-7 text-white/72">
               {locale === "en"
-                ? "Families searching locally usually want a tutor they can trust quickly. This page makes the offer, guarantees and local relevance much easier to understand."
-                : "Les familles qui cherchent localement veulent surtout comprendre vite si le service est sérieux, adapté et rassurant. Cette page rend l'offre et les garanties beaucoup plus lisibles."}
+                ? "Families want to understand quickly whether the support will feel serious, clear and well organized. That is exactly what this page is here to show."
+                : "Les familles veulent comprendre rapidement si l'accompagnement sera sérieux, clair et bien organisé. C'est exactement ce que cette page montre."}
             </div>
           </MotionCard>
         </section>
@@ -212,8 +254,8 @@ export default function LocalLanding() {
                   asChild
                   className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
                 >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    {locale === "en" ? "Book now" : "Réserver maintenant"}
+                  <a href={`tel:${siteConfig.phone}`}>
+                    {locale === "en" ? "Call now" : "Appeler maintenant"}
                   </a>
                 </Button>
                 <Button
@@ -221,9 +263,9 @@ export default function LocalLanding() {
                   variant="outline"
                   className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
                 >
-                  <Link to={getLocalizedPath("maths", locale)}>
-                    {locale === "en" ? "See subject pages" : "Voir les pages matières"}
-                  </Link>
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    {locale === "en" ? "Book a session" : "Réserver une séance"}
+                  </a>
                 </Button>
               </div>
             </div>

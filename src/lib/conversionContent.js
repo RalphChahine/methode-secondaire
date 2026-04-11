@@ -1,9 +1,11 @@
 export const guaranteeByLocale = {
   fr: {
-    eyebrow: "Garantie et essai",
-    title: "Commencer avec un diagnostic clair et une vraie sécurité de fit",
+    eyebrow: "Commencer sereinement",
+    title: "Un premier échange clair, simple et rassurant",
     description:
-      "Le premier pas doit réduire le doute, pas l'augmenter. Le site met donc en avant un appel diagnostic, une première séance cadrée et une garantie de réajustement si le matching n'est pas le bon.",
+      "Tout est pensé pour comprendre rapidement le besoin de l'élève, rassurer la famille et orienter vers le bon accompagnement dès le départ.",
+    recommended: "Premier réflexe recommandé",
+    recommendedText: "Un appel diagnostic de 15 minutes permet souvent de cadrer le besoin plus vite qu'une réservation à l'aveugle.",
     items: [
       {
         title: "Appel diagnostic de 15 minutes",
@@ -16,19 +18,22 @@ export const guaranteeByLocale = {
           "La première rencontre ne sert pas juste à voir. Elle sert à clarifier les priorités et à remettre de l'ordre dans la progression.",
       },
       {
-        title: "Garantie de rematching si le fit n'est pas bon",
+        title: "Réorientation possible si le courant n'est pas le bon",
         description:
-          "Si le bon fit pédagogique n'est pas trouvé, l'accompagnement peut être réorienté vers un profil plus cohérent.",
+          "Si le premier accompagnement ne convient pas vraiment, la famille peut être réorientée vers un profil plus adapté.",
       },
     ],
-    primary: "Réserver le diagnostic",
-    secondary: "Voir les tuteurs",
+    primary: "Appeler pour un diagnostic",
+    secondary: "Réserver une séance",
+    tertiary: "Rencontrer l'équipe",
   },
   en: {
-    eyebrow: "Guarantee and first step",
-    title: "Start with a clear diagnosis and real fit protection",
+    eyebrow: "Start with confidence",
+    title: "A clear, simple and reassuring first conversation",
     description:
-      "The first step should lower hesitation, not increase it. The site now highlights a diagnostic call, a goal-driven first session and a rematch guarantee if the fit is not right.",
+      "Everything is designed to understand the student's needs quickly, reassure the family and guide them toward the right support from the start.",
+    recommended: "Recommended first step",
+    recommendedText: "A 15-minute diagnostic call often frames the need faster than booking without first talking it through.",
     items: [
       {
         title: "15-minute diagnostic call",
@@ -41,61 +46,62 @@ export const guaranteeByLocale = {
           "The first meeting is not just exploratory. It is meant to clarify priorities and create direction immediately.",
       },
       {
-        title: "Rematch guarantee if the fit is off",
+        title: "A simple adjustment path if a change is needed",
         description:
-          "If the pedagogical fit is not right, support can be redirected toward a profile that matches the student better.",
+          "If the first support dynamic is not the right one, the family can be redirected toward a tutor profile that fits better.",
       },
     ],
-    primary: "Book the diagnostic",
-    secondary: "See tutors",
+    primary: "Call for a diagnostic",
+    secondary: "Book a session",
+    tertiary: "Meet the team",
   },
 }
 
 export const operationalPromisesByLocale = {
   fr: {
-    eyebrow: "Promesses opérationnelles",
-    title: "Ce que les familles peuvent attendre concrètement",
+    eyebrow: "Un service bien cadré",
+    title: "Un accompagnement simple, réactif et facile à suivre",
     description:
-      "Les meilleures marques de tutorat ne laissent pas les parents deviner. Elles rendent le fonctionnement lisible, rassurant et professionnel.",
+      "Les familles doivent savoir à quoi s'attendre dès le départ: rapidité, clarté, suivi et continuité.",
     promises: [
       {
         title: "Réponse initiale sous 24 h ouvrables",
         description: "Le premier retour doit être rapide pour éviter qu'un besoin urgent reste en suspens.",
       },
       {
-        title: "Matching selon matière, niveau et style",
-        description: "Le jumelage tient compte du besoin académique et du type d'accompagnement qui fera progresser l'élève.",
+        title: "Le bon tuteur selon la matière et le niveau",
+        description: "Le choix de l'accompagnement tient compte du besoin scolaire et de la manière la plus utile d'aider l'élève.",
       },
       {
         title: "Plan de priorité dès la première séance",
         description: "L'élève et le parent comprennent rapidement ce qu'on travaille d'abord et pourquoi.",
       },
       {
-        title: "Compte rendu parent après le suivi",
+        title: "Un retour clair après la séance",
         description: "Le parent peut voir la notion travaillée, le blocage observé et la prochaine étape recommandée.",
       },
     ],
   },
   en: {
-    eyebrow: "Operational promises",
-    title: "What families can expect in concrete terms",
+    eyebrow: "A well-structured service",
+    title: "Support that feels simple, responsive and easy to follow",
     description:
-      "The strongest tutoring brands do not leave parents guessing. They make the process visible, reassuring and professional.",
+      "Families should know what to expect from the start: quick replies, clear direction and follow-up that stays easy to understand.",
     promises: [
       {
         title: "Initial reply within one business day",
         description: "The first answer should be quick so an urgent academic need does not sit unresolved.",
       },
       {
-        title: "Matching based on subject, level and teaching style",
-        description: "Matching reflects both the academic need and the kind of support most likely to create progress.",
+        title: "The right tutor based on subject and level",
+        description: "Tutor choice reflects the academic need and the kind of support most likely to help the student progress well.",
       },
       {
         title: "Priority plan from the first session",
         description: "The student and parent understand quickly what needs attention first and why.",
       },
       {
-        title: "Parent follow-up summary after the session",
+        title: "A clear family summary after the session",
         description: "Families can see what was covered, where the block is and what the next step should be.",
       },
     ],
@@ -104,16 +110,16 @@ export const operationalPromisesByLocale = {
 
 export const verifiedReviewsByLocale = {
   fr: {
-    eyebrow: "Avis vérifiés",
-    title: "Des retours structurés pour inspirer confiance avant de réserver",
+    eyebrow: "Paroles de familles",
+    title: "Des retours qui parlent de progression, de calme et de confiance",
     description:
-      "Chaque carte reprend un retour publié sous forme anonymisée avec contexte, nombre de séances et résultat observé pour donner une preuve sociale plus solide.",
-    note: "Publié sous forme anonymisée avec accord familial et contexte de suivi.",
-    moreLabel: "Voir la page témoignages",
+      "Quelques retours anonymisés avec contexte de suivi pour refléter le type d'expérience vécu par les familles accompagnées.",
+    note: "Retours anonymisés avec contexte de suivi.",
+    moreLabel: "Lire plus de témoignages",
     reviews: [
       {
         subject: "Mathématiques",
-        verified: "Suivi vérifié",
+        verified: "Famille accompagnée",
         author: "Parent A.",
         context: "Secondaire 4 • 8 séances",
         outcome: "Échec à 92 %",
@@ -122,7 +128,7 @@ export const verifiedReviewsByLocale = {
       },
       {
         subject: "Sciences",
-        verified: "Suivi vérifié",
+        verified: "Famille accompagnée",
         author: "Parent B.",
         context: "Secondaire 5 • suivi hebdomadaire",
         outcome: "Année redressée",
@@ -131,7 +137,7 @@ export const verifiedReviewsByLocale = {
       },
       {
         subject: "Préparation d'examen",
-        verified: "Suivi vérifié",
+        verified: "Famille accompagnée",
         author: "Parent C.",
         context: "Secondaire 3 • 5 séances",
         outcome: "Confiance retrouvée",
@@ -140,7 +146,7 @@ export const verifiedReviewsByLocale = {
       },
       {
         subject: "Rattrapage",
-        verified: "Suivi vérifié",
+        verified: "Famille accompagnée",
         author: "Parent D.",
         context: "Secondaire 2 • remise à niveau",
         outcome: "Méthode stabilisée",
@@ -150,16 +156,16 @@ export const verifiedReviewsByLocale = {
     ],
   },
   en: {
-    eyebrow: "Verified reviews",
-    title: "Structured feedback that builds trust before booking",
+    eyebrow: "From families",
+    title: "Feedback about progress, confidence and peace of mind",
     description:
-      "Each card includes anonymized context, session volume and the result observed so families see proof that feels more grounded than generic praise.",
-    note: "Published in anonymized form with family approval and tutoring context.",
-    moreLabel: "See the testimonials page",
+      "A few anonymized reviews with tutoring context help families feel the kind of experience students and parents actually go through.",
+    note: "Anonymized family feedback with tutoring context.",
+    moreLabel: "Read more testimonials",
     reviews: [
       {
         subject: "Mathematics",
-        verified: "Verified follow-up",
+        verified: "Supported family",
         author: "Parent A.",
         context: "Secondary 4 • 8 sessions",
         outcome: "From failing to 92%",
@@ -168,7 +174,7 @@ export const verifiedReviewsByLocale = {
       },
       {
         subject: "Science",
-        verified: "Verified follow-up",
+        verified: "Supported family",
         author: "Parent B.",
         context: "Secondary 5 • weekly support",
         outcome: "School year turned around",
@@ -177,7 +183,7 @@ export const verifiedReviewsByLocale = {
       },
       {
         subject: "Exam preparation",
-        verified: "Verified follow-up",
+        verified: "Supported family",
         author: "Parent C.",
         context: "Secondary 3 • 5 sessions",
         outcome: "Confidence restored",
@@ -186,7 +192,7 @@ export const verifiedReviewsByLocale = {
       },
       {
         subject: "Catch-up support",
-        verified: "Verified follow-up",
+        verified: "Supported family",
         author: "Parent D.",
         context: "Secondary 2 • intensive reset",
         outcome: "Method stabilized",
@@ -199,10 +205,10 @@ export const verifiedReviewsByLocale = {
 
 export const tutorProfilesByLocale = {
   fr: {
-    eyebrow: "Profils publiés",
-    title: "Des profils tuteurs plus concrets et plus faciles à comparer",
+    eyebrow: "Notre équipe",
+    title: "Des profils clairs pour choisir le bon accompagnement",
     description:
-      "Chaque profil public montre la spécialité, le format, le style de séance et le type d'élève pour lequel le matching est le plus pertinent.",
+      "Chaque profil aide à comprendre la spécialité, le style d'accompagnement et le type de besoin auquel il répond le mieux.",
     profiles: [
       {
         name: "Profil Maths Examens",
@@ -229,13 +235,13 @@ export const tutorProfilesByLocale = {
         ideal: "Idéal pour les périodes où il faut reprendre beaucoup sans ajouter plus de stress.",
       },
     ],
-    cta: "Voir tous les témoignages",
+    cta: "Lire les témoignages",
   },
   en: {
-    eyebrow: "Published tutor profiles",
-    title: "Tutor profiles that feel more concrete and easier to compare",
+    eyebrow: "Our team",
+    title: "Clear tutor profiles to help families choose well",
     description:
-      "Each public profile highlights the specialty, format, teaching style and student fit so families can picture the right match more clearly.",
+      "Each profile helps families understand the specialty, teaching style and student needs it serves best.",
     profiles: [
       {
         name: "Math Exam Profile",
@@ -262,22 +268,22 @@ export const tutorProfilesByLocale = {
         ideal: "Best for heavier periods when a student needs to catch up without feeling overwhelmed.",
       },
     ],
-    cta: "See all testimonials",
+    cta: "Read testimonials",
   },
 }
 
 export const localLinkContentByLocale = {
   fr: {
-    eyebrow: "Pages locales",
-    title: "Des portes d'entrée SEO locales pour Montréal, Laval et le Québec en ligne",
+    eyebrow: "Selon votre situation",
+    title: "Trouver l'accompagnement qui vous convient",
     description:
-      "Ces pages ciblent des intentions de recherche précises tout en gardant la même promesse de clarté, de matching et de progression visible.",
+      "Que vous soyez à Montréal, à Laval ou ailleurs au Québec, l'accompagnement garde la même exigence de clarté, de méthode et de suivi.",
   },
   en: {
-    eyebrow: "Local pages",
-    title: "Local SEO entry points for Montreal, Laval and online tutoring across Quebec",
+    eyebrow: "By location",
+    title: "Find the support that fits your situation",
     description:
-      "These pages target specific local search intent while keeping the same promise of clarity, matching and visible progress.",
+      "Whether you are in Montreal, Laval or anywhere else in Quebec, the same standard of clarity, structure and follow-up stays in place.",
   },
 }
 
@@ -288,16 +294,16 @@ export const localPageConfigs = {
       eyebrow: "Tutorat local",
       heroTitle: "Tutorat secondaire à Montréal en maths et sciences",
       heroText:
-        "Une page locale pensée pour les familles qui cherchent un tuteur à Montréal avec un vrai diagnostic, un bon matching et une progression visible.",
+        "Pour les familles de Montréal qui veulent un accompagnement sérieux en maths et en sciences, avec une méthode claire et un suivi rassurant.",
       seoTitle: "Tutorat secondaire à Montréal | Méthode Secondaire",
       seoDescription:
-        "Tutorat de mathématiques et de sciences à Montréal pour le secondaire. Diagnostic clair, matching soigné, suivi structuré et réservation simple.",
+        "Tutorat de mathématiques et de sciences à Montréal pour le secondaire. Diagnostic clair, accompagnement choisi avec soin, suivi structuré et réservation simple.",
       keywords:
         "tutorat montréal, tuteur maths montréal, tuteur sciences montréal, soutien scolaire secondaire montréal",
       highlights: [
         "En ligne partout à Montréal et présentiel selon le secteur",
         "Maths, sciences, physique et chimie",
-        "Diagnostic 15 min et rematching si nécessaire",
+        "Premier échange clair pour orienter le bon accompagnement",
       ],
       faq: [
         {
@@ -311,9 +317,9 @@ export const localPageConfigs = {
             "Les demandes les plus fréquentes concernent les maths du secondaire, les sciences, la physique, la chimie et la préparation d'examens.",
         },
         {
-          question: "Comment le matching se fait-il ?",
+          question: "Comment choisissez-vous le tuteur ?",
           answer:
-            "Le jumelage tient compte de la matière, du niveau, du style d'explication recherché et du type de suivi souhaité par la famille.",
+            "Le choix du tuteur tient compte de la matière, du niveau, du style d'explication recherché et du type de suivi souhaité par la famille.",
         },
       ],
     },
@@ -322,16 +328,16 @@ export const localPageConfigs = {
       eyebrow: "Local tutoring",
       heroTitle: "High school math and science tutoring in Montreal",
       heroText:
-        "A local page for families searching for a tutor in Montreal with a real diagnosis, thoughtful matching and visible academic progress.",
+        "For Montreal families looking for serious math and science support with clear teaching and reassuring follow-up.",
       seoTitle: "Montreal tutoring | Méthode Secondaire",
       seoDescription:
-        "High school math and science tutoring in Montreal. Clear diagnosis, careful matching, structured follow-up and simple booking.",
+        "High school math and science tutoring in Montreal. Clear diagnosis, carefully selected support, structured follow-up and simple booking.",
       keywords:
         "montreal tutoring, math tutor montreal, science tutor montreal, high school tutoring montreal",
       highlights: [
         "Online across Montreal and in person depending on area",
         "Math, science, physics and chemistry",
-        "15-minute diagnosis and rematch protection if needed",
+        "A clear first conversation to guide the right support",
       ],
       faq: [
         {
@@ -345,9 +351,9 @@ export const localPageConfigs = {
             "The most frequent requests involve high school math, science, physics, chemistry and major exam preparation.",
         },
         {
-          question: "How does matching work?",
+          question: "How do you choose the tutor?",
           answer:
-            "Matching reflects the subject, grade level, teaching style needed and the kind of follow-up the family wants.",
+            "Tutor choice reflects the subject, grade level, teaching style needed and the kind of follow-up the family wants.",
         },
       ],
     },
@@ -358,7 +364,7 @@ export const localPageConfigs = {
       eyebrow: "Tutorat local",
       heroTitle: "Tutorat secondaire à Laval avec suivi clair et rassurant",
       heroText:
-        "Pour les familles de Laval qui cherchent un tuteur en maths ou en sciences avec une méthode sérieuse, un bon fit et un vrai suivi parent.",
+        "Pour les familles de Laval qui veulent un accompagnement sérieux en maths ou en sciences, avec une méthode claire et un vrai suivi parent.",
       seoTitle: "Tutorat secondaire à Laval | Méthode Secondaire",
       seoDescription:
         "Tutorat de mathématiques et de sciences à Laval pour le secondaire. Réponse rapide, diagnostic 15 min, suivi structuré et réservation simple.",
@@ -373,7 +379,7 @@ export const localPageConfigs = {
         {
           question: "Le tutorat à Laval est-il en ligne ou en présentiel ?",
           answer:
-            "Les deux formats sont possibles. L'en ligne est accessible partout à Laval, et le présentiel dépend du secteur et du matching retenu.",
+            "Les deux formats sont possibles. L'en ligne est accessible partout à Laval, et le présentiel dépend du secteur et de la disponibilité retenue.",
         },
         {
           question: "Est-ce adapté aux élèves qui ont accumulé du retard ?",
@@ -392,7 +398,7 @@ export const localPageConfigs = {
       eyebrow: "Local tutoring",
       heroTitle: "High school tutoring in Laval with clear and reassuring follow-up",
       heroText:
-        "For Laval families looking for a math or science tutor with a serious method, the right fit and visible parent follow-up.",
+        "For Laval families looking for math or science support with a serious method and visible parent follow-up.",
       seoTitle: "Laval tutoring | Méthode Secondaire",
       seoDescription:
         "High school math and science tutoring in Laval. Fast replies, 15-minute diagnosis, structured follow-up and simple booking.",
@@ -407,7 +413,7 @@ export const localPageConfigs = {
         {
           question: "Is tutoring in Laval online or in person?",
           answer:
-            "Both formats are possible. Online support is available across Laval, while in-person support depends on area and matching.",
+            "Both formats are possible. Online support is available across Laval, while in-person support depends on area and availability.",
         },
         {
           question: "Is this useful for students who have fallen behind?",
@@ -428,10 +434,10 @@ export const localPageConfigs = {
       eyebrow: "Tutorat en ligne",
       heroTitle: "Tutorat en ligne au Québec pour le secondaire en maths et sciences",
       heroText:
-        "Une page pensée pour les familles qui veulent un accompagnement sérieux à distance partout au Québec, avec la même exigence de clarté et de progression.",
+        "Pour les familles qui veulent un accompagnement sérieux à distance partout au Québec, avec la même exigence de clarté et de progression.",
       seoTitle: "Tutorat en ligne au Québec | Méthode Secondaire",
       seoDescription:
-        "Tutorat en ligne en mathématiques et en sciences pour le secondaire partout au Québec. Diagnostic clair, matching soigné et suivi structuré.",
+        "Tutorat en ligne en mathématiques et en sciences pour le secondaire partout au Québec. Diagnostic clair, accompagnement soigné et suivi structuré.",
       keywords:
         "tutorat en ligne québec, tuteur en ligne maths québec, tuteur en ligne sciences québec, tutorat secondaire québec",
       highlights: [
@@ -462,10 +468,10 @@ export const localPageConfigs = {
       eyebrow: "Online tutoring",
       heroTitle: "Online high school math and science tutoring across Quebec",
       heroText:
-        "A page built for families who want serious remote support anywhere in Quebec, with the same level of clarity, structure and progress visibility.",
+        "For families who want serious remote support anywhere in Quebec, with the same level of clarity, structure and progress visibility.",
       seoTitle: "Online tutoring in Quebec | Méthode Secondaire",
       seoDescription:
-        "Online high school math and science tutoring across Quebec. Clear diagnosis, careful matching and structured follow-up.",
+        "Online high school math and science tutoring across Quebec. Clear diagnosis, thoughtful support and structured follow-up.",
       keywords:
         "online tutoring quebec, online math tutor quebec, online science tutor quebec, high school tutoring quebec",
       highlights: [

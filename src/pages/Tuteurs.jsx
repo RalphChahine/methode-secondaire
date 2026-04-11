@@ -85,13 +85,13 @@ const standardsByLocale = {
     "Clarté d'explication avant tout",
     "Fiabilité, ponctualité et professionnalisme",
     "Capacité à rassurer sans baisser le niveau",
-    "Jumelage selon la matière, le niveau et le style d'accompagnement recherché",
+    "Orientation du bon profil selon la matière, le niveau et le style d'accompagnement recherché",
   ],
   en: [
     "Clarity of explanation first",
     "Reliability, punctuality and professionalism",
     "Ability to reassure students without lowering standards",
-    "Matching based on subject, grade level and teaching style",
+    "Tutor choice based on subject, grade level and teaching style",
   ],
 }
 
@@ -103,7 +103,7 @@ const processByLocale = {
     },
     {
       title: "Associer le bon profil",
-      description: "Le jumelage se fait selon la spécialité, la pédagogie et la disponibilité la plus cohérente.",
+      description: "Le choix du profil se fait selon la spécialité, la pédagogie et la disponibilité la plus cohérente.",
     },
     {
       title: "Avancer avec plus de structure",
@@ -116,8 +116,8 @@ const processByLocale = {
       description: "We look at grade level, subject, urgency and the kind of support that will create the most progress.",
     },
     {
-      title: "Match the right profile",
-      description: "Matching is based on specialization, teaching style and the best availability fit.",
+      title: "Choose the right profile",
+      description: "Tutor choice is based on specialization, teaching style and the most coherent availability.",
     },
     {
       title: "Move forward with structure",
@@ -135,7 +135,7 @@ const commitmentsByLocale = {
     },
     {
       icon: ShieldCheck,
-      title: "Le bon fit compte autant que la matière",
+      title: "La bonne approche compte autant que la matière",
       description: "Le niveau d'exigence, le ton du tuteur et la pédagogie doivent vraiment correspondre au besoin.",
     },
     {
@@ -152,8 +152,8 @@ const commitmentsByLocale = {
     },
     {
       icon: ShieldCheck,
-      title: "Fit matters as much as the subject",
-      description: "The level of rigor, tutor tone and teaching style need to match the need in a real way.",
+      title: "Approach matters as much as the subject",
+      description: "The level of rigor, tutor tone and teaching style need to reflect the student's real need.",
     },
     {
       icon: Sparkles,
@@ -165,80 +165,80 @@ const commitmentsByLocale = {
 
 const copyByLocale = {
   fr: {
-    badge: "Tuteurs • Spécialités et matching",
+    badge: "Notre équipe • Profils et spécialités",
     title: "Des profils pédagogiques pensés pour rassurer les parents et faire avancer les élèves.",
     intro:
-      "Cette page présente le calibre de profils et de spécialités que Méthode Secondaire veut associer aux familles. Le jumelage final dépend toujours du niveau, des besoins et des disponibilités.",
+      "Découvrez les profils et les spécialités qui permettent d'orienter chaque élève vers l'accompagnement le plus juste selon ses besoins.",
     ctaPrimary: "Réserver un premier échange",
     ctaSecondary: "Lire les témoignages",
     asideEyebrow: "Ce que les familles veulent sentir",
-    asideTitle: "Un tutorat sérieux, humain et bien ciblé",
+    asideTitle: "Un tutorat sérieux, humain et bien pensé",
     asidePoints: [
       "Un tuteur qui comprend rapidement où ça bloque.",
       "Une pédagogie claire qui ne crée pas plus de confusion.",
       "Une présence rassurante avant les examens et les périodes plus lourdes.",
     ],
-    profilesEyebrow: "Profils représentatifs",
+    profilesEyebrow: "Profils et spécialités",
     profilesTitle: "Le type d'accompagnement qui inspire confiance dès le départ",
     profilesDescription:
-      "Au lieu de promettre un simple cours, on montre le type de spécialités et de qualités pédagogiques qu'un bon jumelage doit apporter.",
+      "Chaque profil aide à comprendre le style de séance, les matières couvertes et le type d'élève pour lequel l'accompagnement est le plus utile.",
     standardsEyebrow: "Standard de sélection",
     standardsTitle: "Ce qui fait qu'un tuteur mérite d'être recommandé",
     standardsDescription:
       "Les familles ne cherchent pas juste une matière maîtrisée. Elles cherchent quelqu'un de clair, stable et fiable.",
-    processEyebrow: "Comment le jumelage se fait",
-    processTitle: "Un matching plus intelligent qu'un simple créneau libre",
+    processEyebrow: "Comment nous orientons les familles",
+    processTitle: "Le bon accompagnement pour le bon besoin",
     processDescription:
-      "Les meilleures expériences arrivent quand le profil, la matière et le style d'accompagnement sont réellement alignés.",
+      "Les meilleures expériences arrivent quand la matière, le niveau et la façon d'expliquer sont réellement bien choisis.",
     finalBadge: "Pour parents et élèves",
-    finalTitle: "Besoin d'un bon match rapidement?",
+    finalTitle: "Besoin d'être orienté rapidement?",
     finalText:
       "Réservez un premier échange et on pourra orienter le besoin vers le bon type d'accompagnement, en maths ou en sciences.",
     finalButton: "Réserver maintenant",
     finalSecondary: "Devenir tuteur",
     seoTitle: "Tuteurs et spécialités | Méthode Secondaire",
     seoDescription:
-      "Découvrez les spécialités, standards pédagogiques et principes de jumelage de Méthode Secondaire pour le tutorat au secondaire.",
+      "Découvrez les profils, spécialités et standards pédagogiques de Méthode Secondaire pour le tutorat au secondaire.",
     seoKeywords:
-      "tuteurs maths secondaire, tuteurs sciences secondaire, tutorat québec, matching tuteur élève, soutien scolaire montréal",
+      "tuteurs maths secondaire, tuteurs sciences secondaire, tutorat québec, profils tuteurs secondaire, soutien scolaire montréal",
   },
   en: {
-    badge: "Tutors • Specialties and matching",
+    badge: "Our team • Profiles and specialties",
     title: "Teaching profiles designed to reassure parents and move students forward.",
     intro:
-      "This page highlights the caliber of tutor profiles and specialties Méthode Secondaire aims to match with families. Final matching always depends on grade level, needs and availability.",
+      "Explore the tutor profiles and specialties that help each student find the most suitable kind of support.",
     ctaPrimary: "Book a first conversation",
     ctaSecondary: "Read testimonials",
     asideEyebrow: "What families want to feel",
-    asideTitle: "Serious, human and well-matched tutoring",
+    asideTitle: "Serious, human and thoughtful tutoring",
     asidePoints: [
       "A tutor who understands the real academic block quickly.",
       "Clear teaching that removes confusion instead of adding more.",
       "A reassuring presence before exams and heavier school periods.",
     ],
-    profilesEyebrow: "Representative profiles",
+    profilesEyebrow: "Profiles and specialties",
     profilesTitle: "The kind of support that inspires confidence from the start",
     profilesDescription:
-      "Instead of promising a generic session, we highlight the specialties and teaching qualities a strong match should bring.",
+      "Each profile helps families understand the teaching style, subject strengths and student needs it serves best.",
     standardsEyebrow: "Selection standard",
     standardsTitle: "What makes a tutor worth recommending",
     standardsDescription:
       "Families are not just looking for subject knowledge. They are looking for clarity, consistency and reliability.",
-    processEyebrow: "How matching works",
-    processTitle: "A smarter match than simply filling an open slot",
+    processEyebrow: "How families are guided",
+    processTitle: "The right support for the right need",
     processDescription:
-      "The best tutoring experiences happen when the profile, subject and teaching style are truly aligned.",
+      "The best tutoring experiences happen when the subject, level and teaching style are chosen with care.",
     finalBadge: "For parents and students",
-    finalTitle: "Need the right fit quickly?",
+    finalTitle: "Need clear guidance quickly?",
     finalText:
       "Book a first conversation and we can guide the need toward the right kind of support, in math or science.",
     finalButton: "Book now",
     finalSecondary: "Become a tutor",
     seoTitle: "Tutors and specialties | Méthode Secondaire",
     seoDescription:
-      "Explore the tutoring specialties, teaching standards and matching philosophy behind Méthode Secondaire.",
+      "Explore the tutor profiles, specialties and teaching standards behind Méthode Secondaire.",
     seoKeywords:
-      "math tutors high school, science tutors high school, tutoring quebec, tutor matching, montreal academic support",
+      "math tutors high school, science tutors high school, tutoring quebec, tutor profiles, montreal academic support",
   },
 }
 
@@ -413,12 +413,12 @@ export default function Tuteurs() {
 
         <section className="pt-20">
           <SectionHeader
-            eyebrow={locale === "en" ? "What strong matching protects" : "Ce que le bon matching protège"}
-            title={locale === "en" ? "Why this part of the experience matters so much" : "Pourquoi cette étape compte autant dans l'expérience"}
+            eyebrow={locale === "en" ? "What this protects" : "Ce que cela protège"}
+            title={locale === "en" ? "Why this part of the experience matters so much" : "Pourquoi cette étape compte autant"}
             description={
               locale === "en"
-                ? "The strongest tutoring experiences happen when the academic need, the human fit and the progression plan all line up."
-                : "Les meilleures expériences de tutorat arrivent quand le besoin académique, le fit humain et la logique de progression sont réellement alignés."
+                ? "The strongest tutoring experiences happen when the academic need, the human connection and the learning plan all work together."
+                : "Les meilleures expériences arrivent quand le besoin scolaire, la relation humaine et la logique de progression avancent ensemble."
             }
           />
 

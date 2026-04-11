@@ -97,7 +97,7 @@ const contentByLocale = {
     profilesDescription:
       "La priorité n'est pas juste la compétence académique. La priorité, c'est la combinaison entre maîtrise, clarté et fiabilité.",
     prioritiesTitle: "Domaines prioritaires",
-    fitTitle: "Le bon fit humain",
+    fitTitle: "Le bon alignement humain",
     fitText:
       "On veut des personnes capables d'expliquer proprement, de rassurer sans infantiliser et de garder un vrai niveau d'exigence. Le ton doit être sérieux, clair et respectueux.",
     fitBoxTitle: "Ce qui aide vraiment",
@@ -218,7 +218,7 @@ const contentByLocale = {
       },
       {
         title: "Conversation",
-        description: "We validate fit with the mission, the expected level and the communication style.",
+        description: "We confirm alignment with the mission, the expected level and the communication style.",
       },
       {
         title: "Teaching review",
@@ -251,7 +251,7 @@ const contentByLocale = {
     profilesDescription:
       "The priority is not just academic strength. It is the combination of mastery, clarity and reliability.",
     prioritiesTitle: "Priority areas",
-    fitTitle: "The right human fit",
+    fitTitle: "The right human alignment",
     fitText:
       "We want people who can explain well, reassure without patronizing and maintain strong standards. The tone should be serious, clear and respectful.",
     fitBoxTitle: "What helps most",

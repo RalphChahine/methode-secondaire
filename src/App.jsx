@@ -36,12 +36,12 @@ export default function App() {
             <Route path="/en/testimonials" element={<Temoignages />} />
             <Route path="/tuteurs" element={<Tuteurs />} />
             <Route path="/en/tutors" element={<Tuteurs />} />
-            <Route path="/tutorat-montreal" element={<LocalLanding />} />
-            <Route path="/en/montreal-tutoring" element={<LocalLanding />} />
-            <Route path="/tutorat-laval" element={<LocalLanding />} />
-            <Route path="/en/laval-tutoring" element={<LocalLanding />} />
-            <Route path="/tutorat-en-ligne-quebec" element={<LocalLanding />} />
-            <Route path="/en/quebec-online-tutoring" element={<LocalLanding />} />
+            <Route path="/tutorat-montreal" element={<LocalLanding forcedRouteKey="montreal" />} />
+            <Route path="/en/montreal-tutoring" element={<LocalLanding forcedRouteKey="montreal" />} />
+            <Route path="/tutorat-laval" element={<LocalLanding forcedRouteKey="laval" />} />
+            <Route path="/en/laval-tutoring" element={<LocalLanding forcedRouteKey="laval" />} />
+            <Route path="/tutorat-en-ligne-quebec" element={<LocalLanding forcedRouteKey="quebecOnline" />} />
+            <Route path="/en/quebec-online-tutoring" element={<LocalLanding forcedRouteKey="quebecOnline" />} />
             <Route path="/reussites" element={<Navigate to="/temoignages" replace />} />
             <Route path="/en/success-stories" element={<Navigate to="/en/testimonials" replace />} />
             <Route path="/devenir-tuteur" element={<DevenirTuteur />} />

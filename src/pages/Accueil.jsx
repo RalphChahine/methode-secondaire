@@ -75,9 +75,9 @@ const trustSignals = [
   },
   {
     icon: Users,
-    title: "Jumelage pensé pour le bon fit",
+    title: "Accompagnement choisi avec soin",
     description:
-      "On met l'accent sur la pédagogie, le ton et le type d'accompagnement attendu, pas seulement sur la prochaine disponibilité.",
+      "On tient compte de la pédagogie, du ton et du vrai besoin de l'élève, pas seulement de la prochaine disponibilité.",
   },
   {
     icon: ShieldCheck,
@@ -383,19 +383,33 @@ export default function Accueil() {
                   asChild
                   className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] shadow-[0_18px_45px_rgba(245,201,119,0.28)] hover:bg-[#f7d38f]"
                 >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    Réserver une première séance
-                    <ArrowRight className="h-4 w-4" />
+                  <a href={`tel:${siteConfig.phone}`}>
+                    <Phone className="h-4 w-4" />
+                    Appeler pour un diagnostic
                   </a>
                 </Button>
 
                 <Button
+                  asChild
                   variant="outline"
                   className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                >
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    <CalendarDays className="h-4 w-4" />
+                    Réserver une séance
+                  </a>
+                </Button>
+              </motion.div>
+
+              <motion.div variants={item} className="mt-4 flex flex-wrap items-center gap-4 text-sm text-white/68">
+                <span>Le meilleur premier pas: un appel de 15 minutes pour parler de la situation.</span>
+                <button
+                  type="button"
+                  className="text-white transition hover:text-[#f5c977]"
                   onClick={() => document.getElementById("methode")?.scrollIntoView({ behavior: "smooth" })}
                 >
                   Voir la méthode
-                </Button>
+                </button>
               </motion.div>
 
               <motion.div variants={item} className="mt-10 grid gap-3 sm:grid-cols-3">
@@ -446,23 +460,23 @@ export default function Accueil() {
                 <div className="mt-6 grid gap-3 sm:grid-cols-2">
                   <div className="rounded-[24px] border border-white/10 bg-[#0b214d]/80 p-5">
                     <div className="flex items-center gap-2 text-sm text-white/55">
-                      <CalendarDays className="h-4 w-4 text-[#f5c977]" />
-                      Réservation simple
+                      <Phone className="h-4 w-4 text-[#f5c977]" />
+                      Premier réflexe
                     </div>
-                    <div className="mt-2 text-lg font-semibold text-white">Calendrier en ligne</div>
+                    <div className="mt-2 text-lg font-semibold text-white">Appel diagnostic 15 min</div>
                     <p className="mt-2 text-sm leading-7 text-white/70">
-                      Choix rapide du créneau, sans allers-retours compliqués.
+                      Le moyen le plus simple pour expliquer la situation et être orienté rapidement.
                     </p>
                   </div>
 
                   <div className="rounded-[24px] border border-white/10 bg-white/5 p-5">
                     <div className="flex items-center gap-2 text-sm text-white/55">
-                      <MapPin className="h-4 w-4 text-[#f5c977]" />
-                      Format flexible
+                      <CalendarDays className="h-4 w-4 text-[#f5c977]" />
+                      Si vous êtes déjà prêt
                     </div>
-                    <div className="mt-2 text-lg font-semibold text-white">En ligne ou en présentiel</div>
+                    <div className="mt-2 text-lg font-semibold text-white">Réservation en ligne</div>
                     <p className="mt-2 text-sm leading-7 text-white/70">
-                      Partout au Québec en ligne, avec présence possible selon le secteur.
+                      Le calendrier reste disponible pour réserver directement en quelques clics.
                     </p>
                   </div>
                 </div>
@@ -480,7 +494,7 @@ export default function Accueil() {
           <SectionHeader
             eyebrow="Confiance dès le départ"
             title="Un cadre sérieux avant même la première séance"
-            description="Les familles ont besoin de sentir rapidement comment le besoin est cadré, comment le bon fit est trouvé et comment la progression va être rendue lisible."
+            description="Les familles ont besoin de sentir rapidement comment le besoin est cadré, comment l'accompagnement sera choisi et comment la progression va être rendue lisible."
           />
 
           <div className="mt-8 grid gap-4 xl:grid-cols-[1.05fr,0.95fr]">
@@ -519,8 +533,9 @@ export default function Accueil() {
                   asChild
                   className="rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]"
                 >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    Réserver un premier échange
+                  <a href={`tel:${siteConfig.phone}`}>
+                    <Phone className="h-4 w-4" />
+                    Appeler pour en parler
                   </a>
                 </Button>
                 <Button
@@ -528,7 +543,10 @@ export default function Accueil() {
                   variant="outline"
                   className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
                 >
-                  <Link to={getLocalizedPath("tuteurs", "fr")}>Voir les critères de matching</Link>
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    <CalendarDays className="h-4 w-4" />
+                    Réserver une séance
+                  </a>
                 </Button>
               </div>
             </MotionCard>
@@ -691,9 +709,9 @@ export default function Accueil() {
           viewport={{ once: true, amount: 0.2 }}
         >
           <SectionHeader
-            eyebrow="Tuteurs et matching"
-            title="Une vitrine plus claire pour montrer le calibre d'accompagnement proposé"
-            description="Les familles peuvent maintenant voir plus facilement le type de profils, de standards et de matching derrière la marque."
+            eyebrow="Notre équipe"
+            title="Des profils clairs pour guider les familles dès le départ"
+            description="Les familles peuvent mieux comprendre le style d'accompagnement proposé, les spécialités disponibles et la qualité de suivi attendue."
           />
 
           <div className="mt-8 grid gap-4 lg:grid-cols-[1.05fr,0.95fr]">
@@ -710,25 +728,24 @@ export default function Accueil() {
             </div>
 
             <MotionCard className="rounded-[32px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-7 text-white">
-              <div className="text-sm uppercase tracking-[0.24em] text-white/45">Nouvelle page</div>
+              <div className="text-sm uppercase tracking-[0.24em] text-white/45">Rencontrer l'équipe</div>
               <h3 className="mt-3 font-display text-3xl font-semibold">Tuteurs et spécialités</h3>
               <p className="mt-3 text-sm leading-7 text-white/75">
-                Une page dédiée présente maintenant le type de profils, de spécialités et de matching que
-                Méthode Secondaire veut offrir aux familles.
+                Découvrez les profils, les spécialités et les styles d'accompagnement qui permettent de choisir le bon tuteur plus sereinement.
               </p>
 
               <div className="mt-6 space-y-3 text-sm text-white/80">
                 <div className="flex items-start gap-3">
                   <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
-                  Spécialités par niveau et par besoin
+                  Profils adaptés selon la matière et le niveau
                 </div>
                 <div className="flex items-start gap-3">
                   <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
-                  Standards pédagogiques clairement visibles
+                  Style pédagogique et approche clairement présentés
                 </div>
                 <div className="flex items-start gap-3">
                   <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
-                  Lien direct avec les témoignages et la réservation
+                  Accès direct aux témoignages et à la réservation
                 </div>
               </div>
 
@@ -738,7 +755,7 @@ export default function Accueil() {
                   className="rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]"
                 >
                   <Link to={getLocalizedPath("tuteurs", "fr")}>
-                    Découvrir la page tuteurs
+                    Voir nos profils
                     <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
@@ -855,24 +872,27 @@ export default function Accueil() {
         >
           <SectionHeader
             eyebrow="Contact et réservation"
-            title="Réserver doit être la partie la plus simple du processus"
-            description="Par téléphone, par email, via le formulaire ou directement avec le calendrier en ligne."
+            title="Le plus simple est souvent d'appeler d'abord"
+            description="Un court appel permet souvent de clarifier le besoin, puis la réservation reste disponible juste après si vous voulez avancer tout de suite."
           />
 
           <div className="mt-8 grid gap-4 xl:grid-cols-[0.95fr,1.05fr]">
             <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
-              <div className="text-sm uppercase tracking-[0.24em] text-white/45">Prendre contact</div>
-              <h3 className="mt-3 font-display text-3xl font-semibold">Rapide, simple, sans friction</h3>
+              <div className="text-sm uppercase tracking-[0.24em] text-white/45">Premier contact recommandé</div>
+              <h3 className="mt-3 font-display text-3xl font-semibold">Parler d'abord, réserver ensuite si vous le souhaitez</h3>
+              <p className="mt-3 text-sm leading-7 text-white/72">
+                L'appel sert à comprendre la matière, le niveau, l'urgence et le bon format avant d'ouvrir le calendrier.
+              </p>
 
               <div className="mt-7 space-y-4">
-                <ContactLine icon={Phone} href="tel:+15149520709" label="+1 (514) 952-0709" />
+                <ContactLine icon={Phone} href={`tel:${siteConfig.phone}`} label={siteConfig.phoneDisplay} />
                 <ContactLine
                   icon={Mail}
                   href="mailto:chahineralph@gmail.com"
                   label="chahineralph@gmail.com"
                 />
                 <ContactLine icon={MapPin} label="En ligne partout au Québec, présentiel selon le secteur" />
-                <ContactLine icon={Clock3} label="Réponse rapide et réservation facile" />
+                <ContactLine icon={Clock3} label="Appel diagnostic court, réponse rapide et réservation simple ensuite" />
               </div>
 
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
@@ -880,8 +900,9 @@ export default function Accueil() {
                   asChild
                   className="rounded-full bg-[#f5c977] py-6 text-[#071631] hover:bg-[#f7d38f]"
                 >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    Réserver
+                  <a href={`tel:${siteConfig.phone}`}>
+                    <Phone className="h-4 w-4" />
+                    Appeler maintenant
                   </a>
                 </Button>
 
@@ -890,15 +911,17 @@ export default function Accueil() {
                   variant="outline"
                   className="rounded-full border-white/15 bg-white/5 py-6 text-white hover:bg-white/10 hover:text-white"
                 >
-                  <a href="tel:+15149520709">Appeler</a>
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    <CalendarDays className="h-4 w-4" />
+                    Réserver une séance
+                  </a>
                 </Button>
               </div>
 
               <div className="mt-8 rounded-[24px] border border-white/10 bg-[#0b214d]/80 p-5">
                 <div className="text-sm uppercase tracking-[0.22em] text-white/45">Bon à savoir</div>
                 <p className="mt-3 text-sm leading-7 text-white/72">
-                  Le suivi hebdomadaire donne souvent les meilleurs résultats: moins d'accumulation,
-                  plus de structure et beaucoup moins de panique avant les évaluations.
+                  Si vous hésitez entre appeler et réserver, l'appel est souvent le meilleur point de départ pour cadrer le besoin et repartir avec une direction claire.
                 </p>
               </div>
             </MotionCard>

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import { ArrowRight, BadgeCheck, CalendarDays, Clock3, ShieldCheck, Star, Users } from "lucide-react"
+import { ArrowRight, BadgeCheck, CalendarDays, Clock3, MapPin, Phone, ShieldCheck, Star, Users } from "lucide-react"
 
 import MotionCard from "@/components/MotionCard"
 import { Badge } from "@/components/ui/badge"
@@ -14,6 +14,7 @@ import {
   verifiedReviewsByLocale,
 } from "@/lib/conversionContent"
 import { getLocalizedPath } from "@/lib/i18n"
+import { siteConfig } from "@/lib/seo"
 
 const localRouteKeys = ["montreal", "laval", "quebecOnline"]
 
@@ -28,7 +29,7 @@ export function GuaranteeSection({ locale = "fr", className = "pt-20" }) {
         <div className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
           <div>
             <Badge className="rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-white hover:bg-white/10">
-              {locale === "en" ? "Low-friction first step" : "Premier pas sans friction"}
+              {locale === "en" ? "First conversation" : "Premier échange"}
             </Badge>
 
             <div className="mt-6 space-y-4">
@@ -48,25 +49,30 @@ export function GuaranteeSection({ locale = "fr", className = "pt-20" }) {
 
           <div className="glass-panel rounded-[30px] border-white/10 bg-white/[0.05] p-6 text-white">
             <div className="text-sm uppercase tracking-[0.24em] text-white/45">
-              {locale === "en" ? "How it converts" : "Pourquoi ça convertit"}
+              {locale === "en" ? "What families appreciate" : "Ce que les familles apprécient"}
             </div>
             <div className="mt-3 font-display text-3xl font-semibold">
               {locale === "en"
-                ? "Parents move faster when the first step feels clear and safe."
-                : "Les parents avancent plus vite quand le premier pas est clair et rassurant."}
+                ? "A clear beginning makes the rest of the journey feel lighter."
+                : "Quand le début est clair, tout le reste devient plus simple."}
+            </div>
+
+            <div className="mt-4 rounded-[22px] border border-[#f5c977]/25 bg-[#f5c977]/10 px-4 py-4 text-sm text-[#f8deb0]">
+              <div className="font-semibold text-white">{copy.recommended}</div>
+              <p className="mt-2 leading-7 text-[#f8deb0]">{copy.recommendedText}</p>
             </div>
 
             <div className="mt-6 space-y-3 text-sm text-white/78">
               {[
                 locale === "en"
-                  ? "A short diagnostic call lowers hesitation before booking."
-                  : "Un court appel diagnostic réduit l'hésitation avant de réserver.",
+                  ? "A short first conversation helps the family move forward with confidence."
+                  : "Un premier échange court aide la famille à avancer avec confiance.",
                 locale === "en"
-                  ? "A fit guarantee protects the family if the first match is off."
-                  : "Une garantie de fit protège la famille si le premier matching n'est pas le bon.",
+                  ? "If a change is needed, there is a simple way to adjust."
+                  : "Si le premier accompagnement ne convient pas, l'ajustement reste simple et rassurant.",
                 locale === "en"
-                  ? "The first session starts with priorities instead of uncertainty."
-                  : "La première séance démarre avec des priorités claires au lieu de rester dans le flou.",
+                  ? "The first session already gives the student and parent a clear direction."
+                  : "Dès la première séance, l'élève et le parent repartent avec une direction claire.",
               ].map((line) => (
                 <div key={line} className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-[#081a38]/70 px-4 py-4">
                   <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
@@ -77,9 +83,9 @@ export function GuaranteeSection({ locale = "fr", className = "pt-20" }) {
 
             <div className="mt-7 flex flex-wrap gap-3">
               <Button asChild className="rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
-                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                <a href={`tel:${siteConfig.phone}`}>
+                  <Phone className="h-4 w-4" />
                   {copy.primary}
-                  <ArrowRight className="h-4 w-4" />
                 </a>
               </Button>
               <Button
@@ -87,8 +93,17 @@ export function GuaranteeSection({ locale = "fr", className = "pt-20" }) {
                 variant="outline"
                 className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
               >
-                <Link to={getLocalizedPath("tuteurs", locale)}>{copy.secondary}</Link>
+                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                  <CalendarDays className="h-4 w-4" />
+                  {copy.secondary}
+                </a>
               </Button>
+            </div>
+
+            <div className="mt-4">
+              <Link to={getLocalizedPath("tuteurs", locale)} className="text-sm text-white/72 transition hover:text-white">
+                {copy.tertiary}
+              </Link>
             </div>
           </div>
         </div>
@@ -222,7 +237,7 @@ export function TutorRosterSection({ locale = "fr", className = "pt-20", limit }
             </div>
 
             <div className="mt-6 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/72">
-              <div className="font-semibold text-white">{locale === "en" ? "Best fit" : "Bon fit"}</div>
+              <div className="font-semibold text-white">{locale === "en" ? "Ideal for" : "Idéal pour"}</div>
               <p className="mt-2 leading-7">{profile.ideal}</p>
             </div>
           </MotionCard>
@@ -276,7 +291,7 @@ export function LocalSeoSection({ locale = "fr", className = "pt-20" }) {
                 className="mt-8 rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
               >
                 <Link to={getLocalizedPath(routeKey, locale)}>
-                  {locale === "en" ? "Open local page" : "Voir la page locale"}
+                  {locale === "en" ? "Discover" : "Découvrir"}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>

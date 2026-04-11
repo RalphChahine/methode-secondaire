@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/sheet"
 import { BOOKING_URL } from "@/config/booking"
 import { getLocaleFromPath, getLocalizedPath } from "@/lib/i18n"
+import { siteConfig } from "@/lib/seo"
 
 export default function SiteLayout() {
   const location = useLocation()
@@ -39,8 +40,12 @@ export default function SiteLayout() {
         brandTag: "High school tutoring across Quebec",
         book: "Book now",
         bookSession: "Book a session",
+        call: "Call first",
+        callDiagnostic: "Call for a diagnostic",
+        callPrompt: "Talk first, then book if it feels right.",
         menuTitle: "Navigation",
         joinTutor: "Become a tutor",
+        locations: "Areas served",
         quickLinks: "Quick links",
         about:
           "Private tutoring in math and science for high school students across Quebec. A clear, structured and reassuring approach to help students understand better, practice better and perform better.",
@@ -73,8 +78,12 @@ export default function SiteLayout() {
         brandTag: "Tutorat secondaire au Québec",
         book: "Réserver",
         bookSession: "Réserver une séance",
+        call: "Appeler d'abord",
+        callDiagnostic: "Appeler pour un diagnostic",
+        callPrompt: "Le mieux est souvent d'en parler d'abord, puis de réserver.",
         menuTitle: "Navigation",
         joinTutor: "Devenir tuteur",
+        locations: "Zones desservies",
         quickLinks: "Accès rapide",
         about:
           "Tutorat privé en mathématiques et en sciences pour les élèves du secondaire au Québec. Une approche claire, structurée et rassurante pour mieux comprendre, mieux pratiquer et mieux performer.",
@@ -120,7 +129,7 @@ export default function SiteLayout() {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-24 lg:pb-0">
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#071631]/75 backdrop-blur-xl">
         <div className="mx-auto flex min-h-[4.75rem] w-full max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:h-20 sm:gap-4 sm:px-6 sm:py-0 lg:px-8">
           <Link to={getLocalizedPath("home", locale)} className="flex min-w-0 flex-1 items-center gap-3">
@@ -157,6 +166,17 @@ export default function SiteLayout() {
               asChild
               className="rounded-full bg-[#f5c977] px-5 text-[#071631] shadow-[0_12px_30px_rgba(245,201,119,0.28)] hover:bg-[#f7d38f]"
             >
+              <a href={`tel:${siteConfig.phone}`}>
+                <Phone className="h-4 w-4" />
+                {copy.call}
+              </a>
+            </Button>
+
+            <Button
+              asChild
+              variant="outline"
+              className="rounded-full border-white/15 bg-white/5 px-5 text-white hover:bg-white/10 hover:text-white"
+            >
               <a href={BOOKING_URL} target="_blank" rel="noreferrer">
                 {copy.book}
               </a>
@@ -165,6 +185,15 @@ export default function SiteLayout() {
 
           <div className="flex shrink-0 items-center gap-2 lg:hidden">
             <LanguageToggle className="shrink-0" />
+
+            <Button
+              asChild
+              className="h-11 rounded-full bg-[#f5c977] px-4 text-[#071631] shadow-[0_12px_30px_rgba(245,201,119,0.28)] hover:bg-[#f7d38f]"
+            >
+              <a href={`tel:${siteConfig.phone}`} aria-label={copy.callDiagnostic}>
+                <Phone className="h-4 w-4" />
+              </a>
+            </Button>
 
             <Sheet>
               <SheetTrigger asChild>
@@ -212,6 +241,53 @@ export default function SiteLayout() {
                         </button>
                       </SheetClose>
                     ))}
+                  </div>
+
+                  <div className="mt-4 border-t border-white/10 pt-4">
+                    <div className="mb-2 px-4 text-xs text-white/60">
+                      {copy.callPrompt}
+                    </div>
+                    <SheetClose asChild>
+                      <Button
+                        asChild
+                        className="mb-3 w-full rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]"
+                      >
+                        <a href={`tel:${siteConfig.phone}`}>
+                          <Phone className="h-4 w-4" />
+                          {copy.callDiagnostic}
+                        </a>
+                      </Button>
+                    </SheetClose>
+                  </div>
+
+                  <div className="mt-4 border-t border-white/10 pt-4">
+                    <div className="mb-2 px-4 text-xs font-semibold uppercase tracking-[0.22em] text-white/45">
+                      {copy.locations}
+                    </div>
+                    <SheetClose asChild>
+                      <NavLink
+                        to={getLocalizedPath("montreal", locale)}
+                        className="mb-2 block rounded-2xl px-4 py-3 text-white/85 transition hover:bg-white/10"
+                      >
+                        {copy.montreal}
+                      </NavLink>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <NavLink
+                        to={getLocalizedPath("laval", locale)}
+                        className="mb-2 block rounded-2xl px-4 py-3 text-white/85 transition hover:bg-white/10"
+                      >
+                        {copy.laval}
+                      </NavLink>
+                    </SheetClose>
+                    <SheetClose asChild>
+                      <NavLink
+                        to={getLocalizedPath("quebecOnline", locale)}
+                        className="rounded-2xl px-4 py-3 text-white/85 transition hover:bg-white/10"
+                      >
+                        {copy.onlineQuebec}
+                      </NavLink>
+                    </SheetClose>
                   </div>
 
                   <div className="mt-4 border-t border-white/10 pt-4">
@@ -294,9 +370,9 @@ export default function SiteLayout() {
               {copy.contact}
             </div>
             <div className="mt-5 space-y-3 text-sm text-white/70">
-              <a className="flex items-center gap-3 transition hover:text-white" href="tel:+15149520709">
+              <a className="flex items-center gap-3 transition hover:text-white" href={`tel:${siteConfig.phone}`}>
                 <Phone className="h-4 w-4 text-[#f5c977]" />
-                +1 (514) 952-0709
+                {siteConfig.phoneDisplay}
               </a>
               <a className="flex items-center gap-3 transition hover:text-white" href="mailto:chahineralph@gmail.com">
                 <Mail className="h-4 w-4 text-[#f5c977]" />
@@ -323,6 +399,27 @@ export default function SiteLayout() {
           © {new Date().getFullYear()} Méthode Secondaire. {copy.rights}
         </div>
       </footer>
+
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[#071631]/95 px-4 py-3 backdrop-blur lg:hidden">
+        <div className="mx-auto flex w-full max-w-7xl gap-3">
+          <Button asChild className="flex-1 rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
+            <a href={`tel:${siteConfig.phone}`}>
+              <Phone className="h-4 w-4" />
+              {copy.call}
+            </a>
+          </Button>
+          <Button
+            asChild
+            variant="outline"
+            className="flex-1 rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+          >
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+              <CalendarDays className="h-4 w-4" />
+              {copy.bookSession}
+            </a>
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
