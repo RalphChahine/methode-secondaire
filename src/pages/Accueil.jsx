@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
 import {
@@ -25,18 +24,18 @@ import {
 } from "lucide-react"
 
 import BookingEmbed from "@/components/BookingEmbed"
+import DecisionPathwaysSection from "@/components/DecisionPathwaysSection"
 import {
   GuaranteeSection,
   LocalSeoSection,
   OperationalPromisesSection,
   VerifiedReviewsSection,
 } from "@/components/ConversionSections"
+import LeadForm from "@/components/LeadForm"
 import MotionCard from "@/components/MotionCard"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { BOOKING_URL } from "@/config/booking"
 import {
   buildAlternates,
@@ -554,6 +553,7 @@ export default function Accueil() {
         </motion.section>
 
         <GuaranteeSection locale="fr" className="pt-20" />
+        <DecisionPathwaysSection locale="fr" className="pt-20" />
 
         <motion.section
           id="methode"
@@ -934,7 +934,7 @@ export default function Accueil() {
               </p>
 
               <div className="mt-6">
-                <ContactForm />
+                <LeadForm locale="fr" pageName="home-fr" />
               </div>
             </MotionCard>
           </div>

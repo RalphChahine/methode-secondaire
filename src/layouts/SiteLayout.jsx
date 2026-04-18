@@ -3,6 +3,7 @@ import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-do
 import { CalendarDays, Mail, MapPin, Menu, Phone } from "lucide-react"
 
 import LanguageToggle from "@/components/LanguageToggle"
+import StudentAssistantWidget from "@/components/StudentAssistantWidget"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -100,6 +101,10 @@ export default function SiteLayout() {
         rights: "Tous droits réservés.",
       }
 
+  const footerHighlights = isEnglish
+    ? ["15-minute diagnostic call", "Online across Quebec", "Math, science, exam prep"]
+    : ["Appel diagnostic 15 min", "En ligne partout au Qu\u00E9bec", "Maths, sciences, pr\u00E9paration d'examens"]
+
   useEffect(() => {
     if (!location.hash) {
       window.scrollTo(0, 0)
@@ -134,7 +139,11 @@ export default function SiteLayout() {
         <div className="mx-auto flex min-h-[4.75rem] w-full max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:h-20 sm:gap-4 sm:px-6 sm:py-0 lg:px-8">
           <Link to={getLocalizedPath("home", locale)} className="flex min-w-0 flex-1 items-center gap-3">
             <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[18px] border border-white/15 bg-white/10 text-white shadow-lg shadow-black/10 sm:h-12 sm:w-12">
-              <span className="font-display text-base font-bold tracking-[-0.08em] sm:text-lg">MS</span>
+              <img
+                src="/logo-methode-secondaire-mark-white.svg"
+                alt=""
+                className="h-8 w-8 object-contain sm:h-9 sm:w-9"
+              />
             </div>
 
             <div className="min-w-0 leading-tight">
@@ -316,8 +325,22 @@ export default function SiteLayout() {
       <footer className="border-t border-white/10 bg-[#04112b]">
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-6 lg:grid-cols-[1.2fr,0.8fr,0.8fr] lg:px-8">
           <div className="max-w-xl">
-            <div className="font-display text-2xl font-semibold text-white">Méthode Secondaire</div>
+            <img
+              src="/logo-methode-secondaire-business-card-white.svg"
+              alt="Methode Secondaire"
+              className="mb-4 h-auto w-full max-w-[22rem]"
+            />
             <p className="mt-4 text-sm leading-7 text-white/70">{copy.about}</p>
+            <div className="mt-5 flex flex-wrap gap-2">
+              {footerHighlights.map((item) => (
+                <div
+                  key={item}
+                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/75"
+                >
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
 
           <div>
@@ -420,6 +443,8 @@ export default function SiteLayout() {
           </Button>
         </div>
       </div>
+
+      <StudentAssistantWidget locale={locale} />
     </div>
   )
 }

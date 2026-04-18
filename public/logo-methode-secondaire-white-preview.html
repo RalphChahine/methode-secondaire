@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <title>Logo Methode Secondaire Preview</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background:
+          radial-gradient(circle at 18% 18%, rgba(122, 180, 255, 0.18), transparent 28%),
+          radial-gradient(circle at 82% 20%, rgba(245, 201, 119, 0.12), transparent 24%),
+          linear-gradient(135deg, #0a234f, #031128 72%);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .frame {
+        width: 1400px;
+        padding: 54px 60px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 34px;
+        background: rgba(255, 255, 255, 0.02);
+        box-sizing: border-box;
+      }
+
+      .primary {
+        width: 1180px;
+        display: block;
+      }
+
+      .mark-row {
+        margin-top: 42px;
+        padding-top: 30px;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+      }
+
+      .mark {
+        width: 180px;
+        display: block;
+      }
+
+      /* 🔥 Force bold inside SVG if text elements exist */
+      .primary text,
+      .mark text {
+        font-weight: bold !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="frame">
+      <img
+        class="primary"
+        src="./logo-methode-secondaire-business-card-white.svg"
+        alt="Logo principal Methode Secondaire"
+      />
+
+      <div class="mark-row">
+        <img
+          class="mark"
+          src="./logo-methode-secondaire-mark-white.svg"
+          alt="Monogramme Methode Secondaire"
+        />
+      </div>
+    </div>
+  </body>
+</html>

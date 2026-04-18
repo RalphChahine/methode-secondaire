@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { motion } from "framer-motion"
 import { Link } from "react-router-dom"
 import {
@@ -22,18 +21,18 @@ import {
 } from "lucide-react"
 
 import BookingEmbed from "@/components/BookingEmbed"
+import DecisionPathwaysSection from "@/components/DecisionPathwaysSection"
 import {
   GuaranteeSection,
   LocalSeoSection,
   OperationalPromisesSection,
   VerifiedReviewsSection,
 } from "@/components/ConversionSections"
+import LeadForm from "@/components/LeadForm"
 import MotionCard from "@/components/MotionCard"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
 import { BOOKING_URL } from "@/config/booking"
 import { buildAlternates, getLocalizedPath } from "@/lib/i18n"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
@@ -346,6 +345,7 @@ export default function AccueilEn() {
         </section>
 
         <GuaranteeSection locale="en" className="pt-20" />
+        <DecisionPathwaysSection locale="en" className="pt-20" />
 
         <section className="pt-20">
           <SectionHeader
@@ -589,7 +589,7 @@ export default function AccueilEn() {
               <h3 className="mt-3 font-display text-3xl font-semibold">Describe the need in one minute</h3>
               <p className="mt-3 text-sm leading-7 text-white/70">Share the level, subject and context. A quick reply follows.</p>
               <div className="mt-6">
-                <ContactForm />
+                <LeadForm locale="en" pageName="home-en" />
               </div>
             </MotionCard>
           </div>
