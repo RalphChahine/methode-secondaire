@@ -46,7 +46,9 @@ export default async function handler(req, res) {
     )
   }
 
-  if (!process.env.OPENAI_API_KEY) {
+  const apiKey = normalizeEnvString(process.env.OPENAI_API_KEY)
+
+  if (!apiKey) {
     return sendFallback(
       res,
       locale,
@@ -58,7 +60,7 @@ export default async function handler(req, res) {
 
   try {
     const client = new OpenAI({
-      apiKey: process.env.OPENAI_API_KEY,
+      apiKey,
     })
 
     const response = await client.responses.create({
@@ -162,4 +164,26 @@ function getErrorStatus(error) {
   }
 
   return 0
+}
+
+function normalizeEnvString(value) {
+  if (typeof value !== "string") {
+    return ""
+  }
+
+  const trimmed = value.trim()
+
+  if (!trimmed) {
+    return ""
+  }
+
+  if (
+    trimmed.length >= 2 &&
+    ((trimmed.startsWith('"') && trimmed.endsWith('"')) ||
+      (trimmed.startsWith("'") && trimmed.endsWith("'")))
+  ) {
+    return trimmed.slice(1, -1).trim()
+  }
+
+  return trimmed
 }
