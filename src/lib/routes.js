@@ -25,4 +25,20 @@ export const routeCatalog = {
     fr: "/ressources/rattrapage-scolaire-secondaire",
     en: "/en/resources/high-school-catch-up-tutoring",
   },
+  mathMinisterial: {
+    fr: "/ressources/preparation-examen-ministeriel-maths",
+    en: "/en/resources/math-ministerial-exam-prep",
+  },
+  physicsHelp: {
+    fr: "/ressources/tuteur-physique-secondaire",
+    en: "/en/resources/high-school-physics-tutoring",
+  },
+  chemistrySec5: {
+    fr: "/ressources/aide-chimie-secondaire-5",
+    en: "/en/resources/secondary-5-chemistry-help",
+  },
+  montrealSec4Math: {
+    fr: "/ressources/tuteur-maths-montreal-secondaire-4",
+    en: "/en/resources/montreal-secondary-4-math-tutor",
+  },
 }

@@ -36,6 +36,26 @@ Create a local `.env.local` from `.env.example` and set:
 
 For production on Vercel, add the same environment variables in the Vercel project settings and redeploy.
 
+## Optional analytics and ad tracking
+
+The site now supports optional Google tag and Google Ads conversion tracking.
+
+Supported environment variables:
+
+- `VITE_GOOGLE_TAG_ID`
+- `VITE_GA_MEASUREMENT_ID`
+- `VITE_GOOGLE_ADS_ID`
+- `VITE_GOOGLE_ADS_LEAD_LABEL`
+- `VITE_GOOGLE_ADS_BOOKING_LABEL`
+- `VITE_GOOGLE_ADS_CALL_LABEL`
+
+If configured, the site can track:
+
+- page views
+- lead form submissions
+- booking link clicks
+- phone click events
+
 ## Assistant troubleshooting
 
 - If you test locally, use `npm.cmd run dev:full`. The plain `npm.cmd run dev` command does not start the `/api/student-assistant` function.

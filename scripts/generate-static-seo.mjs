@@ -10,6 +10,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(__dirname, "..")
 const distDir = path.join(projectRoot, "dist")
 const distIndexPath = path.join(distDir, "index.html")
+const publicSitemapPath = path.join(projectRoot, "public", "sitemap.xml")
 const buildDate = new Date().toISOString().slice(0, 10)
 
 function escapeHtml(value = "") {
@@ -159,12 +160,14 @@ ${urls}
 async function main() {
   const baseHtml = await fs.readFile(distIndexPath, "utf8")
   const pages = getPrerenderPageEntries()
+  const sitemapXml = buildSitemap(pages)
 
   for (const page of pages) {
     await writePageHtml(page, baseHtml)
   }
 
-  await fs.writeFile(path.join(distDir, "sitemap.xml"), buildSitemap(pages), "utf8")
+  await fs.writeFile(path.join(distDir, "sitemap.xml"), sitemapXml, "utf8")
+  await fs.writeFile(publicSitemapPath, sitemapXml, "utf8")
 }
 
 await main()

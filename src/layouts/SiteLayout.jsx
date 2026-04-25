@@ -4,6 +4,7 @@ import { CalendarDays, Mail, MapPin, Menu, Phone } from "lucide-react"
 
 import LanguageToggle from "@/components/LanguageToggle"
 import StudentAssistantWidget from "@/components/StudentAssistantWidget"
+import TrackingManager from "@/components/TrackingManager"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -451,6 +452,7 @@ export default function SiteLayout() {
         </div>
       </div>
 
+      <TrackingManager />
       <StudentAssistantWidget locale={locale} />
     </div>
   )

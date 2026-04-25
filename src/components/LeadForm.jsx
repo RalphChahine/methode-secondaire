@@ -112,6 +112,19 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
         throw new Error("Submission failed")
       }
 
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(
+          new CustomEvent("methode:lead-submit", {
+            detail: {
+              locale,
+              source_page: pageName,
+              priority: data.get("priorite") || "",
+              format: data.get("format") || "",
+            },
+          }),
+        )
+      }
+
       setStatus("success")
       form.reset()
     } catch {

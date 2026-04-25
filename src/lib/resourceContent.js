@@ -3,6 +3,10 @@ export const resourceRouteKeys = [
   "scienceExamPrep",
   "sec4Math",
   "catchUp",
+  "mathMinisterial",
+  "physicsHelp",
+  "chemistrySec5",
+  "montrealSec4Math",
 ]
 
 export const resourceHubCopyByLocale = {
@@ -557,6 +561,542 @@ export const resourcePageContent = {
       ctaText:
         "A short first conversation can be enough to define priorities, reduce overload and restart real forward momentum.",
       relatedRouteKeys: ["mathExamPrep", "scienceExamPrep"],
+    },
+  },
+  mathMinisterial: {
+    fr: {
+      cardTitle: "Preparation examen ministeriel maths",
+      cardDescription:
+        "Un guide pour preparer l'examen ministeriel de maths avec un plan de revision plus strategique.",
+      eyebrow: "Examen ministeriel",
+      heroTitle: "Preparation a l'examen ministeriel de maths: comment reviser sans disperser son energie",
+      heroText:
+        "L'examen ministeriel change la facon de reviser: il faut tenir compte du temps, des types de questions qui reviennent et de la regularite de la methode sous pression. Le bon objectif n'est pas d'en faire le plus possible, mais d'entrer avec une structure fiable.",
+      seoTitle: "Preparation examen ministeriel maths | Methode Secondaire",
+      seoDescription:
+        "Guide de preparation a l'examen ministeriel de maths au Quebec: plan de revision, types de questions, erreurs courantes et aide ciblee.",
+      keywords:
+        "preparation examen ministeriel maths, examen ministeriel maths quebec, tutorat examen ministeriel, revision maths ministeriel",
+      quickSignalsTitle: "Ce qui fragilise souvent la preparation ministerielle",
+      quickSignals: [
+        "L'eleve revise des exercices, mais sans distinguer les formats les plus rentables.",
+        "Le stress du chrono prend plus de place que la logique de resolution.",
+        "La revision manque d'un ordre clair entre bases, questions-types et simulation.",
+      ],
+      planTitle: "Un plan utile pour l'examen ministeriel",
+      planSteps: [
+        {
+          title: "Verifier les blocs incontournables",
+          description:
+            "Avant de viser large, il faut s'assurer que les notions et procedures qui reviennent presque toujours sont stables.",
+        },
+        {
+          title: "Travailler par format de question",
+          description:
+            "Lecture, choix de methode, calcul, verification: les questions ministerielles recompensent surtout une demarche repetable.",
+        },
+        {
+          title: "Simuler sous un cadre realiste",
+          description:
+            "Quand la methode est mieux posee, les simulations servent enfin a tester le rythme et non a creer encore plus de panique.",
+        },
+      ],
+      mistakesTitle: "Les erreurs qui coutent cher a l'approche du ministeriel",
+      mistakes: [
+        "Vouloir tout revoir en meme temps au lieu de securiser les points les plus probables.",
+        "Faire trop peu de questions longues ou mixtes.",
+        "Confondre revision intense et revision strategique.",
+      ],
+      tutoringTitle: "Quand une aide externe devient tres rentable",
+      tutoringPoints: [
+        "Quand il faut ordonner la revision en tres peu de temps.",
+        "Quand l'eleve comprend la matiere mais perd ses moyens en contexte d'examen.",
+        "Quand la famille veut un regard precis sur les priorites finales.",
+      ],
+      faq: [
+        {
+          question: "Faut-il faire beaucoup d'examens blancs ?",
+          answer:
+            "Pas au debut. Il vaut mieux d'abord consolider la methode sur les bons formats, puis utiliser les simulations pour ajuster le rythme et les derniers points faibles.",
+        },
+        {
+          question: "Le tutorat peut-il encore aider peu de temps avant l'examen ?",
+          answer:
+            "Oui, surtout pour remettre les priorites en ordre, corriger des erreurs recurrentes et reduire l'impression de dispersion.",
+        },
+      ],
+      ctaTitle: "Besoin d'un plan ministeriel plus clair ?",
+      ctaText:
+        "Une seance ciblee peut aider a trier les questions prioritaires, renforcer la methode et calmer la preparation finale.",
+      relatedRouteKeys: ["mathExamPrep", "sec4Math", "catchUp"],
+    },
+    en: {
+      cardTitle: "Math ministerial exam prep",
+      cardDescription:
+        "A practical guide to preparing for the Quebec math ministerial exam with a smarter revision structure.",
+      eyebrow: "Ministerial exam",
+      heroTitle: "Math ministerial exam prep: how to review without scattering your energy",
+      heroText:
+        "A ministerial exam changes how review should work: time management, recurring question formats and method under pressure matter just as much as content. The goal is not to do everything. It is to walk in with a structure that holds.",
+      seoTitle: "Math ministerial exam prep | Methode Secondaire",
+      seoDescription:
+        "Guide to Quebec math ministerial exam prep: revision plan, common question patterns, frequent mistakes and when tutoring helps.",
+      keywords:
+        "math ministerial exam prep, quebec math ministerial exam, ministerial exam tutor, math review quebec",
+      quickSignalsTitle: "What often weakens ministerial exam preparation",
+      quickSignals: [
+        "The student is practicing, but not separating the highest-value question types.",
+        "Time pressure is taking over the solving process.",
+        "The review plan has no clear order between basics, question types and simulation.",
+      ],
+      planTitle: "A stronger plan for the ministerial exam",
+      planSteps: [
+        {
+          title: "Secure the non-negotiable blocks",
+          description:
+            "Before expanding outward, it helps to stabilize the chapters and procedures that keep showing up.",
+        },
+        {
+          title: "Practice by question format",
+          description:
+            "Ministerial-style questions reward a repeatable solving method much more than random problem volume.",
+        },
+        {
+          title: "Simulate in a realistic frame",
+          description:
+            "Once the method is steadier, simulations finally become useful for testing pace instead of creating extra panic.",
+        },
+      ],
+      mistakesTitle: "Mistakes that become expensive near the exam",
+      mistakes: [
+        "Trying to review everything instead of protecting the most likely marks first.",
+        "Doing too few mixed or longer-form questions.",
+        "Confusing intense review with strategic review.",
+      ],
+      tutoringTitle: "When outside help becomes high-leverage",
+      tutoringPoints: [
+        "When the review plan needs structure quickly.",
+        "When the student knows the content but loses control in exam conditions.",
+        "When the family wants a sharper outside view on the final priorities.",
+      ],
+      faq: [
+        {
+          question: "Should students do many full mock exams?",
+          answer:
+            "Not at the beginning. It is usually smarter to stabilize the method first, then use simulations to adjust pace and final weak points.",
+        },
+        {
+          question: "Can tutoring still help shortly before the exam?",
+          answer:
+            "Yes. It can still be very useful for sorting priorities, correcting repeated mistakes and reducing the feeling of chaos.",
+        },
+      ],
+      ctaTitle: "Need a clearer ministerial exam plan?",
+      ctaText:
+        "A focused session can help sort the priorities, strengthen the method and calm the final review stretch.",
+      relatedRouteKeys: ["mathExamPrep", "sec4Math", "catchUp"],
+    },
+  },
+  physicsHelp: {
+    fr: {
+      cardTitle: "Tuteur physique secondaire",
+      cardDescription:
+        "Une page utile pour les familles qui cherchent une aide plus precise en physique au secondaire.",
+      eyebrow: "Physique",
+      heroTitle: "Tutorat en physique au secondaire: quand les formules ne suffisent plus a elles seules",
+      heroText:
+        "La physique devient beaucoup plus abordable quand les grandeurs, les schemas et les situations concretes se reconnectent. Le vrai blocage ne vient pas seulement des formules: il vient souvent du lien entre la situation et la bonne demarche.",
+      seoTitle: "Tuteur physique secondaire | Methode Secondaire",
+      seoDescription:
+        "Tutorat en physique au secondaire au Quebec: formules, problemes, schemas, methode de resolution et preparation d'examens.",
+      keywords:
+        "tuteur physique secondaire, aide physique secondaire, tutorat physique quebec, probleme physique secondaire",
+      quickSignalsTitle: "Ce qui bloque souvent en physique",
+      quickSignals: [
+        "Les formules sont apprises, mais l'eleve ne sait pas toujours quand les utiliser.",
+        "Les schemas et les unites sont vus comme du detail alors qu'ils guident la resolution.",
+        "Les problemes semblent differents les uns des autres meme quand la logique est proche.",
+      ],
+      planTitle: "Une meilleure facon de progresser en physique",
+      planSteps: [
+        {
+          title: "Lire la situation avant la formule",
+          description:
+            "En physique, il faut d'abord comprendre ce qui se passe avant de choisir l'outil mathematique.",
+        },
+        {
+          title: "Relier schema, donnees et variables",
+          description:
+            "Quand ces trois elements restent alignes, la resolution devient plus stable et plus rapide.",
+        },
+        {
+          title: "Comparer les problemes entre eux",
+          description:
+            "L'eleve gagne beaucoup quand il commence a reconnaitre des familles de questions plutot que des cas isoles.",
+        },
+      ],
+      mistakesTitle: "Les erreurs qui reviennent le plus",
+      mistakes: [
+        "Partir sur une formule sans clarifier ce que demande vraiment le probleme.",
+        "Negliger les unites et les representations visuelles.",
+        "Faire de la physique comme une simple liste de procedures a memoriser.",
+      ],
+      tutoringTitle: "Quand le tutorat en physique accelere vraiment",
+      tutoringPoints: [
+        "Quand les problemes semblent tous differents et decourageants.",
+        "Quand les calculs sont corrects mais le raisonnement reste flou.",
+        "Quand un examen approche et que la methode doit devenir plus fiable.",
+      ],
+      faq: [
+        {
+          question: "Pourquoi la physique semble-t-elle plus difficile que les maths ?",
+          answer:
+            "Parce qu'elle demande souvent de lire une situation reelle, de choisir les bonnes variables et de traduire ensuite cette situation en calcul.",
+        },
+        {
+          question: "Est-ce qu'un eleve fort en maths peut quand meme bloquer en physique ?",
+          answer:
+            "Oui. Les maths aident beaucoup, mais la physique demande aussi de l'interpretation, des schemas et une lecture plus contextuelle du probleme.",
+        },
+      ],
+      ctaTitle: "Besoin de remettre la physique en logique claire ?",
+      ctaText:
+        "Un accompagnement cible peut aider a reconnecter les problemes, les schemas et les formules avant que la matiere ne se referme.",
+      relatedRouteKeys: ["scienceExamPrep", "chemistrySec5", "catchUp"],
+    },
+    en: {
+      cardTitle: "High school physics tutoring",
+      cardDescription:
+        "A focused page for families looking for more precise help in high school physics.",
+      eyebrow: "Physics",
+      heroTitle: "High school physics tutoring: when formulas alone stop being enough",
+      heroText:
+        "Physics becomes much easier when quantities, diagrams and real situations reconnect. The real block is rarely just the formula itself. It is often the link between the situation and the right approach.",
+      seoTitle: "High school physics tutoring | Methode Secondaire",
+      seoDescription:
+        "High school physics tutoring in Quebec: formulas, diagrams, problem-solving method and exam preparation.",
+      keywords:
+        "high school physics tutoring, physics help high school, physics tutor quebec, physics problem solving help",
+      quickSignalsTitle: "What often blocks progress in physics",
+      quickSignals: [
+        "Formulas are memorized, but the student does not always know when to use them.",
+        "Diagrams and units are treated like details even though they guide the solution.",
+        "Problems all feel different even when the underlying logic is similar.",
+      ],
+      planTitle: "A better way to improve in physics",
+      planSteps: [
+        {
+          title: "Read the situation before choosing the formula",
+          description:
+            "In physics, students need to understand what is happening before they choose the math tool.",
+        },
+        {
+          title: "Align the diagram, the data and the variables",
+          description:
+            "When those three pieces stay connected, problem solving becomes more stable and faster.",
+        },
+        {
+          title: "Compare problem families",
+          description:
+            "Students gain a lot when they start recognizing recurring structures instead of seeing isolated cases.",
+        },
+      ],
+      mistakesTitle: "The mistakes that return most often",
+      mistakes: [
+        "Jumping into a formula before clarifying what the problem is actually asking.",
+        "Ignoring units and visual representations.",
+        "Treating physics like a list of procedures instead of a system of linked ideas.",
+      ],
+      tutoringTitle: "When physics tutoring speeds things up the most",
+      tutoringPoints: [
+        "When all problems feel different and discouraging.",
+        "When calculations can be done but the reasoning still feels blurry.",
+        "When an exam is coming and the method needs to become more reliable quickly.",
+      ],
+      faq: [
+        {
+          question: "Why can physics feel harder than math?",
+          answer:
+            "Because it often requires reading a real situation, choosing the right variables and then translating that situation into a calculation.",
+        },
+        {
+          question: "Can a strong math student still struggle in physics?",
+          answer:
+            "Yes. Math helps a lot, but physics also demands interpretation, diagrams and more context-based reading of the problem.",
+        },
+      ],
+      ctaTitle: "Need to make physics feel logical again?",
+      ctaText:
+        "Focused support can reconnect the problems, diagrams and formulas before the subject starts closing in on the student.",
+      relatedRouteKeys: ["scienceExamPrep", "chemistrySec5", "catchUp"],
+    },
+  },
+  chemistrySec5: {
+    fr: {
+      cardTitle: "Aide chimie secondaire 5",
+      cardDescription:
+        "Une page pour les familles qui cherchent un accompagnement plus precis en chimie de secondaire 5.",
+      eyebrow: "Chimie sec 5",
+      heroTitle: "Aide en chimie de secondaire 5: clarifier les reactions, les calculs et la logique derriere les questions",
+      heroText:
+        "En secondaire 5, la chimie peut devenir lourde tres vite quand les transformations, les equations, les proportions et la justification se melangent. Une bonne aide sert a remettre ces blocs en ordre pour rendre la matiere beaucoup moins opaque.",
+      seoTitle: "Aide chimie secondaire 5 | Methode Secondaire",
+      seoDescription:
+        "Aide et tutorat en chimie de secondaire 5 au Quebec: reactions, equations, calculs, methode et preparation d'examens.",
+      keywords:
+        "aide chimie secondaire 5, tutorat chimie sec 5, tuteur chimie quebec, examen chimie secondaire",
+      quickSignalsTitle: "Ce qui pèse souvent en chimie de secondaire 5",
+      quickSignals: [
+        "Les equations chimiques semblent memorisees plutot que comprises.",
+        "Les calculs et les proportions tombent vite quand l'enonce change un peu.",
+        "Les reponses manque de structure dans les questions plus explicatives.",
+      ],
+      planTitle: "Ce qui aide le plus en chimie sec 5",
+      planSteps: [
+        {
+          title: "Revenir a la logique des reactions",
+          description:
+            "Quand les transformations redeviennent lisibles, les equations et les calculs suivent beaucoup mieux.",
+        },
+        {
+          title: "Stabiliser les etapes de calcul",
+          description:
+            "Les conversions, proportions et quantites doivent suivre un ordre clair pour rester solides en evaluation.",
+        },
+        {
+          title: "Repondre avec plus de structure",
+          description:
+            "Les bonnes notes viennent aussi de la capacite a expliquer et justifier proprement, pas seulement de trouver un resultat.",
+        },
+      ],
+      mistakesTitle: "Les erreurs qui ralentissent les progres",
+      mistakes: [
+        "Apprendre des reactions par coeur sans comprendre ce qu'elles decrivent.",
+        "Sauter des etapes de calcul quand la pression monte.",
+        "Ne pratiquer que les questions courtes et eviter les questions d'analyse.",
+      ],
+      tutoringTitle: "Quand la chimie beneficie beaucoup d'un accompagnement",
+      tutoringPoints: [
+        "Quand l'eleve perd confiance devant les calculs de chimie.",
+        "Quand les reactions et les equations ne tiennent pas ensemble dans sa tete.",
+        "Quand un examen approche et qu'il faut remettre de l'ordre rapidement.",
+      ],
+      faq: [
+        {
+          question: "Pourquoi la chimie de secondaire 5 semble-t-elle si dense ?",
+          answer:
+            "Parce qu'elle demande souvent de comprendre une reaction, d'ecrire ou lire une equation, puis d'enchainer avec des calculs ou une justification.",
+        },
+        {
+          question: "Faut-il privilegier la theorie ou les exercices ?",
+          answer:
+            "Les deux, mais dans cet ordre: la theorie doit redevenir claire avant que les exercices puissent vraiment consolider quelque chose.",
+        },
+      ],
+      ctaTitle: "La chimie de secondaire 5 commence a se brouiller ?",
+      ctaText:
+        "Une seance ciblee peut remettre les reactions, les calculs et la structure des reponses dans un ordre beaucoup plus utilisable.",
+      relatedRouteKeys: ["scienceExamPrep", "physicsHelp", "catchUp"],
+    },
+    en: {
+      cardTitle: "Secondary 5 chemistry help",
+      cardDescription:
+        "A resource for families looking for more precise support in Secondary 5 chemistry.",
+      eyebrow: "Secondary 5 chemistry",
+      heroTitle: "Secondary 5 chemistry help: clarifying reactions, calculations and the logic behind the questions",
+      heroText:
+        "In Secondary 5, chemistry gets heavy quickly when transformations, equations, proportions and written explanation all blend together. Strong support helps put those blocks back in order so the subject feels much less opaque.",
+      seoTitle: "Secondary 5 chemistry help | Methode Secondaire",
+      seoDescription:
+        "Secondary 5 chemistry help in Quebec: reactions, equations, calculations, clearer method and exam preparation.",
+      keywords:
+        "secondary 5 chemistry help, chemistry tutor sec 5, chemistry tutoring quebec, chemistry exam help high school",
+      quickSignalsTitle: "What often weighs students down in Secondary 5 chemistry",
+      quickSignals: [
+        "Chemical equations feel memorized rather than understood.",
+        "Calculations and proportions collapse as soon as the wording changes.",
+        "Written answers lack structure on more analytical questions.",
+      ],
+      planTitle: "What helps most in Secondary 5 chemistry",
+      planSteps: [
+        {
+          title: "Return to the logic of the reactions",
+          description:
+            "When the transformations make sense again, the equations and calculations become much easier to hold.",
+        },
+        {
+          title: "Stabilize the calculation steps",
+          description:
+            "Conversions, proportions and quantities need a clear order if they are going to stay reliable during assessments.",
+        },
+        {
+          title: "Answer with more structure",
+          description:
+            "Strong marks also come from the ability to explain and justify clearly, not just from landing on a number.",
+        },
+      ],
+      mistakesTitle: "Mistakes that slow progress down",
+      mistakes: [
+        "Memorizing reactions without understanding what they describe.",
+        "Skipping calculation steps under pressure.",
+        "Practicing only short questions while avoiding analytical ones.",
+      ],
+      tutoringTitle: "When chemistry support becomes especially valuable",
+      tutoringPoints: [
+        "When the student is losing confidence in chemistry calculations.",
+        "When reactions and equations no longer feel connected in the student's mind.",
+        "When an exam is close and the material needs to be reorganized quickly.",
+      ],
+      faq: [
+        {
+          question: "Why does Secondary 5 chemistry feel so dense?",
+          answer:
+            "Because it often requires understanding a reaction, reading or writing an equation, then moving into calculations or written justification.",
+        },
+        {
+          question: "Should students focus more on theory or exercises?",
+          answer:
+            "Both, but in that order: the theory needs to become clear again before the exercises can consolidate anything properly.",
+        },
+      ],
+      ctaTitle: "Is Secondary 5 chemistry starting to blur together?",
+      ctaText:
+        "A focused session can put the reactions, calculations and answer structure back into a much more usable order.",
+      relatedRouteKeys: ["scienceExamPrep", "physicsHelp", "catchUp"],
+    },
+  },
+  montrealSec4Math: {
+    fr: {
+      cardTitle: "Tuteur maths Montreal secondaire 4",
+      cardDescription:
+        "Une page plus locale pour les familles de Montreal qui cherchent une aide precise en maths de secondaire 4.",
+      eyebrow: "Montreal + sec 4",
+      heroTitle: "Tuteur de maths a Montreal pour le secondaire 4: une recherche tres precise, et souvent tres urgente",
+      heroText:
+        "Quand un parent cherche un tuteur de maths a Montreal pour un eleve de secondaire 4, le besoin est rarement vague. Il y a souvent un chapitre qui glisse, un examen qui approche ou une perte de confiance qui commence a peser.",
+      seoTitle: "Tuteur maths Montreal secondaire 4 | Methode Secondaire",
+      seoDescription:
+        "Tuteur de maths a Montreal pour le secondaire 4: fonctions, methode, rattrapage, examen et accompagnement clair.",
+      keywords:
+        "tuteur maths montreal secondaire 4, tutorat maths montreal sec 4, aide maths secondaire 4 montreal, tuteur fonctions montreal",
+      quickSignalsTitle: "Ce que cette recherche veut souvent vraiment dire",
+      quickSignals: [
+        "Le secondaire 4 commence a devenir plus abstrait que prevu.",
+        "La famille veut une aide rapide, mais aussi un tuteur qui explique avec calme.",
+        "Le besoin est local, concret et souvent relie a une evaluation proche.",
+      ],
+      planTitle: "Ce qui rassure le plus dans ce contexte",
+      planSteps: [
+        {
+          title: "Clarifier le vrai blocage",
+          description:
+            "Fonctions, lecture de problemes, methode ou stress: le bon point de depart doit etre identifie tres vite.",
+        },
+        {
+          title: "Retrouver une demarche stable",
+          description:
+            "En secondaire 4, la progression passe souvent par une meilleure facon de commencer, structurer et verifier.",
+        },
+        {
+          title: "Choisir un rythme coherent",
+          description:
+            "Certaines situations demandent une aide ponctuelle avant un examen, d'autres un suivi hebdomadaire pour stabiliser tout le reste.",
+        },
+      ],
+      mistakesTitle: "Les faux bons reflexes les plus frequents",
+      mistakes: [
+        "Chercher seulement le tuteur le plus proche au lieu du profil le plus adapte.",
+        "Attendre trop longtemps alors que le secondaire 4 commence deja a se fragiliser.",
+        "Se concentrer uniquement sur la note a venir sans consolider la methode.",
+      ],
+      tutoringTitle: "Quand cette page correspond exactement au bon besoin",
+      tutoringPoints: [
+        "Quand vous etes a Montreal et que le secondaire 4 devient un vrai point de friction.",
+        "Quand l'eleve a besoin d'explications nettes sur les fonctions et les problemes.",
+        "Quand vous voulez un premier echange rapide avant de reserver.",
+      ],
+      faq: [
+        {
+          question: "Est-ce que le tutorat peut se faire en ligne meme a Montreal ?",
+          answer:
+            "Oui. L'en ligne reste disponible partout a Montreal, avec du presentiel selon le secteur et le bon profil retenu.",
+        },
+        {
+          question: "Le secondaire 4 justifie-t-il deja un suivi hebdomadaire ?",
+          answer:
+            "Souvent oui, surtout si les fonctions ou la methode commencent a glisser. Un suivi regulier evite que le retard se fixe avant le secondaire 5.",
+        },
+      ],
+      ctaTitle: "Vous cherchez un tuteur de maths a Montreal pour le secondaire 4 ?",
+      ctaText:
+        "Un premier appel peut aider a cadrer le niveau, l'urgence et le type d'accompagnement le plus utile tout de suite.",
+      relatedRouteKeys: ["sec4Math", "mathExamPrep", "mathMinisterial"],
+    },
+    en: {
+      cardTitle: "Montreal Secondary 4 math tutor",
+      cardDescription:
+        "A more local page for Montreal families looking for precise Secondary 4 math support.",
+      eyebrow: "Montreal + Secondary 4",
+      heroTitle: "A Montreal math tutor for Secondary 4: a very specific search, and often an urgent one",
+      heroText:
+        "When a parent searches for a Montreal math tutor for a Secondary 4 student, the need is rarely vague. There is usually a slipping chapter, an exam coming up or a confidence drop that is starting to weigh on the family.",
+      seoTitle: "Montreal Secondary 4 math tutor | Methode Secondaire",
+      seoDescription:
+        "Montreal math tutor for Secondary 4: functions, method, catch-up work, exams and clear support.",
+      keywords:
+        "montreal secondary 4 math tutor, secondary 4 math tutoring montreal, math help secondary 4 montreal, functions tutor montreal",
+      quickSignalsTitle: "What this search often really means",
+      quickSignals: [
+        "Secondary 4 is becoming more abstract than expected.",
+        "The family needs help quickly, but also wants a tutor who explains calmly and clearly.",
+        "The need is local, concrete and often tied to an upcoming assessment.",
+      ],
+      planTitle: "What reassures families most in this situation",
+      planSteps: [
+        {
+          title: "Clarify the real block quickly",
+          description:
+            "Functions, word problems, method or stress: the right starting point needs to be identified fast.",
+        },
+        {
+          title: "Rebuild a stable approach",
+          description:
+            "At this level, progress often comes from a better way to start, structure and verify each question.",
+        },
+        {
+          title: "Choose the right rhythm",
+          description:
+            "Some cases need a short burst before an exam, while others need weekly follow-up to stabilize the whole course.",
+        },
+      ],
+      mistakesTitle: "The most common false good ideas",
+      mistakes: [
+        "Looking only for the closest tutor instead of the best-fit teaching profile.",
+        "Waiting too long while Secondary 4 is already starting to weaken.",
+        "Focusing only on the next mark instead of rebuilding the method.",
+      ],
+      tutoringTitle: "When this page matches the need exactly",
+      tutoringPoints: [
+        "When you are in Montreal and Secondary 4 has become a real point of friction.",
+        "When the student needs clearer explanations around functions and problem solving.",
+        "When you want a fast first conversation before booking.",
+      ],
+      faq: [
+        {
+          question: "Can tutoring still happen online even if we are in Montreal?",
+          answer:
+            "Yes. Online sessions remain available across Montreal, with in-person options depending on area and the right tutor profile.",
+        },
+        {
+          question: "Does Secondary 4 already justify weekly follow-up?",
+          answer:
+            "Often yes, especially if functions or method are starting to slide. Regular follow-up can keep the issue from hardening before the final years.",
+        },
+      ],
+      ctaTitle: "Looking for a Montreal math tutor for Secondary 4?",
+      ctaText:
+        "A first call can quickly clarify the level, urgency and the kind of support that will help right away.",
+      relatedRouteKeys: ["sec4Math", "mathExamPrep", "mathMinisterial"],
     },
   },
 }

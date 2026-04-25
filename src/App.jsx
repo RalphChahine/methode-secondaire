@@ -54,6 +54,14 @@ export default function App() {
             <Route path="/en/resources/secondary-4-math-help" element={<ResourceArticle />} />
             <Route path="/ressources/rattrapage-scolaire-secondaire" element={<ResourceArticle />} />
             <Route path="/en/resources/high-school-catch-up-tutoring" element={<ResourceArticle />} />
+            <Route path="/ressources/preparation-examen-ministeriel-maths" element={<ResourceArticle />} />
+            <Route path="/en/resources/math-ministerial-exam-prep" element={<ResourceArticle />} />
+            <Route path="/ressources/tuteur-physique-secondaire" element={<ResourceArticle />} />
+            <Route path="/en/resources/high-school-physics-tutoring" element={<ResourceArticle />} />
+            <Route path="/ressources/aide-chimie-secondaire-5" element={<ResourceArticle />} />
+            <Route path="/en/resources/secondary-5-chemistry-help" element={<ResourceArticle />} />
+            <Route path="/ressources/tuteur-maths-montreal-secondaire-4" element={<ResourceArticle />} />
+            <Route path="/en/resources/montreal-secondary-4-math-tutor" element={<ResourceArticle />} />
             <Route path="/reussites" element={<Navigate to="/temoignages" replace />} />
             <Route path="/en/success-stories" element={<Navigate to="/en/testimonials" replace />} />
             <Route path="/devenir-tuteur" element={<DevenirTuteur />} />

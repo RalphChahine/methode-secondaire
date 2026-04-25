@@ -307,7 +307,7 @@ export default function Sciences() {
         <ResourceGridSection
           locale={locale}
           className="pt-20"
-          routeKeys={["scienceExamPrep", "catchUp"]}
+          routeKeys={["scienceExamPrep", "physicsHelp", "chemistrySec5", "catchUp"]}
           heading={{
             eyebrow: locale === "en" ? "Useful reading" : "Lectures utiles",
             title:
@@ -317,8 +317,8 @@ export default function Sciences() {
           }}
           description={
             locale === "en"
-              ? "These pages focus on science exam prep and catch-up periods where structure matters more than generic practice."
-              : "Ces pages visent la revision de sciences et les periodes de rattrapage ou la structure compte plus qu'une pratique diffuse."
+              ? "These pages focus on science exam prep, physics, chemistry and catch-up periods where structure matters more than generic practice."
+              : "Ces pages visent la revision de sciences, la physique, la chimie et les periodes de rattrapage ou la structure compte plus qu'une pratique diffuse."
           }
         />
 

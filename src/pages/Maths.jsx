@@ -307,7 +307,7 @@ export default function Maths() {
         <ResourceGridSection
           locale={locale}
           className="pt-20"
-          routeKeys={["mathExamPrep", "sec4Math", "catchUp"]}
+          routeKeys={["mathExamPrep", "mathMinisterial", "sec4Math", "montrealSec4Math"]}
           heading={{
             eyebrow: locale === "en" ? "Useful reading" : "Lectures utiles",
             title:
@@ -317,8 +317,8 @@ export default function Maths() {
           }}
           description={
             locale === "en"
-              ? "These guides go beyond generic homework help and target exam prep, Secondary 4 math friction and catch-up periods."
-              : "Ces pages vont plus loin qu'une simple aide aux devoirs et couvrent l'examen, le secondaire 4 et les periodes de rattrapage."
+              ? "These guides go beyond generic homework help and target exam prep, ministerial prep, Secondary 4 math friction and local Montreal search intent."
+              : "Ces pages vont plus loin qu'une simple aide aux devoirs et couvrent l'examen, le ministeriel, le secondaire 4 et une intention locale Montreal."
           }
         />
 
