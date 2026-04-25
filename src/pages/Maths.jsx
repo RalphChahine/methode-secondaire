@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 
 import MotionCard from "@/components/MotionCard"
+import ResourceGridSection from "@/components/ResourceGridSection"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -302,6 +303,24 @@ export default function Maths() {
             ))}
           </div>
         </section>
+
+        <ResourceGridSection
+          locale={locale}
+          className="pt-20"
+          routeKeys={["mathExamPrep", "sec4Math", "catchUp"]}
+          heading={{
+            eyebrow: locale === "en" ? "Useful reading" : "Lectures utiles",
+            title:
+              locale === "en"
+                ? "Math guides built around the moments families search most"
+                : "Des guides maths centres sur les moments ou les familles cherchent vraiment",
+          }}
+          description={
+            locale === "en"
+              ? "These guides go beyond generic homework help and target exam prep, Secondary 4 math friction and catch-up periods."
+              : "Ces pages vont plus loin qu'une simple aide aux devoirs et couvrent l'examen, le secondaire 4 et les periodes de rattrapage."
+          }
+        />
 
         <section className="pt-20">
           <MotionCard className="rounded-[34px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-8 text-white sm:p-10">

@@ -1,16 +1,5 @@
-import { absoluteUrl } from "@/lib/seo"
-
-export const routeCatalog = {
-  home: { fr: "/", en: "/en" },
-  maths: { fr: "/maths", en: "/en/math-tutoring" },
-  sciences: { fr: "/sciences", en: "/en/science-tutoring" },
-  temoignages: { fr: "/temoignages", en: "/en/testimonials" },
-  tuteurs: { fr: "/tuteurs", en: "/en/tutors" },
-  devenirTuteur: { fr: "/devenir-tuteur", en: "/en/become-a-tutor" },
-  montreal: { fr: "/tutorat-montreal", en: "/en/montreal-tutoring" },
-  laval: { fr: "/tutorat-laval", en: "/en/laval-tutoring" },
-  quebecOnline: { fr: "/tutorat-en-ligne-quebec", en: "/en/quebec-online-tutoring" },
-}
+import { absoluteUrl } from "./seo.js"
+import { routeCatalog } from "./routes.js"
 
 const routeEntries = Object.entries(routeCatalog)
 

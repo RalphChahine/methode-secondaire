@@ -30,6 +30,7 @@ import {
 } from "@/components/ConversionSections"
 import LeadForm from "@/components/LeadForm"
 import MotionCard from "@/components/MotionCard"
+import ResourceGridSection from "@/components/ResourceGridSection"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -488,6 +489,15 @@ export default function AccueilEn() {
 
         <OperationalPromisesSection locale="en" className="pt-20" />
         <LocalSeoSection locale="en" className="pt-20" />
+        <ResourceGridSection
+          locale="en"
+          className="pt-20"
+          heading={{
+            eyebrow: "High-intent guides",
+            title: "Resources built around the moments when families are ready to act",
+          }}
+          description="Exam prep pressure, Secondary 4 math confusion and catch-up overload are not generic blog topics. These pages answer the searches that often happen right before a parent calls."
+        />
 
         <section id="tarifs" className="scroll-mt-32 pt-20">
           <SectionHeader

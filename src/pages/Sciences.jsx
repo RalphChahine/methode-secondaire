@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 
 import MotionCard from "@/components/MotionCard"
+import ResourceGridSection from "@/components/ResourceGridSection"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -302,6 +303,24 @@ export default function Sciences() {
             ))}
           </div>
         </section>
+
+        <ResourceGridSection
+          locale={locale}
+          className="pt-20"
+          routeKeys={["scienceExamPrep", "catchUp"]}
+          heading={{
+            eyebrow: locale === "en" ? "Useful reading" : "Lectures utiles",
+            title:
+              locale === "en"
+                ? "Science guides for exam pressure and overload moments"
+                : "Des guides sciences pour les moments de pression et de surcharge",
+          }}
+          description={
+            locale === "en"
+              ? "These pages focus on science exam prep and catch-up periods where structure matters more than generic practice."
+              : "Ces pages visent la revision de sciences et les periodes de rattrapage ou la structure compte plus qu'une pratique diffuse."
+          }
+        />
 
         <section className="pt-20">
           <MotionCard className="rounded-[34px] border-white/10 bg-[linear-gradient(135deg,rgba(115,214,255,0.14),rgba(255,255,255,0.06))] p-8 text-white sm:p-10">

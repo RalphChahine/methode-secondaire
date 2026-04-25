@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:full": "npx vercel dev",
-    "build": "vite build",
+    "build": "vite build && node scripts/generate-static-seo.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

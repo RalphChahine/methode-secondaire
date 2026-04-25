@@ -1,6 +1,6 @@
 export const siteConfig = {
   siteName: "Méthode Secondaire",
-  siteUrl: (import.meta.env.VITE_SITE_URL || "https://methode-secondaire.vercel.app").replace(/\/$/, ""),
+  siteUrl: (import.meta.env?.VITE_SITE_URL || "https://methode-secondaire.vercel.app").replace(/\/$/, ""),
   defaultImage: "/og-image.png",
   locale: "fr_CA",
   email: "chahineralph@gmail.com",

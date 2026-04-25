@@ -35,6 +35,7 @@ export default function SiteLayout() {
           { to: getLocalizedPath("home", locale), label: "Home" },
           { to: getLocalizedPath("maths", locale), label: "Math tutoring" },
           { to: getLocalizedPath("sciences", locale), label: "Science tutoring" },
+          { to: getLocalizedPath("resourcesHub", locale), label: "Resources" },
           { to: getLocalizedPath("temoignages", locale), label: "Testimonials" },
           { to: getLocalizedPath("tuteurs", locale), label: "Tutors" },
         ],
@@ -52,6 +53,7 @@ export default function SiteLayout() {
           "Private tutoring in math and science for high school students across Quebec. A clear, structured and reassuring approach to help students understand better, practice better and perform better.",
         math: "Math tutoring",
         science: "Science tutoring",
+        resources: "Resources",
         testimonials: "Testimonials",
         tutors: "Tutors",
         montreal: "Montreal tutoring",
@@ -73,6 +75,7 @@ export default function SiteLayout() {
           { to: getLocalizedPath("home", locale), label: "Accueil" },
           { to: getLocalizedPath("maths", locale), label: "Maths" },
           { to: getLocalizedPath("sciences", locale), label: "Sciences" },
+          { to: getLocalizedPath("resourcesHub", locale), label: "Ressources" },
           { to: getLocalizedPath("temoignages", locale), label: "Témoignages" },
           { to: getLocalizedPath("tuteurs", locale), label: "Tuteurs" },
         ],
@@ -90,6 +93,7 @@ export default function SiteLayout() {
           "Tutorat privé en mathématiques et en sciences pour les élèves du secondaire au Québec. Une approche claire, structurée et rassurante pour mieux comprendre, mieux pratiquer et mieux performer.",
         math: "Tutorat maths",
         science: "Tutorat sciences",
+        resources: "Ressources",
         testimonials: "Témoignages",
         tutors: "Tuteurs",
         montreal: "Tutorat Montréal",
@@ -356,6 +360,9 @@ export default function SiteLayout() {
               </Link>
               <Link to={getLocalizedPath("sciences", locale)} className="transition hover:text-white">
                 {copy.science}
+              </Link>
+              <Link to={getLocalizedPath("resourcesHub", locale)} className="transition hover:text-white">
+                {copy.resources}
               </Link>
               <Link to={getLocalizedPath("temoignages", locale)} className="transition hover:text-white">
                 {copy.testimonials}

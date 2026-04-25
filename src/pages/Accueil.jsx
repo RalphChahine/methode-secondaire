@@ -33,6 +33,7 @@ import {
 } from "@/components/ConversionSections"
 import LeadForm from "@/components/LeadForm"
 import MotionCard from "@/components/MotionCard"
+import ResourceGridSection from "@/components/ResourceGridSection"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -773,6 +774,15 @@ export default function Accueil() {
 
         <OperationalPromisesSection locale="fr" className="pt-20" />
         <LocalSeoSection locale="fr" className="pt-20" />
+        <ResourceGridSection
+          locale="fr"
+          className="pt-20"
+          heading={{
+            eyebrow: "Guides a forte intention",
+            title: "Des ressources pensees pour les vraies urgences parentales",
+          }}
+          description="Examen qui approche, secondaire 4 qui bascule, retard qui s'accumule: ces pages repondent a des recherches precises juste avant qu'une famille appelle ou reserve."
+        />
 
         <motion.section
           id="tarifs"

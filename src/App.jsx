@@ -8,6 +8,8 @@ const AccueilEn = lazy(() => import("@/pages/AccueilEn"))
 const DevenirTuteur = lazy(() => import("@/pages/DevenirTuteur"))
 const LocalLanding = lazy(() => import("@/pages/LocalLanding"))
 const Maths = lazy(() => import("@/pages/Maths"))
+const ResourceArticle = lazy(() => import("@/pages/ResourceArticle"))
+const ResourcesHub = lazy(() => import("@/pages/ResourcesHub"))
 const Sciences = lazy(() => import("@/pages/Sciences"))
 const Temoignages = lazy(() => import("@/pages/Temoignages"))
 const Tuteurs = lazy(() => import("@/pages/Tuteurs"))
@@ -42,6 +44,16 @@ export default function App() {
             <Route path="/en/laval-tutoring" element={<LocalLanding forcedRouteKey="laval" />} />
             <Route path="/tutorat-en-ligne-quebec" element={<LocalLanding forcedRouteKey="quebecOnline" />} />
             <Route path="/en/quebec-online-tutoring" element={<LocalLanding forcedRouteKey="quebecOnline" />} />
+            <Route path="/ressources" element={<ResourcesHub />} />
+            <Route path="/en/resources" element={<ResourcesHub />} />
+            <Route path="/ressources/preparation-examen-maths-secondaire" element={<ResourceArticle />} />
+            <Route path="/en/resources/high-school-math-exam-prep" element={<ResourceArticle />} />
+            <Route path="/ressources/preparation-examen-sciences-secondaire" element={<ResourceArticle />} />
+            <Route path="/en/resources/high-school-science-exam-prep" element={<ResourceArticle />} />
+            <Route path="/ressources/aide-maths-secondaire-4" element={<ResourceArticle />} />
+            <Route path="/en/resources/secondary-4-math-help" element={<ResourceArticle />} />
+            <Route path="/ressources/rattrapage-scolaire-secondaire" element={<ResourceArticle />} />
+            <Route path="/en/resources/high-school-catch-up-tutoring" element={<ResourceArticle />} />
             <Route path="/reussites" element={<Navigate to="/temoignages" replace />} />
             <Route path="/en/success-stories" element={<Navigate to="/en/testimonials" replace />} />
             <Route path="/devenir-tuteur" element={<DevenirTuteur />} />
