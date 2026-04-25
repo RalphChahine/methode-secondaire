@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { Bot, CalendarDays, Loader2, MessageSquareMore, Phone, Sparkles } from "lucide-react"
 
 import { assistantBusinessInfo, assistantUiByLocale } from "@/lib/assistantConfig"
+import LeadDiagnosticPanel from "@/components/LeadDiagnosticPanel"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,6 +14,7 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Textarea } from "@/components/ui/textarea"
+import { getDiagnosticUi } from "@/lib/leadDiagnostic"
 
 const initialMessageByLocale = {
   fr: {
@@ -105,7 +107,9 @@ function getTransportErrorMessage({ error, locale, fallback }) {
 
 export default function StudentAssistantWidget({ locale = "fr" }) {
   const copy = assistantUiByLocale[locale] || assistantUiByLocale.fr
+  const diagnosticCopy = getDiagnosticUi(locale)
   const [open, setOpen] = useState(false)
+  const [mode, setMode] = useState("chat")
   const [messages, setMessages] = useState([initialMessageByLocale[locale] || initialMessageByLocale.fr])
   const [draft, setDraft] = useState("")
   const [isSending, setIsSending] = useState(false)
@@ -130,7 +134,22 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
     setDraft("")
     setError("")
     setPreviousResponseId("")
+    setMode("chat")
   }, [locale])
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined
+    }
+
+    function handleOpenDiagnostic() {
+      setOpen(true)
+      setMode("diagnostic")
+    }
+
+    window.addEventListener("methode:open-diagnostic", handleOpenDiagnostic)
+    return () => window.removeEventListener("methode:open-diagnostic", handleOpenDiagnostic)
+  }, [])
 
   const starters = useMemo(() => copy.starterQuestions.slice(0, 4), [copy.starterQuestions])
 
@@ -224,7 +243,7 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
           </Button>
         </SheetTrigger>
 
-        <SheetContent
+          <SheetContent
           side="right"
           className="flex h-full w-full flex-col border-white/10 bg-[#071631] p-0 text-white sm:max-w-xl"
         >
@@ -240,111 +259,156 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
             </div>
           </SheetHeader>
 
-          <div className="flex-1 overflow-y-auto px-6 py-5">
-            <div className="rounded-[26px] border border-white/10 bg-white/[0.04] p-5">
-              <div className="flex items-center gap-2 text-sm font-semibold text-white">
-                <Sparkles className="h-4 w-4 text-[#f5c977]" />
-                {copy.emptyStateTitle}
-              </div>
-              <p className="mt-2 text-sm leading-7 text-white/70">{copy.emptyStateText}</p>
-              <div className="mt-4 flex flex-wrap gap-2">
-                <a
-                  href={`tel:${assistantBusinessInfo.phone}`}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#f5c977] px-4 py-2 text-sm font-medium text-[#071631] transition hover:bg-[#f7d38f]"
-                >
-                  <Phone className="h-4 w-4" />
-                  {copy.quickCall}
-                </a>
-                <a
-                  href={assistantBusinessInfo.bookingUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
-                >
-                  <CalendarDays className="h-4 w-4" />
-                  {copy.quickBook}
-                </a>
-              </div>
-            </div>
-
-            <div className="mt-4 flex flex-wrap gap-2">
-              {starters.map((starter) => (
-                <button
-                  key={starter}
-                  type="button"
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/78 transition hover:bg-white/10"
-                  onClick={() => void sendQuestion(starter)}
-                >
-                  {starter}
-                </button>
-              ))}
-            </div>
-
-            <div className="mt-6 space-y-4">
-              {messages.map((message) => (
-                <div
-                  key={message.id}
+          <div className="border-b border-white/10 px-6 py-4">
+            <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1">
+              <button
+                type="button"
+                className={cn(
+                  "rounded-full px-4 py-2 text-sm transition",
+                  mode === "chat"
+                    ? "bg-[#f5c977] text-[#071631]"
+                    : "text-white/72 hover:text-white",
+                )}
+                onClick={() => setMode("chat")}
+              >
+                {diagnosticCopy.modeChat}
+              </button>
+              <button
+                type="button"
+                className={cn(
+                  "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm transition",
+                  mode === "diagnostic"
+                    ? "bg-[#f5c977] text-[#071631]"
+                    : "text-white/72 hover:text-white",
+                )}
+                onClick={() => setMode("diagnostic")}
+              >
+                {diagnosticCopy.modeDiagnostic}
+                <span
                   className={cn(
-                    "max-w-[88%] rounded-[24px] px-4 py-3 text-sm leading-7",
-                    message.role === "assistant"
-                      ? "border border-white/10 bg-white/6 text-white"
-                      : "ml-auto bg-[#f5c977] text-[#071631]",
+                    "rounded-full px-2 py-0.5 text-[10px] uppercase tracking-[0.18em]",
+                    mode === "diagnostic" ? "bg-[#071631]/12" : "bg-white/10 text-white/72",
                   )}
                 >
-                  <div
-                    className={cn(
-                      "mb-1 text-xs uppercase tracking-[0.22em]",
-                      message.role === "assistant" ? "text-white/45" : "text-[#071631]/65",
-                    )}
-                  >
-                    {message.role === "assistant" ? copy.assistantLabel : copy.youLabel}
-                  </div>
-                  <div className="whitespace-pre-wrap">{message.content}</div>
-                </div>
-              ))}
-
-              {isSending && (
-                <div className="max-w-[88%] rounded-[24px] border border-white/10 bg-white/6 px-4 py-3 text-sm text-white/72">
-                  <div className="mb-1 text-xs uppercase tracking-[0.22em] text-white/45">{copy.assistantLabel}</div>
-                  <div className="flex items-center gap-2">
-                    <Loader2 className="h-4 w-4 animate-spin text-[#f5c977]" />
-                    {copy.sending}
-                  </div>
-                </div>
-              )}
-
-              <div ref={endRef} />
+                  {diagnosticCopy.modeBadge}
+                </span>
+              </button>
             </div>
           </div>
 
-          <div className="border-t border-white/10 px-6 py-5">
-            <form onSubmit={handleSubmit} className="space-y-3">
-              <Textarea
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
-                onKeyDown={handleKeyDown}
-                placeholder={copy.inputPlaceholder}
-                className="min-h-[104px] rounded-[24px] border-white/10 bg-[#06132f]/90 text-white placeholder:text-white/35"
-              />
-
-              {error && (
-                <div className="rounded-[20px] border border-red-400/25 bg-red-500/10 px-4 py-3 text-sm text-red-200">
-                  {error}
+          <div className="flex-1 overflow-y-auto px-6 py-5">
+            {mode === "chat" ? (
+              <>
+                <div className="rounded-[26px] border border-white/10 bg-white/[0.04] p-5">
+                  <div className="flex items-center gap-2 text-sm font-semibold text-white">
+                    <Sparkles className="h-4 w-4 text-[#f5c977]" />
+                    {copy.emptyStateTitle}
+                  </div>
+                  <p className="mt-2 text-sm leading-7 text-white/70">{copy.emptyStateText}</p>
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    <a
+                      href={`tel:${assistantBusinessInfo.phone}`}
+                      className="inline-flex items-center gap-2 rounded-full bg-[#f5c977] px-4 py-2 text-sm font-medium text-[#071631] transition hover:bg-[#f7d38f]"
+                    >
+                      <Phone className="h-4 w-4" />
+                      {copy.quickCall}
+                    </a>
+                    <a
+                      href={assistantBusinessInfo.bookingUrl}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
+                    >
+                      <CalendarDays className="h-4 w-4" />
+                      {copy.quickBook}
+                    </a>
+                  </div>
                 </div>
-              )}
 
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-xs leading-6 text-white/50">{copy.note}</p>
-                <Button
-                  type="submit"
-                  disabled={isSending || !draft.trim()}
-                  className="shrink-0 rounded-full bg-[#f5c977] px-5 text-[#071631] hover:bg-[#f7d38f]"
-                >
-                  {isSending ? copy.sending : copy.send}
-                </Button>
-              </div>
-            </form>
+                <div className="mt-4 flex flex-wrap gap-2">
+                  {starters.map((starter) => (
+                    <button
+                      key={starter}
+                      type="button"
+                      className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-white/78 transition hover:bg-white/10"
+                      onClick={() => void sendQuestion(starter)}
+                    >
+                      {starter}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="mt-6 space-y-4">
+                  {messages.map((message) => (
+                    <div
+                      key={message.id}
+                      className={cn(
+                        "max-w-[88%] rounded-[24px] px-4 py-3 text-sm leading-7",
+                        message.role === "assistant"
+                          ? "border border-white/10 bg-white/6 text-white"
+                          : "ml-auto bg-[#f5c977] text-[#071631]",
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "mb-1 text-xs uppercase tracking-[0.22em]",
+                          message.role === "assistant" ? "text-white/45" : "text-[#071631]/65",
+                        )}
+                      >
+                        {message.role === "assistant" ? copy.assistantLabel : copy.youLabel}
+                      </div>
+                      <div className="whitespace-pre-wrap">{message.content}</div>
+                    </div>
+                  ))}
+
+                  {isSending && (
+                    <div className="max-w-[88%] rounded-[24px] border border-white/10 bg-white/6 px-4 py-3 text-sm text-white/72">
+                      <div className="mb-1 text-xs uppercase tracking-[0.22em] text-white/45">{copy.assistantLabel}</div>
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin text-[#f5c977]" />
+                        {copy.sending}
+                      </div>
+                    </div>
+                  )}
+
+                  <div ref={endRef} />
+                </div>
+              </>
+            ) : (
+              <LeadDiagnosticPanel locale={locale} />
+            )}
           </div>
+
+          {mode === "chat" && (
+            <div className="border-t border-white/10 px-6 py-5">
+              <form onSubmit={handleSubmit} className="space-y-3">
+                <Textarea
+                  value={draft}
+                  onChange={(event) => setDraft(event.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder={copy.inputPlaceholder}
+                  className="min-h-[104px] rounded-[24px] border-white/10 bg-[#06132f]/90 text-white placeholder:text-white/35"
+                />
+
+                {error && (
+                  <div className="rounded-[20px] border border-red-400/25 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                    {error}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs leading-6 text-white/50">{copy.note}</p>
+                  <Button
+                    type="submit"
+                    disabled={isSending || !draft.trim()}
+                    className="shrink-0 rounded-full bg-[#f5c977] px-5 text-[#071631] hover:bg-[#f7d38f]"
+                  >
+                    {isSending ? copy.sending : copy.send}
+                  </Button>
+                </div>
+              </form>
+            </div>
+          )}
         </SheetContent>
       </Sheet>
     </div>

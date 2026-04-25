@@ -154,3 +154,18 @@ export function trackCallClick(detail = {}) {
     currency: "CAD",
   })
 }
+
+export function trackDiagnosticComplete(detail = {}) {
+  trackEvent("qualify_lead", {
+    event_category: "diagnostic",
+    diagnostic_locale: detail.locale || "",
+    diagnostic_level: detail.level || "",
+    diagnostic_subject: detail.subject || "",
+    diagnostic_goal: detail.goal || "",
+    diagnostic_timing: detail.timing || "",
+    diagnostic_format: detail.format || "",
+    diagnostic_recommendation: detail.recommended_action || "",
+    diagnostic_service: detail.recommended_service || "",
+    diagnostic_limited_mode: detail.limited_mode ? "true" : "false",
+  })
+}

@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 
 import BookingEmbed from "@/components/BookingEmbed"
+import AiDiagnosticSection from "@/components/AiDiagnosticSection"
 import DecisionPathwaysSection from "@/components/DecisionPathwaysSection"
 import {
   GuaranteeSection,
@@ -347,6 +348,7 @@ export default function AccueilEn() {
 
         <GuaranteeSection locale="en" className="pt-20" />
         <DecisionPathwaysSection locale="en" className="pt-20" />
+        <AiDiagnosticSection locale="en" className="pt-20" />
 
         <section className="pt-20">
           <SectionHeader

@@ -7,6 +7,7 @@ import {
   initTracking,
   trackBookingClick,
   trackCallClick,
+  trackDiagnosticComplete,
   trackLeadSubmission,
   trackPageView,
 } from "@/lib/tracking"
@@ -63,12 +64,18 @@ export default function TrackingManager() {
       trackLeadSubmission(event.detail || {})
     }
 
+    function handleDiagnosticComplete(event) {
+      trackDiagnosticComplete(event.detail || {})
+    }
+
     document.addEventListener("click", handleDocumentClick, true)
     window.addEventListener("methode:lead-submit", handleLeadSubmit)
+    window.addEventListener("methode:diagnostic-complete", handleDiagnosticComplete)
 
     return () => {
       document.removeEventListener("click", handleDocumentClick, true)
       window.removeEventListener("methode:lead-submit", handleLeadSubmit)
+      window.removeEventListener("methode:diagnostic-complete", handleDiagnosticComplete)
     }
   }, [])
 
