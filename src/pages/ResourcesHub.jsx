@@ -20,14 +20,14 @@ import { absoluteUrl } from "@/lib/seo"
 
 const seoByLocale = {
   fr: {
-    title: "Ressources tutorat secondaire | Methode Secondaire",
+    title: "Ressources tutorat secondaire | Méthode Secondaire",
     description:
-      "Guides utiles sur la preparation aux examens, le rattrapage scolaire et les points de blocage frequents en maths et sciences au secondaire.",
+      "Guides utiles sur la préparation aux examens, le rattrapage scolaire et les points de blocage fréquents en maths et sciences au secondaire.",
     keywords:
-      "ressources tutorat secondaire, blog tutorat maths, blog tutorat sciences, rattrapage scolaire secondaire, preparation examens secondaire",
+      "ressources tutorat secondaire, blog tutorat maths, blog tutorat sciences, rattrapage scolaire secondaire, préparation examens secondaire",
   },
   en: {
-    title: "High school tutoring resources | Methode Secondaire",
+    title: "High school tutoring resources | Méthode Secondaire",
     description:
       "Useful guides about exam prep, catch-up tutoring and common math and science pain points for high school students in Quebec.",
     keywords:
@@ -86,7 +86,7 @@ export default function ResourcesHub() {
                 className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
               >
                 <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                  {locale === "en" ? "Book a session" : "Reserver une seance"}
+                  {locale === "en" ? "Book a session" : "Réserver une séance"}
                   <ArrowRight className="h-4 w-4" />
                 </a>
               </Button>
@@ -97,7 +97,7 @@ export default function ResourcesHub() {
                 className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
               >
                 <Link to={getLocalizedPath("home", locale)}>
-                  {locale === "en" ? "Back to home" : "Retour a l'accueil"}
+                  {locale === "en" ? "Back to home" : "Retour à l'accueil"}
                 </Link>
               </Button>
             </div>
@@ -110,19 +110,19 @@ export default function ResourcesHub() {
             <h2 className="mt-5 font-display text-3xl font-semibold">
               {locale === "en"
                 ? "Built for searches with strong intent"
-                : "Des pages faites pour les recherches a forte intention"}
+                : "Des pages faites pour les recherches à forte intention"}
             </h2>
             <div className="mt-6 space-y-4 text-sm text-white/80">
               {[
                 locale === "en"
                   ? "Exam prep pages for families looking for last-mile structure."
-                  : "Des pages examen pour les familles qui cherchent une vraie structure de revision.",
+                  : "Des pages examen pour les familles qui cherchent une vraie structure de révision.",
                 locale === "en"
                   ? "Catch-up pages for situations where chapters have already piled up."
-                  : "Des pages rattrapage pour les periodes ou les chapitres se sont deja accumules.",
+                  : "Des pages rattrapage pour les périodes où les chapitres se sont déjà accumulés.",
                 locale === "en"
                   ? "Grade-specific pages for searches that are more precise than generic tutoring."
-                  : "Des pages plus precises qu'une recherche generique de tutorat.",
+                  : "Des pages plus précises qu'une recherche générique de tutorat.",
               ].map((line) => (
                 <div
                   key={line}
@@ -141,7 +141,7 @@ export default function ResourcesHub() {
               <p className="mt-2">
                 {locale === "en"
                   ? "These pages are not generic blog posts. They are written to answer the exact situations families search for right before booking or calling."
-                  : "Ces pages ne sont pas des billets de blog generiques. Elles repondent a des situations precises que les familles cherchent juste avant d'appeler ou de reserver."}
+                  : "Ces pages ne sont pas des billets de blog génériques. Elles répondent à des situations précises que les familles cherchent juste avant d'appeler ou de réserver."}
               </p>
             </div>
           </MotionCard>

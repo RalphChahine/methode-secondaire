@@ -778,10 +778,10 @@ export default function Accueil() {
           locale="fr"
           className="pt-20"
           heading={{
-            eyebrow: "Guides a forte intention",
-            title: "Des ressources pensees pour les vraies urgences parentales",
+            eyebrow: "Guides à forte intention",
+            title: "Des ressources pensées pour les vraies urgences parentales",
           }}
-          description="Examen qui approche, secondaire 4 qui bascule, retard qui s'accumule: ces pages repondent a des recherches precises juste avant qu'une famille appelle ou reserve."
+            description="Examen qui approche, secondaire 4 qui bascule, retard qui s'accumule : ces pages répondent à des recherches précises juste avant qu'une famille appelle ou réserve."
         />
 
         <motion.section

@@ -5,17 +5,17 @@ import { routeCatalog } from "./routes.js"
 const basePageSeo = {
   home: {
     fr: {
-      title: "Methode Secondaire | Tutorat en maths et sciences au secondaire",
+      title: "Méthode Secondaire | Tutorat en maths et sciences au secondaire",
       description:
-        "Tutorat prive en mathematiques et en sciences pour le secondaire 1 a 5 au Quebec. Revision claire, methode structuree et reservation simple.",
+        "Tutorat privé en mathématiques et en sciences pour le secondaire 1 à 5 au Québec. Révision claire, méthode structurée et réservation simple.",
       keywords:
-        "tutorat maths secondaire, tutorat sciences secondaire, cours prives mathematiques Quebec, soutien scolaire secondaire Montreal, preparation examens ministeriels",
+        "tutorat maths secondaire, tutorat sciences secondaire, cours privés mathématiques Québec, soutien scolaire secondaire Montréal, préparation examens ministériels",
       name: "Tutorat secondaire en maths et sciences",
       schemaType: "WebPage",
       ogType: "website",
     },
     en: {
-      title: "Methode Secondaire | High school math and science tutoring",
+      title: "Méthode Secondaire | High school math and science tutoring",
       description:
         "Private high school math and science tutoring across Quebec. Clear teaching, structured follow-up and simple booking.",
       keywords:
@@ -27,17 +27,17 @@ const basePageSeo = {
   },
   maths: {
     fr: {
-      title: "Tutorat de maths au secondaire | Methode Secondaire",
+      title: "Tutorat de maths au secondaire | Méthode Secondaire",
       description:
-        "Tutorat de mathematiques au secondaire 1 a 5 au Quebec. Algebre, fonctions, geometrie, trigonometrie et examens avec une methode claire.",
+        "Tutorat de mathématiques au secondaire 1 à 5 au Québec. Algèbre, fonctions, géométrie, trigonométrie et examens avec une méthode claire.",
       keywords:
-        "tutorat maths secondaire, cours prives maths Quebec, aide devoirs maths secondaire, preparation examen maths secondaire",
-      name: "Tutorat de mathematiques au secondaire",
+        "tutorat maths secondaire, cours privés maths Québec, aide devoirs maths secondaire, préparation examen maths secondaire",
+      name: "Tutorat de mathématiques au secondaire",
       schemaType: "Service",
       ogType: "website",
     },
     en: {
-      title: "High school math tutoring | Methode Secondaire",
+      title: "High school math tutoring | Méthode Secondaire",
       description:
         "High school math tutoring across Quebec. Algebra, functions, geometry, trigonometry and exam prep with a clear method.",
       keywords:
@@ -49,17 +49,17 @@ const basePageSeo = {
   },
   sciences: {
     fr: {
-      title: "Tutorat de sciences au secondaire | Methode Secondaire",
+      title: "Tutorat de sciences au secondaire | Méthode Secondaire",
       description:
-        "Tutorat de sciences au secondaire 1 a 5 au Quebec. Physique, chimie, electricite, labos et preparation d'examens avec une methode claire.",
+        "Tutorat de sciences au secondaire 1 à 5 au Québec. Physique, chimie, électricité, labos et préparation d'examens avec une méthode claire.",
       keywords:
-        "tutorat sciences secondaire, cours prives sciences Quebec, aide physique secondaire, aide chimie secondaire, preparation examen sciences",
+        "tutorat sciences secondaire, cours privés sciences Québec, aide physique secondaire, aide chimie secondaire, préparation examen sciences",
       name: "Tutorat de sciences au secondaire",
       schemaType: "Service",
       ogType: "website",
     },
     en: {
-      title: "High school science tutoring | Methode Secondaire",
+      title: "High school science tutoring | Méthode Secondaire",
       description:
         "High school science tutoring across Quebec. Physics, chemistry, electricity, labs and exam preparation with a clear method.",
       keywords:
@@ -71,17 +71,17 @@ const basePageSeo = {
   },
   temoignages: {
     fr: {
-      title: "Temoignages | Methode Secondaire",
+      title: "Témoignages | Méthode Secondaire",
       description:
-        "Decouvrez des temoignages anonymises de parents et d'eleves en maths et sciences au secondaire: progression, confiance et resultats.",
+        "Découvrez des témoignages anonymisés de parents et d'élèves en maths et sciences au secondaire : progression, confiance et résultats.",
       keywords:
-        "avis verifies tutorat secondaire, avis tutorat maths, avis tutorat sciences, progression scolaire Quebec",
-      name: "Temoignages",
+        "avis vérifiés tutorat secondaire, avis tutorat maths, avis tutorat sciences, progression scolaire Québec",
+      name: "Témoignages",
       schemaType: "CollectionPage",
       ogType: "website",
     },
     en: {
-      title: "Testimonials | Methode Secondaire",
+      title: "Testimonials | Méthode Secondaire",
       description:
         "Read anonymized parent and student testimonials about high school math and science tutoring: progress, confidence and results.",
       keywords:
@@ -93,19 +93,19 @@ const basePageSeo = {
   },
   tuteurs: {
     fr: {
-      title: "Tuteurs et specialites | Methode Secondaire",
+      title: "Tuteurs et spécialités | Méthode Secondaire",
       description:
-        "Decouvrez les profils, specialites et standards pedagogiques de Methode Secondaire pour le tutorat au secondaire.",
+        "Découvrez les profils, spécialités et standards pédagogiques de Méthode Secondaire pour le tutorat au secondaire.",
       keywords:
-        "tuteurs maths secondaire, tuteurs sciences secondaire, tutorat quebec, profils tuteurs secondaire, soutien scolaire montreal",
-      name: "Tuteurs et specialites",
+        "tuteurs maths secondaire, tuteurs sciences secondaire, tutorat Québec, profils tuteurs secondaire, soutien scolaire Montréal",
+      name: "Tuteurs et spécialités",
       schemaType: "CollectionPage",
       ogType: "website",
     },
     en: {
-      title: "Tutors and specialties | Methode Secondaire",
+      title: "Tutors and specialties | Méthode Secondaire",
       description:
-        "Explore the tutor profiles, specialties and teaching standards behind Methode Secondaire.",
+        "Explore the tutor profiles, specialties and teaching standards behind Méthode Secondaire.",
       keywords:
         "math tutors high school, science tutors high school, tutoring quebec, tutor profiles, montreal academic support",
       name: "Tutors and specialties",
@@ -115,19 +115,19 @@ const basePageSeo = {
   },
   devenirTuteur: {
     fr: {
-      title: "Recrutement de tuteurs en maths et sciences | Methode Secondaire",
+      title: "Recrutement de tuteurs en maths et sciences | Méthode Secondaire",
       description:
-        "Methode Secondaire recrute des tuteurs en mathematiques et en sciences pour le secondaire au Quebec, en ligne et selon le secteur en presentiel.",
+        "Méthode Secondaire recrute des tuteurs en mathématiques et en sciences pour le secondaire au Québec, en ligne et selon le secteur en présentiel.",
       keywords:
-        "recrutement tuteur maths, recrutement tuteur sciences, emploi tuteur secondaire Quebec, devenir tuteur prive, tutorat en ligne Quebec",
+        "recrutement tuteur maths, recrutement tuteur sciences, emploi tuteur secondaire Québec, devenir tuteur privé, tutorat en ligne Québec",
       name: "Recrutement de tuteurs",
       schemaType: "WebPage",
       ogType: "website",
     },
     en: {
-      title: "Math and science tutor jobs | Methode Secondaire",
+      title: "Math and science tutor jobs | Méthode Secondaire",
       description:
-        "Apply for high school math and science tutor jobs with Methode Secondaire across Quebec. Explore the profile, standards and application process.",
+        "Apply for high school math and science tutor jobs with Méthode Secondaire across Quebec. Explore the profile, standards and application process.",
       keywords:
         "math tutor jobs Quebec, science tutor jobs Quebec, online tutor jobs Quebec, high school tutor Montreal, become a private tutor",
       name: "Math and science tutor jobs",
@@ -137,16 +137,16 @@ const basePageSeo = {
   },
   resourcesHub: {
     fr: {
-      title: "Ressources tutorat secondaire | Methode Secondaire",
+      title: "Ressources tutorat secondaire | Méthode Secondaire",
       description: resourceHubCopyByLocale.fr.description,
       keywords:
-        "ressources tutorat secondaire, blog tutorat maths, blog tutorat sciences, rattrapage scolaire secondaire, preparation examens secondaire",
+        "ressources tutorat secondaire, blog tutorat maths, blog tutorat sciences, rattrapage scolaire secondaire, préparation examens secondaire",
       name: "Ressources tutorat secondaire",
       schemaType: "CollectionPage",
       ogType: "website",
     },
     en: {
-      title: "High school tutoring resources | Methode Secondaire",
+      title: "High school tutoring resources | Méthode Secondaire",
       description: resourceHubCopyByLocale.en.description,
       keywords:
         "high school tutoring resources, math tutoring blog, science tutoring guide, catch-up tutoring, exam prep guide",

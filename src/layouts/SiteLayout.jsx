@@ -332,7 +332,7 @@ export default function SiteLayout() {
           <div className="max-w-xl">
             <img
               src="/logo-methode-secondaire-business-card-white.svg"
-              alt="Methode Secondaire"
+                  alt="Méthode Secondaire"
               className="mb-4 h-auto w-full max-w-[22rem]"
             />
             <p className="mt-4 text-sm leading-7 text-white/70">{copy.about}</p>

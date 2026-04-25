@@ -86,7 +86,7 @@ const copyByLocale = {
     successReset: "Send another message",
     errorText:
       "An error occurred while sending. You can try again or contact directly by phone or email.",
-    emailSubject: "New tutoring request - Methode Secondaire",
+    emailSubject: "New tutoring request - Méthode Secondaire",
   },
 }
 

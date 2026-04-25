@@ -55,8 +55,8 @@ function getAssistantErrorMessage({ payload, status, locale, fallback }) {
         ? "The assistant is missing `OPENAI_API_KEY` locally. Create `.env.local` from `.env.example`, add the key, then run `npm.cmd run dev:full`."
         : "The assistant is missing `OPENAI_API_KEY` on Vercel. Add it in the project environment variables, redeploy, and try again."
       : isLocal
-        ? "L'assistant n'a pas de `OPENAI_API_KEY` en local. Creez `.env.local` a partir de `.env.example`, ajoutez la cle, puis lancez `npm.cmd run dev:full`."
-        : "L'assistant n'a pas de `OPENAI_API_KEY` sur Vercel. Ajoutez-la dans les variables d'environnement du projet, redeployez, puis reessayez."
+        ? "L'assistant n'a pas de `OPENAI_API_KEY` en local. Créez `.env.local` à partir de `.env.example`, ajoutez la clé, puis lancez `npm.cmd run dev:full`."
+        : "L'assistant n'a pas de `OPENAI_API_KEY` sur Vercel. Ajoutez-la dans les variables d'environnement du projet, redéployez, puis réessayez."
   }
 
   if (payload?.code === "OPENAI_AUTH_FAILED") {
@@ -65,8 +65,8 @@ function getAssistantErrorMessage({ payload, status, locale, fallback }) {
         ? "The local `OPENAI_API_KEY` looks invalid. Update `.env.local`, restart `npm.cmd run dev:full`, and try again."
         : "The `OPENAI_API_KEY` configured on Vercel looks invalid. Update it in the project settings and redeploy."
       : isLocal
-        ? "La `OPENAI_API_KEY` locale semble invalide. Mettez a jour `.env.local`, redemarrez `npm.cmd run dev:full`, puis reessayez."
-        : "La `OPENAI_API_KEY` configuree sur Vercel semble invalide. Mettez-la a jour dans les reglages du projet puis redeployez."
+        ? "La `OPENAI_API_KEY` locale semble invalide. Mettez à jour `.env.local`, redémarrez `npm.cmd run dev:full`, puis réessayez."
+        : "La `OPENAI_API_KEY` configurée sur Vercel semble invalide. Mettez-la à jour dans les réglages du projet puis redéployez."
   }
 
   if (payload?.code === "ASSISTANT_RATE_LIMITED" || payload?.code === "OPENAI_UPSTREAM_RATE_LIMITED") {

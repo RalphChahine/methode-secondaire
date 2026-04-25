@@ -313,12 +313,12 @@ export default function Maths() {
             title:
               locale === "en"
                 ? "Math guides built around the moments families search most"
-                : "Des guides maths centres sur les moments ou les familles cherchent vraiment",
+        : "Des guides maths centrés sur les moments où les familles cherchent vraiment",
           }}
           description={
             locale === "en"
               ? "These guides go beyond generic homework help and target exam prep, ministerial prep, Secondary 4 math friction and local Montreal search intent."
-              : "Ces pages vont plus loin qu'une simple aide aux devoirs et couvrent l'examen, le ministeriel, le secondaire 4 et une intention locale Montreal."
+        : "Ces pages vont plus loin qu'une simple aide aux devoirs et couvrent l'examen, le ministériel, le secondaire 4 et une intention locale Montréal."
           }
         />
 

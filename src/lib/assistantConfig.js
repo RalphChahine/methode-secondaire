@@ -8,8 +8,8 @@ export const assistantBusinessInfo = {
 export const assistantServiceInfo = {
   flexibleRateCad: 75,
   weeklyRateCad: 70,
-  subjects: ["mathematiques", "sciences", "physique", "chimie", "preparation aux examens"],
-  serviceAreas: ["Montreal", "Laval", "en ligne partout au Quebec"],
+  subjects: ["mathématiques", "sciences", "physique", "chimie", "préparation aux examens"],
+  serviceAreas: ["Montréal", "Laval", "en ligne partout au Québec"],
 }
 
 export const assistantUiByLocale = {
@@ -129,30 +129,30 @@ export function buildFallbackAssistantReply(message, locale = "fr") {
   if (mentionsPricing) {
     return isEnglish
       ? `The assistant is in limited mode right now, but here is the key pricing info.\n\nWeekly follow-up is ${assistantServiceInfo.weeklyRateCad} CAD/hour. Flexible sessions are ${assistantServiceInfo.flexibleRateCad} CAD/hour. Intensive exam-prep blocks are available on request.\n\nIf you want the fastest next step, call ${formatPhoneForReply(locale)} or book here: ${BOOKING_URL}`
-      : `L'assistant est en mode limite pour le moment, mais voici l'essentiel pour les tarifs.\n\nLe suivi hebdomadaire est a ${assistantServiceInfo.weeklyRateCad} $ CAD / heure. Les seances flexibles sont a ${assistantServiceInfo.flexibleRateCad} $ CAD / heure. Les blocs intensifs de preparation aux examens sont offerts sur demande.\n\nPour aller vite, appelez au ${formatPhoneForReply(locale)} ou reservez ici : ${BOOKING_URL}`
+      : `L'assistant est en mode limite pour le moment, mais voici l'essentiel pour les tarifs.\n\nLe suivi hebdomadaire est à ${assistantServiceInfo.weeklyRateCad} $ CAD / heure. Les séances flexibles sont à ${assistantServiceInfo.flexibleRateCad} $ CAD / heure. Les blocs intensifs de préparation aux examens sont offerts sur demande.\n\nPour aller vite, appelez au ${formatPhoneForReply(locale)} ou réservez ici : ${BOOKING_URL}`
   }
 
   if (mentionsBooking) {
     return isEnglish
       ? `The assistant is in limited mode right now, but I can still point you to the right next step.\n\nFor urgent situations, the fastest option is to call ${formatPhoneForReply(locale)}. To reserve a session or a 15-minute diagnostic call, use: ${BOOKING_URL}\n\nOnline tutoring is available across Quebec, with in-person support depending on area and availability.`
-      : `L'assistant est en mode limite pour le moment, mais je peux quand meme vous diriger vers la bonne prochaine etape.\n\nPour une situation urgente, le plus rapide est d'appeler au ${formatPhoneForReply(locale)}. Pour reserver une seance ou un appel diagnostique de 15 minutes, utilisez : ${BOOKING_URL}\n\nLe tutorat en ligne est offert partout au Quebec, avec des disponibilites en personne selon le secteur et l'horaire.`
+      : `L'assistant est en mode limite pour le moment, mais je peux quand même vous diriger vers la bonne prochaine étape.\n\nPour une situation urgente, le plus rapide est d'appeler au ${formatPhoneForReply(locale)}. Pour réserver une séance ou un appel diagnostique de 15 minutes, utilisez : ${BOOKING_URL}\n\nLe tutorat en ligne est offert partout au Québec, avec des disponibilités en personne selon le secteur et l'horaire.`
   }
 
   if (looksLikeAcademicQuestion) {
     return isEnglish
       ? `The detailed AI tutoring mode is temporarily unavailable, so I should not pretend to solve the exercise step by step right now.\n\nWhat I can confirm is that tutoring covers math, science, physics, chemistry, catch-up support, and exam preparation for Secondary 1 to 5 in Quebec.\n\nIf you want real guided help on this question, book here: ${BOOKING_URL} or call ${formatPhoneForReply(locale)}.`
-      : `Le mode d'aide IA detaille est temporairement indisponible, donc je ne vais pas pretendre resoudre l'exercice pas a pas pour le moment.\n\nJe peux quand meme confirmer que le tutorat couvre les maths, les sciences, la physique, la chimie, la mise a niveau et la preparation aux examens du secondaire 1 a 5 au Quebec.\n\nPour une vraie aide guidee sur cette question, reservez ici : ${BOOKING_URL} ou appelez au ${formatPhoneForReply(locale)}.`
+      : `Le mode d'aide IA détaillé est temporairement indisponible, donc je ne vais pas prétendre résoudre l'exercice pas à pas pour le moment.\n\nJe peux quand même confirmer que le tutorat couvre les maths, les sciences, la physique, la chimie, la mise à niveau et la préparation aux examens du secondaire 1 à 5 au Québec.\n\nPour une vraie aide guidée sur cette question, réservez ici : ${BOOKING_URL} ou appelez au ${formatPhoneForReply(locale)}.`
   }
 
   if (mentionsSubjects) {
     return isEnglish
       ? `The assistant is in limited mode right now, but here is the core service info.\n\nTutoring covers math, science, physics, chemistry, catch-up support, and exam preparation for Quebec secondary students. Sessions are available online across Quebec and in person depending on area and availability.\n\nThe best next step is usually a quick call or a booking request: ${BOOKING_URL}`
-      : `L'assistant est en mode limite pour le moment, mais voici l'information essentielle sur le service.\n\nLe tutorat couvre les maths, les sciences, la physique, la chimie, la mise a niveau et la preparation aux examens pour les eleves du secondaire au Quebec. Les seances sont offertes en ligne partout au Quebec et en personne selon le secteur et les disponibilites.\n\nLa meilleure prochaine etape est souvent un court appel ou une demande de reservation : ${BOOKING_URL}`
+      : `L'assistant est en mode limite pour le moment, mais voici l'information essentielle sur le service.\n\nLe tutorat couvre les maths, les sciences, la physique, la chimie, la mise à niveau et la préparation aux examens pour les élèves du secondaire au Québec. Les séances sont offertes en ligne partout au Québec et en personne selon le secteur et les disponibilités.\n\nLa meilleure prochaine étape est souvent un court appel ou une demande de réservation : ${BOOKING_URL}`
   }
 
   return isEnglish
-    ? `The assistant is in limited mode right now, but I can still share the essentials.\n\nMethode Secondaire offers tutoring for Secondary 1 to 5 students in Quebec in math, science, physics, chemistry, catch-up support, and exam preparation. Weekly follow-up is ${assistantServiceInfo.weeklyRateCad} CAD/hour and flexible sessions are ${assistantServiceInfo.flexibleRateCad} CAD/hour.\n\nFor the fastest next step, call ${formatPhoneForReply(locale)} or book here: ${BOOKING_URL}`
-    : `L'assistant est en mode limite pour le moment, mais je peux quand meme partager l'essentiel.\n\nMethode Secondaire offre du tutorat pour les eleves du secondaire 1 a 5 au Quebec en maths, sciences, physique, chimie, mise a niveau et preparation aux examens. Le suivi hebdomadaire est a ${assistantServiceInfo.weeklyRateCad} $ CAD / heure et les seances flexibles sont a ${assistantServiceInfo.flexibleRateCad} $ CAD / heure.\n\nPour avancer rapidement, appelez au ${formatPhoneForReply(locale)} ou reservez ici : ${BOOKING_URL}`
+    ? `The assistant is in limited mode right now, but I can still share the essentials.\n\nMéthode Secondaire offers tutoring for Secondary 1 to 5 students in Quebec in math, science, physics, chemistry, catch-up support, and exam preparation. Weekly follow-up is ${assistantServiceInfo.weeklyRateCad} CAD/hour and flexible sessions are ${assistantServiceInfo.flexibleRateCad} CAD/hour.\n\nFor the fastest next step, call ${formatPhoneForReply(locale)} or book here: ${BOOKING_URL}`
+    : `L'assistant est en mode limite pour le moment, mais je peux quand même partager l'essentiel.\n\nMéthode Secondaire offre du tutorat pour les élèves du secondaire 1 à 5 au Québec en maths, sciences, physique, chimie, mise à niveau et préparation aux examens. Le suivi hebdomadaire est à ${assistantServiceInfo.weeklyRateCad} $ CAD / heure et les séances flexibles sont à ${assistantServiceInfo.flexibleRateCad} $ CAD / heure.\n\nPour avancer rapidement, appelez au ${formatPhoneForReply(locale)} ou réservez ici : ${BOOKING_URL}`
 }
 
 export function buildAssistantInstructions(locale = "fr") {

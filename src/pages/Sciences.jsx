@@ -318,7 +318,7 @@ export default function Sciences() {
           description={
             locale === "en"
               ? "These pages focus on science exam prep, physics, chemistry and catch-up periods where structure matters more than generic practice."
-              : "Ces pages visent la revision de sciences, la physique, la chimie et les periodes de rattrapage ou la structure compte plus qu'une pratique diffuse."
+        : "Ces pages visent la révision de sciences, la physique, la chimie et les périodes de rattrapage où la structure compte plus qu'une pratique diffuse."
           }
         />
 

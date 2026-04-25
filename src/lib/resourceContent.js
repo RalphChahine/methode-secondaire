@@ -12,9 +12,9 @@ export const resourceRouteKeys = [
 export const resourceHubCopyByLocale = {
   fr: {
     eyebrow: "Ressources utiles",
-    title: "Des pages utiles pour les recherches qui arrivent juste avant une vraie prise de decision",
+    title: "Des pages utiles pour les recherches qui arrivent juste avant une vraie prise de décision",
     description:
-      "Ces guides sont pensés pour les familles qui cherchent deja une aide concrete: examen qui approche, rattrapage, secondaire 4 en maths, ou besoin de remettre une matiere sur les rails rapidement.",
+      "Ces guides sont pensés pour les familles qui cherchent déjà une aide concrète : examen qui approche, rattrapage, secondaire 4 en maths, ou besoin de remettre une matière sur les rails rapidement.",
     cta: "Voir le guide",
   },
   en: {
@@ -29,22 +29,22 @@ export const resourceHubCopyByLocale = {
 export const resourcePageContent = {
   mathExamPrep: {
     fr: {
-      cardTitle: "Preparation examen maths secondaire",
+      cardTitle: "Préparation examen maths secondaire",
       cardDescription:
         "Comment remettre les notions en ordre, prioriser les chapitres et arriver plus calme devant un examen de maths.",
       eyebrow: "Guide examen",
-      heroTitle: "Preparation a l'examen de maths au secondaire: quoi reviser, comment pratiquer et quand demander de l'aide",
+      heroTitle: "Préparation à l'examen de maths au secondaire : quoi réviser, comment pratiquer et quand demander de l'aide",
       heroText:
-        "Quand un examen de maths approche, le vrai probleme n'est pas seulement le temps. C'est le manque de priorites claires, la confusion entre les chapitres et la tendance a refaire trop d'exercices sans vraie methode.",
-      seoTitle: "Preparation examen maths secondaire | Methode Secondaire",
+        "Quand un examen de maths approche, le vrai problème n'est pas seulement le temps. C'est le manque de priorités claires, la confusion entre les chapitres et la tendance à refaire trop d'exercices sans vraie méthode.",
+      seoTitle: "Préparation examen maths secondaire | Méthode Secondaire",
       seoDescription:
-        "Guide utile pour preparer un examen de maths au secondaire au Quebec: priorites de revision, erreurs a eviter, strategie de pratique et tutorat si le temps manque.",
+        "Guide utile pour préparer un examen de maths au secondaire au Québec : priorités de révision, erreurs à éviter, stratégie de pratique et tutorat si le temps manque.",
       keywords:
-        "preparation examen maths secondaire, aide examen maths quebec, tutorat maths examen ministeriel, revision maths secondaire",
+        "préparation examen maths secondaire, aide examen maths Québec, tutorat maths examen ministériel, révision maths secondaire",
       quickSignalsTitle: "Ce que les familles voient souvent juste avant un examen",
       quickSignals: [
-        "L'eleve sait qu'il a deja vu la matiere, mais ne sait plus par ou recommencer.",
-        "Les exercices sont refaits au hasard sans ordre entre algebra, fonctions et geometrie.",
+        "L'élève sait qu'il a déjà vu la matière, mais ne sait plus par où recommencer.",
+        "Les exercices sont refaits au hasard sans ordre entre algèbre, fonctions et géométrie.",
         "Le stress monte vite parce que chaque erreur donne l'impression que rien n'est solide.",
       ],
       planTitle: "Le plan qui aide le plus quand le temps est court",
@@ -52,46 +52,46 @@ export const resourcePageContent = {
         {
           title: "Trier les chapitres",
           description:
-            "Commencer par identifier les deux ou trois blocs qui donnent le plus de points ou qui bloquent le plus l'eleve.",
+            "Commencer par identifier les deux ou trois blocs qui donnent le plus de points ou qui bloquent le plus l'élève.",
         },
         {
           title: "Refaire les bases avant les exercices longs",
           description:
-            "Une bonne revision commence souvent par les regles, les formats de questions et les erreurs recurrentes, pas par une feuille complete d'examen blanc.",
+            "Une bonne révision commence souvent par les règles, les formats de questions et les erreurs récurrentes, pas par une feuille complète d'examen blanc.",
         },
         {
-          title: "Pratiquer sous une vraie methode",
+          title: "Pratiquer sous une vraie méthode",
           description:
-            "Lire, choisir la demarche, resoudre, verifier. Tant que cette sequence n'est pas stable, l'eleve consomme son energie sans vraiment consolider.",
+            "Lire, choisir la démarche, résoudre, vérifier. Tant que cette séquence n'est pas stable, l'élève consomme son énergie sans vraiment consolider.",
         },
       ],
       mistakesTitle: "Les erreurs qui ralentissent la progression",
       mistakes: [
-        "Passer trop de temps sur les chapitres deja solides juste pour se rassurer.",
-        "Memoriser des procedures sans comprendre a quel type de question elles s'appliquent.",
-        "Faire une revision trop large au lieu d'un plan court et cible.",
+        "Passer trop de temps sur les chapitres déjà solides juste pour se rassurer.",
+        "Mémoriser des procédures sans comprendre à quel type de question elles s'appliquent.",
+        "Faire une révision trop large au lieu d'un plan court et ciblé.",
       ],
       tutoringTitle: "Quand le tutorat devient un vrai raccourci utile",
       tutoringPoints: [
-        "Quand il faut remettre de l'ordre tres vite avant un examen.",
-        "Quand l'eleve comprend mieux avec une logique expliquee a voix haute.",
-        "Quand la famille veut un plan de priorites clair plutot qu'une revision improvisee.",
+        "Quand il faut remettre de l'ordre très vite avant un examen.",
+        "Quand l'élève comprend mieux avec une logique expliquée à voix haute.",
+        "Quand la famille veut un plan de priorités clair plutôt qu'une révision improvisée.",
       ],
       faq: [
         {
-          question: "Combien de seances faut-il avant un examen de maths ?",
+          question: "Combien de séances faut-il avant un examen de maths ?",
           answer:
-            "Cela depend du niveau de confusion actuel. Parfois une ou deux seances bien ciblees suffisent pour clarifier les priorites. Quand plusieurs chapitres sont fragiles, un court bloc intensif aide davantage.",
+            "Cela dépend du niveau de confusion actuel. Parfois une ou deux séances bien ciblées suffisent pour clarifier les priorités. Quand plusieurs chapitres sont fragiles, un court bloc intensif aide davantage.",
         },
         {
           question: "Faut-il refaire tous les chapitres ?",
           answer:
-            "Pas toujours. Le plus efficace est souvent de distinguer ce qui doit etre securise maintenant de ce qui peut etre laisse de cote pour ne pas diluer l'effort.",
+            "Pas toujours. Le plus efficace est souvent de distinguer ce qui doit être sécurisé maintenant de ce qui peut être laissé de côté pour ne pas diluer l'effort.",
         },
       ],
-      ctaTitle: "Besoin de remettre la revision en ordre rapidement ?",
+      ctaTitle: "Besoin de remettre la révision en ordre rapidement ?",
       ctaText:
-        "Un appel court ou une seance ciblee peut suffire a clarifier les priorites avant l'examen et a faire baisser le stress.",
+        "Un appel court ou une séance ciblée peut suffire à clarifier les priorités avant l'examen et à faire baisser le stress.",
       relatedRouteKeys: ["sec4Math", "catchUp"],
     },
     en: {
@@ -102,7 +102,7 @@ export const resourcePageContent = {
       heroTitle: "High school math exam prep: what to review, how to practice and when tutoring helps",
       heroText:
         "When a math exam is close, the real problem is rarely just lack of time. It is usually unclear priorities, mixed-up chapters and too much unfocused practice without a reliable method.",
-      seoTitle: "High school math exam prep | Methode Secondaire",
+      seoTitle: "High school math exam prep | Méthode Secondaire",
       seoDescription:
         "A practical guide to high school math exam prep in Quebec: review priorities, practice structure, common mistakes and when tutoring can save time.",
       keywords:
@@ -163,69 +163,69 @@ export const resourcePageContent = {
   },
   scienceExamPrep: {
     fr: {
-      cardTitle: "Preparation examen sciences secondaire",
+      cardTitle: "Préparation examen sciences secondaire",
       cardDescription:
-        "Une page utile pour les familles qui veulent mieux preparer un examen de sciences, de physique ou de chimie.",
+        "Une page utile pour les familles qui veulent mieux préparer un examen de sciences, de physique ou de chimie.",
       eyebrow: "Guide examen",
-      heroTitle: "Preparation a l'examen de sciences au secondaire: revoir sans s'eparpiller",
+      heroTitle: "Préparation à l'examen de sciences au secondaire : revoir sans s'éparpiller",
       heroText:
-        "Les sciences deviennent lourdes tres vite quand les concepts, les unites, les formules et les questions a developpement se melangent. Une bonne revision sert d'abord a remettre de la logique avant de rajouter des pages d'exercices.",
-      seoTitle: "Preparation examen sciences secondaire | Methode Secondaire",
+        "Les sciences deviennent lourdes très vite quand les concepts, les unités, les formules et les questions à développement se mélangent. Une bonne révision sert d'abord à remettre de la logique avant de rajouter des pages d'exercices.",
+      seoTitle: "Préparation examen sciences secondaire | Méthode Secondaire",
       seoDescription:
-        "Guide de preparation a l'examen de sciences au secondaire au Quebec: physique, chimie, questions a developpement, methodes de revision et aide ciblee.",
+        "Guide de préparation à l'examen de sciences au secondaire au Québec : physique, chimie, questions à développement, méthodes de révision et aide ciblée.",
       keywords:
-        "preparation examen sciences secondaire, aide examen physique secondaire, aide examen chimie secondaire, tutorat sciences quebec",
-      quickSignalsTitle: "Signes qu'une revision de sciences manque encore de structure",
+        "préparation examen sciences secondaire, aide examen physique secondaire, aide examen chimie secondaire, tutorat sciences Québec",
+      quickSignalsTitle: "Signes qu'une révision de sciences manque encore de structure",
       quickSignals: [
-        "L'eleve connait des mots et des formules, mais ne voit pas bien comment ils se relient.",
-        "Les questions longues sont plus difficiles que les definitions courtes.",
-        "Les erreurs viennent autant du raisonnement que du contenu lui-meme.",
+        "L'élève connaît des mots et des formules, mais ne voit pas bien comment ils se relient.",
+        "Les questions longues sont plus difficiles que les définitions courtes.",
+        "Les erreurs viennent autant du raisonnement que du contenu lui-même.",
       ],
-      planTitle: "Une meilleure facon de reviser les sciences",
+      planTitle: "Une meilleure façon de réviser les sciences",
       planSteps: [
         {
-          title: "Classer la matiere par themes",
+          title: "Classer la matière par thèmes",
           description:
-            "Physique, chimie, electricite, labos: la revision devient plus lisible quand les blocs sont separes clairement.",
+            "Physique, chimie, électricité, labos : la révision devient plus lisible quand les blocs sont séparés clairement.",
         },
         {
-          title: "Relier les unites, les formules et les situations",
+          title: "Relier les unités, les formules et les situations",
           description:
-            "Ce n'est pas assez de memoriser. L'eleve doit voir ce que la formule represente et quand elle s'applique.",
+            "Ce n'est pas assez de mémoriser. L'élève doit voir ce que la formule représente et quand elle s'applique.",
         },
         {
-          title: "Pratiquer les reponses construites",
+          title: "Pratiquer les réponses construites",
           description:
-            "Une bonne note en sciences depend aussi de la qualite de l'explication, de la justification et de l'analyse.",
+            "Une bonne note en sciences dépend aussi de la qualité de l'explication, de la justification et de l'analyse.",
         },
       ],
       mistakesTitle: "Ce qui fait perdre du temps juste avant l'examen",
       mistakes: [
-        "Relire les notes passivement sans verifier si le raisonnement tient vraiment.",
-        "Travailler seulement les calculs et laisser de cote les questions a developpement.",
-        "Confondre memorisation rapide et comprehension durable.",
+        "Relire les notes passivement sans vérifier si le raisonnement tient vraiment.",
+        "Travailler seulement les calculs et laisser de côté les questions à développement.",
+        "Confondre mémorisation rapide et compréhension durable.",
       ],
-      tutoringTitle: "Quand une seance de sciences devient utile tres vite",
+      tutoringTitle: "Quand une séance de sciences devient utile très vite",
       tutoringPoints: [
-        "Quand les concepts restent flous malgre plusieurs lectures.",
-        "Quand il faut mieux repondre aux questions de physique ou de chimie sous pression.",
-        "Quand la famille veut un plan de revision plus calme et plus concret.",
+        "Quand les concepts restent flous malgré plusieurs lectures.",
+        "Quand il faut mieux répondre aux questions de physique ou de chimie sous pression.",
+        "Quand la famille veut un plan de révision plus calme et plus concret.",
       ],
       faq: [
         {
-          question: "Faut-il privilegier la theorie ou les exercices ?",
+          question: "Faut-il privilégier la théorie ou les exercices ?",
           answer:
             "Les deux, mais dans le bon ordre. Il faut d'abord clarifier la logique du chapitre, puis appliquer sur les bons types de questions.",
         },
         {
-          question: "Les sciences demandent-elles une methode differente des maths ?",
+          question: "Les sciences demandent-elles une méthode différente des maths ?",
           answer:
-            "Oui. Les sciences demandent souvent plus de liens entre concepts, formules, unites et redaction. La revision doit donc rester plus visuelle et plus structuree.",
+            "Oui. Les sciences demandent souvent plus de liens entre concepts, formules, unités et rédaction. La révision doit donc rester plus visuelle et plus structurée.",
         },
       ],
-      ctaTitle: "Besoin de remettre les sciences en ordre avant l'evaluation ?",
+      ctaTitle: "Besoin de remettre les sciences en ordre avant l'évaluation ?",
       ctaText:
-        "Une courte seance ciblee peut aider a reconnecter les concepts, les formules et les questions attendues avant l'examen.",
+        "Une courte séance ciblée peut aider à reconnecter les concepts, les formules et les questions attendues avant l'examen.",
       relatedRouteKeys: ["catchUp", "mathExamPrep"],
     },
     en: {
@@ -236,7 +236,7 @@ export const resourcePageContent = {
       heroTitle: "High school science exam prep: review with more structure and less overload",
       heroText:
         "Science becomes heavy very quickly when concepts, units, formulas and long-form questions all blur together. Good review rebuilds logic first instead of simply adding more pages of practice.",
-      seoTitle: "High school science exam prep | Methode Secondaire",
+      seoTitle: "High school science exam prep | Méthode Secondaire",
       seoDescription:
         "A practical guide to high school science exam prep in Quebec: physics, chemistry, long-form questions, review structure and targeted tutoring.",
       keywords:
@@ -299,67 +299,67 @@ export const resourcePageContent = {
     fr: {
       cardTitle: "Aide maths secondaire 4",
       cardDescription:
-        "Une page faite pour les familles qui cherchent une aide plus precise en maths de secondaire 4.",
+        "Une page faite pour les familles qui cherchent une aide plus précise en maths de secondaire 4.",
       eyebrow: "Niveau cible",
-      heroTitle: "Aide en maths de secondaire 4: la matiere ou beaucoup d'eleves commencent a perdre le fil",
+      heroTitle: "Aide en maths de secondaire 4 : la matière où beaucoup d'élèves commencent à perdre le fil",
       heroText:
-        "Le secondaire 4 en maths est souvent le moment ou les fonctions, l'algebre et la lecture des problemes demandent plus de methode que de simple bonne volonte. Si les bases ne sont pas bien organisees, la confiance baisse vite.",
-      seoTitle: "Aide maths secondaire 4 | Methode Secondaire",
+        "Le secondaire 4 en maths est souvent le moment où les fonctions, l'algèbre et la lecture des problèmes demandent plus de méthode que de simple bonne volonté. Si les bases ne sont pas bien organisées, la confiance baisse vite.",
+      seoTitle: "Aide maths secondaire 4 | Méthode Secondaire",
       seoDescription:
-        "Aide et tutorat en maths de secondaire 4 au Quebec: fonctions, algebra, strategie de resolution, revision et accompagnement clair.",
+        "Aide et tutorat en maths de secondaire 4 au Québec : fonctions, algèbre, stratégie de résolution, révision et accompagnement clair.",
       keywords:
-        "aide maths secondaire 4, tuteur maths secondaire 4, maths sec 4 quebec, tutorat fonctions secondaire 4",
+        "aide maths secondaire 4, tuteur maths secondaire 4, maths sec 4 Québec, tutorat fonctions secondaire 4",
       quickSignalsTitle: "Ce qui revient souvent en secondaire 4",
       quickSignals: [
-        "Les fonctions sont vues comme plusieurs chapitres separes au lieu d'un seul langage a comprendre.",
-        "Les calculs sont parfois corrects, mais le choix de la demarche reste fragile.",
-        "Les problemes prennent trop de temps parce que l'eleve ne sait pas comment commencer.",
+        "Les fonctions sont vues comme plusieurs chapitres séparés au lieu d'un seul langage à comprendre.",
+        "Les calculs sont parfois corrects, mais le choix de la démarche reste fragile.",
+        "Les problèmes prennent trop de temps parce que l'élève ne sait pas comment commencer.",
       ],
-      planTitle: "Ce qui aide le plus a ce niveau",
+      planTitle: "Ce qui aide le plus à ce niveau",
       planSteps: [
         {
           title: "Rendre les fonctions plus visuelles",
           description:
-            "Table, equation, graphe et interpretation doivent redevenir une meme idee vue sous plusieurs angles.",
+            "Table, équation, graphe et interprétation doivent redevenir une même idée vue sous plusieurs angles.",
         },
         {
-          title: "Stabiliser la demarche",
+          title: "Stabiliser la démarche",
           description:
-            "En secondaire 4, la difference se fait souvent sur la facon d'aborder la question, pas seulement sur le calcul final.",
+            "En secondaire 4, la différence se fait souvent sur la façon d'aborder la question, pas seulement sur le calcul final.",
         },
         {
           title: "Travailler les erreurs qui reviennent",
           description:
-            "Une bonne seance de maths secondaire 4 cible les memes fautes encore et encore jusqu'a ce qu'elles disparaissent.",
+            "Une bonne séance de maths secondaire 4 cible les mêmes fautes encore et encore jusqu'à ce qu'elles disparaissent.",
         },
       ],
       mistakesTitle: "Les mauvaises habitudes les plus couteuses",
       mistakes: [
         "Commencer le calcul trop vite sans lire le type de question.",
-        "Confondre lecture de graphe et procedure algebrique.",
-        "Penser qu'il faut juste plus pratiquer alors que la methode n'est pas encore claire.",
+        "Confondre lecture de graphe et procédure algébrique.",
+        "Penser qu'il faut juste plus pratiquer alors que la méthode n'est pas encore claire.",
       ],
-      tutoringTitle: "Quand une aide exterieure change vraiment la donne",
+      tutoringTitle: "Quand une aide extérieure change vraiment la donne",
       tutoringPoints: [
         "Quand le secondaire 4 devient un point de bascule avant le secondaire 5.",
-        "Quand l'eleve comprend mieux en voyant la logique de chaque etape.",
+        "Quand l'élève comprend mieux en voyant la logique de chaque étape.",
         "Quand un parent veut stopper l'accumulation avant qu'elle se transforme en gros retard.",
       ],
       faq: [
         {
           question: "Pourquoi le secondaire 4 est-il si difficile en maths ?",
           answer:
-            "Souvent parce que plusieurs notions se croisent en meme temps. Les fonctions demandent de lire, de calculer et d'interpreter avec plus d'autonomie qu'avant.",
+            "Souvent parce que plusieurs notions se croisent en même temps. Les fonctions demandent de lire, de calculer et d'interpréter avec plus d'autonomie qu'avant.",
         },
         {
           question: "Faut-il attendre les mauvaises notes avant de chercher de l'aide ?",
           answer:
-            "Non. Le meilleur moment est souvent quand la confusion commence, avant que les chapitres s'empilent et que l'eleve perde confiance.",
+            "Non. Le meilleur moment est souvent quand la confusion commence, avant que les chapitres s'empilent et que l'élève perde confiance.",
         },
       ],
-      ctaTitle: "Le secondaire 4 commence a devenir lourd ?",
+      ctaTitle: "Le secondaire 4 commence à devenir lourd ?",
       ctaText:
-        "Une seance ciblee peut clarifier les fonctions, la demarche et les priorites avant que la matiere ne se complique davantage.",
+        "Une séance ciblée peut clarifier les fonctions, la démarche et les priorités avant que la matière ne se complique davantage.",
       relatedRouteKeys: ["mathExamPrep", "catchUp"],
     },
     en: {
@@ -370,7 +370,7 @@ export const resourcePageContent = {
       heroTitle: "Secondary 4 math help: the year when many students start losing the thread",
       heroText:
         "Secondary 4 math is often the point where functions, algebra and word problems require more method than raw effort. When the basics are not well organized, confidence drops quickly.",
-      seoTitle: "Secondary 4 math help | Methode Secondaire",
+      seoTitle: "Secondary 4 math help | Méthode Secondaire",
       seoDescription:
         "Secondary 4 math help and tutoring in Quebec: functions, algebra, problem-solving strategy, review priorities and clear support.",
       keywords:
@@ -433,67 +433,67 @@ export const resourcePageContent = {
     fr: {
       cardTitle: "Rattrapage scolaire secondaire",
       cardDescription:
-        "Quand plusieurs chapitres se sont accumules et qu'il faut reprendre le controle sans ajouter plus de stress.",
-      eyebrow: "Remise a niveau",
-      heroTitle: "Rattrapage scolaire au secondaire: comment repartir sans se noyer dans tout ce qui s'est accumule",
+        "Quand plusieurs chapitres se sont accumulés et qu'il faut reprendre le contrôle sans ajouter plus de stress.",
+      eyebrow: "Remise à niveau",
+      heroTitle: "Rattrapage scolaire au secondaire : comment repartir sans se noyer dans tout ce qui s'est accumulé",
       heroText:
-        "Quand un eleve prend du retard, le vrai risque est de vouloir tout reparer en meme temps. Un bon rattrapage commence par une priorisation tres claire, une vision realiste de la charge et une methode qui redonne un sentiment de controle.",
-      seoTitle: "Rattrapage scolaire secondaire | Methode Secondaire",
+        "Quand un élève prend du retard, le vrai risque est de vouloir tout réparer en même temps. Un bon rattrapage commence par une priorisation très claire, une vision réaliste de la charge et une méthode qui redonne un sentiment de contrôle.",
+      seoTitle: "Rattrapage scolaire secondaire | Méthode Secondaire",
       seoDescription:
-        "Aide en rattrapage scolaire au secondaire au Quebec: maths, sciences, remise a niveau, plan de priorites et tutorat structure.",
+        "Aide en rattrapage scolaire au secondaire au Québec : maths, sciences, remise à niveau, plan de priorités et tutorat structuré.",
       keywords:
-        "rattrapage scolaire secondaire, remise a niveau secondaire, tutorat rattrapage quebec, aide devoirs secondaire retard",
-      quickSignalsTitle: "Quand le retard commence a peser",
+        "rattrapage scolaire secondaire, remise à niveau secondaire, tutorat rattrapage Québec, aide devoirs secondaire retard",
+      quickSignalsTitle: "Quand le retard commence à peser",
       quickSignals: [
-        "Plusieurs chapitres sont flous et l'eleve ne sait plus lequel reprendre en premier.",
-        "Les devoirs prennent trop longtemps parce que chaque notion demande un effort enorme.",
-        "Le stress vient autant de l'accumulation que de la matiere elle-meme.",
+        "Plusieurs chapitres sont flous et l'élève ne sait plus lequel reprendre en premier.",
+        "Les devoirs prennent trop longtemps parce que chaque notion demande un effort énorme.",
+        "Le stress vient autant de l'accumulation que de la matière elle-même.",
       ],
-      planTitle: "Ce qui aide vraiment en periode de rattrapage",
+      planTitle: "Ce qui aide vraiment en période de rattrapage",
       planSteps: [
         {
-          title: "Choisir les vraies priorites",
+          title: "Choisir les vraies priorités",
           description:
-            "Tout n'a pas la meme urgence. Il faut identifier ce qui bloque la suite du cours et ce qui peut attendre.",
+            "Tout n'a pas la même urgence. Il faut identifier ce qui bloque la suite du cours et ce qui peut attendre.",
         },
         {
           title: "Redonner des bases stables",
           description:
-            "Un rattrapage reussi ne saute pas directement au chapitre actuel si les bases de lecture, de calcul ou de logique restent fragiles.",
+            "Un rattrapage réussi ne saute pas directement au chapitre actuel si les bases de lecture, de calcul ou de logique restent fragiles.",
         },
         {
           title: "Installer un rythme soutenable",
           description:
-            "L'eleve a besoin d'un plan qu'il peut tenir sans se sentir toujours en retard, sinon le decouragement revient vite.",
+            "L'élève a besoin d'un plan qu'il peut tenir sans se sentir toujours en retard, sinon le découragement revient vite.",
         },
       ],
-      mistakesTitle: "Les faux bons reflexes les plus frequents",
+      mistakesTitle: "Les faux bons réflexes les plus fréquents",
       mistakes: [
         "Essayer de tout rattraper en une semaine.",
         "Travailler seulement l'urgence du devoir du jour sans traiter la cause du retard.",
-        "Confondre surcharge de travail et progression reelle.",
+        "Confondre surcharge de travail et progression réelle.",
       ],
-      tutoringTitle: "Quand un accompagnement externe devient tres rentable",
+      tutoringTitle: "Quand un accompagnement externe devient très rentable",
       tutoringPoints: [
         "Quand il faut trier rapidement ce qui est essentiel de ce qui peut attendre.",
         "Quand la maison a besoin d'un cadre plus calme et plus structurant.",
-        "Quand l'eleve a besoin de retrouver vite un sentiment de progression.",
+        "Quand l'élève a besoin de retrouver vite un sentiment de progression.",
       ],
       faq: [
         {
-          question: "Le rattrapage demande-t-il forcement beaucoup d'heures ?",
+          question: "Le rattrapage demande-t-il forcément beaucoup d'heures ?",
           answer:
-            "Pas forcement. Ce qui compte le plus est la priorisation. Quelques seances bien ciblees peuvent relancer la progression beaucoup plus efficacement qu'un volume mal organise.",
+            "Pas forcément. Ce qui compte le plus est la priorisation. Quelques séances bien ciblées peuvent relancer la progression beaucoup plus efficacement qu'un volume mal organisé.",
         },
         {
-          question: "Faut-il traiter plusieurs matieres en meme temps ?",
+          question: "Faut-il traiter plusieurs matières en même temps ?",
           answer:
-            "Parfois oui, mais pas toujours. Le mieux est souvent de commencer par la matiere qui bloque le plus la semaine scolaire ou l'estime de soi de l'eleve.",
+            "Parfois oui, mais pas toujours. Le mieux est souvent de commencer par la matière qui bloque le plus la semaine scolaire ou l'estime de soi de l'élève.",
         },
       ],
-      ctaTitle: "Besoin d'une remise a niveau plus claire et plus respirable ?",
+      ctaTitle: "Besoin d'une remise à niveau plus claire et plus respirable ?",
       ctaText:
-        "Un premier echange peut suffire a definir les priorites, calmer la charge et remettre la progression en mouvement.",
+        "Un premier échange peut suffire à définir les priorités, calmer la charge et remettre la progression en mouvement.",
       relatedRouteKeys: ["mathExamPrep", "scienceExamPrep"],
     },
     en: {
@@ -504,7 +504,7 @@ export const resourcePageContent = {
       heroTitle: "High school catch-up tutoring: how to restart without drowning in everything that piled up",
       heroText:
         "When a student falls behind, the real danger is trying to repair everything at once. Strong catch-up work starts with clear priorities, realistic workload and a method that gives the student a sense of control again.",
-      seoTitle: "High school catch-up tutoring | Methode Secondaire",
+      seoTitle: "High school catch-up tutoring | Méthode Secondaire",
       seoDescription:
         "High school catch-up tutoring in Quebec for math and science: academic reset, priority planning, structured support and realistic progress.",
       keywords:
@@ -565,69 +565,69 @@ export const resourcePageContent = {
   },
   mathMinisterial: {
     fr: {
-      cardTitle: "Preparation examen ministeriel maths",
+      cardTitle: "Préparation examen ministériel maths",
       cardDescription:
-        "Un guide pour preparer l'examen ministeriel de maths avec un plan de revision plus strategique.",
-      eyebrow: "Examen ministeriel",
-      heroTitle: "Preparation a l'examen ministeriel de maths: comment reviser sans disperser son energie",
+        "Un guide pour préparer l'examen ministériel de maths avec un plan de révision plus stratégique.",
+      eyebrow: "Examen ministériel",
+      heroTitle: "Préparation à l'examen ministériel de maths : comment réviser sans disperser son énergie",
       heroText:
-        "L'examen ministeriel change la facon de reviser: il faut tenir compte du temps, des types de questions qui reviennent et de la regularite de la methode sous pression. Le bon objectif n'est pas d'en faire le plus possible, mais d'entrer avec une structure fiable.",
-      seoTitle: "Preparation examen ministeriel maths | Methode Secondaire",
+        "L'examen ministériel change la façon de réviser : il faut tenir compte du temps, des types de questions qui reviennent et de la régularité de la méthode sous pression. Le bon objectif n'est pas d'en faire le plus possible, mais d'entrer avec une structure fiable.",
+      seoTitle: "Préparation examen ministériel maths | Méthode Secondaire",
       seoDescription:
-        "Guide de preparation a l'examen ministeriel de maths au Quebec: plan de revision, types de questions, erreurs courantes et aide ciblee.",
+        "Guide de préparation à l'examen ministériel de maths au Québec : plan de révision, types de questions, erreurs courantes et aide ciblée.",
       keywords:
-        "preparation examen ministeriel maths, examen ministeriel maths quebec, tutorat examen ministeriel, revision maths ministeriel",
-      quickSignalsTitle: "Ce qui fragilise souvent la preparation ministerielle",
+        "préparation examen ministériel maths, examen ministériel maths Québec, tutorat examen ministériel, révision maths ministériel",
+      quickSignalsTitle: "Ce qui fragilise souvent la préparation ministérielle",
       quickSignals: [
-        "L'eleve revise des exercices, mais sans distinguer les formats les plus rentables.",
+        "L'élève révise des exercices, mais sans distinguer les formats les plus rentables.",
         "Le stress du chrono prend plus de place que la logique de resolution.",
-        "La revision manque d'un ordre clair entre bases, questions-types et simulation.",
+        "La révision manque d'un ordre clair entre bases, questions-types et simulation.",
       ],
-      planTitle: "Un plan utile pour l'examen ministeriel",
+      planTitle: "Un plan utile pour l'examen ministériel",
       planSteps: [
         {
-          title: "Verifier les blocs incontournables",
+          title: "Vérifier les blocs incontournables",
           description:
-            "Avant de viser large, il faut s'assurer que les notions et procedures qui reviennent presque toujours sont stables.",
+            "Avant de viser large, il faut s'assurer que les notions et procédures qui reviennent presque toujours sont stables.",
         },
         {
           title: "Travailler par format de question",
           description:
-            "Lecture, choix de methode, calcul, verification: les questions ministerielles recompensent surtout une demarche repetable.",
+            "Lecture, choix de méthode, calcul, vérification : les questions ministérielles récompensent surtout une démarche répétable.",
         },
         {
-          title: "Simuler sous un cadre realiste",
+          title: "Simuler sous un cadre réaliste",
           description:
-            "Quand la methode est mieux posee, les simulations servent enfin a tester le rythme et non a creer encore plus de panique.",
+            "Quand la méthode est mieux posée, les simulations servent enfin à tester le rythme et non à créer encore plus de panique.",
         },
       ],
-      mistakesTitle: "Les erreurs qui coutent cher a l'approche du ministeriel",
+      mistakesTitle: "Les erreurs qui coûtent cher à l'approche du ministériel",
       mistakes: [
-        "Vouloir tout revoir en meme temps au lieu de securiser les points les plus probables.",
+        "Vouloir tout revoir en même temps au lieu de sécuriser les points les plus probables.",
         "Faire trop peu de questions longues ou mixtes.",
-        "Confondre revision intense et revision strategique.",
+        "Confondre révision intense et révision stratégique.",
       ],
-      tutoringTitle: "Quand une aide externe devient tres rentable",
+      tutoringTitle: "Quand une aide externe devient très rentable",
       tutoringPoints: [
-        "Quand il faut ordonner la revision en tres peu de temps.",
-        "Quand l'eleve comprend la matiere mais perd ses moyens en contexte d'examen.",
-        "Quand la famille veut un regard precis sur les priorites finales.",
+        "Quand il faut ordonner la révision en très peu de temps.",
+        "Quand l'élève comprend la matière mais perd ses moyens en contexte d'examen.",
+        "Quand la famille veut un regard précis sur les priorités finales.",
       ],
       faq: [
         {
           question: "Faut-il faire beaucoup d'examens blancs ?",
           answer:
-            "Pas au debut. Il vaut mieux d'abord consolider la methode sur les bons formats, puis utiliser les simulations pour ajuster le rythme et les derniers points faibles.",
+            "Pas au début. Il vaut mieux d'abord consolider la méthode sur les bons formats, puis utiliser les simulations pour ajuster le rythme et les derniers points faibles.",
         },
         {
           question: "Le tutorat peut-il encore aider peu de temps avant l'examen ?",
           answer:
-            "Oui, surtout pour remettre les priorites en ordre, corriger des erreurs recurrentes et reduire l'impression de dispersion.",
+            "Oui, surtout pour remettre les priorités en ordre, corriger des erreurs récurrentes et réduire l'impression de dispersion.",
         },
       ],
-      ctaTitle: "Besoin d'un plan ministeriel plus clair ?",
+      ctaTitle: "Besoin d'un plan ministériel plus clair ?",
       ctaText:
-        "Une seance ciblee peut aider a trier les questions prioritaires, renforcer la methode et calmer la preparation finale.",
+        "Une séance ciblée peut aider à trier les questions prioritaires, renforcer la méthode et calmer la préparation finale.",
       relatedRouteKeys: ["mathExamPrep", "sec4Math", "catchUp"],
     },
     en: {
@@ -638,7 +638,7 @@ export const resourcePageContent = {
       heroTitle: "Math ministerial exam prep: how to review without scattering your energy",
       heroText:
         "A ministerial exam changes how review should work: time management, recurring question formats and method under pressure matter just as much as content. The goal is not to do everything. It is to walk in with a structure that holds.",
-      seoTitle: "Math ministerial exam prep | Methode Secondaire",
+      seoTitle: "Math ministerial exam prep | Méthode Secondaire",
       seoDescription:
         "Guide to Quebec math ministerial exam prep: revision plan, common question patterns, frequent mistakes and when tutoring helps.",
       keywords:
@@ -701,67 +701,67 @@ export const resourcePageContent = {
     fr: {
       cardTitle: "Tuteur physique secondaire",
       cardDescription:
-        "Une page utile pour les familles qui cherchent une aide plus precise en physique au secondaire.",
+        "Une page utile pour les familles qui cherchent une aide plus précise en physique au secondaire.",
       eyebrow: "Physique",
-      heroTitle: "Tutorat en physique au secondaire: quand les formules ne suffisent plus a elles seules",
+      heroTitle: "Tutorat en physique au secondaire : quand les formules ne suffisent plus à elles seules",
       heroText:
-        "La physique devient beaucoup plus abordable quand les grandeurs, les schemas et les situations concretes se reconnectent. Le vrai blocage ne vient pas seulement des formules: il vient souvent du lien entre la situation et la bonne demarche.",
-      seoTitle: "Tuteur physique secondaire | Methode Secondaire",
+        "La physique devient beaucoup plus abordable quand les grandeurs, les schémas et les situations concrètes se reconnectent. Le vrai blocage ne vient pas seulement des formules : il vient souvent du lien entre la situation et la bonne démarche.",
+      seoTitle: "Tuteur physique secondaire | Méthode Secondaire",
       seoDescription:
-        "Tutorat en physique au secondaire au Quebec: formules, problemes, schemas, methode de resolution et preparation d'examens.",
+        "Tutorat en physique au secondaire au Québec : formules, problèmes, schémas, méthode de résolution et préparation d'examens.",
       keywords:
-        "tuteur physique secondaire, aide physique secondaire, tutorat physique quebec, probleme physique secondaire",
+        "tuteur physique secondaire, aide physique secondaire, tutorat physique Québec, problème physique secondaire",
       quickSignalsTitle: "Ce qui bloque souvent en physique",
       quickSignals: [
-        "Les formules sont apprises, mais l'eleve ne sait pas toujours quand les utiliser.",
-        "Les schemas et les unites sont vus comme du detail alors qu'ils guident la resolution.",
-        "Les problemes semblent differents les uns des autres meme quand la logique est proche.",
+        "Les formules sont apprises, mais l'élève ne sait pas toujours quand les utiliser.",
+        "Les schémas et les unités sont vus comme du détail alors qu'ils guident la résolution.",
+        "Les problèmes semblent différents les uns des autres même quand la logique est proche.",
       ],
-      planTitle: "Une meilleure facon de progresser en physique",
+      planTitle: "Une meilleure façon de progresser en physique",
       planSteps: [
         {
           title: "Lire la situation avant la formule",
           description:
-            "En physique, il faut d'abord comprendre ce qui se passe avant de choisir l'outil mathematique.",
+            "En physique, il faut d'abord comprendre ce qui se passe avant de choisir l'outil mathématique.",
         },
         {
-          title: "Relier schema, donnees et variables",
+          title: "Relier schéma, données et variables",
           description:
-            "Quand ces trois elements restent alignes, la resolution devient plus stable et plus rapide.",
+            "Quand ces trois éléments restent alignés, la résolution devient plus stable et plus rapide.",
         },
         {
-          title: "Comparer les problemes entre eux",
+          title: "Comparer les problèmes entre eux",
           description:
-            "L'eleve gagne beaucoup quand il commence a reconnaitre des familles de questions plutot que des cas isoles.",
+            "L'élève gagne beaucoup quand il commence à reconnaître des familles de questions plutôt que des cas isolés.",
         },
       ],
       mistakesTitle: "Les erreurs qui reviennent le plus",
       mistakes: [
-        "Partir sur une formule sans clarifier ce que demande vraiment le probleme.",
-        "Negliger les unites et les representations visuelles.",
-        "Faire de la physique comme une simple liste de procedures a memoriser.",
+        "Partir sur une formule sans clarifier ce que demande vraiment le problème.",
+        "Négliger les unités et les représentations visuelles.",
+        "Faire de la physique comme une simple liste de procédures à mémoriser.",
       ],
-      tutoringTitle: "Quand le tutorat en physique accelere vraiment",
+      tutoringTitle: "Quand le tutorat en physique accélère vraiment",
       tutoringPoints: [
-        "Quand les problemes semblent tous differents et decourageants.",
+        "Quand les problèmes semblent tous différents et décourageants.",
         "Quand les calculs sont corrects mais le raisonnement reste flou.",
-        "Quand un examen approche et que la methode doit devenir plus fiable.",
+        "Quand un examen approche et que la méthode doit devenir plus fiable.",
       ],
       faq: [
         {
           question: "Pourquoi la physique semble-t-elle plus difficile que les maths ?",
           answer:
-            "Parce qu'elle demande souvent de lire une situation reelle, de choisir les bonnes variables et de traduire ensuite cette situation en calcul.",
+            "Parce qu'elle demande souvent de lire une situation réelle, de choisir les bonnes variables et de traduire ensuite cette situation en calcul.",
         },
         {
-          question: "Est-ce qu'un eleve fort en maths peut quand meme bloquer en physique ?",
+          question: "Est-ce qu'un élève fort en maths peut quand même bloquer en physique ?",
           answer:
-            "Oui. Les maths aident beaucoup, mais la physique demande aussi de l'interpretation, des schemas et une lecture plus contextuelle du probleme.",
+            "Oui. Les maths aident beaucoup, mais la physique demande aussi de l'interprétation, des schémas et une lecture plus contextuelle du problème.",
         },
       ],
       ctaTitle: "Besoin de remettre la physique en logique claire ?",
       ctaText:
-        "Un accompagnement cible peut aider a reconnecter les problemes, les schemas et les formules avant que la matiere ne se referme.",
+        "Un accompagnement ciblé peut aider à reconnecter les problèmes, les schémas et les formules avant que la matière ne se referme.",
       relatedRouteKeys: ["scienceExamPrep", "chemistrySec5", "catchUp"],
     },
     en: {
@@ -772,7 +772,7 @@ export const resourcePageContent = {
       heroTitle: "High school physics tutoring: when formulas alone stop being enough",
       heroText:
         "Physics becomes much easier when quantities, diagrams and real situations reconnect. The real block is rarely just the formula itself. It is often the link between the situation and the right approach.",
-      seoTitle: "High school physics tutoring | Methode Secondaire",
+      seoTitle: "High school physics tutoring | Méthode Secondaire",
       seoDescription:
         "High school physics tutoring in Quebec: formulas, diagrams, problem-solving method and exam preparation.",
       keywords:
@@ -835,67 +835,67 @@ export const resourcePageContent = {
     fr: {
       cardTitle: "Aide chimie secondaire 5",
       cardDescription:
-        "Une page pour les familles qui cherchent un accompagnement plus precis en chimie de secondaire 5.",
+        "Une page pour les familles qui cherchent un accompagnement plus précis en chimie de secondaire 5.",
       eyebrow: "Chimie sec 5",
-      heroTitle: "Aide en chimie de secondaire 5: clarifier les reactions, les calculs et la logique derriere les questions",
+      heroTitle: "Aide en chimie de secondaire 5 : clarifier les réactions, les calculs et la logique derrière les questions",
       heroText:
-        "En secondaire 5, la chimie peut devenir lourde tres vite quand les transformations, les equations, les proportions et la justification se melangent. Une bonne aide sert a remettre ces blocs en ordre pour rendre la matiere beaucoup moins opaque.",
-      seoTitle: "Aide chimie secondaire 5 | Methode Secondaire",
+        "En secondaire 5, la chimie peut devenir lourde très vite quand les transformations, les équations, les proportions et la justification se mélangent. Une bonne aide sert à remettre ces blocs en ordre pour rendre la matière beaucoup moins opaque.",
+      seoTitle: "Aide chimie secondaire 5 | Méthode Secondaire",
       seoDescription:
-        "Aide et tutorat en chimie de secondaire 5 au Quebec: reactions, equations, calculs, methode et preparation d'examens.",
+        "Aide et tutorat en chimie de secondaire 5 au Québec : réactions, équations, calculs, méthode et préparation d'examens.",
       keywords:
-        "aide chimie secondaire 5, tutorat chimie sec 5, tuteur chimie quebec, examen chimie secondaire",
+        "aide chimie secondaire 5, tutorat chimie sec 5, tuteur chimie Québec, examen chimie secondaire",
       quickSignalsTitle: "Ce qui pèse souvent en chimie de secondaire 5",
       quickSignals: [
-        "Les equations chimiques semblent memorisees plutot que comprises.",
-        "Les calculs et les proportions tombent vite quand l'enonce change un peu.",
-        "Les reponses manque de structure dans les questions plus explicatives.",
+        "Les équations chimiques semblent mémorisées plutôt que comprises.",
+        "Les calculs et les proportions tombent vite quand l'énoncé change un peu.",
+        "Les réponses manquent de structure dans les questions plus explicatives.",
       ],
       planTitle: "Ce qui aide le plus en chimie sec 5",
       planSteps: [
         {
-          title: "Revenir a la logique des reactions",
+          title: "Revenir à la logique des réactions",
           description:
-            "Quand les transformations redeviennent lisibles, les equations et les calculs suivent beaucoup mieux.",
+            "Quand les transformations redeviennent lisibles, les équations et les calculs suivent beaucoup mieux.",
         },
         {
-          title: "Stabiliser les etapes de calcul",
+          title: "Stabiliser les étapes de calcul",
           description:
-            "Les conversions, proportions et quantites doivent suivre un ordre clair pour rester solides en evaluation.",
+            "Les conversions, proportions et quantités doivent suivre un ordre clair pour rester solides en évaluation.",
         },
         {
-          title: "Repondre avec plus de structure",
+          title: "Répondre avec plus de structure",
           description:
-            "Les bonnes notes viennent aussi de la capacite a expliquer et justifier proprement, pas seulement de trouver un resultat.",
+            "Les bonnes notes viennent aussi de la capacité à expliquer et justifier proprement, pas seulement de trouver un résultat.",
         },
       ],
-      mistakesTitle: "Les erreurs qui ralentissent les progres",
+      mistakesTitle: "Les erreurs qui ralentissent les progrès",
       mistakes: [
-        "Apprendre des reactions par coeur sans comprendre ce qu'elles decrivent.",
-        "Sauter des etapes de calcul quand la pression monte.",
-        "Ne pratiquer que les questions courtes et eviter les questions d'analyse.",
+        "Apprendre des réactions par cœur sans comprendre ce qu'elles décrivent.",
+        "Sauter des étapes de calcul quand la pression monte.",
+        "Ne pratiquer que les questions courtes et éviter les questions d'analyse.",
       ],
-      tutoringTitle: "Quand la chimie beneficie beaucoup d'un accompagnement",
+      tutoringTitle: "Quand la chimie bénéficie beaucoup d'un accompagnement",
       tutoringPoints: [
-        "Quand l'eleve perd confiance devant les calculs de chimie.",
-        "Quand les reactions et les equations ne tiennent pas ensemble dans sa tete.",
+        "Quand l'élève perd confiance devant les calculs de chimie.",
+        "Quand les réactions et les équations ne tiennent pas ensemble dans sa tête.",
         "Quand un examen approche et qu'il faut remettre de l'ordre rapidement.",
       ],
       faq: [
         {
           question: "Pourquoi la chimie de secondaire 5 semble-t-elle si dense ?",
           answer:
-            "Parce qu'elle demande souvent de comprendre une reaction, d'ecrire ou lire une equation, puis d'enchainer avec des calculs ou une justification.",
+            "Parce qu'elle demande souvent de comprendre une réaction, d'écrire ou lire une équation, puis d'enchaîner avec des calculs ou une justification.",
         },
         {
-          question: "Faut-il privilegier la theorie ou les exercices ?",
+          question: "Faut-il privilégier la théorie ou les exercices ?",
           answer:
-            "Les deux, mais dans cet ordre: la theorie doit redevenir claire avant que les exercices puissent vraiment consolider quelque chose.",
+            "Les deux, mais dans cet ordre : la théorie doit redevenir claire avant que les exercices puissent vraiment consolider quelque chose.",
         },
       ],
-      ctaTitle: "La chimie de secondaire 5 commence a se brouiller ?",
+      ctaTitle: "La chimie de secondaire 5 commence à se brouiller ?",
       ctaText:
-        "Une seance ciblee peut remettre les reactions, les calculs et la structure des reponses dans un ordre beaucoup plus utilisable.",
+        "Une séance ciblée peut remettre les réactions, les calculs et la structure des réponses dans un ordre beaucoup plus utilisable.",
       relatedRouteKeys: ["scienceExamPrep", "physicsHelp", "catchUp"],
     },
     en: {
@@ -906,7 +906,7 @@ export const resourcePageContent = {
       heroTitle: "Secondary 5 chemistry help: clarifying reactions, calculations and the logic behind the questions",
       heroText:
         "In Secondary 5, chemistry gets heavy quickly when transformations, equations, proportions and written explanation all blend together. Strong support helps put those blocks back in order so the subject feels much less opaque.",
-      seoTitle: "Secondary 5 chemistry help | Methode Secondaire",
+      seoTitle: "Secondary 5 chemistry help | Méthode Secondaire",
       seoDescription:
         "Secondary 5 chemistry help in Quebec: reactions, equations, calculations, clearer method and exam preparation.",
       keywords:
@@ -967,69 +967,69 @@ export const resourcePageContent = {
   },
   montrealSec4Math: {
     fr: {
-      cardTitle: "Tuteur maths Montreal secondaire 4",
+      cardTitle: "Tuteur maths Montréal secondaire 4",
       cardDescription:
-        "Une page plus locale pour les familles de Montreal qui cherchent une aide precise en maths de secondaire 4.",
-      eyebrow: "Montreal + sec 4",
-      heroTitle: "Tuteur de maths a Montreal pour le secondaire 4: une recherche tres precise, et souvent tres urgente",
+        "Une page plus locale pour les familles de Montréal qui cherchent une aide précise en maths de secondaire 4.",
+      eyebrow: "Montréal + sec 4",
+      heroTitle: "Tuteur de maths à Montréal pour le secondaire 4 : une recherche très précise, et souvent très urgente",
       heroText:
-        "Quand un parent cherche un tuteur de maths a Montreal pour un eleve de secondaire 4, le besoin est rarement vague. Il y a souvent un chapitre qui glisse, un examen qui approche ou une perte de confiance qui commence a peser.",
-      seoTitle: "Tuteur maths Montreal secondaire 4 | Methode Secondaire",
+        "Quand un parent cherche un tuteur de maths à Montréal pour un élève de secondaire 4, le besoin est rarement vague. Il y a souvent un chapitre qui glisse, un examen qui approche ou une perte de confiance qui commence à peser.",
+      seoTitle: "Tuteur maths Montréal secondaire 4 | Méthode Secondaire",
       seoDescription:
-        "Tuteur de maths a Montreal pour le secondaire 4: fonctions, methode, rattrapage, examen et accompagnement clair.",
+        "Tuteur de maths à Montréal pour le secondaire 4 : fonctions, méthode, rattrapage, examen et accompagnement clair.",
       keywords:
-        "tuteur maths montreal secondaire 4, tutorat maths montreal sec 4, aide maths secondaire 4 montreal, tuteur fonctions montreal",
+        "tuteur maths Montréal secondaire 4, tutorat maths Montréal sec 4, aide maths secondaire 4 Montréal, tuteur fonctions Montréal",
       quickSignalsTitle: "Ce que cette recherche veut souvent vraiment dire",
       quickSignals: [
-        "Le secondaire 4 commence a devenir plus abstrait que prevu.",
+        "Le secondaire 4 commence à devenir plus abstrait que prévu.",
         "La famille veut une aide rapide, mais aussi un tuteur qui explique avec calme.",
-        "Le besoin est local, concret et souvent relie a une evaluation proche.",
+        "Le besoin est local, concret et souvent relié à une évaluation proche.",
       ],
       planTitle: "Ce qui rassure le plus dans ce contexte",
       planSteps: [
         {
           title: "Clarifier le vrai blocage",
           description:
-            "Fonctions, lecture de problemes, methode ou stress: le bon point de depart doit etre identifie tres vite.",
+            "Fonctions, lecture de problèmes, méthode ou stress : le bon point de départ doit être identifié très vite.",
         },
         {
-          title: "Retrouver une demarche stable",
+          title: "Retrouver une démarche stable",
           description:
-            "En secondaire 4, la progression passe souvent par une meilleure facon de commencer, structurer et verifier.",
+            "En secondaire 4, la progression passe souvent par une meilleure façon de commencer, structurer et vérifier.",
         },
         {
-          title: "Choisir un rythme coherent",
+          title: "Choisir un rythme cohérent",
           description:
             "Certaines situations demandent une aide ponctuelle avant un examen, d'autres un suivi hebdomadaire pour stabiliser tout le reste.",
         },
       ],
       mistakesTitle: "Les faux bons reflexes les plus frequents",
       mistakes: [
-        "Chercher seulement le tuteur le plus proche au lieu du profil le plus adapte.",
-        "Attendre trop longtemps alors que le secondaire 4 commence deja a se fragiliser.",
-        "Se concentrer uniquement sur la note a venir sans consolider la methode.",
+        "Chercher seulement le tuteur le plus proche au lieu du profil le plus adapté.",
+        "Attendre trop longtemps alors que le secondaire 4 commence déjà à se fragiliser.",
+        "Se concentrer uniquement sur la note à venir sans consolider la méthode.",
       ],
       tutoringTitle: "Quand cette page correspond exactement au bon besoin",
       tutoringPoints: [
-        "Quand vous etes a Montreal et que le secondaire 4 devient un vrai point de friction.",
-        "Quand l'eleve a besoin d'explications nettes sur les fonctions et les problemes.",
-        "Quand vous voulez un premier echange rapide avant de reserver.",
+        "Quand vous êtes à Montréal et que le secondaire 4 devient un vrai point de friction.",
+        "Quand l'élève a besoin d'explications nettes sur les fonctions et les problèmes.",
+        "Quand vous voulez un premier échange rapide avant de réserver.",
       ],
       faq: [
         {
-          question: "Est-ce que le tutorat peut se faire en ligne meme a Montreal ?",
+          question: "Est-ce que le tutorat peut se faire en ligne même à Montréal ?",
           answer:
-            "Oui. L'en ligne reste disponible partout a Montreal, avec du presentiel selon le secteur et le bon profil retenu.",
+            "Oui. L'en ligne reste disponible partout à Montréal, avec du présentiel selon le secteur et le bon profil retenu.",
         },
         {
-          question: "Le secondaire 4 justifie-t-il deja un suivi hebdomadaire ?",
+          question: "Le secondaire 4 justifie-t-il déjà un suivi hebdomadaire ?",
           answer:
-            "Souvent oui, surtout si les fonctions ou la methode commencent a glisser. Un suivi regulier evite que le retard se fixe avant le secondaire 5.",
+            "Souvent oui, surtout si les fonctions ou la méthode commencent à glisser. Un suivi régulier évite que le retard se fixe avant le secondaire 5.",
         },
       ],
-      ctaTitle: "Vous cherchez un tuteur de maths a Montreal pour le secondaire 4 ?",
+      ctaTitle: "Vous cherchez un tuteur de maths à Montréal pour le secondaire 4 ?",
       ctaText:
-        "Un premier appel peut aider a cadrer le niveau, l'urgence et le type d'accompagnement le plus utile tout de suite.",
+        "Un premier appel peut aider à cadrer le niveau, l'urgence et le type d'accompagnement le plus utile tout de suite.",
       relatedRouteKeys: ["sec4Math", "mathExamPrep", "mathMinisterial"],
     },
     en: {
@@ -1040,7 +1040,7 @@ export const resourcePageContent = {
       heroTitle: "A Montreal math tutor for Secondary 4: a very specific search, and often an urgent one",
       heroText:
         "When a parent searches for a Montreal math tutor for a Secondary 4 student, the need is rarely vague. There is usually a slipping chapter, an exam coming up or a confidence drop that is starting to weigh on the family.",
-      seoTitle: "Montreal Secondary 4 math tutor | Methode Secondaire",
+      seoTitle: "Montreal Secondary 4 math tutor | Méthode Secondaire",
       seoDescription:
         "Montreal math tutor for Secondary 4: functions, method, catch-up work, exams and clear support.",
       keywords:
