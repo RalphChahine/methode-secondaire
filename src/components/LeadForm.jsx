@@ -1,10 +1,11 @@
-import { useState } from "react"
-import { CalendarDays, Check, Clock3, Phone } from "lucide-react"
+import { useEffect, useState } from "react"
+import { CalendarDays, Check, Clock3, Phone, Sparkles } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { BOOKING_URL } from "@/config/booking"
+import { getDiagnosticAnswerLabel } from "@/lib/leadDiagnostic"
 import { siteConfig } from "@/lib/seo"
 
 const copyByLocale = {
@@ -13,6 +14,7 @@ const copyByLocale = {
     noteText:
       "D\u00E9crivez la situation en une minute. Le retour permet ensuite de vous orienter vers le bon format ou le bon tuteur.",
     quickReply: "R\u00E9ponse vis\u00E9e sous 24 h ouvrables.",
+    injectedSummary: "Le r\u00E9sum\u00E9 du diagnostic a \u00E9t\u00E9 ajout\u00E9 automatiquement.",
     nameLabel: "Nom",
     namePlaceholder: "Nom de l'\u00E9l\u00E8ve ou du parent",
     emailLabel: "Email",
@@ -22,16 +24,16 @@ const copyByLocale = {
     priorityLabel: "Besoin le plus urgent",
     priorityPlaceholder: "Choisir la situation qui ressemble le plus",
     priorityOptions: [
-      { value: "examens", label: "Pr\u00E9paration d'examens" },
-      { value: "suivi", label: "Suivi hebdomadaire" },
-      { value: "rattrapage", label: "Rattrapage ou remise \u00E0 niveau" },
-      { value: "incertain", label: "Je ne suis pas encore certain" },
+      { value: "exam-prep", label: "Pr\u00E9paration d'examens" },
+      { value: "weekly", label: "Suivi hebdomadaire" },
+      { value: "catch-up", label: "Rattrapage ou remise \u00E0 niveau" },
+      { value: "unsure", label: "Je ne suis pas encore certain" },
     ],
     formatLabel: "Format souhait\u00E9",
     formatOptions: [
-      { value: "en-ligne", label: "En ligne" },
-      { value: "presentiel", label: "Pr\u00E9sentiel si possible" },
-      { value: "flexible", label: "Les deux me conviennent" },
+      { value: "online", label: "En ligne" },
+      { value: "in-person", label: "Pr\u00E9sentiel si possible" },
+      { value: "either", label: "Les deux me conviennent" },
     ],
     messageLabel: "Message",
     messagePlaceholder: "D\u00E9crivez bri\u00E8vement la situation, les difficult\u00E9s ou l'objectif.",
@@ -53,6 +55,7 @@ const copyByLocale = {
     noteText:
       "Describe the situation in a minute. The reply can then guide you toward the right format or tutor profile.",
     quickReply: "Target reply within one business day.",
+    injectedSummary: "The diagnostic summary was added automatically.",
     nameLabel: "Name",
     namePlaceholder: "Student or parent name",
     emailLabel: "Email",
@@ -86,20 +89,84 @@ const copyByLocale = {
     successReset: "Send another message",
     errorText:
       "An error occurred while sending. You can try again or contact directly by phone or email.",
-    emailSubject: "New tutoring request - Méthode Secondaire",
+    emailSubject: "New tutoring request - M\u00E9thode Secondaire",
   },
+}
+
+function getInitialValues(copy) {
+  return {
+    nom: "",
+    email: "",
+    sujet: "",
+    priorite: "",
+    format: copy.formatOptions[2].value,
+    message: "",
+  }
 }
 
 export default function LeadForm({ locale = "fr", pageName = "website" }) {
   const copy = copyByLocale[locale] || copyByLocale.fr
   const [status, setStatus] = useState("idle")
+  const [diagnosticInjected, setDiagnosticInjected] = useState(false)
+  const [values, setValues] = useState(() => getInitialValues(copy))
+
+  useEffect(() => {
+    setValues(getInitialValues(copy))
+    setDiagnosticInjected(false)
+  }, [copy])
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined
+    }
+
+    function handleDiagnosticPrefill(event) {
+      const detail = event.detail || {}
+
+      if (detail.locale !== locale || !detail.answers || !detail.result) {
+        return
+      }
+
+      const subjectLabel = getDiagnosticAnswerLabel(locale, "subject", detail.answers.subject)
+      const levelLabel = getDiagnosticAnswerLabel(locale, "level", detail.answers.level)
+
+      setValues((current) => ({
+        ...current,
+        sujet: current.sujet || [levelLabel, subjectLabel].filter(Boolean).join(" - "),
+        priorite: detail.answers.goal || current.priorite,
+        format: detail.answers.format || current.format,
+        message: detail.result.suggestedMessage || current.message,
+      }))
+      setDiagnosticInjected(true)
+    }
+
+    window.addEventListener("methode:diagnostic-prefill", handleDiagnosticPrefill)
+    return () => window.removeEventListener("methode:diagnostic-prefill", handleDiagnosticPrefill)
+  }, [locale])
+
+  function updateValue(key, value) {
+    setValues((current) => ({
+      ...current,
+      [key]: value,
+    }))
+  }
 
   async function handleSubmit(event) {
     event.preventDefault()
     setStatus("sending")
 
-    const form = event.currentTarget
-    const data = new FormData(form)
+    const data = new FormData()
+    data.append("nom", values.nom)
+    data.append("email", values.email)
+    data.append("sujet", values.sujet)
+    data.append("priorite", values.priorite)
+    data.append("format", values.format)
+    data.append("message", values.message)
+    data.append("_subject", copy.emailSubject)
+    data.append("_template", "table")
+    data.append("_gotcha", "")
+    data.append("site_locale", locale)
+    data.append("source_page", pageName)
 
     try {
       const response = await fetch("https://formspree.io/f/mzddpkaz", {
@@ -118,15 +185,16 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
             detail: {
               locale,
               source_page: pageName,
-              priority: data.get("priorite") || "",
-              format: data.get("format") || "",
+              priority: values.priorite,
+              format: values.format,
             },
           }),
         )
       }
 
       setStatus("success")
-      form.reset()
+      setValues(getInitialValues(copy))
+      setDiagnosticInjected(false)
     } catch {
       setStatus("error")
     }
@@ -180,7 +248,15 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
           {copy.noteTitle}
         </div>
         <p className="mt-2 text-sm leading-7 text-white/72">{copy.noteText}</p>
-        <p className="mt-2 text-xs uppercase tracking-[0.22em] text-[#f5c977]">{copy.quickReply}</p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <p className="text-xs uppercase tracking-[0.22em] text-[#f5c977]">{copy.quickReply}</p>
+          {diagnosticInjected && (
+            <div className="inline-flex items-center gap-1 rounded-full border border-[#f5c977]/25 bg-[#f5c977]/10 px-3 py-1 text-xs text-[#f8deb0]">
+              <Sparkles className="h-3 w-3" />
+              {copy.injectedSummary}
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -188,6 +264,8 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
           <Input
             name="nom"
             required
+            value={values.nom}
+            onChange={(event) => updateValue("nom", event.target.value)}
             className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
             placeholder={copy.namePlaceholder}
           />
@@ -198,6 +276,8 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
             name="email"
             type="email"
             required
+            value={values.email}
+            onChange={(event) => updateValue("email", event.target.value)}
             className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
             placeholder={copy.emailPlaceholder}
           />
@@ -208,6 +288,8 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
         <Input
           name="sujet"
           required
+          value={values.sujet}
+          onChange={(event) => updateValue("sujet", event.target.value)}
           className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
           placeholder={copy.subjectPlaceholder}
         />
@@ -218,7 +300,8 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
           <select
             name="priorite"
             required
-            defaultValue=""
+            value={values.priorite}
+            onChange={(event) => updateValue("priorite", event.target.value)}
             className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
           >
             <option value="" disabled className="bg-[#06132f] text-white/45">
@@ -235,7 +318,8 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
         <Field label={copy.formatLabel}>
           <select
             name="format"
-            defaultValue={copy.formatOptions[2].value}
+            value={values.format}
+            onChange={(event) => updateValue("format", event.target.value)}
             className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
           >
             {copy.formatOptions.map((option) => (
@@ -251,16 +335,12 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
         <Textarea
           name="message"
           required
+          value={values.message}
+          onChange={(event) => updateValue("message", event.target.value)}
           className="min-h-[140px] rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
           placeholder={copy.messagePlaceholder}
         />
       </Field>
-
-      <input type="hidden" name="_subject" value={copy.emailSubject} />
-      <input type="hidden" name="_template" value="table" />
-      <input type="hidden" name="_gotcha" />
-      <input type="hidden" name="site_locale" value={locale} />
-      <input type="hidden" name="source_page" value={pageName} />
 
       <Button
         type="submit"

@@ -1,10 +1,20 @@
 import { useEffect, useMemo, useState } from "react"
-import { CalendarDays, Check, Clipboard, Loader2, Phone, RotateCcw, Sparkles } from "lucide-react"
+import {
+  CalendarDays,
+  Check,
+  Clipboard,
+  Loader2,
+  MessageSquareMore,
+  Phone,
+  RotateCcw,
+  Sparkles,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { assistantBusinessInfo } from "@/lib/assistantConfig"
 import {
+  buildFallbackLeadDiagnosticResult,
   buildLeadDiagnosticClipboardText,
   createEmptyDiagnosticAnswers,
   getDiagnosticQuestions,
@@ -19,20 +29,18 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
   const [stepIndex, setStepIndex] = useState(0)
   const [answers, setAnswers] = useState(createEmptyDiagnosticAnswers())
   const [result, setResult] = useState(null)
-  const [limitedMode, setLimitedMode] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [copied, setCopied] = useState(false)
 
   const currentQuestion = questions[stepIndex]
-  const progress = ((stepIndex + 1) / questions.length) * 100
-  const currentValue = answers[currentQuestion.key] || ""
+  const progress = questions.length ? ((stepIndex + 1) / questions.length) * 100 : 0
+  const currentValue = currentQuestion ? answers[currentQuestion.key] || "" : ""
 
   useEffect(() => {
     setStepIndex(0)
     setAnswers(createEmptyDiagnosticAnswers())
     setResult(null)
-    setLimitedMode(false)
     setIsSubmitting(false)
     setError("")
     setCopied(false)
@@ -73,12 +81,15 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
     setStepIndex(0)
     setAnswers(createEmptyDiagnosticAnswers())
     setResult(null)
-    setLimitedMode(false)
     setError("")
     setCopied(false)
   }
 
   function canAdvance() {
+    if (!currentQuestion) {
+      return false
+    }
+
     if (currentQuestion.type === "textarea") {
       return String(currentValue || "").trim().length >= 10
     }
@@ -97,26 +108,10 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
     setError("")
 
     try {
-      const response = await fetch("/api/student-assistant", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          locale,
-          mode: "diagnostic",
-          qualification: normalizedAnswers,
-        }),
-      })
+      await new Promise((resolve) => window.setTimeout(resolve, 320))
+      const localResult = buildFallbackLeadDiagnosticResult(locale, normalizedAnswers)
 
-      const payload = await response.json().catch(() => ({}))
-
-      if (!response.ok || !payload?.diagnostic) {
-        throw new Error(locale === "en" ? "The diagnostic could not be generated." : "Le diagnostic n'a pas pu être généré.")
-      }
-
-      setResult(payload.diagnostic)
-      setLimitedMode(Boolean(payload.limitedMode))
+      setResult(localResult)
 
       if (typeof window !== "undefined") {
         window.dispatchEvent(
@@ -124,20 +119,28 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
             detail: {
               locale,
               ...normalizedAnswers,
-              recommended_action: payload.diagnostic.recommendedAction,
-              recommended_service: payload.diagnostic.recommendedService,
-              limited_mode: Boolean(payload.limitedMode),
+              recommended_action: localResult.recommendedAction,
+              recommended_service: localResult.recommendedService,
+              limited_mode: false,
+            },
+          }),
+        )
+
+        window.dispatchEvent(
+          new CustomEvent("methode:diagnostic-prefill", {
+            detail: {
+              locale,
+              answers: normalizedAnswers,
+              result: localResult,
             },
           }),
         )
       }
-    } catch (requestError) {
+    } catch {
       setError(
-        requestError instanceof Error && requestError.message
-          ? requestError.message
-          : locale === "en"
-            ? "The diagnostic could not be generated."
-            : "Le diagnostic n'a pas pu être généré.",
+        locale === "en"
+          ? "The diagnostic could not be generated."
+          : "Le diagnostic n'a pas pu \u00EAtre g\u00E9n\u00E9r\u00E9.",
       )
     } finally {
       setIsSubmitting(false)
@@ -157,6 +160,18 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
     }
   }
 
+  function jumpToContact() {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    window.dispatchEvent(new CustomEvent("methode:jump-contact"))
+  }
+
+  if (!currentQuestion && !result) {
+    return null
+  }
+
   if (result) {
     const callIsPrimary = result.recommendedAction === "call_now"
 
@@ -168,11 +183,6 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
               <Sparkles className="h-3.5 w-3.5 text-[#f5c977]" />
               {ui.resultEyebrow}
             </div>
-            {limitedMode && (
-              <div className="rounded-full border border-[#f5c977]/30 bg-[#f5c977]/10 px-3 py-1 text-xs text-[#f5c977]">
-                {ui.limitedMode}
-              </div>
-            )}
           </div>
 
           <h3 className="mt-4 font-display text-2xl font-semibold text-white">{result.headline}</h3>
@@ -197,7 +207,10 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
             <div className="text-sm font-semibold text-white">{ui.reasonsTitle}</div>
             <div className="mt-4 space-y-3">
               {result.reasons.map((item) => (
-                <div key={item} className="flex items-start gap-3 rounded-[20px] border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/78">
+                <div
+                  key={item}
+                  className="flex items-start gap-3 rounded-[20px] border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/78"
+                >
                   <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
                   {item}
                 </div>
@@ -209,7 +222,10 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
             <div className="text-sm font-semibold text-white">{ui.nextStepsTitle}</div>
             <div className="mt-4 space-y-3">
               {result.nextSteps.map((item) => (
-                <div key={item} className="flex items-start gap-3 rounded-[20px] border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/78">
+                <div
+                  key={item}
+                  className="flex items-start gap-3 rounded-[20px] border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/78"
+                >
                   <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
                   {item}
                 </div>
@@ -268,6 +284,16 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
           >
             <Clipboard className="h-4 w-4" />
             {copied ? ui.copied : ui.copySummary}
+          </Button>
+
+          <Button
+            type="button"
+            variant="outline"
+            className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+            onClick={jumpToContact}
+          >
+            <MessageSquareMore className="h-4 w-4" />
+            {locale === "en" ? "Use in contact form" : "Utiliser dans le formulaire"}
           </Button>
 
           <Button

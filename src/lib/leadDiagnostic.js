@@ -4,7 +4,7 @@ export { diagnosticFieldOrder }
 
 export const diagnosticUiByLocale = {
   fr: {
-    launchEyebrow: "Diagnostic IA express",
+    launchEyebrow: "Diagnostic express",
     launchTitle: "2 minutes pour savoir quoi faire ensuite",
     launchDescription:
       "L'IA lit le niveau, la matière, l'urgence et le bon format pour recommander la prochaine étape la plus utile avant d'appeler ou de réserver.",
@@ -13,7 +13,7 @@ export const diagnosticUiByLocale = {
       "Aide à décider entre appel immédiat et réservation directe.",
       "Génère un résumé propre à réutiliser dans la demande.",
     ],
-    launchButton: "Lancer le diagnostic IA",
+    launchButton: "Lancer le diagnostic",
     launchSecondary: "Appeler maintenant",
     modeChat: "Questions",
     modeDiagnostic: "Diagnostic",
@@ -28,9 +28,9 @@ export const diagnosticUiByLocale = {
     analyzing: "Analyse en cours...",
     restart: "Recommencer",
     edit: "Modifier mes réponses",
-    resultEyebrow: "Orientation IA",
+    resultEyebrow: "Orientation recommandee",
     resultTitle: "La meilleure prochaine étape selon le diagnostic",
-    summaryTitle: "Ce que l'IA voit",
+    summaryTitle: "Ce que le diagnostic voit",
     reasonsTitle: "Pourquoi cette orientation",
     nextStepsTitle: "Suite recommandée",
     messageTitle: "Résumé prêt à réutiliser",
@@ -108,16 +108,16 @@ export const diagnosticUiByLocale = {
     },
   },
   en: {
-    launchEyebrow: "AI diagnostic",
+    launchEyebrow: "Quick diagnostic",
     launchTitle: "2 minutes to know what to do next",
     launchDescription:
-      "The AI reads the grade, subject, urgency and best format, then recommends the most useful next step before you call or book.",
+      "The diagnostic reads the grade, subject, urgency and best format, then recommends the most useful next step before you call or book.",
     launchBullets: [
       "Clarifies whether the need feels more like exam prep, catch-up support or weekly follow-up.",
       "Helps decide between calling now and booking directly.",
       "Generates a clean summary you can reuse in the request.",
     ],
-    launchButton: "Start the AI diagnostic",
+    launchButton: "Start the diagnostic",
     launchSecondary: "Call now",
     modeChat: "Questions",
     modeDiagnostic: "Diagnostic",
@@ -132,9 +132,9 @@ export const diagnosticUiByLocale = {
     analyzing: "Analyzing...",
     restart: "Start again",
     edit: "Edit answers",
-    resultEyebrow: "AI direction",
+    resultEyebrow: "Recommended direction",
     resultTitle: "The best next step based on the diagnostic",
-    summaryTitle: "What the AI sees",
+    summaryTitle: "What the diagnostic sees",
     reasonsTitle: "Why this direction",
     nextStepsTitle: "Recommended next steps",
     messageTitle: "Summary ready to reuse",

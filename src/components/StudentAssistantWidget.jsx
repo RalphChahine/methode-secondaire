@@ -1,9 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react"
 import { Bot, CalendarDays, Loader2, MessageSquareMore, Phone, Sparkles } from "lucide-react"
 
-import { assistantBusinessInfo, assistantUiByLocale } from "@/lib/assistantConfig"
 import LeadDiagnosticPanel from "@/components/LeadDiagnosticPanel"
-import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import {
   Sheet,
@@ -14,7 +12,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { Textarea } from "@/components/ui/textarea"
+import {
+  assistantBusinessInfo,
+  assistantUiByLocale,
+  buildFallbackAssistantReply,
+} from "@/lib/assistantConfig"
 import { getDiagnosticUi } from "@/lib/leadDiagnostic"
+import { cn } from "@/lib/utils"
 
 const initialMessageByLocale = {
   fr: {
@@ -29,82 +33,6 @@ const initialMessageByLocale = {
   },
 }
 
-function isLocalAssistantHost() {
-  if (typeof window === "undefined") {
-    return false
-  }
-
-  return window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-}
-
-function getAssistantErrorMessage({ payload, status, locale, fallback }) {
-  const isEnglish = locale === "en"
-  const isLocal = isLocalAssistantHost()
-
-  if (status === 404) {
-    return isEnglish
-      ? isLocal
-        ? "The local assistant route is missing. Run `npm.cmd run dev:full` instead of `npm.cmd run dev` so the `/api/student-assistant` function is available."
-        : "The `/api/student-assistant` route was not found on this deployment."
-      : isLocal
-        ? "La route locale de l'assistant est introuvable. Lancez `npm.cmd run dev:full` au lieu de `npm.cmd run dev` pour activer la fonction `/api/student-assistant`."
-        : "La route `/api/student-assistant` est introuvable sur ce deploiement."
-  }
-
-  if (payload?.code === "MISSING_OPENAI_API_KEY") {
-    return isEnglish
-      ? isLocal
-        ? "The assistant is missing `OPENAI_API_KEY` locally. Create `.env.local` from `.env.example`, add the key, then run `npm.cmd run dev:full`."
-        : "The assistant is missing `OPENAI_API_KEY` on Vercel. Add it in the project environment variables, redeploy, and try again."
-      : isLocal
-        ? "L'assistant n'a pas de `OPENAI_API_KEY` en local. Créez `.env.local` à partir de `.env.example`, ajoutez la clé, puis lancez `npm.cmd run dev:full`."
-        : "L'assistant n'a pas de `OPENAI_API_KEY` sur Vercel. Ajoutez-la dans les variables d'environnement du projet, redéployez, puis réessayez."
-  }
-
-  if (payload?.code === "OPENAI_AUTH_FAILED") {
-    return isEnglish
-      ? isLocal
-        ? "The local `OPENAI_API_KEY` looks invalid. Update `.env.local`, restart `npm.cmd run dev:full`, and try again."
-        : "The `OPENAI_API_KEY` configured on Vercel looks invalid. Update it in the project settings and redeploy."
-      : isLocal
-        ? "La `OPENAI_API_KEY` locale semble invalide. Mettez à jour `.env.local`, redémarrez `npm.cmd run dev:full`, puis réessayez."
-        : "La `OPENAI_API_KEY` configurée sur Vercel semble invalide. Mettez-la à jour dans les réglages du projet puis redéployez."
-  }
-
-  if (payload?.code === "ASSISTANT_RATE_LIMITED" || payload?.code === "OPENAI_UPSTREAM_RATE_LIMITED") {
-    return isEnglish
-      ? "The assistant is busy right now. Please wait a minute and try again."
-      : "L'assistant est surcharge pour le moment. Attendez une minute puis reessayez."
-  }
-
-  if (typeof payload?.error === "string" && payload.error.trim()) {
-    return payload.error.trim()
-  }
-
-  return fallback
-}
-
-function getTransportErrorMessage({ error, locale, fallback }) {
-  const isEnglish = locale === "en"
-  const isLocal = isLocalAssistantHost()
-
-  if (error instanceof TypeError) {
-    return isEnglish
-      ? isLocal
-        ? "The local assistant is unreachable. Run `npm.cmd run dev:full` and make sure `.env.local` contains `OPENAI_API_KEY`."
-        : "The assistant service could not be reached from this deployment."
-      : isLocal
-        ? "L'assistant local est inaccessible. Lancez `npm.cmd run dev:full` et verifiez que `.env.local` contient `OPENAI_API_KEY`."
-        : "Le service assistant est inaccessible depuis ce deploiement."
-  }
-
-  if (error instanceof Error && error.message) {
-    return error.message
-  }
-
-  return fallback
-}
-
 export default function StudentAssistantWidget({ locale = "fr" }) {
   const copy = assistantUiByLocale[locale] || assistantUiByLocale.fr
   const diagnosticCopy = getDiagnosticUi(locale)
@@ -114,7 +42,6 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
   const [draft, setDraft] = useState("")
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState("")
-  const [previousResponseId, setPreviousResponseId] = useState("")
   const endRef = useRef(null)
 
   useEffect(() => {
@@ -133,7 +60,6 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
     setMessages([initialMessageByLocale[locale] || initialMessageByLocale.fr])
     setDraft("")
     setError("")
-    setPreviousResponseId("")
     setMode("chat")
   }, [locale])
 
@@ -147,8 +73,23 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
       setMode("diagnostic")
     }
 
+    function handleJumpContact() {
+      setOpen(false)
+      const contactSection = document.getElementById("contact")
+      if (contactSection) {
+        window.requestAnimationFrame(() => {
+          contactSection.scrollIntoView({ behavior: "smooth", block: "start" })
+        })
+      }
+    }
+
     window.addEventListener("methode:open-diagnostic", handleOpenDiagnostic)
-    return () => window.removeEventListener("methode:open-diagnostic", handleOpenDiagnostic)
+    window.addEventListener("methode:jump-contact", handleJumpContact)
+
+    return () => {
+      window.removeEventListener("methode:open-diagnostic", handleOpenDiagnostic)
+      window.removeEventListener("methode:jump-contact", handleJumpContact)
+    }
   }, [])
 
   const starters = useMemo(() => copy.starterQuestions.slice(0, 4), [copy.starterQuestions])
@@ -173,49 +114,19 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
     setDraft("")
 
     try {
-      const response = await fetch("/api/student-assistant", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          locale,
-          message,
-          previousResponseId,
-        }),
-      })
-
-      const payload = await response.json().catch(() => ({}))
-
-      if (!response.ok) {
-        throw new Error(
-          getAssistantErrorMessage({
-            payload,
-            status: response.status,
-            locale,
-            fallback: copy.error,
-          }),
-        )
-      }
+      await new Promise((resolve) => window.setTimeout(resolve, 220))
+      const reply = buildFallbackAssistantReply(message, locale)
 
       setMessages((current) => [
         ...current,
         {
-          id: payload.responseId || `assistant-${Date.now()}`,
+          id: `assistant-${Date.now()}`,
           role: "assistant",
-          content: payload.text,
+          content: reply,
         },
       ])
-      setPreviousResponseId(payload.limitedMode ? "" : payload.responseId || "")
-    } catch (requestError) {
-      const messageText = getTransportErrorMessage({
-        error: requestError,
-        locale,
-        fallback: copy.error,
-      })
-
-      setError(messageText)
-      setMessages((current) => current.filter((entry) => entry.id !== userMessage.id || entry.role !== "user").concat(userMessage))
+    } catch {
+      setError(copy.error)
     } finally {
       setIsSending(false)
     }
@@ -243,7 +154,7 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
           </Button>
         </SheetTrigger>
 
-          <SheetContent
+        <SheetContent
           side="right"
           className="flex h-full w-full flex-col border-white/10 bg-[#071631] p-0 text-white sm:max-w-xl"
         >
@@ -265,9 +176,7 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
                 type="button"
                 className={cn(
                   "rounded-full px-4 py-2 text-sm transition",
-                  mode === "chat"
-                    ? "bg-[#f5c977] text-[#071631]"
-                    : "text-white/72 hover:text-white",
+                  mode === "chat" ? "bg-[#f5c977] text-[#071631]" : "text-white/72 hover:text-white",
                 )}
                 onClick={() => setMode("chat")}
               >
@@ -363,7 +272,9 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
 
                   {isSending && (
                     <div className="max-w-[88%] rounded-[24px] border border-white/10 bg-white/6 px-4 py-3 text-sm text-white/72">
-                      <div className="mb-1 text-xs uppercase tracking-[0.22em] text-white/45">{copy.assistantLabel}</div>
+                      <div className="mb-1 text-xs uppercase tracking-[0.22em] text-white/45">
+                        {copy.assistantLabel}
+                      </div>
                       <div className="flex items-center gap-2">
                         <Loader2 className="h-4 w-4 animate-spin text-[#f5c977]" />
                         {copy.sending}
