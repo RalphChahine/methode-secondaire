@@ -29,6 +29,7 @@ import {
   OperationalPromisesSection,
   VerifiedReviewsSection,
 } from "@/components/ConversionSections"
+import GrowthProgramSection from "@/components/GrowthProgramSection"
 import LeadForm from "@/components/LeadForm"
 import MotionCard from "@/components/MotionCard"
 import ResourceGridSection from "@/components/ResourceGridSection"
@@ -290,6 +291,8 @@ export default function AccueilEn() {
             </div>
           </motion.div>
         </section>
+
+        <GrowthProgramSection locale="en" className="pt-20" />
 
         <section id="methode" className="scroll-mt-32 pt-20">
           <SectionHeader

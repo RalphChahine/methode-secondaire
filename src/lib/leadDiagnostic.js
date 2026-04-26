@@ -28,7 +28,7 @@ export const diagnosticUiByLocale = {
     analyzing: "Analyse en cours...",
     restart: "Recommencer",
     edit: "Modifier mes réponses",
-    resultEyebrow: "Orientation recommandee",
+    resultEyebrow: "Orientation recommand\u00E9e",
     resultTitle: "La meilleure prochaine étape selon le diagnostic",
     summaryTitle: "Ce que le diagnostic voit",
     reasonsTitle: "Pourquoi cette orientation",
@@ -254,7 +254,28 @@ export const leadDiagnosticSchema = {
 }
 
 export function getDiagnosticUi(locale = "fr") {
-  return diagnosticUiByLocale[locale] || diagnosticUiByLocale.fr
+  const ui = diagnosticUiByLocale[locale] || diagnosticUiByLocale.fr
+
+  if (locale === "fr") {
+    return {
+      ...ui,
+      launchDescription:
+        "Le diagnostic lit le niveau, la mati\u00E8re, l'urgence et le bon format pour recommander la prochaine \u00E9tape la plus utile avant d'appeler ou de r\u00E9server.",
+      introDescription:
+        "R\u00E9pondez en quelques clics. \u00C0 la fin, l'outil recommande la meilleure prochaine \u00E9tape pour la situation.",
+      resultEyebrow: "Orientation recommand\u00E9e",
+    }
+  }
+
+  if (locale === "en") {
+    return {
+      ...ui,
+      introDescription:
+        "Answer in a few taps. At the end, the tool recommends the best next step for the situation.",
+    }
+  }
+
+  return ui
 }
 
 export function getDiagnosticQuestions(locale = "fr") {

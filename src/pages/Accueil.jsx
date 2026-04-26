@@ -32,6 +32,7 @@ import {
   OperationalPromisesSection,
   VerifiedReviewsSection,
 } from "@/components/ConversionSections"
+import GrowthProgramSection from "@/components/GrowthProgramSection"
 import LeadForm from "@/components/LeadForm"
 import MotionCard from "@/components/MotionCard"
 import ResourceGridSection from "@/components/ResourceGridSection"
@@ -785,6 +786,8 @@ export default function Accueil() {
           }}
             description="Examen qui approche, secondaire 4 qui bascule, retard qui s'accumule : ces pages répondent à des recherches précises juste avant qu'une famille appelle ou réserve."
         />
+
+        <GrowthProgramSection locale="fr" className="pt-20" />
 
         <motion.section
           id="tarifs"

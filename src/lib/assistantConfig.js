@@ -23,7 +23,7 @@ export const assistantUiByLocale = {
     buttonLabel: "Assistant rapide",
     sheetTitle: "Assistant M\u00E9thode Secondaire",
     sheetDescription:
-      "Rep\u00E8res rapides, questions fr\u00E9quentes et meilleure prochaine \u00E9tape sans d\u00E9pendre d'une IA payante.",
+      "Rep\u00E8res rapides, questions fr\u00E9quentes et meilleure prochaine \u00E9tape pour avancer plus vite.",
     welcome:
       "Bonjour. Je peux aider avec les tarifs, les mati\u00E8res couvertes, le bon format de tutorat et la meilleure prochaine \u00E9tape.",
     starterQuestions: [
@@ -52,7 +52,7 @@ export const assistantUiByLocale = {
     buttonLabel: "Quick help",
     sheetTitle: "M\u00E9thode Secondaire Assistant",
     sheetDescription:
-      "Quick answers, common questions, and the best next step without relying on a paid AI backend.",
+      "Quick answers, common questions, and the best next step so families can move forward faster.",
     welcome:
       "Hi. I can help with pricing, covered subjects, tutoring format, and the best next step for the situation.",
     starterQuestions: [
