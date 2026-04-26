@@ -71,7 +71,7 @@ const contentByLocale = {
     heroTitle: "Les maths peuvent redevenir nettes, même quand elles semblent déjà perdues.",
     heroText:
       "Ici, on ne saute pas directement à la réponse. On reconstruit la logique, on pratique la bonne démarche et on fait baisser le stress qui vient avec les questions de maths.",
-    ctaPrimary: "Réserver un cours de maths",
+    ctaPrimary: "Réserver une séance ciblée",
     ctaSecondary: "Poser une question",
     asideEyebrow: "Ce qu'on travaille vite",
     asideTitle: "Plus de méthode, moins de panique",
@@ -87,7 +87,7 @@ const contentByLocale = {
     finalTitle: "Quand les maths deviennent plus simples à lire, elles deviennent aussi plus simples à réussir.",
     finalText:
       "Si la matière a commencé à s'accumuler ou qu'un examen approche, on peut repartir avec une stratégie claire très vite.",
-    finalPrimary: "Réserver maintenant",
+    finalPrimary: "Réserver une séance ciblée",
     finalSecondary: "Retour à l'accueil",
     seoTitle: "Tutorat de maths au secondaire | Méthode Secondaire",
     seoDescription:
@@ -143,7 +143,7 @@ const contentByLocale = {
     heroTitle: "Math can feel clear again, even when it already seems out of reach.",
     heroText:
       "We do not jump straight to the answer. We rebuild the logic, practice the right approach and reduce the stress that often comes with math questions.",
-    ctaPrimary: "Book a math session",
+    ctaPrimary: "Book a focused math session",
     ctaSecondary: "Ask a question",
     asideEyebrow: "What we improve quickly",
     asideTitle: "More method, less panic",
@@ -159,7 +159,7 @@ const contentByLocale = {
     finalTitle: "When math becomes easier to read, it also becomes easier to succeed in.",
     finalText:
       "If the subject has started piling up or an exam is approaching, we can rebuild a clear strategy quickly.",
-    finalPrimary: "Book now",
+    finalPrimary: "Book a focused session",
     finalSecondary: "Back to home",
     seoTitle: "High school math tutoring | Méthode Secondaire",
     seoDescription:

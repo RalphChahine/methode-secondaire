@@ -162,17 +162,17 @@ export default function LocalLanding({ forcedRouteKey }) {
                 variant="outline"
                 className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
               >
-                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                  <ArrowRight className="h-4 w-4" />
-                  {locale === "en" ? "Book a session" : "Réserver une séance"}
-                </a>
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    <ArrowRight className="h-4 w-4" />
+                  {locale === "en" ? "Book a focused session" : "Réserver une séance ciblée"}
+                  </a>
               </Button>
             </div>
 
             <p className="mt-4 text-sm leading-7 text-white/68">
               {locale === "en"
-                ? "A short phone call is often the easiest way to explain the situation before booking."
-                : "Un court appel est souvent la façon la plus simple d'expliquer la situation avant de réserver."}
+                ? "A short phone call is often the easiest way to explain the situation before booking. Weekly follow-up is best discussed by phone first."
+                : "Un court appel est souvent la façon la plus simple d'expliquer la situation avant de réserver. Un suivi hebdomadaire se discute mieux d'abord par téléphone."}
             </p>
           </div>
 
@@ -246,8 +246,8 @@ export default function LocalLanding({ forcedRouteKey }) {
               </h2>
               <p className="mt-4 text-base leading-8 text-white/75 sm:text-lg">
                 {locale === "en"
-                  ? "Book a first conversation, explore the subject pages or compare the tutor profiles before making the next step."
-                  : "Réservez un premier échange, consultez les pages matières ou comparez les profils tuteurs avant la prochaine étape."}
+                  ? "Call first for regular follow-up, or book a focused session if the need is already clear."
+                  : "Appelez d'abord pour un suivi régulier, ou réservez une séance ciblée si le besoin est déjà clair."}
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
                 <Button
@@ -264,7 +264,7 @@ export default function LocalLanding({ forcedRouteKey }) {
                   className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
                 >
                   <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    {locale === "en" ? "Book a session" : "Réserver une séance"}
+                    {locale === "en" ? "Book a focused session" : "Réserver une séance ciblée"}
                   </a>
                 </Button>
               </div>

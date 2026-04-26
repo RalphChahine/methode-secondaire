@@ -86,7 +86,7 @@ export default function ResourcesHub() {
                 className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
               >
                 <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                  {locale === "en" ? "Book a session" : "Réserver une séance"}
+                  {locale === "en" ? "Book a focused session" : "Réserver une séance ciblée"}
                   <ArrowRight className="h-4 w-4" />
                 </a>
               </Button>
@@ -140,8 +140,8 @@ export default function ResourcesHub() {
               </div>
               <p className="mt-2">
                 {locale === "en"
-                  ? "These pages are not generic blog posts. They are written to answer the exact situations families search for right before booking or calling."
-                  : "Ces pages ne sont pas des billets de blog génériques. Elles répondent à des situations précises que les familles cherchent juste avant d'appeler ou de réserver."}
+                  ? "These pages are not generic blog posts. They are written to answer the exact situations families search for right before calling or booking a focused session."
+                  : "Ces pages ne sont pas des billets de blog génériques. Elles répondent à des situations précises que les familles cherchent juste avant d'appeler ou de réserver une séance ciblée."}
               </p>
             </div>
           </MotionCard>

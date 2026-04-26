@@ -18,7 +18,7 @@ const copyByLocale = {
         badge: "Besoin urgent",
         title: "Un examen approche ou la situation est pressante",
         description:
-          "Quand le temps compte, le plus simple est souvent d'appeler pour cadrer la mati\u00E8re, l'urgence et la meilleure suite.",
+          "Quand le temps compte, le plus simple est souvent d'appeler pour cadrer la mati\u00E8re, l'urgence et la meilleure suite. Si le besoin ponctuel est d\u00E9j\u00E0 tr\u00E8s clair, la r\u00E9servation directe reste possible juste apr\u00E8s.",
         bullets: ["Priorit\u00E9s cibl\u00E9es rapidement", "Bloc intensif possible", "Premier cadrage imm\u00E9diat"],
         action: "phone",
         cta: "Appeler maintenant",
@@ -27,10 +27,10 @@ const copyByLocale = {
         badge: "Suivi durable",
         title: "Vous voulez une progression stable semaine apr\u00E8s semaine",
         description:
-          "Si l'objectif est de consolider la m\u00E9thode et de garder un cap clair pendant l'ann\u00E9e, la r\u00E9servation directe fonctionne tr\u00E8s bien.",
+          "Si l'objectif est de consolider la m\u00E9thode et de garder un cap clair pendant l'ann\u00E9e, le mieux est d'appeler d'abord pour cadrer le vrai rythme et le bon format.",
         bullets: ["Cr\u00E9neau r\u00E9gulier", "Suivi plus stable", "Id\u00E9al pendant l'ann\u00E9e"],
-        action: "book",
-        cta: "R\u00E9server une s\u00E9ance",
+        action: "phone",
+        cta: "Appeler pour discuter",
       },
       {
         badge: "Situation \u00E0 clarifier",
@@ -53,7 +53,7 @@ const copyByLocale = {
         badge: "Urgent need",
         title: "An exam is close or the situation feels time-sensitive",
         description:
-          "When timing matters, the simplest move is often a call to frame the subject, urgency and the best next step right away.",
+          "When timing matters, the simplest move is often a call to frame the subject, urgency and the best next step right away. If the one-time need is already very clear, direct booking can still happen right after.",
         bullets: ["Fast priority setting", "Intensive support possible", "Immediate first framing"],
         action: "phone",
         cta: "Call now",
@@ -62,10 +62,10 @@ const copyByLocale = {
         badge: "Steady progress",
         title: "You want stable progress from week to week",
         description:
-          "If the goal is to build method and keep a clear direction through the school year, direct booking works very well.",
+          "If the goal is to build method and keep a clear direction through the school year, calling first is the better move so the right rhythm and format can be discussed.",
         bullets: ["Recurring time slot", "More stable follow-up", "Ideal during the school year"],
-        action: "book",
-        cta: "Book a session",
+        action: "phone",
+        cta: "Call to discuss",
       },
       {
         badge: "Need guidance",

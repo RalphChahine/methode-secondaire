@@ -169,7 +169,7 @@ const copyByLocale = {
     title: "Des profils pédagogiques pensés pour rassurer les parents et faire avancer les élèves.",
     intro:
       "Découvrez les profils et les spécialités qui permettent d'orienter chaque élève vers l'accompagnement le plus juste selon ses besoins.",
-    ctaPrimary: "Réserver un premier échange",
+    ctaPrimary: "Appeler pour discuter",
     ctaSecondary: "Lire les témoignages",
     asideEyebrow: "Ce que les familles veulent sentir",
     asideTitle: "Un tutorat sérieux, humain et bien pensé",
@@ -193,8 +193,8 @@ const copyByLocale = {
     finalBadge: "Pour parents et élèves",
     finalTitle: "Besoin d'être orienté rapidement?",
     finalText:
-      "Réservez un premier échange et on pourra orienter le besoin vers le bon type d'accompagnement, en maths ou en sciences.",
-    finalButton: "Réserver maintenant",
+      "Appelez d'abord et on pourra orienter le besoin vers le bon type d'accompagnement, en maths ou en sciences.",
+    finalButton: "Appeler maintenant",
     finalSecondary: "Devenir tuteur",
     seoTitle: "Tuteurs et spécialités | Méthode Secondaire",
     seoDescription:
@@ -207,7 +207,7 @@ const copyByLocale = {
     title: "Teaching profiles designed to reassure parents and move students forward.",
     intro:
       "Explore the tutor profiles and specialties that help each student find the most suitable kind of support.",
-    ctaPrimary: "Book a first conversation",
+    ctaPrimary: "Call to discuss",
     ctaSecondary: "Read testimonials",
     asideEyebrow: "What families want to feel",
     asideTitle: "Serious, human and thoughtful tutoring",
@@ -231,8 +231,8 @@ const copyByLocale = {
     finalBadge: "For parents and students",
     finalTitle: "Need clear guidance quickly?",
     finalText:
-      "Book a first conversation and we can guide the need toward the right kind of support, in math or science.",
-    finalButton: "Book now",
+      "Call first and we can guide the need toward the right kind of support, in math or science.",
+    finalButton: "Call now",
     finalSecondary: "Become a tutor",
     seoTitle: "Tutors and specialties | Méthode Secondaire",
     seoDescription:
@@ -297,7 +297,7 @@ export default function Tuteurs() {
                 asChild
                 className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
               >
-                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                <a href={`tel:${siteConfig.phone}`}>
                   {copy.ctaPrimary}
                   <ArrowRight className="h-4 w-4" />
                 </a>
@@ -448,7 +448,7 @@ export default function Tuteurs() {
                   asChild
                   className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
                 >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                  <a href={`tel:${siteConfig.phone}`}>
                     {copy.finalButton}
                   </a>
                 </Button>

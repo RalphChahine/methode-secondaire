@@ -146,14 +146,14 @@ export function buildFallbackAssistantReply(message, locale = "fr") {
 
   if (mentionsPricing) {
     return isEnglish
-      ? `Weekly follow-up is ${assistantServiceInfo.weeklyRateCad} CAD/hour. Flexible sessions are ${assistantServiceInfo.flexibleRateCad} CAD/hour. Intensive exam-prep blocks are available on request.\n\nIf the need already feels clear, you can book here: ${BOOKING_URL}\nIf the situation is still fuzzy or urgent, call ${formatPhoneForReply(locale)} first.`
-      : `Le suivi hebdomadaire est \u00E0 ${assistantServiceInfo.weeklyRateCad} $ CAD / heure. Les s\u00E9ances flexibles sont \u00E0 ${assistantServiceInfo.flexibleRateCad} $ CAD / heure. Les blocs intensifs de pr\u00E9paration aux examens sont offerts sur demande.\n\nSi le besoin est d\u00E9j\u00E0 clair, vous pouvez r\u00E9server ici : ${BOOKING_URL}\nSi la situation est encore floue ou urgente, appelez d'abord au ${formatPhoneForReply(locale)}.`
+      ? `Weekly follow-up is ${assistantServiceInfo.weeklyRateCad} CAD/hour and should usually start with a call. Flexible sessions are ${assistantServiceInfo.flexibleRateCad} CAD/hour, and the booking link is mainly there for one-time or urgent targeted needs. Intensive exam-prep blocks are available on request.\n\nCall first: ${formatPhoneForReply(locale)}\nFocused booking: ${BOOKING_URL}`
+      : `Le suivi hebdomadaire est \u00E0 ${assistantServiceInfo.weeklyRateCad} $ CAD / heure et devrait g\u00E9n\u00E9ralement commencer par un appel. Les s\u00E9ances flexibles sont \u00E0 ${assistantServiceInfo.flexibleRateCad} $ CAD / heure, et le lien de r\u00E9servation sert surtout pour une s\u00E9ance ponctuelle ou urgente. Les blocs intensifs de pr\u00E9paration aux examens sont offerts sur demande.\n\nAppeler d'abord : ${formatPhoneForReply(locale)}\nR\u00E9servation cibl\u00E9e : ${BOOKING_URL}`
   }
 
   if (mentionsBooking) {
     return isEnglish
-      ? `Call first when the situation is urgent, still unclear, or tied to an exam coming soon. Book directly when the chapter, subject, and goal are already clear.\n\nFastest paths:\n- Call: ${formatPhoneForReply(locale)}\n- Book: ${BOOKING_URL}`
-      : `Il vaut mieux appeler d'abord quand la situation est urgente, encore floue, ou li\u00E9e \u00E0 un examen proche. Il vaut mieux r\u00E9server directement quand le chapitre, la mati\u00E8re et l'objectif sont d\u00E9j\u00E0 clairs.\n\nRaccourcis les plus utiles :\n- Appeler : ${formatPhoneForReply(locale)}\n- R\u00E9server : ${BOOKING_URL}`
+      ? `Call first for weekly follow-up, fuzzy situations, or anything that needs discussion. Book directly when the need is already clear and feels like a one-time or urgent targeted session.\n\nFastest paths:\n- Call first: ${formatPhoneForReply(locale)}\n- Focused booking: ${BOOKING_URL}`
+      : `Il vaut mieux appeler d'abord pour un suivi hebdomadaire, une situation encore floue ou un besoin qui m\u00E9rite une discussion. Il vaut mieux r\u00E9server directement quand le besoin est d\u00E9j\u00E0 clair et ressemble \u00E0 une s\u00E9ance ponctuelle ou urgente.\n\nRaccourcis les plus utiles :\n- Appeler d'abord : ${formatPhoneForReply(locale)}\n- R\u00E9servation cibl\u00E9e : ${BOOKING_URL}`
   }
 
   if (asksAboutExamPrep) {
@@ -164,25 +164,25 @@ export function buildFallbackAssistantReply(message, locale = "fr") {
 
   if (asksAboutSec4) {
     return isEnglish
-      ? `Yes. Secondary 4 is covered, especially in math, science, physics, and chemistry.\n\nThat level often needs either:\n- weekly follow-up to stabilize the method\n- targeted catch-up before marks slip further\n- focused exam preparation later in the year\n\nIf you already know the subject and chapter, book here: ${BOOKING_URL}`
-      : `Oui. Le secondaire 4 est bien couvert, surtout en maths, sciences, physique et chimie.\n\nC'est souvent un niveau o\u00F9 il faut soit :\n- un suivi hebdomadaire pour stabiliser la m\u00E9thode\n- un rattrapage cibl\u00E9 avant que les notes glissent davantage\n- une pr\u00E9paration d'examen plus tard dans l'ann\u00E9e\n\nSi la mati\u00E8re et le chapitre sont d\u00E9j\u00E0 clairs, vous pouvez r\u00E9server ici : ${BOOKING_URL}`
+      ? `Yes. Secondary 4 is covered, especially in math, science, physics, and chemistry.\n\nThat level often needs either:\n- weekly follow-up to stabilize the method\n- targeted catch-up before marks slip further\n- focused exam preparation later in the year\n\nIf the goal is weekly follow-up, call first: ${formatPhoneForReply(locale)}\nIf the chapter is already clear and the need is one-time, focused booking is fine: ${BOOKING_URL}`
+      : `Oui. Le secondaire 4 est bien couvert, surtout en maths, sciences, physique et chimie.\n\nC'est souvent un niveau o\u00F9 il faut soit :\n- un suivi hebdomadaire pour stabiliser la m\u00E9thode\n- un rattrapage cibl\u00E9 avant que les notes glissent davantage\n- une pr\u00E9paration d'examen plus tard dans l'ann\u00E9e\n\nSi l'id\u00E9e est un vrai suivi semaine apr\u00E8s semaine, appelez d'abord au ${formatPhoneForReply(locale)}\nSi le chapitre est d\u00E9j\u00E0 clair et que le besoin est ponctuel, la r\u00E9servation cibl\u00E9e convient : ${BOOKING_URL}`
   }
 
   if (looksLikeAcademicQuestion) {
     return isEnglish
-      ? `This widget is better for fast orientation than full lesson support.\n\nWhat I can confirm is that tutoring covers math, science, physics, chemistry, catch-up support, and exam preparation for Secondary 1 to 5 in Quebec.\n\nFor detailed guided help on the actual problem, the best next step is to book here: ${BOOKING_URL} or call ${formatPhoneForReply(locale)}.`
-      : `Ce widget sert surtout \u00E0 orienter rapidement, pas \u00E0 remplacer une vraie s\u00E9ance de cours.\n\nJe peux confirmer que le tutorat couvre les maths, les sciences, la physique, la chimie, la mise \u00E0 niveau et la pr\u00E9paration aux examens du secondaire 1 \u00E0 5 au Qu\u00E9bec.\n\nPour une aide vraiment guid\u00E9e sur le probl\u00E8me, le plus utile est de r\u00E9server ici : ${BOOKING_URL} ou d'appeler au ${formatPhoneForReply(locale)}.`
+      ? `This widget is better for fast orientation than full lesson support.\n\nWhat I can confirm is that tutoring covers math, science, physics, chemistry, catch-up support, and exam preparation for Secondary 1 to 5 in Quebec.\n\nFor detailed guided help on the actual problem, call first if you want real follow-up: ${formatPhoneForReply(locale)}.\nIf the need is one-time and already clear, you can book a focused session here: ${BOOKING_URL}.`
+      : `Ce widget sert surtout \u00E0 orienter rapidement, pas \u00E0 remplacer une vraie s\u00E9ance de cours.\n\nJe peux confirmer que le tutorat couvre les maths, les sciences, la physique, la chimie, la mise \u00E0 niveau et la pr\u00E9paration aux examens du secondaire 1 \u00E0 5 au Qu\u00E9bec.\n\nPour une aide vraiment guid\u00E9e sur le probl\u00E8me, appelez d'abord si vous voulez un vrai suivi : ${formatPhoneForReply(locale)}.\nSi le besoin est ponctuel et d\u00E9j\u00E0 clair, vous pouvez r\u00E9server une s\u00E9ance cibl\u00E9e ici : ${BOOKING_URL}.`
   }
 
   if (mentionsSubjects) {
     return isEnglish
-      ? `Tutoring covers math, science, physics, chemistry, catch-up support, and exam preparation for Quebec secondary students. Sessions are available online across Quebec and in person depending on area and availability.\n\nIf the need is clear, book here: ${BOOKING_URL}\nIf you still need help sorting the situation, use the diagnostic in the widget.`
-      : `Le tutorat couvre les maths, les sciences, la physique, la chimie, la mise \u00E0 niveau et la pr\u00E9paration aux examens pour les \u00E9l\u00E8ves du secondaire au Qu\u00E9bec. Les s\u00E9ances sont offertes en ligne partout au Qu\u00E9bec et en personne selon le secteur et les disponibilit\u00E9s.\n\nSi le besoin est clair, r\u00E9servez ici : ${BOOKING_URL}\nSi vous h\u00E9sitez encore sur la bonne direction, utilisez le diagnostic du widget.`
+      ? `Tutoring covers math, science, physics, chemistry, catch-up support, and exam preparation for Quebec secondary students. Sessions are available online across Quebec and in person depending on area and availability.\n\nCall first if you want ongoing weekly follow-up: ${formatPhoneForReply(locale)}\nBook directly only if the need already feels clear and one-time: ${BOOKING_URL}`
+      : `Le tutorat couvre les maths, les sciences, la physique, la chimie, la mise \u00E0 niveau et la pr\u00E9paration aux examens pour les \u00E9l\u00E8ves du secondaire au Qu\u00E9bec. Les s\u00E9ances sont offertes en ligne partout au Qu\u00E9bec et en personne selon le secteur et les disponibilit\u00E9s.\n\nAppelez d'abord si vous cherchez un suivi semaine apr\u00E8s semaine : ${formatPhoneForReply(locale)}\nR\u00E9servez directement seulement si le besoin est d\u00E9j\u00E0 clair et ponctuel : ${BOOKING_URL}`
   }
 
   return isEnglish
-    ? `M\u00E9thode Secondaire offers tutoring for Secondary 1 to 5 students in Quebec in math, science, physics, chemistry, catch-up support, and exam preparation. Weekly follow-up is ${assistantServiceInfo.weeklyRateCad} CAD/hour and flexible sessions are ${assistantServiceInfo.flexibleRateCad} CAD/hour.\n\nBest next steps:\n- use the diagnostic if the situation is still fuzzy\n- call ${formatPhoneForReply(locale)} if it feels urgent\n- book here if the need is already clear: ${BOOKING_URL}`
-    : `M\u00E9thode Secondaire offre du tutorat pour les \u00E9l\u00E8ves du secondaire 1 \u00E0 5 au Qu\u00E9bec en maths, sciences, physique, chimie, mise \u00E0 niveau et pr\u00E9paration aux examens. Le suivi hebdomadaire est \u00E0 ${assistantServiceInfo.weeklyRateCad} $ CAD / heure et les s\u00E9ances flexibles sont \u00E0 ${assistantServiceInfo.flexibleRateCad} $ CAD / heure.\n\nMeilleurs raccourcis selon la situation :\n- utilisez le diagnostic si le besoin est encore flou\n- appelez au ${formatPhoneForReply(locale)} si c'est urgent\n- r\u00E9servez ici si le besoin est d\u00E9j\u00E0 clair : ${BOOKING_URL}`
+    ? `M\u00E9thode Secondaire offers tutoring for Secondary 1 to 5 students in Quebec in math, science, physics, chemistry, catch-up support, and exam preparation. Weekly follow-up is ${assistantServiceInfo.weeklyRateCad} CAD/hour and flexible sessions are ${assistantServiceInfo.flexibleRateCad} CAD/hour.\n\nBest next steps:\n- use the diagnostic if the situation is still fuzzy\n- call ${formatPhoneForReply(locale)} for weekly follow-up or anything that needs discussion\n- book here only for a focused one-time session: ${BOOKING_URL}`
+    : `M\u00E9thode Secondaire offre du tutorat pour les \u00E9l\u00E8ves du secondaire 1 \u00E0 5 au Qu\u00E9bec en maths, sciences, physique, chimie, mise \u00E0 niveau et pr\u00E9paration aux examens. Le suivi hebdomadaire est \u00E0 ${assistantServiceInfo.weeklyRateCad} $ CAD / heure et les s\u00E9ances flexibles sont \u00E0 ${assistantServiceInfo.flexibleRateCad} $ CAD / heure.\n\nMeilleurs raccourcis selon la situation :\n- utilisez le diagnostic si le besoin est encore flou\n- appelez au ${formatPhoneForReply(locale)} pour un suivi hebdomadaire ou une situation \u00E0 discuter\n- r\u00E9servez ici seulement pour une s\u00E9ance ponctuelle cibl\u00E9e : ${BOOKING_URL}`
 }
 
 export function buildAssistantInstructions(locale = "fr") {
@@ -204,7 +204,8 @@ Business facts:
 - Local pages emphasize Montreal, Laval, and online across Quebec.
 - Pricing currently shown on the website: flexible session 75 CAD/hour, weekly follow-up 70 CAD/hour, intensive block on request.
 - Best first step for many families: a 15-minute diagnostic call.
-- Booking link: ${BOOKING_URL}
+- Weekly follow-up should usually be discussed by phone first.
+- The booking link is mainly for one-time or urgent targeted sessions: ${BOOKING_URL}
 - Phone: +1 (514) 952-0709
 
 Behavior rules:
@@ -213,7 +214,7 @@ Behavior rules:
 - If asked a math or science question, explain briefly at a secondary-school level.
 - If the user appears to want answers for graded homework or an exam, do not simply give the final answer with no guidance.
 - Do not invent tutor availability, credentials, guarantees, or policies not listed above.
-- If the question is about fit, urgency, or what to do next, recommend either calling first or booking a session when appropriate.
+- If the question is about fit, urgency, or what to do next, recommend calling first for weekly follow-up and using direct booking mainly for one-time or urgent targeted sessions.
 - If you do not know something specific, say so plainly and suggest calling or using the website contact form.
 `.trim()
 }

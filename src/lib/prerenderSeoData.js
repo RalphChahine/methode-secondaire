@@ -1,4 +1,5 @@
 import { localPageConfigs } from "./conversionContent.js"
+import { getOfferPageConfig, offerRouteKeys } from "./offerContent.js"
 import { getResourcePageContent, resourceHubCopyByLocale, resourceRouteKeys } from "./resourceContent.js"
 import { routeCatalog } from "./routes.js"
 
@@ -174,6 +175,24 @@ export function getPrerenderPageEntries() {
   for (const routeKey of ["montreal", "laval", "quebecOnline"]) {
     for (const locale of ["fr", "en"]) {
       const page = localPageConfigs[routeKey][locale]
+
+      entries.push({
+        routeKey,
+        locale,
+        path: routeCatalog[routeKey][locale],
+        title: page.seoTitle,
+        description: page.seoDescription,
+        keywords: page.keywords,
+        name: page.heroTitle,
+        schemaType: "Service",
+        ogType: "website",
+      })
+    }
+  }
+
+  for (const routeKey of offerRouteKeys) {
+    for (const locale of ["fr", "en"]) {
+      const page = getOfferPageConfig(routeKey, locale)
 
       entries.push({
         routeKey,

@@ -227,19 +227,25 @@ const pricing = [
     price: "75 $ / h",
     accent: "Idéal pour une révision ponctuelle ou un besoin précis.",
     bullets: ["Réservation au besoin", "Maths ou sciences", "En ligne ou présentiel"],
+    action: "book",
+    cta: "Réserver une séance ponctuelle",
   },
   {
     title: "Suivi hebdomadaire",
     price: "70 $ / h",
-    accent: "La formule la plus efficace pour bâtir une progression durable.",
-    bullets: ["Créneau régulier", "Suivi clair", "Excellente option pendant l'année"],
+    accent: "La formule la plus efficace pour bâtir une progression durable, à cadrer d'abord par téléphone.",
+    bullets: ["Appel d'abord pour cadrer le suivi", "Créneau régulier", "Excellente option pendant l'année"],
     highlight: true,
+    action: "phone",
+    cta: "Appeler pour discuter",
   },
   {
     title: "Bloc intensif",
     price: "Sur demande",
     accent: "Pour une période courte avant examens, reprise de matière ou remise à niveau.",
     bullets: ["Plan serré", "Priorités bien ciblées", "Format adaptable"],
+    action: "book",
+    cta: "Réserver une première séance ciblée",
   },
 ]
 
@@ -398,13 +404,13 @@ export default function Accueil() {
                 >
                   <a href={BOOKING_URL} target="_blank" rel="noreferrer">
                     <CalendarDays className="h-4 w-4" />
-                    Réserver une séance
+                    Réserver une séance ciblée
                   </a>
                 </Button>
               </motion.div>
 
               <motion.div variants={item} className="mt-4 flex flex-wrap items-center gap-4 text-sm text-white/68">
-                <span>Le meilleur premier pas: un appel de 15 minutes pour parler de la situation.</span>
+                <span>Pour un suivi semaine après semaine, le meilleur premier pas reste un appel de 15 minutes.</span>
                 <button
                   type="button"
                   className="text-white transition hover:text-[#f5c977]"
@@ -476,9 +482,9 @@ export default function Accueil() {
                       <CalendarDays className="h-4 w-4 text-[#f5c977]" />
                       Si vous êtes déjà prêt
                     </div>
-                    <div className="mt-2 text-lg font-semibold text-white">Réservation en ligne</div>
+                    <div className="mt-2 text-lg font-semibold text-white">Réservation ponctuelle</div>
                     <p className="mt-2 text-sm leading-7 text-white/70">
-                      Le calendrier reste disponible pour réserver directement en quelques clics.
+                      Le calendrier sert surtout aux besoins ciblés, urgents ou déjà très clairs.
                     </p>
                   </div>
                 </div>
@@ -799,7 +805,7 @@ export default function Accueil() {
           <SectionHeader
             eyebrow="Tarifs"
             title="Des formules simples pour avancer au bon rythme"
-            description="Le suivi hebdomadaire est généralement la meilleure option pour garder une progression régulière et beaucoup moins de stress entre les séances."
+            description="Le suivi hebdomadaire se discute d'abord par appel. La réservation en ligne reste surtout l'option la plus simple pour un besoin ponctuel, ciblé ou urgent."
           />
 
           <div className="mt-8 grid gap-4 xl:grid-cols-3">
@@ -841,9 +847,13 @@ export default function Accueil() {
                       : "bg-white/8 text-white hover:bg-white/12"
                   }`}
                 >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    Choisir cette formule
-                  </a>
+                  {plan.action === "phone" ? (
+                    <a href={`tel:${siteConfig.phone}`}>{plan.cta}</a>
+                  ) : (
+                    <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                      {plan.cta}
+                    </a>
+                  )}
                 </Button>
               </MotionCard>
             ))}
@@ -887,16 +897,16 @@ export default function Accueil() {
         >
           <SectionHeader
             eyebrow="Contact et réservation"
-            title="Le plus simple est souvent d'appeler d'abord"
-            description="Un court appel permet souvent de clarifier le besoin, puis la réservation reste disponible juste après si vous voulez avancer tout de suite."
+            title="Suivi régulier? Le plus simple est d'appeler d'abord"
+            description="Pour un besoin ponctuel ou urgent déjà clair, la réservation reste disponible tout de suite. Pour un vrai suivi semaine après semaine, l'appel aide à cadrer le rythme, le format et les priorités."
           />
 
           <div className="mt-8 grid gap-4 xl:grid-cols-[0.95fr,1.05fr]">
             <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
               <div className="text-sm uppercase tracking-[0.24em] text-white/45">Premier contact recommandé</div>
-              <h3 className="mt-3 font-display text-3xl font-semibold">Parler d'abord, réserver ensuite si vous le souhaitez</h3>
+              <h3 className="mt-3 font-display text-3xl font-semibold">Suivi régulier? On en parle d'abord</h3>
               <p className="mt-3 text-sm leading-7 text-white/72">
-                L'appel sert à comprendre la matière, le niveau, l'urgence et le bon format avant d'ouvrir le calendrier.
+                L'appel sert à comprendre la matière, le niveau, l'urgence et le bon format. Si le besoin est ponctuel ou urgent et déjà clair, le calendrier peut ensuite prendre le relais tout de suite.
               </p>
 
               <div className="mt-7 space-y-4">
@@ -907,7 +917,7 @@ export default function Accueil() {
                   label="chahineralph@gmail.com"
                 />
                 <ContactLine icon={MapPin} label="En ligne partout au Québec, présentiel selon le secteur" />
-                <ContactLine icon={Clock3} label="Appel diagnostic court, réponse rapide et réservation simple ensuite" />
+                <ContactLine icon={Clock3} label="Appel court pour cadrer un suivi, ou réservation directe pour un besoin ponctuel" />
               </div>
 
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
@@ -928,7 +938,7 @@ export default function Accueil() {
                 >
                   <a href={BOOKING_URL} target="_blank" rel="noreferrer">
                     <CalendarDays className="h-4 w-4" />
-                    Réserver une séance
+                    Réserver une séance ponctuelle
                   </a>
                 </Button>
               </div>
@@ -936,7 +946,7 @@ export default function Accueil() {
               <div className="mt-8 rounded-[24px] border border-white/10 bg-[#0b214d]/80 p-5">
                 <div className="text-sm uppercase tracking-[0.22em] text-white/45">Bon à savoir</div>
                 <p className="mt-3 text-sm leading-7 text-white/72">
-                  Si vous hésitez entre appeler et réserver, l'appel est souvent le meilleur point de départ pour cadrer le besoin et repartir avec une direction claire.
+                  Si vous hésitez entre appeler et réserver, gardez cette règle simple: suivi régulier = appel d'abord. Besoin ponctuel ou urgent = réservation possible tout de suite.
                 </p>
               </div>
             </MotionCard>
@@ -955,7 +965,10 @@ export default function Accueil() {
           </div>
 
           <div className="mt-6">
-            <BookingEmbed title="Réserver une séance avec Méthode Secondaire" />
+            <div className="mb-4 max-w-3xl text-sm leading-7 text-white/68">
+              Calendrier pensé surtout pour les besoins ponctuels, ciblés ou urgents.
+            </div>
+            <BookingEmbed title="Réserver une séance ponctuelle avec Méthode Secondaire" />
           </div>
         </motion.section>
       </main>

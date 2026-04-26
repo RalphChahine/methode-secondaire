@@ -44,7 +44,7 @@ const uiByLocale = {
       "Ces autres ressources couvrent les situations qui reviennent souvent juste avant qu'une famille appelle ou réserve.",
     unavailable: "Ressource indisponible",
     unavailableText:
-      "Cette ressource n'est pas disponible pour le moment, mais vous pouvez continuer vers les pages matières ou réserver un appel.",
+      "Cette ressource n'est pas disponible pour le moment, mais vous pouvez continuer vers les pages matières, appeler ou réserver une séance ciblée.",
     backHome: "Retour à l'accueil",
     quickSignals: "Ce que cette page aide à clarifier",
     planEyebrow: "Plan concret",
@@ -56,7 +56,7 @@ const uiByLocale = {
     faqDescription:
       "Des réponses courtes et utiles pour savoir quand agir, quoi prioriser et comment sortir plus vite du flou.",
     ctaCall: "Appeler maintenant",
-    ctaBook: "Réserver une séance",
+    ctaBook: "Réserver une séance ciblée",
     ctaHub: "Voir toutes les ressources",
   },
   en: {
@@ -69,7 +69,7 @@ const uiByLocale = {
       "These resources cover the situations families often search right before they call or book.",
     unavailable: "Resource unavailable",
     unavailableText:
-      "This resource is not available right now, but you can keep going through the subject pages or book a quick call.",
+      "This resource is not available right now, but you can keep going through the subject pages, call or book a focused session.",
     backHome: "Back to home",
     quickSignals: "What this page helps clarify",
     planEyebrow: "Concrete plan",
@@ -81,7 +81,7 @@ const uiByLocale = {
     faqDescription:
       "Short answers about when to act, what to prioritize and how to get out of the confusion faster.",
     ctaCall: "Call now",
-    ctaBook: "Book a session",
+    ctaBook: "Book a focused session",
     ctaHub: "See all resources",
   },
 }

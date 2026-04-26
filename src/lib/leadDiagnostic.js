@@ -114,7 +114,7 @@ export const diagnosticUiByLocale = {
       "The diagnostic reads the grade, subject, urgency and best format, then recommends the most useful next step before you call or book.",
     launchBullets: [
       "Clarifies whether the need feels more like exam prep, catch-up support or weekly follow-up.",
-      "Helps decide between calling now and booking directly.",
+      "Helps decide between calling to discuss a real follow-up and booking a focused one-time session.",
       "Generates a clean summary you can reuse in the request.",
     ],
     launchButton: "Start the diagnostic",
@@ -143,7 +143,7 @@ export const diagnosticUiByLocale = {
     limitedMode: "Simplified diagnostic for now",
     actions: {
       call_now: "Call now",
-      book_session: "Book a session",
+      book_session: "Book a focused session",
     },
     fields: {
       level: {
@@ -260,18 +260,38 @@ export function getDiagnosticUi(locale = "fr") {
     return {
       ...ui,
       launchDescription:
-        "Le diagnostic lit le niveau, la mati\u00E8re, l'urgence et le bon format pour recommander la prochaine \u00E9tape la plus utile avant d'appeler ou de r\u00E9server.",
+        "Le diagnostic lit le niveau, la mati\u00E8re, l'urgence et le bon format pour recommander la prochaine \u00E9tape la plus utile entre un appel de cadrage et une r\u00E9servation ponctuelle.",
+      launchBullets: [
+        "Clarifie si le besoin ressemble plut\u00F4t \u00E0 un examen, une remise \u00E0 niveau ou un suivi r\u00E9gulier.",
+        "Aide \u00E0 choisir entre un appel pour discuter du suivi et une r\u00E9servation cibl\u00E9e.",
+        "G\u00E9n\u00E8re un r\u00E9sum\u00E9 propre \u00E0 r\u00E9utiliser dans la demande.",
+      ],
       introDescription:
         "R\u00E9pondez en quelques clics. \u00C0 la fin, l'outil recommande la meilleure prochaine \u00E9tape pour la situation.",
       resultEyebrow: "Orientation recommand\u00E9e",
+      actions: {
+        call_now: "Appeler maintenant",
+        book_session: "R\u00E9server une s\u00E9ance cibl\u00E9e",
+      },
     }
   }
 
   if (locale === "en") {
     return {
       ...ui,
+      launchDescription:
+        "The diagnostic reads the grade, subject, urgency and best format, then recommends the most useful next step between a framing call and a focused one-time booking.",
+      launchBullets: [
+        "Clarifies whether the need feels more like exam prep, catch-up support or weekly follow-up.",
+        "Helps decide between calling to discuss real follow-up and booking a focused one-time session.",
+        "Generates a clean summary you can reuse in the request.",
+      ],
       introDescription:
         "Answer in a few taps. At the end, the tool recommends the best next step for the situation.",
+      actions: {
+        call_now: "Call now",
+        book_session: "Book a focused session",
+      },
     }
   }
 
@@ -327,6 +347,36 @@ export function getDiagnosticAnswerLabel(locale, field, value) {
 }
 
 export function buildLeadDiagnosticInstructions(locale = "fr") {
+  if (locale === "fr") {
+    return [
+      "Vous r\u00E9digez un court diagnostic d'intake orient\u00E9 conversion pour un site de tutorat secondaire au Qu\u00E9bec.",
+      "Public: parents d'\u00E9l\u00E8ves du secondaire 1 \u00E0 5 au Qu\u00E9bec.",
+      "Mati\u00E8res offertes: maths, sciences, physique, chimie, pr\u00E9paration d'examens, rattrapage.",
+      "Formats: en ligne partout au Qu\u00E9bec; en personne selon le secteur et le bon profil.",
+      "Contexte tarifaire: suivi hebdomadaire 70 $ CAD / h, s\u00E9ance flexible 75 $ CAD / h, blocs intensifs sur demande.",
+      "Choisissez `recommendedAction` parmi `call_now` ou `book_session`.",
+      "Utilisez `call_now` si la situation m\u00E9rite d'abord une discussion, surtout pour un suivi hebdomadaire, un besoin encore flou ou un cadrage humain rapide.",
+      "Utilisez `book_session` si le besoin est d\u00E9j\u00E0 assez clair pour une s\u00E9ance ponctuelle ou tr\u00E8s cibl\u00E9e.",
+      "N'inventez pas de disponibilit\u00E9s pr\u00E9cises, de garanties ni de r\u00E9sultats.",
+      "Gardez un ton calme, concret, utile et rassurant pour un parent.",
+    ].join(" ")
+  }
+
+  if (locale === "en") {
+    return [
+      "You are writing a short, conversion-oriented intake diagnostic for a Quebec high-school tutoring website.",
+      "Audience: parents of Secondary 1 to 5 students in Quebec.",
+      "Subjects available: math, science, physics, chemistry, exam prep, catch-up support.",
+      "Formats: online across Quebec; in person depending on area and tutor fit.",
+      "Pricing context: weekly follow-up 70 CAD/hour, flexible sessions 75 CAD/hour, intensive blocks on request.",
+      "Choose recommendedAction as either `call_now` or `book_session`.",
+      "`call_now` should be used when the situation needs discussion first, especially for weekly follow-up, vague cases, or quick human framing.",
+      "`book_session` should be used when the need is already clear enough for a one-time or focused session.",
+      "Do not invent exact tutor availability, guarantees, or outcomes.",
+      "Keep every field concise, calm, practical, and parent-friendly.",
+    ].join(" ")
+  }
+
   if (locale === "en") {
     return [
       "You are writing a short, conversion-oriented intake diagnostic for a Quebec high-school tutoring website.",
@@ -399,14 +449,14 @@ export function buildFallbackLeadDiagnosticResult(locale = "fr", answers = {}) {
   const isUrgent = normalized.timing === "this-week"
   const isExam = normalized.goal === "exam-prep"
   const isUnclear = normalized.goal === "unsure" || normalized.subject === "unsure" || normalized.format === "either"
-  const recommendedAction = isUrgent || isExam || isUnclear ? "call_now" : "book_session"
+  const recommendedAction = normalized.goal === "weekly" || isUnclear ? "call_now" : "book_session"
   const recommendedActionLabel = ui.actions[recommendedAction]
 
   let recommendedService = ""
 
   if (locale === "en") {
     if (normalized.goal === "weekly") {
-      recommendedService = "weekly follow-up"
+      recommendedService = "a phone call to discuss weekly follow-up"
     } else if (normalized.goal === "catch-up") {
       recommendedService = isUrgent ? "a quick diagnostic call followed by a catch-up session" : "a structured catch-up session"
     } else if (isExam) {
@@ -416,13 +466,77 @@ export function buildFallbackLeadDiagnosticResult(locale = "fr", answers = {}) {
     }
   } else {
     if (normalized.goal === "weekly") {
-      recommendedService = "un suivi hebdomadaire"
+      recommendedService = "un appel pour discuter d'un suivi hebdomadaire"
     } else if (normalized.goal === "catch-up") {
       recommendedService = isUrgent ? "un appel diagnostic rapide suivi d'une séance de remise à niveau" : "une séance de remise à niveau structurée"
     } else if (isExam) {
       recommendedService = isUrgent ? "un appel rapide puis une séance ciblée examen" : "une séance ciblée de préparation d'examen"
     } else {
       recommendedService = "un appel diagnostic de 15 minutes"
+    }
+  }
+
+  if (locale === "fr") {
+    return {
+      headline:
+        recommendedAction === "call_now"
+          ? "Le besoin m\u00E9rite d'abord un vrai \u00E9change."
+          : "Le besoin semble assez clair pour une s\u00E9ance cibl\u00E9e.",
+      summary: `Pour ${labels.level} en ${labels.subject.toLowerCase()}, le besoin ressemble surtout \u00E0 ${labels.goal.toLowerCase()}. Le timing est ${labels.timing.toLowerCase()} et le format souhait\u00E9 est ${labels.format.toLowerCase()}.`,
+      recommendedAction,
+      recommendedActionLabel,
+      recommendedService,
+      actionReason:
+        recommendedAction === "call_now"
+          ? "Un appel rapide reste le meilleur moyen de cadrer un vrai suivi hebdomadaire ou de confirmer le bon format avant d'aller plus loin."
+          : "Le besoin semble d\u00E9j\u00E0 assez clair pour une s\u00E9ance ponctuelle et cibl\u00E9e sans longue discussion.",
+      reasons: [
+        `${labels.level} et ${labels.subject.toLowerCase()} pointent vers un besoin assez pr\u00E9cis, pas seulement une demande g\u00E9n\u00E9rale.`,
+        normalized.goal === "weekly"
+          ? "Le suivi semaine apr\u00E8s semaine demande d'abord un cadrage humain sur le rythme, les attentes et la meilleure formule."
+          : `Le timing (${labels.timing.toLowerCase()}) laisse une voie plus directe si l'objectif est d\u00E9j\u00E0 bien d\u00E9fini.`,
+        `Le format souhait\u00E9 (${labels.format.toLowerCase()}) aide \u00E0 choisir entre discussion pr\u00E9alable et s\u00E9ance cibl\u00E9e.`,
+      ],
+      nextSteps: [
+        "Pr\u00E9parez le dernier chapitre bloquant, la date d'examen ou la note la plus r\u00E9cente avant le premier \u00E9change.",
+        recommendedAction === "call_now"
+          ? "Utilisez l'appel pour d\u00E9cider si le bon format est un suivi hebdomadaire, un rattrapage ou une s\u00E9ance ponctuelle cibl\u00E9e."
+          : "R\u00E9servez la s\u00E9ance cibl\u00E9e et indiquez clairement le chapitre, l'examen ou la comp\u00E9tence qui bloque.",
+        "Gardez un premier objectif court et concret: un chapitre, une fen\u00EAtre d'examen ou un type de probl\u00E8me r\u00E9current.",
+      ],
+      suggestedMessage: `Bonjour, nous cherchons un accompagnement en ${labels.subject.toLowerCase()} pour ${labels.level}. Le besoin ressemble surtout \u00E0 ${labels.goal.toLowerCase()}, id\u00E9alement ${labels.timing.toLowerCase()}, plut\u00F4t ${labels.format.toLowerCase()}. Ce qui bloque le plus en ce moment: ${normalized.details}`,
+    }
+  }
+
+  if (locale === "en") {
+    return {
+      headline:
+        recommendedAction === "call_now"
+          ? "This looks like something worth discussing first."
+          : "This already looks clear enough for a focused session.",
+      summary: `${labels.level} in ${labels.subject} looks closest to ${labels.goal.toLowerCase()}. The timing is ${labels.timing.toLowerCase()}, and the preferred format is ${labels.format.toLowerCase()}.`,
+      recommendedAction,
+      recommendedActionLabel,
+      recommendedService,
+      actionReason:
+        recommendedAction === "call_now"
+          ? "A quick call is the best way to frame a real weekly follow-up or confirm the right format before moving ahead."
+          : "The need already looks clear enough for a focused one-time session without a long discussion first.",
+      reasons: [
+        `${labels.level} and ${labels.subject} suggest a fairly targeted academic need rather than a vague general request.`,
+        normalized.goal === "weekly"
+          ? "Week-to-week follow-up works better after a short human conversation about rhythm, expectations and fit."
+          : `The timing (${labels.timing.toLowerCase()}) still allows a more direct move when the goal is already clear.`,
+        `The preferred format (${labels.format.toLowerCase()}) helps choose between a quick discussion first and a focused one-time session.`,
+      ],
+      nextSteps: [
+        "Have the latest chapter, exam date or recent mark ready before the first exchange.",
+        recommendedAction === "call_now"
+          ? "Use the call to decide whether the right fit is weekly follow-up, a catch-up plan, or a more targeted one-time session."
+          : "Book the focused session and mention the exact chapter, exam or skill gap in the request.",
+        "Keep the first goal short and concrete: one chapter, one exam window, or one recurring problem pattern.",
+      ],
+      suggestedMessage: `Hello, we are looking for support in ${labels.subject.toLowerCase()} for ${labels.level}. The need feels closest to ${labels.goal.toLowerCase()}, ideally ${labels.timing.toLowerCase()}, with ${labels.format.toLowerCase()}. What is blocking the most right now: ${normalized.details}`,
     }
   }
 

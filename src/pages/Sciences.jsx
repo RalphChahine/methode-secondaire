@@ -71,7 +71,7 @@ const contentByLocale = {
     heroTitle: "La science devient plus simple quand elle devient visuelle, logique et concrète.",
     heroText:
       "L'objectif n'est pas de mémoriser un bloc de notions sans lien. L'objectif, c'est de faire apparaître la logique derrière les phénomènes, les formules et les réponses attendues.",
-    ctaPrimary: "Réserver un cours de sciences",
+    ctaPrimary: "Réserver une séance ciblée",
     ctaSecondary: "Poser une question",
     asideEyebrow: "Ce que le suivi change",
     asideTitle: "Moins de mémorisation brute, plus de compréhension",
@@ -87,7 +87,7 @@ const contentByLocale = {
     finalTitle: "Quand la logique apparaît, les sciences deviennent beaucoup moins intimidantes.",
     finalText:
       "Que le besoin soit en chimie, en physique ou en préparation d'évaluation, on peut remettre les concepts à leur place rapidement.",
-    finalPrimary: "Réserver maintenant",
+    finalPrimary: "Réserver une séance ciblée",
     finalSecondary: "Retour à l'accueil",
     seoTitle: "Tutorat de sciences au secondaire | Méthode Secondaire",
     seoDescription:
@@ -143,7 +143,7 @@ const contentByLocale = {
     heroTitle: "Science becomes easier when it becomes visual, logical and concrete.",
     heroText:
       "The goal is not to memorize a disconnected block of content. The goal is to reveal the logic behind phenomena, formulas and the answers teachers expect.",
-    ctaPrimary: "Book a science session",
+    ctaPrimary: "Book a focused science session",
     ctaSecondary: "Ask a question",
     asideEyebrow: "What tutoring changes",
     asideTitle: "Less raw memorization, more understanding",
@@ -159,7 +159,7 @@ const contentByLocale = {
     finalTitle: "When the logic becomes visible, science feels far less intimidating.",
     finalText:
       "Whether the need is chemistry, physics or exam preparation, we can put the concepts back in place quickly.",
-    finalPrimary: "Book now",
+    finalPrimary: "Book a focused session",
     finalSecondary: "Back to home",
     seoTitle: "High school science tutoring | Méthode Secondaire",
     seoDescription:

@@ -36,6 +36,8 @@ const copyByLocale = {
           icon: "sprint",
           title: "Sprint examen",
           subtitle: "Quand une date approche et qu'il faut remettre les priorit\u00E9s en ordre vite.",
+          routeKey: "examSprint",
+          cta: "Voir le Sprint examen",
           bullets: [
             "Bon pour les examens proches",
             "Appel d'abord si la situation est encore floue",
@@ -46,8 +48,11 @@ const copyByLocale = {
           icon: "weekly",
           title: "Suivi hebdomadaire",
           subtitle: "Quand le vrai besoin est de stabiliser la m\u00E9thode et d'\u00E9viter les rechutes.",
+          routeKey: "weeklyFollowUp",
+          cta: "Voir le Suivi hebdomadaire",
           bullets: [
             "Le meilleur format pour la progression durable",
+            "Appel d'abord pour cadrer un vrai suivi r\u00E9gulier",
             "Id\u00E9al si les notions s'accumulent",
             "Tr\u00E8s bon choix pour secondaire 4 et 5",
           ],
@@ -56,6 +61,8 @@ const copyByLocale = {
           icon: "reset",
           title: "Remise \u00E0 niveau cibl\u00E9e",
           subtitle: "Quand il faut reprendre une mati\u00E8re ou un chapitre avant que le retard se fige.",
+          action: "book",
+          cta: "R\u00E9server une s\u00E9ance cibl\u00E9e",
           bullets: [
             "Bon pour un rattrapage propre",
             "Permet de retrouver un cap clair",
@@ -113,6 +120,8 @@ const copyByLocale = {
           icon: "sprint",
           title: "Exam sprint",
           subtitle: "For moments when a deadline is close and priorities need to be reordered fast.",
+          routeKey: "examSprint",
+          cta: "See the exam sprint",
           bullets: [
             "Best for upcoming exams",
             "Call first if the situation is still unclear",
@@ -123,8 +132,11 @@ const copyByLocale = {
           icon: "weekly",
           title: "Weekly follow-up",
           subtitle: "For students who need a steadier method and more durable academic momentum.",
+          routeKey: "weeklyFollowUp",
+          cta: "See weekly follow-up",
           bullets: [
             "Best fit for long-term progress",
+            "Call first to frame a real recurring follow-up",
             "Ideal when the material is starting to pile up",
             "Especially strong for Secondary 4 and 5",
           ],
@@ -133,6 +145,8 @@ const copyByLocale = {
           icon: "reset",
           title: "Targeted catch-up reset",
           subtitle: "For families who need to rebuild one subject or chapter before the gap hardens.",
+          action: "book",
+          cta: "Book a focused session",
           bullets: [
             "Good for clean catch-up work",
             "Helps recover a clearer direction",
@@ -225,6 +239,41 @@ export default function GrowthProgramSection({ locale = "fr", className = "pt-20
                   </div>
                 ))}
               </div>
+
+              {card.routeKey ? (
+                <Button
+                  asChild
+                  variant="outline"
+                  className="mt-6 rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                >
+                  <Link to={getLocalizedPath(card.routeKey, locale)}>
+                    {card.cta}
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              ) : card.action === "phone" ? (
+                <Button
+                  asChild
+                  variant="outline"
+                  className="mt-6 rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                >
+                  <a href={`tel:${siteConfig.phone}`}>
+                    {card.cta}
+                    <Phone className="h-4 w-4" />
+                  </a>
+                </Button>
+              ) : card.action === "book" ? (
+                <Button
+                  asChild
+                  variant="outline"
+                  className="mt-6 rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                >
+                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                    {card.cta}
+                    <CalendarDays className="h-4 w-4" />
+                  </a>
+                </Button>
+              ) : null}
             </MotionCard>
           )
         })}
@@ -286,7 +335,7 @@ export default function GrowthProgramSection({ locale = "fr", className = "pt-20
         >
           <a href={`tel:${siteConfig.phone}`}>
             <Phone className="h-4 w-4" />
-            {locale === "en" ? "Call first" : "Appeler d'abord"}
+            {locale === "en" ? "Call for weekly follow-up" : "Appeler pour un suivi"}
           </a>
         </Button>
         <Button
@@ -296,7 +345,7 @@ export default function GrowthProgramSection({ locale = "fr", className = "pt-20
         >
           <a href={BOOKING_URL} target="_blank" rel="noreferrer">
             <CalendarDays className="h-4 w-4" />
-            {locale === "en" ? "Book a session" : "R\u00E9server une s\u00E9ance"}
+            {locale === "en" ? "Book a one-time session" : "R\u00E9server une s\u00E9ance ponctuelle"}
           </a>
         </Button>
       </div>

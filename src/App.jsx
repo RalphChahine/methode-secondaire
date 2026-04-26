@@ -8,6 +8,7 @@ const AccueilEn = lazy(() => import("@/pages/AccueilEn"))
 const DevenirTuteur = lazy(() => import("@/pages/DevenirTuteur"))
 const LocalLanding = lazy(() => import("@/pages/LocalLanding"))
 const Maths = lazy(() => import("@/pages/Maths"))
+const OfferLanding = lazy(() => import("@/pages/OfferLanding"))
 const ResourceArticle = lazy(() => import("@/pages/ResourceArticle"))
 const ResourcesHub = lazy(() => import("@/pages/ResourcesHub"))
 const Sciences = lazy(() => import("@/pages/Sciences"))
@@ -44,6 +45,10 @@ export default function App() {
             <Route path="/en/laval-tutoring" element={<LocalLanding forcedRouteKey="laval" />} />
             <Route path="/tutorat-en-ligne-quebec" element={<LocalLanding forcedRouteKey="quebecOnline" />} />
             <Route path="/en/quebec-online-tutoring" element={<LocalLanding forcedRouteKey="quebecOnline" />} />
+            <Route path="/sprint-examen" element={<OfferLanding forcedRouteKey="examSprint" />} />
+            <Route path="/en/exam-sprint" element={<OfferLanding forcedRouteKey="examSprint" />} />
+            <Route path="/suivi-hebdomadaire" element={<OfferLanding forcedRouteKey="weeklyFollowUp" />} />
+            <Route path="/en/weekly-follow-up" element={<OfferLanding forcedRouteKey="weeklyFollowUp" />} />
             <Route path="/ressources" element={<ResourcesHub />} />
             <Route path="/en/resources" element={<ResourcesHub />} />
             <Route path="/ressources/preparation-examen-maths-secondaire" element={<ResourceArticle />} />

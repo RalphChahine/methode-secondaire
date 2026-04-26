@@ -8,6 +8,8 @@ export const routeCatalog = {
   montreal: { fr: "/tutorat-montreal", en: "/en/montreal-tutoring" },
   laval: { fr: "/tutorat-laval", en: "/en/laval-tutoring" },
   quebecOnline: { fr: "/tutorat-en-ligne-quebec", en: "/en/quebec-online-tutoring" },
+  examSprint: { fr: "/sprint-examen", en: "/en/exam-sprint" },
+  weeklyFollowUp: { fr: "/suivi-hebdomadaire", en: "/en/weekly-follow-up" },
   resourcesHub: { fr: "/ressources", en: "/en/resources" },
   mathExamPrep: {
     fr: "/ressources/preparation-examen-maths-secondaire",

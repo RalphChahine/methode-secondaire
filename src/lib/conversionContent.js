@@ -24,7 +24,7 @@ export const guaranteeByLocale = {
       },
     ],
     primary: "Appeler pour un diagnostic",
-    secondary: "Réserver une séance",
+    secondary: "Réserver une séance ciblée",
     tertiary: "Rencontrer l'équipe",
   },
   en: {
@@ -52,7 +52,7 @@ export const guaranteeByLocale = {
       },
     ],
     primary: "Call for a diagnostic",
-    secondary: "Book a session",
+    secondary: "Book a focused session",
     tertiary: "Meet the team",
   },
 }

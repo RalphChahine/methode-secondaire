@@ -121,19 +121,25 @@ const pricing = [
     price: "$75 / h",
     accent: "Ideal for a targeted review or a specific short-term need.",
     bullets: ["Book as needed", "Math or science", "Online or in person"],
+    action: "book",
+    cta: "Book a one-time session",
   },
   {
     title: "Weekly follow-up",
     price: "$70 / h",
-    accent: "The most effective format for building lasting progress.",
-    bullets: ["Recurring time slot", "Clear follow-up", "Strong in-school-year option"],
+    accent: "The most effective format for building lasting progress, and best framed by phone first.",
+    bullets: ["Call first to frame the follow-up", "Recurring time slot", "Strong in-school-year option"],
     highlight: true,
+    action: "phone",
+    cta: "Call to discuss",
   },
   {
     title: "Intensive block",
     price: "On request",
     accent: "For exam season, catch-up work or a short, focused reset.",
     bullets: ["Tight plan", "Clear priorities", "Flexible format"],
+    action: "book",
+    cta: "Book a first focused session",
   },
 ]
 
@@ -236,13 +242,13 @@ export default function AccueilEn() {
                 >
                   <a href={BOOKING_URL} target="_blank" rel="noreferrer">
                     <CalendarDays className="h-4 w-4" />
-                    Book a session
+                    Book a focused session
                   </a>
                 </Button>
               </div>
 
               <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-white/68">
-                <span>The best first step is often a quick 15-minute call to talk through the situation.</span>
+                <span>For weekly follow-up, the best first step is usually a quick 15-minute call.</span>
                 <button
                   type="button"
                   className="text-white transition hover:text-[#f5c977]"
@@ -341,7 +347,7 @@ export default function AccueilEn() {
                 <Button asChild variant="outline" className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white">
                   <a href={BOOKING_URL} target="_blank" rel="noreferrer">
                     <CalendarDays className="h-4 w-4" />
-                    Book a session
+                    Book a focused session
                   </a>
                 </Button>
               </div>
@@ -508,7 +514,7 @@ export default function AccueilEn() {
           <SectionHeader
             eyebrow="Pricing"
             title="Simple options to move forward at the right pace"
-            description="Weekly follow-up is usually the strongest option for lasting progress and much less stress between sessions."
+            description="Weekly follow-up is best discussed by phone first. Online booking is mainly for one-time, focused or urgent needs."
           />
           <div className="mt-8 grid gap-4 xl:grid-cols-3">
             {pricing.map((plan) => (
@@ -539,9 +545,13 @@ export default function AccueilEn() {
                   ))}
                 </ul>
                 <Button asChild className="mt-8 w-full rounded-full py-6 bg-white/8 text-white hover:bg-white/12">
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    Choose this option
-                  </a>
+                  {plan.action === "phone" ? (
+                    <a href={`tel:${siteConfig.phone}`}>{plan.cta}</a>
+                  ) : (
+                    <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                      {plan.cta}
+                    </a>
+                  )}
                 </Button>
               </MotionCard>
             ))}
@@ -567,21 +577,21 @@ export default function AccueilEn() {
         <section id="contact" className="scroll-mt-32 pt-20">
           <SectionHeader
             eyebrow="Contact and booking"
-            title="Talking first is often the easiest way to start"
-            description="A short phone call usually clarifies the need faster, and the booking calendar stays available right after if you want to move ahead immediately."
+            title="Weekly follow-up? Talking first is usually best"
+            description="If the need is already clear and one-time or urgent, the booking calendar stays available right away. For real week-after-week follow-up, a short call helps frame the pace, format and priorities."
           />
           <div className="mt-8 grid gap-4 xl:grid-cols-[0.95fr,1.05fr]">
             <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
               <div className="text-sm uppercase tracking-[0.24em] text-white/45">Recommended first step</div>
-              <h3 className="mt-3 font-display text-3xl font-semibold">Talk first, book right after if you want</h3>
+              <h3 className="mt-3 font-display text-3xl font-semibold">Weekly follow-up? Talk first</h3>
               <p className="mt-3 text-sm leading-7 text-white/72">
-                The call is there to clarify the subject, grade level, urgency and best format before opening the calendar.
+                The call clarifies the subject, grade level, urgency and best format. If the need is one-time or urgent and already clear, the calendar can take over right away.
               </p>
               <div className="mt-7 space-y-4">
                 <ContactLine icon={Phone} href={`tel:${siteConfig.phone}`} label={siteConfig.phoneDisplay} />
                 <ContactLine icon={Mail} href="mailto:chahineralph@gmail.com" label="chahineralph@gmail.com" />
                 <ContactLine icon={MapPin} label="Online across Quebec, in person depending on area" />
-                <ContactLine icon={Clock3} label="Short diagnostic call, fast replies and simple booking afterwards" />
+                <ContactLine icon={Clock3} label="Short call to frame follow-up, or direct booking for a one-time need" />
               </div>
               <div className="mt-8 grid gap-3 sm:grid-cols-2">
                 <Button asChild className="rounded-full bg-[#f5c977] py-6 text-[#071631] hover:bg-[#f7d38f]">
@@ -593,7 +603,7 @@ export default function AccueilEn() {
                 <Button asChild variant="outline" className="rounded-full border-white/15 bg-white/5 py-6 text-white hover:bg-white/10 hover:text-white">
                   <a href={BOOKING_URL} target="_blank" rel="noreferrer">
                     <CalendarDays className="h-4 w-4" />
-                    Book a session
+                    Book a one-time session
                   </a>
                 </Button>
               </div>
@@ -609,7 +619,10 @@ export default function AccueilEn() {
             </MotionCard>
           </div>
           <div className="mt-6">
-            <BookingEmbed title="Book a session with Méthode Secondaire" />
+            <div className="mb-4 max-w-3xl text-sm leading-7 text-white/68">
+              This calendar is mainly for one-time, focused or urgent tutoring needs.
+            </div>
+            <BookingEmbed title="Book a one-time session with Méthode Secondaire" />
           </div>
         </section>
       </main>

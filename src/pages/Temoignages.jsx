@@ -94,7 +94,7 @@ const contentByLocale = {
       "Des retours qui donnent envie d'avancer, et qui donnent confiance avant même la première séance.",
     heroText:
       "Retours anonymisés avec contexte de suivi, publiés pour montrer une preuve sociale plus solide tout en protégeant la confidentialité des familles.",
-    ctaPrimary: "Réserver une séance",
+    ctaPrimary: "Réserver une séance ciblée",
     ctaSecondary: "Retour à l'accueil",
     asideEyebrow: "Ce qui revient le plus souvent",
     asideTitle: "Des familles qui sentent une vraie différence",
@@ -110,7 +110,7 @@ const contentByLocale = {
     finalTitle: "Une page qui rassure avant même le premier contact",
     finalText:
       "Quand un parent lit des retours comme ceux-ci, il comprend tout de suite que l'objectif n'est pas seulement d'aider pour un devoir, mais de produire une vraie progression durable.",
-    finalPrimary: "Réserver maintenant",
+    finalPrimary: "Réserver une séance ciblée",
     finalSecondary: "Voir la page devenir tuteur",
     seoTitle: "Témoignages | Méthode Secondaire",
     seoDescription:
@@ -186,7 +186,7 @@ const contentByLocale = {
       "The kind of feedback that builds trust before the very first session.",
     heroText:
       "These reviews are anonymized and published with tutoring context to create stronger social proof while protecting family privacy.",
-    ctaPrimary: "Book a session",
+    ctaPrimary: "Book a focused session",
     ctaSecondary: "Back to home",
     asideEyebrow: "What comes back most often",
     asideTitle: "Families who feel a real difference",
@@ -202,7 +202,7 @@ const contentByLocale = {
     finalTitle: "A page that reassures families before the first conversation",
     finalText:
       "When a parent reads feedback like this, they immediately understand that the goal is not just homework help, but real long-term progress.",
-    finalPrimary: "Book now",
+    finalPrimary: "Book a focused session",
     finalSecondary: "See the tutor page",
     seoTitle: "Testimonials | Méthode Secondaire",
     seoDescription:
