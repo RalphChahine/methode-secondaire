@@ -142,7 +142,10 @@ export default function SiteLayout() {
     <div className="min-h-screen pb-24 lg:pb-0">
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#071631]/75 backdrop-blur-xl">
         <div className="mx-auto flex min-h-[4.75rem] w-full max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:h-20 sm:gap-4 sm:px-6 sm:py-0 lg:px-8">
-          <Link to={getLocalizedPath("home", locale)} className="flex min-w-0 flex-1 items-center gap-3">
+          <Link
+            to={getLocalizedPath("home", locale)}
+            className="flex min-w-0 flex-1 items-center gap-3 xl:min-w-[15rem] xl:flex-none"
+          >
             <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[18px] border border-white/15 bg-white/10 text-white shadow-lg shadow-black/10 sm:h-12 sm:w-12">
               <img
                 src="/logo-methode-secondaire-mark-white.svg"
@@ -153,11 +156,11 @@ export default function SiteLayout() {
 
             <div className="min-w-0 leading-tight">
               <div className="truncate font-display text-base font-semibold text-white sm:text-lg">Méthode Secondaire</div>
-              <div className="hidden text-xs uppercase tracking-[0.22em] text-white/55 sm:block">{copy.brandTag}</div>
+              <div className="hidden text-xs uppercase tracking-[0.22em] text-white/55 2xl:block">{copy.brandTag}</div>
             </div>
           </Link>
 
-          <nav className="hidden items-center gap-5 lg:flex">
+          <nav className="hidden items-center gap-4 xl:flex">
             {copy.pages.map((link) => (
               <NavLink key={link.to} to={link.to} className={navLinkClass}>
                 {link.label}
@@ -165,7 +168,7 @@ export default function SiteLayout() {
             ))}
           </nav>
 
-          <div className="hidden items-center gap-2 lg:flex">
+          <div className="hidden items-center gap-2 xl:flex">
             <LanguageToggle />
 
             <Button
@@ -197,7 +200,7 @@ export default function SiteLayout() {
             </Button>
           </div>
 
-          <div className="flex shrink-0 items-center gap-2 lg:hidden">
+          <div className="flex shrink-0 items-center gap-2 xl:hidden">
             <LanguageToggle className="shrink-0" />
 
             <Button
@@ -431,22 +434,25 @@ export default function SiteLayout() {
         </div>
       </footer>
 
-      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[#071631]/95 px-4 py-3 backdrop-blur lg:hidden">
-        <div className="mx-auto flex w-full max-w-7xl gap-3">
-          <Button asChild className="flex-1 rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
-            <a href={`tel:${siteConfig.phone}`}>
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[#071631]/95 px-3 py-3 backdrop-blur lg:hidden">
+        <div className="mx-auto grid w-full max-w-7xl grid-cols-2 gap-2">
+          <Button
+            asChild
+            className="min-w-0 rounded-full bg-[#f5c977] px-3 text-xs text-[#071631] hover:bg-[#f7d38f] sm:text-sm"
+          >
+            <a href={`tel:${siteConfig.phone}`} aria-label={copy.callDiagnostic}>
               <Phone className="h-4 w-4" />
-              {copy.call}
+              {isEnglish ? "Call" : "Appeler"}
             </a>
           </Button>
           <Button
             asChild
             variant="outline"
-            className="flex-1 rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+            className="min-w-0 rounded-full border-white/15 bg-white/5 px-3 text-xs text-white hover:bg-white/10 hover:text-white sm:text-sm"
           >
-            <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+            <a href={BOOKING_URL} target="_blank" rel="noreferrer" aria-label={copy.bookSession}>
               <CalendarDays className="h-4 w-4" />
-              {copy.bookSession}
+              {isEnglish ? "Book" : "Réserver"}
             </a>
           </Button>
         </div>

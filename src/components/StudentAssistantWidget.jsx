@@ -145,10 +145,10 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
   }
 
   return (
-    <div className="fixed bottom-24 right-4 z-50 lg:bottom-6 lg:right-6">
+    <div className="fixed bottom-24 right-3 z-50 max-w-[calc(100vw-1rem)] lg:bottom-6 lg:right-6 lg:max-w-none">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button className="rounded-full bg-[#f5c977] px-5 py-6 text-[#071631] shadow-[0_18px_45px_rgba(245,201,119,0.3)] hover:bg-[#f7d38f]">
+          <Button className="max-w-[calc(100vw-1rem)] rounded-full bg-[#f5c977] px-4 py-5 text-sm text-[#071631] shadow-[0_18px_45px_rgba(245,201,119,0.3)] hover:bg-[#f7d38f] sm:px-5 sm:py-6 sm:text-base">
             <MessageSquareMore className="h-4 w-4" />
             {copy.buttonLabel}
           </Button>
@@ -158,24 +158,24 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
           side="right"
           className="flex h-full w-full flex-col border-white/10 bg-[#071631] p-0 text-white sm:max-w-xl"
         >
-          <SheetHeader className="border-b border-white/10 px-6 py-5">
-            <div className="flex items-center gap-3">
+          <SheetHeader className="border-b border-white/10 px-4 py-5 sm:px-6">
+            <div className="flex items-start gap-3 pr-8">
               <div className="rounded-2xl bg-[#f5c977] p-2.5 text-[#071631]">
                 <Bot className="h-5 w-5" />
               </div>
-              <div>
-                <SheetTitle className="font-display text-2xl text-white">{copy.sheetTitle}</SheetTitle>
+              <div className="min-w-0">
+                <SheetTitle className="font-display text-xl text-white sm:text-2xl">{copy.sheetTitle}</SheetTitle>
                 <SheetDescription className="mt-1 text-white/65">{copy.sheetDescription}</SheetDescription>
               </div>
             </div>
           </SheetHeader>
 
-          <div className="border-b border-white/10 px-6 py-4">
-            <div className="inline-flex rounded-full border border-white/10 bg-white/5 p-1">
+          <div className="border-b border-white/10 px-4 py-4 sm:px-6">
+            <div className="flex max-w-full rounded-full border border-white/10 bg-white/5 p-1">
               <button
                 type="button"
                 className={cn(
-                  "rounded-full px-4 py-2 text-sm transition",
+                  "min-w-0 rounded-full px-4 py-2 text-sm transition",
                   mode === "chat" ? "bg-[#f5c977] text-[#071631]" : "text-white/72 hover:text-white",
                 )}
                 onClick={() => setMode("chat")}
@@ -185,7 +185,7 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
               <button
                 type="button"
                 className={cn(
-                  "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm transition",
+                  "inline-flex min-w-0 items-center gap-2 rounded-full px-4 py-2 text-sm transition",
                   mode === "diagnostic"
                     ? "bg-[#f5c977] text-[#071631]"
                     : "text-white/72 hover:text-white",
@@ -205,7 +205,7 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto px-6 py-5">
+          <div className="flex-1 overflow-y-auto px-4 py-5 sm:px-6">
             {mode === "chat" ? (
               <>
                 <div className="rounded-[26px] border border-white/10 bg-white/[0.04] p-5">
@@ -252,7 +252,7 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
                     <div
                       key={message.id}
                       className={cn(
-                        "max-w-[88%] rounded-[24px] px-4 py-3 text-sm leading-7",
+                        "max-w-full rounded-[24px] px-4 py-3 text-sm leading-7 sm:max-w-[88%]",
                         message.role === "assistant"
                           ? "border border-white/10 bg-white/6 text-white"
                           : "ml-auto bg-[#f5c977] text-[#071631]",
@@ -266,12 +266,12 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
                       >
                         {message.role === "assistant" ? copy.assistantLabel : copy.youLabel}
                       </div>
-                      <div className="whitespace-pre-wrap">{message.content}</div>
+                      <div className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">{message.content}</div>
                     </div>
                   ))}
 
                   {isSending && (
-                    <div className="max-w-[88%] rounded-[24px] border border-white/10 bg-white/6 px-4 py-3 text-sm text-white/72">
+                    <div className="max-w-full rounded-[24px] border border-white/10 bg-white/6 px-4 py-3 text-sm text-white/72 sm:max-w-[88%]">
                       <div className="mb-1 text-xs uppercase tracking-[0.22em] text-white/45">
                         {copy.assistantLabel}
                       </div>
@@ -291,7 +291,7 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
           </div>
 
           {mode === "chat" && (
-            <div className="border-t border-white/10 px-6 py-5">
+            <div className="border-t border-white/10 px-4 py-5 sm:px-6">
               <form onSubmit={handleSubmit} className="space-y-3">
                 <Textarea
                   value={draft}
@@ -307,12 +307,12 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
                   </div>
                 )}
 
-                <div className="flex items-center justify-between gap-3">
-                  <p className="text-xs leading-6 text-white/50">{copy.note}</p>
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-xs leading-6 text-white/50 sm:max-w-[70%]">{copy.note}</p>
                   <Button
                     type="submit"
                     disabled={isSending || !draft.trim()}
-                    className="shrink-0 rounded-full bg-[#f5c977] px-5 text-[#071631] hover:bg-[#f7d38f]"
+                    className="w-full shrink-0 rounded-full bg-[#f5c977] px-5 text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
                   >
                     {isSending ? copy.sending : copy.send}
                   </Button>
