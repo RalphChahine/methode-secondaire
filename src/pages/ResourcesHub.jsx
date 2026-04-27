@@ -2,6 +2,8 @@ import { Link, useLocation } from "react-router-dom"
 import { ArrowRight, Compass, Sparkles } from "lucide-react"
 
 import KeywordIntentSection from "@/components/KeywordIntentSection"
+import LocalOpportunitySection from "@/components/LocalOpportunitySection"
+import MilestoneOpportunitySection from "@/components/MilestoneOpportunitySection"
 import MotionCard from "@/components/MotionCard"
 import OfferPathwaysSection from "@/components/OfferPathwaysSection"
 import ResourceGridSection from "@/components/ResourceGridSection"
@@ -152,6 +154,10 @@ export default function ResourcesHub() {
         <ResourceGridSection locale={locale} className="pt-20" showHubLink={false} />
 
         <KeywordIntentSection locale={locale} className="pt-20" />
+
+        <LocalOpportunitySection locale={locale} className="pt-20" />
+
+        <MilestoneOpportunitySection locale={locale} className="pt-20" />
 
         <OfferPathwaysSection
           locale={locale}

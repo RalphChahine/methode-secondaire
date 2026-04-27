@@ -32,6 +32,8 @@ import {
 import GrowthProgramSection from "@/components/GrowthProgramSection"
 import KeywordIntentSection from "@/components/KeywordIntentSection"
 import LeadForm from "@/components/LeadForm"
+import LocalOpportunitySection from "@/components/LocalOpportunitySection"
+import MilestoneOpportunitySection from "@/components/MilestoneOpportunitySection"
 import MotionCard from "@/components/MotionCard"
 import ResourceGridSection from "@/components/ResourceGridSection"
 import Seo from "@/components/Seo"
@@ -301,6 +303,8 @@ export default function AccueilEn() {
 
         <GrowthProgramSection locale="en" className="pt-20" />
         <KeywordIntentSection locale="en" className="pt-20" />
+        <LocalOpportunitySection locale="en" className="pt-20" />
+        <MilestoneOpportunitySection locale="en" className="pt-20" />
 
         <section id="methode" className="scroll-mt-32 pt-20">
           <SectionHeader

@@ -96,6 +96,54 @@ export default function App() {
             />
             <Route path="/tuteur-sciences-laval" element={<OfferLanding forcedRouteKey="scienceTutorLaval" />} />
             <Route path="/en/laval-science-tutor" element={<OfferLanding forcedRouteKey="scienceTutorLaval" />} />
+            <Route
+              path="/soutien-scolaire-montreal"
+              element={<OfferLanding forcedRouteKey="academicSupportMontreal" />}
+            />
+            <Route
+              path="/en/montreal-academic-support"
+              element={<OfferLanding forcedRouteKey="academicSupportMontreal" />}
+            />
+            <Route
+              path="/tuteur-physique-montreal"
+              element={<OfferLanding forcedRouteKey="physicsTutorMontreal" />}
+            />
+            <Route
+              path="/en/montreal-physics-tutor"
+              element={<OfferLanding forcedRouteKey="physicsTutorMontreal" />}
+            />
+            <Route
+              path="/aide-chimie-laval"
+              element={<OfferLanding forcedRouteKey="chemistryHelpLaval" />}
+            />
+            <Route
+              path="/en/laval-chemistry-help"
+              element={<OfferLanding forcedRouteKey="chemistryHelpLaval" />}
+            />
+            <Route
+              path="/cours-ete-secondaire"
+              element={<OfferLanding forcedRouteKey="summerSupportSecondary" />}
+            />
+            <Route
+              path="/en/high-school-summer-support"
+              element={<OfferLanding forcedRouteKey="summerSupportSecondary" />}
+            />
+            <Route
+              path="/preparation-examen-ministere-secondaire-4"
+              element={<OfferLanding forcedRouteKey="ministerialExamSec4" />}
+            />
+            <Route
+              path="/en/secondary-4-ministerial-exam-prep"
+              element={<OfferLanding forcedRouteKey="ministerialExamSec4" />}
+            />
+            <Route
+              path="/entree-au-secondaire"
+              element={<OfferLanding forcedRouteKey="entryToSecondary" />}
+            />
+            <Route
+              path="/en/high-school-transition-support"
+              element={<OfferLanding forcedRouteKey="entryToSecondary" />}
+            />
             <Route path="/ressources" element={<ResourcesHub />} />
             <Route path="/en/resources" element={<ResourcesHub />} />
             <Route path="/ressources/preparation-examen-maths-secondaire" element={<ResourceArticle />} />

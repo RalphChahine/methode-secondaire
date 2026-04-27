@@ -10,6 +10,8 @@ import {
 
 import MotionCard from "@/components/MotionCard"
 import KeywordIntentSection from "@/components/KeywordIntentSection"
+import LocalOpportunitySection from "@/components/LocalOpportunitySection"
+import MilestoneOpportunitySection from "@/components/MilestoneOpportunitySection"
 import OfferPathwaysSection from "@/components/OfferPathwaysSection"
 import ResourceGridSection from "@/components/ResourceGridSection"
 import Seo from "@/components/Seo"
@@ -342,6 +344,10 @@ export default function Maths() {
         />
 
         <KeywordIntentSection locale={locale} className="pt-20" />
+
+        <LocalOpportunitySection locale={locale} className="pt-20" />
+
+        <MilestoneOpportunitySection locale={locale} className="pt-20" />
 
         <section className="pt-20">
           <MotionCard className="rounded-[34px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-8 text-white sm:p-10">

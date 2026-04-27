@@ -1,6 +1,5 @@
 import { Link, useLocation } from "react-router-dom"
 import {
-  ArrowRight,
   BadgeCheck,
   CalendarDays,
   Check,
@@ -50,17 +49,17 @@ export default function OfferLanding({ forcedRouteKey }) {
     page?.heroPanelTitle ||
     (locale === "en"
       ? "A clearer entry point when the need is already real"
-      : "Une porte d'entree plus claire quand le besoin est deja reel")
+      : "Une porte d'entrée plus claire quand le besoin est déjà réel")
   const heroPanelText =
     page?.heroPanelText ||
     (locale === "en"
       ? "The goal is not to add random tutoring hours. The goal is to create more clarity, better decisions and the right next move for the family."
-      : "Le but n'est pas d'ajouter des heures au hasard. Le but est de creer plus de clarte, de meilleures decisions et la bonne prochaine etape pour la famille.")
+      : "Le but n'est pas d'ajouter des heures au hasard. Le but est de créer plus de clarté, de meilleures décisions et la bonne prochaine étape pour la famille.")
   const relatedDescription =
     page?.relatedDescription ||
     (locale === "en"
       ? "These pages are the most natural next steps when a family is comparing one focused need with broader tutoring support."
-      : "Ces pages sont les suites les plus naturelles quand une famille compare un besoin cible avec un accompagnement plus large.")
+      : "Ces pages sont les suites les plus naturelles quand une famille compare un besoin ciblé avec un accompagnement plus large.")
 
   function openDiagnostic() {
     if (typeof window === "undefined") {
@@ -113,7 +112,7 @@ export default function OfferLanding({ forcedRouteKey }) {
       "@context": "https://schema.org",
       "@type": "Service",
       name: page.heroTitle,
-      serviceType: page.serviceType || (locale === "en" ? "Exam prep tutoring" : "Tutorat preparation examens"),
+      serviceType: page.serviceType || (locale === "en" ? "Exam prep tutoring" : "Tutorat préparation examens"),
       provider: {
         "@type": "EducationalOrganization",
         name: siteConfig.siteName,
@@ -122,7 +121,7 @@ export default function OfferLanding({ forcedRouteKey }) {
         email: siteConfig.email,
       },
       areaServed: [
-        { "@type": "AdministrativeArea", name: locale === "en" ? "Quebec" : "Quebec" },
+        { "@type": "AdministrativeArea", name: "Quebec" },
         { "@type": "City", name: "Montreal" },
         { "@type": "City", name: "Laval" },
       ],
@@ -238,22 +237,16 @@ export default function OfferLanding({ forcedRouteKey }) {
                   </a>
                 </Button>
               ) : null}
-              </div>
+            </div>
 
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/68">
-              {heroNote}
-            </p>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/68">{heroNote}</p>
           </div>
 
           <MotionCard className="glass-panel rounded-[34px] border-white/10 bg-white/[0.05] p-7 text-white">
             <div className="text-sm uppercase tracking-[0.24em] text-white/45">
-              {locale === "en" ? "Best fit" : "Format ideal"}
+              {locale === "en" ? "Best fit" : "Format idéal"}
             </div>
-            <h2 className="mt-3 font-display text-3xl font-semibold">
-              {locale === "en"
-                ? "A strong fit when the exam window is already real"
-                : "Un bon format quand la fenêtre d'examen est déjà concrète"}
-            </h2>
+            <h2 className="mt-3 font-display text-3xl font-semibold">{heroPanelTitle}</h2>
 
             <div className="mt-6 space-y-4 text-sm text-white/80">
               {page.highlights.map((highlight) => (
@@ -267,10 +260,8 @@ export default function OfferLanding({ forcedRouteKey }) {
               ))}
             </div>
 
-            <div className="mt-6 rounded-[24px] border border-white/10 bg-[#081a38]/80 px-5 py-5 text-sm leading-7 text-white/72">
-              {locale === "en"
-                ? "The goal is not to flood the student with more work. The goal is to restore order, confidence and better decisions before the test."
-                : "Le but n'est pas d'inonder l'élève avec plus de travail. Le but est de remettre de l'ordre, de la confiance et de meilleures priorités avant l'évaluation."}
+            <div className="mt-6 rounded-[24px] border border-white/10 bg-[#081a3a]/80 px-5 py-5 text-sm leading-7 text-white/72">
+              {heroPanelText}
             </div>
           </MotionCard>
         </section>
@@ -330,11 +321,7 @@ export default function OfferLanding({ forcedRouteKey }) {
           <SectionHeader
             eyebrow={locale === "en" ? "Helpful next pages" : "Pages utiles ensuite"}
             title={locale === "en" ? "Keep moving with the most relevant pages" : "Continuer avec les pages les plus utiles"}
-            description={
-              locale === "en"
-                ? "These pages are the most natural follow-up when a family is comparing an exam sprint with broader tutoring support."
-                : "Ces pages sont les suites les plus naturelles quand une famille compare un Sprint examen avec un accompagnement plus large."
-            }
+            description={relatedDescription}
           />
           <div className="mt-8 flex flex-wrap gap-3">
             {page.relatedLinks.map((entry) => (
@@ -355,7 +342,7 @@ export default function OfferLanding({ forcedRouteKey }) {
 
         <section className="pt-20">
           <SectionHeader
-            eyebrow={locale === "en" ? "FAQ" : "Questions frequentes"}
+            eyebrow={locale === "en" ? "FAQ" : "Questions fréquentes"}
             title={locale === "en" ? "What families often ask before booking" : "Ce que les familles demandent souvent avant de réserver"}
           />
           <div className="mt-8 grid gap-4 lg:grid-cols-3">
@@ -390,9 +377,7 @@ export default function OfferLanding({ forcedRouteKey }) {
                   variant="outline"
                   className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
                 >
-                  <a href={`tel:${siteConfig.phone}`}>
-                    {callLabel}
-                  </a>
+                  <a href={`tel:${siteConfig.phone}`}>{callLabel}</a>
                 </Button>
                 {showBookingButton ? (
                   <Button

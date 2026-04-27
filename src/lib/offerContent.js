@@ -8,6 +8,12 @@ export const offerRouteKeys = [
   "mathTutorMontreal",
   "homeworkHelpMontreal",
   "scienceTutorLaval",
+  "academicSupportMontreal",
+  "physicsTutorMontreal",
+  "chemistryHelpLaval",
+  "summerSupportSecondary",
+  "ministerialExamSec4",
+  "entryToSecondary",
 ]
 
 export const offerPageConfigs = {
@@ -1825,6 +1831,1248 @@ export const offerPageConfigs = {
       formTitle: "Describe the science need quickly",
       formText:
         "Share the grade, the priority subject, the kind of difficulty and the evaluation date if you already know it.",
+    },
+  },
+  academicSupportMontreal: {
+    fr: {
+      eyebrow: "Soutien scolaire Montréal",
+      heroTitle: "Soutien scolaire à Montréal : quand le besoin dépasse un seul devoir ou un seul chapitre",
+      heroText:
+        "Quand un parent cherche du soutien scolaire à Montréal, le besoin est souvent plus large qu'une simple aide ponctuelle. Il faut alors voir l'ensemble: matières qui tirent vers le bas, rythme réel, lacunes accumulées et niveau de stress à la maison.",
+      seoTitle: "Soutien scolaire Montréal au secondaire | Méthode Secondaire",
+      seoDescription:
+        "Soutien scolaire à Montréal pour le secondaire : maths, sciences, devoirs, rattrapage, méthode de travail et suivi plus structuré selon le vrai besoin.",
+      keywords:
+        "soutien scolaire montréal secondaire, soutien scolaire secondaire montréal, tutorat montréal secondaire, aide scolaire montréal, rattrapage scolaire montréal",
+      serviceType: "Soutien scolaire au secondaire à Montréal",
+      showBookingButton: false,
+      callLabel: "Appeler pour cadrer le soutien scolaire",
+      heroNote:
+        "Le soutien scolaire ressemble rarement à un besoin de dernière minute. Ici, l'appel d'abord reste le meilleur moyen de clarifier le bon point d'entrée.",
+      highlights: [
+        "Pensé pour les familles de Montréal qui veulent une vue plus large que du simple tutorat chapitre par chapitre.",
+        "Très utile quand plusieurs matières, plusieurs semaines de stress ou plusieurs retards commencent à se répondre entre eux.",
+        "L'appel sert à choisir le bon point d'entrée: maths, sciences, devoirs, rattrapage ou suivi hebdomadaire.",
+      ],
+      fitEyebrow: "Quand cette page aide le plus",
+      fitTitle: "Cette page aide surtout quand la situation demande plus de cohérence que de dépannage.",
+      fitDescription:
+        "Le parent cherche ici une vraie reprise de contrôle, pas juste une séance de plus. Le mot-clé est local Montréal, mais l'intention est surtout stratégique.",
+      fitCards: [
+        {
+          title: "Plusieurs signaux s'additionnent",
+          description:
+            "Quand les notes, les devoirs, les retards, la fatigue ou la perte de confiance commencent à se renforcer en même temps.",
+        },
+        {
+          title: "Le besoin touche plusieurs zones",
+          description:
+            "Quand il faut choisir entre maths, sciences, méthode de travail ou soutien plus large au lieu d'agir au hasard.",
+        },
+        {
+          title: "Il faut une stratégie plus durable",
+          description:
+            "Quand la famille veut moins éteindre le feu et davantage installer un rythme utile, lisible et stable.",
+        },
+      ],
+      processEyebrow: "Comment ça marche",
+      processTitle: "Un soutien scolaire à Montréal utile en 3 étapes",
+      processSteps: [
+        {
+          step: "01",
+          title: "Cadrer la situation dans son ensemble",
+          description:
+            "On clarifie les matières concernées, le niveau actuel, le degré d'urgence et ce qui pèse le plus à court terme.",
+        },
+        {
+          step: "02",
+          title: "Choisir le bon point d'entrée",
+          description:
+            "On décide s'il faut commencer par une matière précise, une aide aux devoirs mieux structurée ou un suivi plus régulier.",
+        },
+        {
+          step: "03",
+          title: "Installer une progression plus lisible",
+          description:
+            "Le but est de rendre les priorités, les progrès et les ajustements beaucoup plus clairs pour le parent et l'élève.",
+        },
+      ],
+      includedEyebrow: "Ce que la famille gagne",
+      includedTitle: "Plus de cohérence, moins d'improvisation",
+      includedItems: [
+        "Une porte d'entrée locale plus crédible pour le soutien scolaire à Montréal.",
+        "Une meilleure lecture de ce qui demande le plus d'énergie maintenant.",
+        "Un pont plus fort entre devoirs, rattrapage, matières et suivi.",
+        "Des décisions plus solides sur le rythme à installer.",
+      ],
+      faq: [
+        {
+          question: "Quelle différence entre soutien scolaire et aide aux devoirs ?",
+          answer:
+            "L'aide aux devoirs vise surtout le travail du moment. Le soutien scolaire prend plus de recul: matières, rythme, lacunes, stratégie et continuité.",
+        },
+        {
+          question: "Pourquoi appeler d'abord ?",
+          answer:
+            "Parce qu'un besoin de soutien scolaire doit être cadré avant d'être réservé. L'appel aide à choisir la vraie priorité et le format le plus utile.",
+        },
+        {
+          question: "Cette page est-elle seulement pour Montréal ?",
+          answer:
+            "Elle répond à une intention locale Montréal, mais le bon accompagnement peut aussi très bien se faire en ligne selon la situation.",
+        },
+      ],
+      relatedLinks: [
+        { routeKey: "academicSupportSecondary", label: "Soutien scolaire secondaire" },
+        { routeKey: "homeworkHelpMontreal", label: "Aide aux devoirs Montréal" },
+        { routeKey: "mathTutorMontreal", label: "Tuteur maths Montréal" },
+        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+        { routeKey: "montreal", label: "Tutorat Montréal" },
+      ],
+      ctaTitle: "Vous sentez que la situation à Montréal demande une vraie vue d'ensemble ?",
+      ctaText:
+        "Le meilleur premier pas est souvent d'expliquer la situation complète, puis de choisir le point d'entrée qui créera le plus de clarté et de soulagement.",
+      formTitle: "Décrire rapidement le besoin de soutien scolaire à Montréal",
+      formText:
+        "Indiquez le niveau, les matières concernées, ce qui s'accumule le plus et si le besoin ressemble davantage à des devoirs, du rattrapage ou un suivi durable.",
+    },
+    en: {
+      eyebrow: "Montreal academic support",
+      heroTitle: "Academic support in Montreal: when the need goes beyond one assignment or one chapter",
+      heroText:
+        "When a parent searches for academic support in Montreal, the need is often broader than one isolated tutoring issue. The real job is to see the full picture: which subjects are slipping, what the real rhythm looks like, what has accumulated and how much strain the family is carrying at home.",
+      seoTitle: "Montreal academic support for high school students | Méthode Secondaire",
+      seoDescription:
+        "Academic support in Montreal for high school students: math, science, homework, catch-up work, study method and more structured follow-up depending on the real need.",
+      keywords:
+        "montreal academic support high school, academic support montreal secondary, montreal tutoring support, school support montreal, catch-up tutoring montreal",
+      serviceType: "High school academic support in Montreal",
+      showBookingButton: false,
+      callLabel: "Call to frame the academic support",
+      heroNote:
+        "Academic support rarely points to a last-minute need. Here, calling first is still the strongest way to choose the right starting point.",
+      highlights: [
+        "Built for Montreal-area families who need a wider view than simple chapter-by-chapter tutoring.",
+        "Especially useful when several subjects, several weeks of stress or several delays are feeding each other.",
+        "The call helps choose the best entry point: math, science, homework, catch-up work or weekly follow-up.",
+      ],
+      fitEyebrow: "When this page helps most",
+      fitTitle: "This page helps most when the situation needs coherence more than quick repair.",
+      fitDescription:
+        "The parent is looking for real control again, not just one more session. The keyword is local to Montreal, but the intent is mainly strategic.",
+      fitCards: [
+        {
+          title: "Several warning signs are adding up",
+          description:
+            "When grades, homework, delays, fatigue or confidence loss start reinforcing each other at the same time.",
+        },
+        {
+          title: "The need touches more than one zone",
+          description:
+            "When the family needs to choose between math, science, work method or broader support instead of acting at random.",
+        },
+        {
+          title: "A more durable strategy is needed",
+          description:
+            "When the goal is less firefighting and more installing a useful, readable and stable rhythm.",
+        },
+      ],
+      processEyebrow: "How it works",
+      processTitle: "Useful academic support in Montreal in 3 steps",
+      processSteps: [
+        {
+          step: "01",
+          title: "Frame the whole situation",
+          description:
+            "We clarify the subjects involved, the current level, the urgency and what weighs most in the short term.",
+        },
+        {
+          step: "02",
+          title: "Choose the right entry point",
+          description:
+            "We decide whether the best start is one subject, stronger homework structure or steadier follow-up.",
+        },
+        {
+          step: "03",
+          title: "Install more readable progress",
+          description:
+            "The goal is to make priorities, progress and needed adjustments much easier to understand for both parent and student.",
+        },
+      ],
+      includedEyebrow: "What the family gains",
+      includedTitle: "More coherence, less improvisation",
+      includedItems: [
+        "A more credible local entry point for academic support in Montreal.",
+        "A clearer reading of what demands the most energy right now.",
+        "A stronger bridge between homework, catch-up work, subjects and follow-up.",
+        "More solid decisions about the rhythm to install.",
+      ],
+      faq: [
+        {
+          question: "What is the difference between academic support and homework help?",
+          answer:
+            "Homework help mainly targets the work of the moment. Academic support steps back further: subjects, rhythm, gaps, strategy and continuity.",
+        },
+        {
+          question: "Why call first?",
+          answer:
+            "Because an academic support need should be framed before it is booked. The call helps choose the true priority and the most useful format.",
+        },
+        {
+          question: "Is this page only for Montreal families?",
+          answer:
+            "It answers a Montreal-local search, but the best support can still happen online depending on the situation.",
+        },
+      ],
+      relatedLinks: [
+        { routeKey: "academicSupportSecondary", label: "Academic support" },
+        { routeKey: "homeworkHelpMontreal", label: "Montreal homework help" },
+        { routeKey: "mathTutorMontreal", label: "Montreal math tutor" },
+        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+        { routeKey: "montreal", label: "Montreal tutoring" },
+      ],
+      ctaTitle: "Does the situation in Montreal need a true wider view?",
+      ctaText:
+        "The best first move is often to explain the whole situation, then choose the entry point that will create the most clarity and relief.",
+      formTitle: "Describe the academic support need in Montreal quickly",
+      formText:
+        "Share the grade, the subjects involved, what is piling up most and whether the need looks more like homework, catch-up work or a steadier long-term rhythm.",
+    },
+  },
+  physicsTutorMontreal: {
+    fr: {
+      eyebrow: "Tuteur physique Montréal",
+      heroTitle: "Tuteur de physique à Montréal : pour rendre les formules, les unités et les phénomènes enfin cohérents",
+      heroText:
+        "Quand un parent cherche un tuteur de physique à Montréal, le besoin est souvent très précis: formules mal reliées, unités confuses, problèmes qui bloquent et examens qui approchent. Cette page sert à capter cette intention plus directement.",
+      seoTitle: "Tuteur physique Montréal au secondaire | Méthode Secondaire",
+      seoDescription:
+        "Tuteur de physique à Montréal pour le secondaire : formules, unités, résolution de problèmes, laboratoires et préparation d'examens avec une méthode claire.",
+      keywords:
+        "tuteur physique montréal, aide physique montréal secondaire, tutorat physique montréal, physique secondaire montréal, préparation examen physique montréal",
+      serviceType: "Tutorat de physique à Montréal",
+      bookingLabel: "Réserver un tuteur de physique",
+      highlights: [
+        "Pensé pour les familles de Montréal qui cherchent de l'aide en physique au secondaire.",
+        "Très utile quand les formules, les unités ou les problèmes restent trop abstraits.",
+        "Compatible avec une réservation directe quand la matière et l'urgence sont déjà bien identifiées.",
+      ],
+      fitEyebrow: "Quand cette page aide le plus",
+      fitTitle: "Cette page aide surtout quand la physique est clairement la matière qui bloque.",
+      fitDescription:
+        "On ne parle pas ici d'un soutien scolaire très large. On parle d'une recherche plus ciblée où le parent sait déjà que la physique demande une aide spécifique.",
+      fitCards: [
+        {
+          title: "Les formules ne se relient pas",
+          description:
+            "Quand l'élève connaît parfois la formule, mais ne sait pas quand l'utiliser, ni comment relier les unités et les phénomènes.",
+        },
+        {
+          title: "Les problèmes restent trop flous",
+          description:
+            "Quand les énoncés de physique créent encore trop d'hésitation, même après plusieurs essais ou révisions.",
+        },
+        {
+          title: "Montréal + besoin ciblé",
+          description:
+            "La recherche est locale Montréal, mais la vraie force de la page est de répondre à un besoin déjà clairement identifié.",
+        },
+      ],
+      processEyebrow: "Comment ça marche",
+      processTitle: "Un tuteur de physique à Montréal utile en 3 étapes",
+      processSteps: [
+        {
+          step: "01",
+          title: "Identifier le vrai point de friction",
+          description:
+            "On repère si le blocage vient des concepts, des unités, des problèmes, des schémas ou d'une préparation d'examen.",
+        },
+        {
+          step: "02",
+          title: "Réorganiser la logique physique",
+          description:
+            "On reconnecte formules, unités, phénomènes et étapes de résolution pour rendre les réponses beaucoup plus nettes.",
+        },
+        {
+          step: "03",
+          title: "Pratiquer avec des questions utiles",
+          description:
+            "On vise des exercices qui préparent vraiment les évaluations au lieu d'ajouter de la pratique diffuse.",
+        },
+      ],
+      includedEyebrow: "Ce que la famille gagne",
+      includedTitle: "Une physique plus lisible et moins intimidante",
+      includedItems: [
+        "Une page locale plus forte sur l'intention tuteur physique Montréal.",
+        "Une meilleure clarté autour des formules, des unités et des problèmes.",
+        "Un bon pont entre séance ciblée, sciences générales et Sprint examen.",
+        "Une décision plus simple entre réserver maintenant et élargir ensuite si nécessaire.",
+      ],
+      faq: [
+        {
+          question: "Cette page est-elle vraiment différente de la page sciences ?",
+          answer:
+            "Oui. La page sciences reste plus large. Ici, l'intention est plus précise: aider un élève en physique à Montréal sur des notions, des problèmes ou une préparation d'examen.",
+        },
+        {
+          question: "Peut-on réserver directement ?",
+          answer:
+            "Oui, si la matière et le besoin sont déjà clairs. Si la famille hésite encore entre sciences générales, physique ou chimie, l'appel peut aider à mieux cadrer.",
+        },
+        {
+          question: "La page peut-elle servir même si le tutorat se fait en ligne ?",
+          answer:
+            "Oui. La recherche est locale Montréal, mais le tutorat peut rester en ligne si c'est la manière la plus simple et la plus rapide de commencer.",
+        },
+      ],
+      relatedLinks: [
+        { routeKey: "scienceTutorSecondary", label: "Tuteur de sciences secondaire" },
+        { routeKey: "scienceTutorLaval", label: "Tuteur sciences Laval" },
+        { routeKey: "physicsHelp", label: "Guide tuteur physique" },
+        { routeKey: "examSprint", label: "Sprint examen" },
+        { routeKey: "montreal", label: "Tutorat Montréal" },
+      ],
+      ctaTitle: "Vous cherchez un tuteur de physique à Montréal avec un besoin déjà bien ciblé ?",
+      ctaText:
+        "Si la matière, le chapitre ou l'examen sont déjà clairs, la réservation directe peut être très efficace. Si le parent hésite encore sur le vrai blocage, l'appel reste utile.",
+      formTitle: "Décrire rapidement le besoin en physique",
+      formText:
+        "Indiquez le niveau, le chapitre, le type de problème ou la date d'évaluation si elle est connue.",
+    },
+    en: {
+      eyebrow: "Montreal physics tutor",
+      heroTitle: "Montreal physics tutor: make formulas, units and phenomena finally connect",
+      heroText:
+        "When a parent searches for a Montreal physics tutor, the need is often very precise: formulas that do not connect, units that stay confusing, problem solving that stalls and tests that are getting close. This page is built to capture that intent directly.",
+      seoTitle: "Montreal physics tutor for high school students | Méthode Secondaire",
+      seoDescription:
+        "Montreal physics tutor for high school students: formulas, units, problem solving, labs and exam prep with a clear method.",
+      keywords:
+        "montreal physics tutor, physics help montreal high school, physics tutoring montreal, high school physics montreal, physics exam prep montreal",
+      serviceType: "High school physics tutoring in Montreal",
+      bookingLabel: "Book a physics tutor",
+      highlights: [
+        "Built for Montreal-area families looking for focused physics help at the high school level.",
+        "Especially useful when formulas, units or problem solving still feel too abstract.",
+        "Works well with direct booking when the subject and urgency are already clear.",
+      ],
+      fitEyebrow: "When this page helps most",
+      fitTitle: "This page helps most when physics is clearly the subject that is blocking progress.",
+      fitDescription:
+        "This is not broad academic support. It is a narrower search intent where the parent already knows physics needs its own kind of help.",
+      fitCards: [
+        {
+          title: "The formulas still do not connect",
+          description:
+            "When the student may know the formula, but still does not know when to use it or how to connect it to units and phenomena.",
+        },
+        {
+          title: "Problem solving still feels too blurry",
+          description:
+            "When physics problem statements still create hesitation even after repeated attempts or review.",
+        },
+        {
+          title: "Montreal-local and highly targeted",
+          description:
+            "The search is local to Montreal, but the real strength of the page is how directly it answers a clearly identified physics need.",
+        },
+      ],
+      processEyebrow: "How it works",
+      processTitle: "Useful Montreal physics tutoring in 3 steps",
+      processSteps: [
+        {
+          step: "01",
+          title: "Identify the real friction point",
+          description:
+            "We pinpoint whether the block sits in the concepts, the units, the problems, the diagrams or the exam preparation.",
+        },
+        {
+          step: "02",
+          title: "Rebuild the physics logic",
+          description:
+            "We reconnect formulas, units, phenomena and solving steps so answers become much clearer and more reliable.",
+        },
+        {
+          step: "03",
+          title: "Practice with questions that matter",
+          description:
+            "We choose exercises that genuinely prepare the evaluations instead of adding diffuse practice.",
+        },
+      ],
+      includedEyebrow: "What the family gains",
+      includedTitle: "Physics that feels clearer and less intimidating",
+      includedItems: [
+        "A stronger local page for the Montreal physics tutor intent.",
+        "Better clarity around formulas, units and problem solving.",
+        "A strong bridge between focused sessions, broader science support and exam sprint help.",
+        "A simpler decision between booking now and widening later if needed.",
+      ],
+      faq: [
+        {
+          question: "Is this page really different from the broader science page?",
+          answer:
+            "Yes. The science page stays broader. This page is for a more precise intent: helping a student in physics in Montreal with concepts, problems or exam preparation.",
+        },
+        {
+          question: "Can families book directly?",
+          answer:
+            "Yes, when the subject and need are already clear. If the family is still hesitating between general science, physics or chemistry, calling first can help frame the right move.",
+        },
+        {
+          question: "Can this page still be relevant if the tutoring happens online?",
+          answer:
+            "Yes. The search intent is local to Montreal, but the tutoring can still happen online when that is the simplest and fastest way to begin.",
+        },
+      ],
+      relatedLinks: [
+        { routeKey: "scienceTutorSecondary", label: "High school science tutor" },
+        { routeKey: "scienceTutorLaval", label: "Laval science tutor" },
+        { routeKey: "physicsHelp", label: "Physics tutoring guide" },
+        { routeKey: "examSprint", label: "Exam sprint" },
+        { routeKey: "montreal", label: "Montreal tutoring" },
+      ],
+      ctaTitle: "Looking for a Montreal physics tutor with a highly targeted need?",
+      ctaText:
+        "If the subject, chapter or exam are already clear, direct booking can be very efficient. If the family still hesitates about the real block, calling first remains useful.",
+      formTitle: "Describe the physics need quickly",
+      formText:
+        "Share the grade, chapter, problem type or test date if you already know it.",
+    },
+  },
+  chemistryHelpLaval: {
+    fr: {
+      eyebrow: "Aide chimie Laval",
+      heroTitle: "Aide en chimie à Laval : quand il faut plus de logique, moins de flou et une meilleure préparation",
+      heroText:
+        "Quand un parent cherche de l'aide en chimie à Laval, la difficulté est souvent précise: réactions, stœchiométrie, équations, laboratoire, calculs ou préparation d'examen. Cette page sert à répondre plus directement à cette recherche.",
+      seoTitle: "Aide chimie Laval au secondaire | Méthode Secondaire",
+      seoDescription:
+        "Aide en chimie à Laval pour le secondaire : équations, stœchiométrie, laboratoires, calculs, chimie secondaire 5 et préparation d'examens.",
+      keywords:
+        "aide chimie laval secondaire, tuteur chimie laval, chimie secondaire 5 laval, tutorat chimie laval, préparation examen chimie laval",
+      serviceType: "Tutorat de chimie à Laval",
+      bookingLabel: "Réserver une aide en chimie",
+      highlights: [
+        "Pensé pour les familles de Laval qui cherchent une aide en chimie plus ciblée au secondaire.",
+        "Très utile quand les calculs, les équations ou les laboratoires restent trop flous.",
+        "Compatible avec une réservation directe quand le besoin est déjà bien identifié.",
+      ],
+      fitEyebrow: "Quand cette page aide le plus",
+      fitTitle: "Cette page aide surtout quand la chimie devient clairement la matière à débloquer.",
+      fitDescription:
+        "La recherche est locale à Laval, mais la valeur SEO et business vient surtout d'une intention forte: le parent sait déjà qu'il faut une aide ciblée en chimie.",
+      fitCards: [
+        {
+          title: "Équations et calculs qui bloquent",
+          description:
+            "Quand les réactions, les équations chimiques, les proportions ou la stœchiométrie restent trop abstraites.",
+        },
+        {
+          title: "Labo ou examen qui approche",
+          description:
+            "Quand le parent veut une aide plus directe avant un rapport, un laboratoire, un test ou une période de révision dense.",
+        },
+        {
+          title: "Laval + besoin ciblé",
+          description:
+            "La page est pensée pour une recherche locale Laval avec une intention déjà plus précise que sciences en général.",
+        },
+      ],
+      processEyebrow: "Comment ça marche",
+      processTitle: "Une aide en chimie à Laval utile en 3 étapes",
+      processSteps: [
+        {
+          step: "01",
+          title: "Clarifier la difficulté dominante",
+          description:
+            "On repère si le blocage porte surtout sur les équations, les calculs, les labos, les explications ou la préparation d'examen.",
+        },
+        {
+          step: "02",
+          title: "Rebâtir la logique de la chimie",
+          description:
+            "On reconnecte notions, symboles, étapes et calculs pour rendre la matière plus lisible et moins intimidante.",
+        },
+        {
+          step: "03",
+          title: "Pratiquer avec ce qui rapporte le plus",
+          description:
+            "On choisit les exercices, questions ou formats de labo qui donnent le plus de clarté et de préparation utile.",
+        },
+      ],
+      includedEyebrow: "Ce que la famille gagne",
+      includedTitle: "Une chimie plus lisible et plus praticable",
+      includedItems: [
+        "Une vraie page locale pour la recherche aide chimie Laval.",
+        "Plus de clarté sur les calculs, les équations et la logique scientifique.",
+        "Un bon pont entre aide ciblée, sciences générales et préparation d'examens.",
+        "Une décision plus simple entre réserver directement et parler d'un besoin plus large.",
+      ],
+      faq: [
+        {
+          question: "Cette page est-elle surtout pour secondaire 5 ?",
+          answer:
+            "Elle est particulièrement pertinente pour secondaire 5, mais elle peut servir dès que la chimie devient la vraie matière prioritaire et demande une aide ciblée.",
+        },
+        {
+          question: "Peut-on réserver directement ?",
+          answer:
+            "Oui, si la matière et le besoin sont déjà assez clairs. Si le parent hésite encore entre sciences générales, chimie ou un besoin plus large, l'appel aide à mieux orienter.",
+        },
+        {
+          question: "Le service doit-il être donné à Laval en présentiel ?",
+          answer:
+            "Pas nécessairement. La page vise une intention locale Laval, mais le tutorat peut aussi très bien se faire en ligne selon ce qui est le plus simple et le plus rapide.",
+        },
+      ],
+      relatedLinks: [
+        { routeKey: "scienceTutorLaval", label: "Tuteur sciences Laval" },
+        { routeKey: "chemistrySec5", label: "Aide chimie secondaire 5" },
+        { routeKey: "scienceTutorSecondary", label: "Tuteur de sciences secondaire" },
+        { routeKey: "examSprint", label: "Sprint examen" },
+        { routeKey: "laval", label: "Tutorat Laval" },
+      ],
+      ctaTitle: "Vous cherchez une aide en chimie à Laval avec un besoin déjà bien identifié ?",
+      ctaText:
+        "Si la matière, le chapitre ou l'examen sont déjà clairs, la réservation directe peut très bien fonctionner. Si le parent hésite encore sur la vraie priorité, l'appel reste utile.",
+      formTitle: "Décrire rapidement le besoin en chimie",
+      formText:
+        "Indiquez le niveau, le chapitre, le type de calcul ou de difficulté, ainsi que la date d'évaluation si elle est connue.",
+    },
+    en: {
+      eyebrow: "Laval chemistry help",
+      heroTitle: "Chemistry help in Laval: when the need is more logic, less confusion and stronger preparation",
+      heroText:
+        "When a parent searches for chemistry help in Laval, the difficulty is often very precise: reactions, stoichiometry, equations, lab work, calculations or exam preparation. This page is built to answer that search more directly.",
+      seoTitle: "Laval chemistry help for high school students | Méthode Secondaire",
+      seoDescription:
+        "Chemistry help in Laval for high school students: equations, stoichiometry, labs, calculations, Secondary 5 chemistry and exam preparation.",
+      keywords:
+        "laval chemistry help high school, chemistry tutor laval, secondary 5 chemistry laval, chemistry tutoring laval, chemistry exam prep laval",
+      serviceType: "High school chemistry tutoring in Laval",
+      bookingLabel: "Book chemistry help",
+      highlights: [
+        "Built for Laval-area families looking for more targeted chemistry help at the high school level.",
+        "Especially useful when calculations, equations or labs still feel too blurry.",
+        "Works well with direct booking when the need is already clearly identified.",
+      ],
+      fitEyebrow: "When this page helps most",
+      fitTitle: "This page helps most when chemistry is clearly the subject that needs to be unlocked.",
+      fitDescription:
+        "The search is local to Laval, but the SEO and business value mainly comes from a strong intent: the parent already knows chemistry needs focused help.",
+      fitCards: [
+        {
+          title: "Equations and calculations are blocking progress",
+          description:
+            "When reactions, chemical equations, proportions or stoichiometry still feel too abstract.",
+        },
+        {
+          title: "A lab or exam is getting close",
+          description:
+            "When the family wants more direct help before a report, a lab, a test or a denser review period.",
+        },
+        {
+          title: "Laval-local and highly targeted",
+          description:
+            "The page is built for a Laval-local search with an intent that is already more specific than general science support.",
+        },
+      ],
+      processEyebrow: "How it works",
+      processTitle: "Useful chemistry help in Laval in 3 steps",
+      processSteps: [
+        {
+          step: "01",
+          title: "Clarify the dominant difficulty",
+          description:
+            "We identify whether the block sits mainly in equations, calculations, labs, explanations or exam prep.",
+        },
+        {
+          step: "02",
+          title: "Rebuild the chemistry logic",
+          description:
+            "We reconnect concepts, symbols, steps and calculations so the material becomes more readable and less intimidating.",
+        },
+        {
+          step: "03",
+          title: "Practice what pays off most",
+          description:
+            "We choose the exercises, question types or lab formats that create the most clarity and the most useful preparation.",
+        },
+      ],
+      includedEyebrow: "What the family gains",
+      includedTitle: "Chemistry that feels clearer and more workable",
+      includedItems: [
+        "A real local page for the Laval chemistry help intent.",
+        "More clarity around calculations, equations and scientific logic.",
+        "A strong bridge between focused chemistry help, broader science support and exam preparation.",
+        "A simpler decision between booking directly and discussing a wider need first.",
+      ],
+      faq: [
+        {
+          question: "Is this page mostly for Secondary 5?",
+          answer:
+            "It is especially relevant for Secondary 5, but it can help as soon as chemistry becomes the true priority subject and needs more focused support.",
+        },
+        {
+          question: "Can families book directly?",
+          answer:
+            "Yes, if the subject and need are already fairly clear. If the family is still hesitating between general science, chemistry or a wider need, a call helps orient things better.",
+        },
+        {
+          question: "Does the tutoring need to happen in Laval in person?",
+          answer:
+            "Not necessarily. The page targets a Laval-local intent, but the tutoring can still happen online depending on what is simplest and fastest.",
+        },
+      ],
+      relatedLinks: [
+        { routeKey: "scienceTutorLaval", label: "Laval science tutor" },
+        { routeKey: "chemistrySec5", label: "Secondary 5 chemistry help" },
+        { routeKey: "scienceTutorSecondary", label: "High school science tutor" },
+        { routeKey: "examSprint", label: "Exam sprint" },
+        { routeKey: "laval", label: "Laval tutoring" },
+      ],
+      ctaTitle: "Looking for chemistry help in Laval with a need that is already well identified?",
+      ctaText:
+        "If the subject, chapter or exam are already clear, direct booking can work very well. If the family still hesitates about the true priority, calling first remains useful.",
+      formTitle: "Describe the chemistry need quickly",
+      formText:
+        "Share the grade, chapter, calculation type or difficulty, along with the evaluation date if you already know it.",
+    },
+  },
+  summerSupportSecondary: {
+    fr: {
+      eyebrow: "Cours d'été secondaire",
+      heroTitle: "Cours d'été et remise à niveau au secondaire : profiter de l'été pour repartir plus solide",
+      heroText:
+        "Quand un parent cherche des cours d'été au secondaire, le vrai besoin peut être très différent: reprise d'une matière, préparation de reprise, transition vers l'année suivante ou simple envie d'éviter que les lacunes se réinstallent. Cette page sert à mieux cadrer ce besoin.",
+      seoTitle: "Cours d'été secondaire et remise à niveau | Méthode Secondaire",
+      seoDescription:
+        "Cours d'été au secondaire au Québec : maths, sciences, reprise, remise à niveau, transition vers l'année suivante et accompagnement plus clair pendant l'été.",
+      keywords:
+        "cours d'été secondaire, cours ete maths secondaire, cours ete sciences secondaire, remise à niveau secondaire, rattrapage été secondaire québec",
+      serviceType: "Cours d'été et remise à niveau au secondaire",
+      showBookingButton: false,
+      callLabel: "Appeler pour cadrer l'été",
+      heroNote:
+        "L'été sert rarement au même besoin pour toutes les familles. L'appel d'abord aide à choisir entre reprise, consolidation, préparation ou remise à niveau.",
+      highlights: [
+        "Pensé pour les familles qui veulent utiliser l'été pour réparer, consolider ou préparer intelligemment.",
+        "Très utile après une année difficile, avant une reprise ou avant une montée de niveau.",
+        "L'appel aide à choisir le bon angle: maths, sciences, rattrapage ou transition vers l'année suivante.",
+      ],
+      fitEyebrow: "Quand cette page aide le plus",
+      fitTitle: "Cette page aide surtout quand l'été doit servir à reprendre de l'avance, pas juste à occuper le temps.",
+      fitDescription:
+        "Le mot-clé peut ressembler à une recherche scolaire large, mais l'intention parentale est souvent très concrète: éviter de repartir à zéro à la rentrée.",
+      fitCards: [
+        {
+          title: "L'année a laissé des lacunes",
+          description:
+            "Quand certaines notions sont restées fragiles et qu'il vaut mieux les retravailler avant la prochaine rentrée.",
+        },
+        {
+          title: "Une reprise ou une transition approche",
+          description:
+            "Quand l'élève doit se préparer à un cours d'été, une reprise, un secondaire plus exigeant ou une matière charnière.",
+        },
+        {
+          title: "Il faut un été utile, pas diffus",
+          description:
+            "Quand la famille veut une vraie structure d'été au lieu de bonnes intentions qui se perdent après deux semaines.",
+        },
+      ],
+      processEyebrow: "Comment ça marche",
+      processTitle: "Un accompagnement d'été utile en 3 étapes",
+      processSteps: [
+        {
+          step: "01",
+          title: "Clarifier le vrai but de l'été",
+          description:
+            "On décide si la priorité est de réparer, consolider, préparer une reprise ou prendre de l'avance avant la rentrée.",
+        },
+        {
+          step: "02",
+          title: "Choisir la matière et le bon rythme",
+          description:
+            "On cible les maths, les sciences ou une combinaison plus large, puis on fixe un rythme réaliste pour l'été.",
+        },
+        {
+          step: "03",
+          title: "Installer une progression lisible",
+          description:
+            "Le but est que l'été produise une vraie base plus solide au lieu d'un simple effort dispersé.",
+        },
+      ],
+      includedEyebrow: "Ce que la famille gagne",
+      includedTitle: "Un été plus utile et une rentrée moins fragile",
+      includedItems: [
+        "Une vraie page commerciale pour la recherche cours d'été secondaire.",
+        "Une meilleure décision entre reprise, remise à niveau et préparation.",
+        "Un bon pont entre été, rattrapage, soutien scolaire et suivi plus durable.",
+        "Une rentrée qui repart avec plus de clarté et moins d'improvisation.",
+      ],
+      faq: [
+        {
+          question: "Cette page sert-elle seulement aux cours d'été officiels ?",
+          answer:
+            "Non. Elle sert aussi aux familles qui veulent une remise à niveau, une consolidation ou une préparation plus claire pendant l'été, même sans cours d'été officiel.",
+        },
+        {
+          question: "Pourquoi appeler d'abord ?",
+          answer:
+            "Parce que le bon plan d'été dépend beaucoup du vrai but: reprise, consolidation, transition ou avance. L'appel aide à choisir la bonne structure avant d'aller plus loin.",
+        },
+        {
+          question: "Peut-on viser seulement les maths ou seulement les sciences ?",
+          answer:
+            "Oui. L'été peut être concentré sur une seule matière prioritaire ou servir de pont entre deux besoins selon la situation.",
+        },
+      ],
+      relatedLinks: [
+        { routeKey: "catchUp", label: "Rattrapage scolaire secondaire" },
+        { routeKey: "academicSupportSecondary", label: "Soutien scolaire secondaire" },
+        { routeKey: "mathTutoringSecondary", label: "Tutorat en mathématiques" },
+        { routeKey: "scienceTutorSecondary", label: "Tuteur de sciences" },
+        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+      ],
+      ctaTitle: "Vous voulez que l'été serve vraiment à quelque chose au secondaire ?",
+      ctaText:
+        "Le meilleur premier pas est souvent de clarifier l'objectif exact de l'été, puis de choisir une matière prioritaire et un rythme réaliste.",
+      formTitle: "Décrire rapidement le besoin pour l'été",
+      formText:
+        "Indiquez le niveau, la ou les matières visées et si l'objectif principal est une reprise, une remise à niveau ou une meilleure transition vers la rentrée.",
+    },
+    en: {
+      eyebrow: "High school summer support",
+      heroTitle: "High school summer support and catch-up work: use the summer to restart from a stronger base",
+      heroText:
+        "When a parent searches for high school summer support, the real need can vary a lot: rebuilding one subject, preparing for a retake, smoothing the jump to the next school year or simply making sure existing gaps do not settle in again. This page is here to frame that need more clearly.",
+      seoTitle: "High school summer support and catch-up work | Méthode Secondaire",
+      seoDescription:
+        "High school summer support across Quebec: math, science, retake preparation, catch-up work, leveling up and clearer academic structure during the summer.",
+      keywords:
+        "high school summer support, summer math tutoring high school, summer science tutoring high school, high school catch-up summer, summer academic support quebec",
+      serviceType: "High school summer support and catch-up work",
+      showBookingButton: false,
+      callLabel: "Call to frame the summer plan",
+      heroNote:
+        "Summer rarely serves the exact same purpose for every family. Calling first helps choose between repair, consolidation, preparation and leveling up.",
+      highlights: [
+        "Built for families who want to use the summer to repair, consolidate or prepare intelligently.",
+        "Especially useful after a difficult year, before a retake or before a more demanding next grade.",
+        "The call helps choose the right angle: math, science, catch-up work or transition into the next school year.",
+      ],
+      fitEyebrow: "When this page helps most",
+      fitTitle: "This page helps most when summer needs to create real academic advantage, not just fill time.",
+      fitDescription:
+        "The keyword may look like a broad school search, but the parent intent is often very concrete: avoid starting from zero again in September.",
+      fitCards: [
+        {
+          title: "The school year left real gaps",
+          description:
+            "When some concepts stayed weak and it is smarter to rebuild them before the next school year begins.",
+        },
+        {
+          title: "A retake or transition is coming",
+          description:
+            "When the student needs to prepare for summer school, a retake, a harder grade or a gateway subject.",
+        },
+        {
+          title: "The summer needs real structure",
+          description:
+            "When the family wants more than good intentions that disappear after two weeks and needs a useful summer rhythm instead.",
+        },
+      ],
+      processEyebrow: "How it works",
+      processTitle: "Useful summer support in 3 steps",
+      processSteps: [
+        {
+          step: "01",
+          title: "Clarify the real summer goal",
+          description:
+            "We decide whether the priority is repair, consolidation, retake preparation or getting ahead before September.",
+        },
+        {
+          step: "02",
+          title: "Choose the subject and the right rhythm",
+          description:
+            "We target math, science or a wider mix, then set a realistic rhythm for the summer period.",
+        },
+        {
+          step: "03",
+          title: "Install readable progress",
+          description:
+            "The goal is for summer to produce a genuinely stronger base instead of diffuse effort.",
+        },
+      ],
+      includedEyebrow: "What the family gains",
+      includedTitle: "A more useful summer and a less fragile September",
+      includedItems: [
+        "A real commercial page for the high school summer support intent.",
+        "A better decision between retake prep, catch-up work and leveling up.",
+        "A strong bridge between summer, catch-up tutoring, academic support and steadier follow-up.",
+        "A September restart with more clarity and less improvisation.",
+      ],
+      faq: [
+        {
+          question: "Is this page only for official summer school?",
+          answer:
+            "No. It also serves families who want catch-up work, consolidation or clearer summer preparation even without official summer school.",
+        },
+        {
+          question: "Why call first?",
+          answer:
+            "Because the right summer plan depends heavily on the true goal: retake prep, consolidation, transition or getting ahead. The call helps choose the right structure first.",
+        },
+        {
+          question: "Can the summer focus only on math or only on science?",
+          answer:
+            "Yes. Summer can focus on one priority subject or serve as a bridge between two needs depending on the situation.",
+        },
+      ],
+      relatedLinks: [
+        { routeKey: "catchUp", label: "Catch-up tutoring" },
+        { routeKey: "academicSupportSecondary", label: "Academic support" },
+        { routeKey: "mathTutoringSecondary", label: "Math tutoring" },
+        { routeKey: "scienceTutorSecondary", label: "Science tutor" },
+        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+      ],
+      ctaTitle: "Do you want the summer to create a real academic advantage?",
+      ctaText:
+        "The best first move is often to clarify the exact summer goal, then choose a priority subject and a realistic rhythm.",
+      formTitle: "Describe the summer need quickly",
+      formText:
+        "Share the grade, the subject or subjects involved and whether the main goal is a retake, catch-up work or a stronger transition into the next school year.",
+    },
+  },
+  ministerialExamSec4: {
+    fr: {
+      eyebrow: "Examen du ministère secondaire 4",
+      heroTitle: "Préparation à l'examen du ministère en secondaire 4 : réviser avec plus d'ordre avant l'épreuve",
+      heroText:
+        "Quand un parent cherche une préparation à l'examen du ministère en secondaire 4, le besoin réel est rarement juste de refaire plus d'exercices. Il faut surtout trier la matière, savoir ce qui tombe vraiment, remettre les méthodes en place et éviter une révision trop large à l'approche de l'épreuve.",
+      seoTitle: "Préparation examen du ministère secondaire 4 | Méthode Secondaire",
+      seoDescription:
+        "Préparation à l'examen du ministère en secondaire 4 au Québec, surtout en mathématiques : priorités claires, révision ciblée, méthode plus nette et accompagnement utile avant l'épreuve.",
+      keywords:
+        "préparation examen ministère secondaire 4, examen ministère maths secondaire 4, révision secondaire 4, préparation examen maths ministère, tutorat secondaire 4 québec",
+      serviceType: "Préparation examen du ministère secondaire 4",
+      bookingLabel: "Réserver une séance examen ministère",
+      heroNote:
+        "Quand la matière, l'épreuve et le niveau d'urgence sont déjà clairs, la réservation directe fonctionne très bien. Si la famille hésite encore entre sprint, suivi ou remise à niveau, l'appel aide à cadrer la meilleure suite.",
+      heroPanelTitle: "Une préparation plus nette quand l'épreuve du ministère approche vraiment",
+      heroPanelText:
+        "Le but n'est pas de refaire tout le cours dans la panique. Le but est de remettre les chapitres prioritaires, les types de questions et la méthode dans un ordre utile avant l'épreuve.",
+      relatedDescription:
+        "Ces pages aident quand une famille compare un besoin très ciblé d'examen du ministère avec un soutien plus large en secondaire 4 ou un accompagnement régulier.",
+      highlights: [
+        "Pensé pour les familles qui visent surtout les épreuves ministérielles de 4e secondaire, souvent en mathématiques.",
+        "Très utile quand les chapitres sont connus, mais que la révision manque encore d'ordre, de méthode ou de priorités.",
+        "Bon format quand le besoin est concret et peut se transformer rapidement en séance ciblée ou en mini bloc intensif.",
+      ],
+      fitEyebrow: "Quand cette page aide le plus",
+      fitTitle: "Cette page aide surtout quand l'épreuve du ministère devient le vrai centre de gravité.",
+      fitDescription:
+        "Le besoin ressemble souvent à une recherche très précise : secondaire 4, examen du ministère, matière charnière, points à sécuriser et peu de temps à perdre.",
+      fitCards: [
+        {
+          title: "L'épreuve officielle approche",
+          description:
+            "Quand la date est déjà connue et que la famille veut un plan de révision plus structuré avant que le temps se comprime trop vite.",
+        },
+        {
+          title: "La matière existe, mais pas l'ordre",
+          description:
+            "Quand l'élève a vu les notions, mais ne sait plus comment les prioriser ni comment attaquer les questions qui ressemblent à l'épreuve.",
+        },
+        {
+          title: "Le niveau est fragile sur les questions charnières",
+          description:
+            "Quand certains types de problèmes, de raisonnements ou de chapitres restent trop instables pour arriver sereinement à l'examen.",
+        },
+      ],
+      processEyebrow: "Comment ça marche",
+      processTitle: "Une préparation ministère utile en 3 étapes",
+      processSteps: [
+        {
+          step: "01",
+          title: "Identifier les chapitres et formats prioritaires",
+          description:
+            "On repère rapidement les notions, les erreurs fréquentes et les formats de questions qui méritent le plus d'attention avant l'épreuve.",
+        },
+        {
+          step: "02",
+          title: "Remettre la méthode au bon endroit",
+          description:
+            "On clarifie la démarche, les réflexes de résolution et la manière d'aborder les questions plus exigeantes de secondaire 4.",
+        },
+        {
+          step: "03",
+          title: "Réviser avec un cap plus réaliste",
+          description:
+            "L'objectif est de sortir avec une révision plus ciblée, plus lisible et mieux adaptée à l'épreuve qui s'en vient.",
+        },
+      ],
+      includedEyebrow: "Ce que la famille gagne",
+      includedTitle: "Une révision plus stratégique et moins diffuse",
+      includedItems: [
+        "Une page d'entrée commerciale plus précise pour les recherches autour de l'examen du ministère en secondaire 4.",
+        "De meilleures priorités de révision avant l'épreuve au lieu d'une reprise trop large du cours.",
+        "Un lien naturel entre préparation d'examen, aide en maths de secondaire 4 et Sprint examen.",
+        "Une décision plus simple entre réserver directement ou appeler pour cadrer l'urgence.",
+      ],
+      faq: [
+        {
+          question: "Cette page vise-t-elle surtout les maths de secondaire 4 ?",
+          answer:
+            "Oui, très souvent. C'est là que l'intention de recherche est la plus claire, mais la logique de préparation reste utile dès qu'une épreuve ministérielle ou finale de secondaire 4 devient le besoin principal.",
+        },
+        {
+          question: "Faut-il réserver directement ou appeler d'abord ?",
+          answer:
+            "Si la matière et l'échéance sont déjà bien identifiées, la réservation directe fonctionne bien. Si la famille hésite encore entre plusieurs formats ou plusieurs niveaux d'urgence, l'appel reste le meilleur premier tri.",
+        },
+        {
+          question: "Est-ce seulement pour les élèves en grande difficulté ?",
+          answer:
+            "Non. Cette page sert aussi aux élèves qui ont déjà une base correcte, mais qui ont besoin d'une préparation plus propre, plus méthodique et plus adaptée à l'épreuve.",
+        },
+      ],
+      relatedLinks: [
+        { routeKey: "examSprint", label: "Sprint examen" },
+        { routeKey: "sec4Math", label: "Aide maths secondaire 4" },
+        { routeKey: "mathMinisterial", label: "Guide examen ministériel maths" },
+        { routeKey: "mathTutoringSecondary", label: "Tutorat en mathématiques" },
+        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+      ],
+      ctaTitle: "L'examen du ministère en secondaire 4 commence à devenir le vrai sujet ?",
+      ctaText:
+        "Le plus utile est souvent de clarifier très vite les chapitres prioritaires, puis de choisir entre une séance ciblée, un petit bloc intensif ou un appel si le plan reste encore flou.",
+      formTitle: "Décrire rapidement la préparation visée",
+      formText:
+        "Indiquez la matière, le niveau exact de secondaire 4, la date de l'épreuve si vous la connaissez et les chapitres qui paraissent les plus fragiles.",
+    },
+    en: {
+      eyebrow: "Secondary 4 ministerial exam prep",
+      heroTitle: "Secondary 4 ministerial exam prep: review with more structure before the exam",
+      heroText:
+        "When a parent searches for Secondary 4 ministerial exam prep, the real need is rarely just more exercises. The stronger move is to sort the material, clarify what really matters, rebuild the method and avoid a review plan that spreads too wide too close to the exam.",
+      seoTitle: "Secondary 4 ministerial exam prep | Méthode Secondaire",
+      seoDescription:
+        "Secondary 4 ministerial exam prep in Quebec, especially in math: clearer priorities, focused review, sharper method and useful support before the official exam.",
+      keywords:
+        "secondary 4 ministerial exam prep, math ministerial exam secondary 4, secondary 4 math review, quebec ministerial exam tutoring, high school exam prep quebec",
+      serviceType: "Secondary 4 ministerial exam preparation",
+      bookingLabel: "Book a ministerial exam session",
+      heroNote:
+        "When the subject, exam and urgency level are already well identified, direct booking works very well. If the family is still weighing a sprint, longer follow-up or broader catch-up work, calling first helps frame the best move.",
+      heroPanelTitle: "A clearer prep format when the ministerial exam is no longer abstract",
+      heroPanelText:
+        "The goal is not to reteach the entire course in panic mode. The goal is to put the priority chapters, question formats and problem-solving method back into a useful order before the exam.",
+      relatedDescription:
+        "These pages help when a family is comparing a sharply defined ministerial exam need with broader Secondary 4 support or steadier tutoring.",
+      highlights: [
+        "Built for families targeting Secondary 4 ministerial-style exam preparation, very often in math.",
+        "Especially useful when the chapters are known but the review still lacks order, method or sharper priorities.",
+        "A strong format when the need is concrete and can quickly become a focused session or a short intensive block.",
+      ],
+      fitEyebrow: "When this page helps most",
+      fitTitle: "This page helps most when the ministerial exam becomes the real center of gravity.",
+      fitDescription:
+        "The search intent is usually very specific: Secondary 4, official exam, gateway subject, key chapters to secure and not much time to waste.",
+      fitCards: [
+        {
+          title: "The official exam is getting close",
+          description:
+            "When the date is already known and the family wants a stronger review structure before time gets compressed too fast.",
+        },
+        {
+          title: "The material exists, but not the order",
+          description:
+            "When the student has already seen the concepts but no longer knows how to prioritize them or attack the exam-style questions.",
+        },
+        {
+          title: "The key question types still feel weak",
+          description:
+            "When certain problem types, reasoning steps or chapters are still too unstable to approach the exam calmly.",
+        },
+      ],
+      processEyebrow: "How it works",
+      processTitle: "Useful ministerial exam prep in 3 steps",
+      processSteps: [
+        {
+          step: "01",
+          title: "Identify the priority chapters and formats",
+          description:
+            "We quickly spot the concepts, repeated mistakes and question formats that deserve the most attention before the exam.",
+        },
+        {
+          step: "02",
+          title: "Put the method back where it belongs",
+          description:
+            "We clarify the process, the solving reflexes and the way to approach more demanding Secondary 4 questions.",
+        },
+        {
+          step: "03",
+          title: "Review with a more realistic plan",
+          description:
+            "The goal is to leave with a sharper, more readable review plan that actually fits the exam ahead.",
+        },
+      ],
+      includedEyebrow: "What the family gains",
+      includedTitle: "A more strategic review and less diffuse pressure",
+      includedItems: [
+        "A more precise commercial entry page for Secondary 4 ministerial exam search intent.",
+        "Better review priorities before the exam instead of replaying the whole course too broadly.",
+        "A natural bridge between exam prep, Secondary 4 math help and the Exam sprint format.",
+        "A clearer decision between booking directly and calling first to frame the urgency.",
+      ],
+      faq: [
+        {
+          question: "Is this page mostly for Secondary 4 math?",
+          answer:
+            "Yes, very often. That is where the search intent is usually strongest, but the preparation logic stays useful whenever a Secondary 4 official or final exam becomes the main need.",
+        },
+        {
+          question: "Should families book directly or call first?",
+          answer:
+            "If the subject and deadline are already clear, direct booking works well. If the family is still comparing several formats or urgency levels, calling first remains the best first filter.",
+        },
+        {
+          question: "Is this only for students in serious difficulty?",
+          answer:
+            "No. It also serves students who already have a decent base but need cleaner preparation, a sharper method and a plan that fits the exam better.",
+        },
+      ],
+      relatedLinks: [
+        { routeKey: "examSprint", label: "Exam sprint" },
+        { routeKey: "sec4Math", label: "Secondary 4 math help" },
+        { routeKey: "mathMinisterial", label: "Math ministerial exam guide" },
+        { routeKey: "mathTutoringSecondary", label: "Math tutoring" },
+        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+      ],
+      ctaTitle: "Is the Secondary 4 ministerial exam becoming the main issue now?",
+      ctaText:
+        "The most useful next step is often to clarify the priority chapters quickly, then choose between a focused session, a short intensive block or a call if the plan is still fuzzy.",
+      formTitle: "Describe the ministerial exam prep need quickly",
+      formText:
+        "Share the subject, the exact Secondary 4 level, the exam date if you know it and the chapters that still feel the most fragile.",
+    },
+  },
+  entryToSecondary: {
+    fr: {
+      eyebrow: "Entrée au secondaire",
+      heroTitle: "Entrée au secondaire : rendre la transition plus stable avant que les premières semaines se brouillent",
+      heroText:
+        "Quand un parent cherche de l'aide pour l'entrée au secondaire, le besoin dépasse souvent une seule matière. Il faut souvent sécuriser les bases, remettre de l'ordre dans la méthode de travail, préparer le rythme du secondaire et éviter qu'une rentrée fragile ne se transforme vite en retard difficile à rattraper.",
+      seoTitle: "Entrée au secondaire et transition vers le secondaire | Méthode Secondaire",
+      seoDescription:
+        "Entrée au secondaire au Québec : transition vers le secondaire 1, bases en maths, méthode de travail, organisation et accompagnement plus rassurant avant la rentrée.",
+      keywords:
+        "entrée au secondaire, transition secondaire 1, préparation secondaire 1, soutien rentrée secondaire, tutorat transition secondaire québec",
+      serviceType: "Transition vers le secondaire",
+      showBookingButton: false,
+      callLabel: "Appeler pour préparer la transition",
+      heroNote:
+        "L'entrée au secondaire se cadre mieux par téléphone d'abord, parce que le vrai besoin peut toucher les maths, l'organisation, la confiance ou le rythme général de la rentrée.",
+      heroPanelTitle: "Une transition qui mérite mieux qu'une rentrée improvisée",
+      heroPanelText:
+        "Le but n'est pas d'ajouter des heures par réflexe. Le but est d'identifier ce qui doit être stabilisé avant ou au tout début du secondaire pour éviter une rentrée vite brouillée.",
+      relatedDescription:
+        "Ces pages aident quand une famille compare une transition vers le secondaire avec un besoin d'été, de soutien scolaire plus large ou de suivi après la rentrée.",
+      highlights: [
+        "Pensé pour les familles qui veulent préparer l'entrée au secondaire avec plus de méthode et moins d'improvisation.",
+        "Très utile quand les bases en maths, l'organisation ou la confiance semblent encore fragiles avant le secondaire 1.",
+        "L'appel aide à choisir entre préparation d'été, remise à niveau ciblée et suivi plus régulier une fois la rentrée commencée.",
+      ],
+      fitEyebrow: "Quand cette page aide le plus",
+      fitTitle: "Cette page aide surtout quand la transition elle-même devient le vrai besoin.",
+      fitDescription:
+        "La recherche peut sembler large, mais l'intention parentale est souvent très concrète : arriver au secondaire avec plus de repères, moins d'anxiété et une base plus solide.",
+      fitCards: [
+        {
+          title: "Le passage primaire-secondaire inquiète déjà",
+          description:
+            "Quand le parent sent que la rentrée au secondaire risque d'être lourde sans un peu plus de repères avant le début de l'année.",
+        },
+        {
+          title: "Les bases en maths ou en méthode sont fragiles",
+          description:
+            "Quand l'élève a besoin de consolider certains acquis, de revoir la logique de travail ou de gagner en autonomie.",
+        },
+        {
+          title: "Il faut une rentrée plus lisible",
+          description:
+            "Quand la famille veut éviter de subir les premières semaines et préfère installer un cadre plus clair dès le départ.",
+        },
+      ],
+      processEyebrow: "Comment ça marche",
+      processTitle: "Une transition utile vers le secondaire en 3 étapes",
+      processSteps: [
+        {
+          step: "01",
+          title: "Clarifier le vrai point sensible de la transition",
+          description:
+            "On repère si la priorité touche surtout les maths, la méthode de travail, l'organisation ou la confiance générale avant la rentrée.",
+        },
+        {
+          step: "02",
+          title: "Choisir le bon format de préparation",
+          description:
+            "On décide si un court accompagnement d'été, une remise à niveau ciblée ou un démarrage plus progressif après la rentrée sera le plus utile.",
+        },
+        {
+          step: "03",
+          title: "Installer des repères simples et durables",
+          description:
+            "Le but est que l'élève commence le secondaire avec plus de lisibilité, de méthode et de marge de manœuvre.",
+        },
+      ],
+      includedEyebrow: "Ce que la famille gagne",
+      includedTitle: "Plus de clarté avant la rentrée, moins de flottement après",
+      includedItems: [
+        "Une vraie page commerciale pour la recherche entrée au secondaire.",
+        "Une meilleure lecture du besoin entre maths, méthode, organisation et accompagnement d'été.",
+        "Un bon pont entre rentrée, cours d'été, soutien scolaire et suivi hebdomadaire.",
+        "Une transition qui repose sur un plan plus clair au lieu de simples bonnes intentions.",
+      ],
+      faq: [
+        {
+          question: "Cette page vise-t-elle seulement les élèves en difficulté ?",
+          answer:
+            "Non. Elle sert aussi aux familles qui veulent simplement rendre la transition plus stable, plus rassurante et mieux structurée dès le départ.",
+        },
+        {
+          question: "Pourquoi appeler d'abord ?",
+          answer:
+            "Parce que l'entrée au secondaire mélange souvent plusieurs besoins à la fois. L'appel aide à distinguer ce qui relève des bases scolaires, de l'organisation, de la confiance ou du format d'accompagnement.",
+        },
+        {
+          question: "Faut-il commencer avant la rentrée ou après ?",
+          answer:
+            "Les deux peuvent être utiles. Certaines familles préfèrent préparer l'été ou les semaines qui précèdent, tandis que d'autres veulent surtout bien cadrer les premières semaines du secondaire.",
+        },
+      ],
+      relatedLinks: [
+        { routeKey: "summerSupportSecondary", label: "Cours d'été secondaire" },
+        { routeKey: "homeworkHelpSecondary", label: "Aide aux devoirs secondaire" },
+        { routeKey: "academicSupportSecondary", label: "Soutien scolaire secondaire" },
+        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+        { routeKey: "reussites", label: "Réussites et cas types" },
+      ],
+      ctaTitle: "Vous voulez préparer l'entrée au secondaire avec plus de calme et de méthode ?",
+      ctaText:
+        "Le meilleur premier pas est souvent de clarifier ce qui inquiète le plus dans la transition, puis de choisir un accompagnement d'été, une remise à niveau ciblée ou un suivi plus progressif à la rentrée.",
+      formTitle: "Décrire rapidement la transition à préparer",
+      formText:
+        "Indiquez le niveau visé, les matières ou habitudes qui semblent les plus fragiles et si vous pensez plutôt à l'été, à la rentrée ou aux premières semaines du secondaire.",
+    },
+    en: {
+      eyebrow: "High school transition support",
+      heroTitle: "Starting high school: make the transition steadier before the first weeks start to blur",
+      heroText:
+        "When a parent looks for help around the start of high school, the need usually goes beyond one subject. The stronger move is often to secure the basics, rebuild the work method, prepare for the high school rhythm and avoid turning a fragile start into a harder delay to recover from.",
+      seoTitle: "High school transition support | Méthode Secondaire",
+      seoDescription:
+        "High school transition support in Quebec: stronger math foundations, work method, organization and a calmer start before Secondary 1 begins.",
+      keywords:
+        "high school transition support, starting high school help, secondary 1 transition, high school readiness quebec, academic transition support",
+      serviceType: "High school transition support",
+      showBookingButton: false,
+      callLabel: "Call to plan the transition",
+      heroNote:
+        "High school transition support is usually better framed by phone first, because the real need may involve math foundations, organization, confidence or the overall rhythm of the start.",
+      heroPanelTitle: "A transition that deserves better than an improvised start",
+      heroPanelText:
+        "The goal is not to add tutoring hours by reflex. The goal is to identify what needs to be stabilized before or at the very start of high school so the first weeks do not become blurry too fast.",
+      relatedDescription:
+        "These pages help when a family is comparing transition support with summer help, broader academic support or follow-up after school starts.",
+      highlights: [
+        "Built for families who want to prepare the move into high school with more method and less improvisation.",
+        "Especially useful when math foundations, organization or confidence still feel fragile before Secondary 1.",
+        "The call helps choose between summer preparation, targeted catch-up work and steadier follow-up once school begins.",
+      ],
+      fitEyebrow: "When this page helps most",
+      fitTitle: "This page helps most when the transition itself becomes the real issue.",
+      fitDescription:
+        "The search may look broad, but the parent intent is often concrete: arrive in high school with more structure, less anxiety and a stronger base.",
+      fitCards: [
+        {
+          title: "The primary-to-secondary jump already feels heavy",
+          description:
+            "When the parent senses that the move into high school could feel rough without stronger reference points before the year begins.",
+        },
+        {
+          title: "Math foundations or work habits still feel weak",
+          description:
+            "When the student needs to reinforce key basics, rebuild the work logic or gain more autonomy.",
+        },
+        {
+          title: "The start needs to feel more readable",
+          description:
+            "When the family wants to avoid simply absorbing the first weeks and would rather install a clearer structure from the start.",
+        },
+      ],
+      processEyebrow: "How it works",
+      processTitle: "A useful high school transition in 3 steps",
+      processSteps: [
+        {
+          step: "01",
+          title: "Clarify the most sensitive part of the transition",
+          description:
+            "We identify whether the real priority is math, work method, organization or overall confidence before school starts.",
+        },
+        {
+          step: "02",
+          title: "Choose the right preparation format",
+          description:
+            "We decide whether short summer support, targeted catch-up work or a gentler start after school begins would help most.",
+        },
+        {
+          step: "03",
+          title: "Install simple and durable reference points",
+          description:
+            "The goal is for the student to start high school with more structure, method and room to breathe.",
+        },
+      ],
+      includedEyebrow: "What the family gains",
+      includedTitle: "More clarity before school starts, less drift after",
+      includedItems: [
+        "A real commercial page for the high school transition search intent.",
+        "A better reading of the need across math, work method, organization and summer preparation.",
+        "A strong bridge between summer support, academic support and weekly follow-up.",
+        "A transition built on a clearer plan instead of good intentions alone.",
+      ],
+      faq: [
+        {
+          question: "Is this page only for students already in difficulty?",
+          answer:
+            "No. It also serves families who simply want the transition to feel more stable, more reassuring and better structured from the start.",
+        },
+        {
+          question: "Why call first?",
+          answer:
+            "Because the start of high school often mixes several needs together. The call helps separate what belongs to academics, organization, confidence or the support format itself.",
+        },
+        {
+          question: "Should support begin before school starts or after?",
+          answer:
+            "Both can work. Some families prefer to prepare during the summer or in the weeks beforehand, while others mainly want the first weeks of high school to be framed more clearly.",
+        },
+      ],
+      relatedLinks: [
+        { routeKey: "summerSupportSecondary", label: "High school summer support" },
+        { routeKey: "homeworkHelpSecondary", label: "High school homework help" },
+        { routeKey: "academicSupportSecondary", label: "Academic support" },
+        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+        { routeKey: "reussites", label: "Success stories and case studies" },
+      ],
+      ctaTitle: "Do you want the start of high school to feel calmer and more structured?",
+      ctaText:
+        "The best first move is often to clarify what feels most fragile in the transition, then choose between summer support, targeted catch-up work or steadier follow-up once school begins.",
+      formTitle: "Describe the transition need quickly",
+      formText:
+        "Share the target grade, the subjects or habits that seem most fragile and whether you are thinking more about summer, the first school days or the opening weeks of high school.",
     },
   },
 }

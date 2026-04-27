@@ -39,6 +39,30 @@ export const routeCatalog = {
     fr: "/tuteur-sciences-laval",
     en: "/en/laval-science-tutor",
   },
+  academicSupportMontreal: {
+    fr: "/soutien-scolaire-montreal",
+    en: "/en/montreal-academic-support",
+  },
+  physicsTutorMontreal: {
+    fr: "/tuteur-physique-montreal",
+    en: "/en/montreal-physics-tutor",
+  },
+  chemistryHelpLaval: {
+    fr: "/aide-chimie-laval",
+    en: "/en/laval-chemistry-help",
+  },
+  summerSupportSecondary: {
+    fr: "/cours-ete-secondaire",
+    en: "/en/high-school-summer-support",
+  },
+  ministerialExamSec4: {
+    fr: "/preparation-examen-ministere-secondaire-4",
+    en: "/en/secondary-4-ministerial-exam-prep",
+  },
+  entryToSecondary: {
+    fr: "/entree-au-secondaire",
+    en: "/en/high-school-transition-support",
+  },
   employmentTutorSecondary: {
     fr: "/emploi-tuteur-secondaire",
     en: "/en/high-school-tutor-jobs-quebec",

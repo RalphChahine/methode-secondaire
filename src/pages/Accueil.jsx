@@ -35,6 +35,8 @@ import {
 import GrowthProgramSection from "@/components/GrowthProgramSection"
 import KeywordIntentSection from "@/components/KeywordIntentSection"
 import LeadForm from "@/components/LeadForm"
+import LocalOpportunitySection from "@/components/LocalOpportunitySection"
+import MilestoneOpportunitySection from "@/components/MilestoneOpportunitySection"
 import MotionCard from "@/components/MotionCard"
 import ResourceGridSection from "@/components/ResourceGridSection"
 import Seo from "@/components/Seo"
@@ -805,6 +807,10 @@ export default function Accueil() {
         />
 
         <KeywordIntentSection locale="fr" className="pt-20" />
+
+        <LocalOpportunitySection locale="fr" className="pt-20" />
+
+        <MilestoneOpportunitySection locale="fr" className="pt-20" />
 
         <GrowthProgramSection locale="fr" className="pt-20" />
 
