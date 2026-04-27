@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 
 import MotionCard from "@/components/MotionCard"
+import OfferPathwaysSection from "@/components/OfferPathwaysSection"
 import ResourceGridSection from "@/components/ResourceGridSection"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
@@ -319,6 +320,23 @@ export default function Maths() {
             locale === "en"
               ? "These guides go beyond generic homework help and target exam prep, ministerial prep, Secondary 4 math friction and local Montreal search intent."
         : "Ces pages vont plus loin qu'une simple aide aux devoirs et couvrent l'examen, le ministériel, le secondaire 4 et une intention locale Montréal."
+          }
+        />
+
+        <OfferPathwaysSection
+          locale={locale}
+          className="pt-20"
+          heading={{
+            eyebrow: locale === "en" ? "Best next offer pages" : "Offres a pousser ensuite",
+            title:
+              locale === "en"
+                ? "From math tutoring, the strongest next pages are Exam sprint and Weekly follow-up"
+                : "Depuis la page maths, les suites les plus fortes sont Sprint examen et Suivi hebdomadaire",
+          }}
+          description={
+            locale === "en"
+              ? "These two pages help families choose between urgent exam help and a steadier long-term rhythm, which makes them strong for both SEO and conversion."
+              : "Ces deux pages aident les familles a choisir entre une urgence avant examen et un rythme plus stable a long terme, ce qui les rend fortes a la fois pour le SEO et pour la conversion."
           }
         />
 

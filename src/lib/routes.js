@@ -3,6 +3,7 @@ export const routeCatalog = {
   maths: { fr: "/maths", en: "/en/math-tutoring" },
   sciences: { fr: "/sciences", en: "/en/science-tutoring" },
   temoignages: { fr: "/temoignages", en: "/en/testimonials" },
+  reussites: { fr: "/reussites", en: "/en/success-stories" },
   tuteurs: { fr: "/tuteurs", en: "/en/tutors" },
   devenirTuteur: { fr: "/devenir-tuteur", en: "/en/become-a-tutor" },
   montreal: { fr: "/tutorat-montreal", en: "/en/montreal-tutoring" },

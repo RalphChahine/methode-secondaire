@@ -86,6 +86,7 @@ export const offerPageConfigs = {
         },
       ],
       relatedLinks: [
+        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
         { routeKey: "mathExamPrep", label: "Guide examen maths" },
         { routeKey: "scienceExamPrep", label: "Guide examen sciences" },
         { routeKey: "maths", label: "Page maths" },
@@ -182,6 +183,7 @@ export const offerPageConfigs = {
         },
       ],
       relatedLinks: [
+        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
         { routeKey: "mathExamPrep", label: "Math exam prep guide" },
         { routeKey: "scienceExamPrep", label: "Science exam prep guide" },
         { routeKey: "maths", label: "Math tutoring page" },
@@ -285,6 +287,7 @@ export const offerPageConfigs = {
         },
       ],
       relatedLinks: [
+        { routeKey: "examSprint", label: "Sprint examen" },
         { routeKey: "maths", label: "Page maths" },
         { routeKey: "sciences", label: "Page sciences" },
         { routeKey: "temoignages", label: "Témoignages" },
@@ -386,6 +389,7 @@ export const offerPageConfigs = {
         },
       ],
       relatedLinks: [
+        { routeKey: "examSprint", label: "Exam sprint" },
         { routeKey: "maths", label: "Math tutoring page" },
         { routeKey: "sciences", label: "Science tutoring page" },
         { routeKey: "temoignages", label: "Testimonials" },

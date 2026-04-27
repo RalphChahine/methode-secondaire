@@ -37,6 +37,7 @@ export default function SiteLayout() {
           { to: getLocalizedPath("maths", locale), label: "Math tutoring" },
           { to: getLocalizedPath("sciences", locale), label: "Science tutoring" },
           { to: getLocalizedPath("resourcesHub", locale), label: "Resources" },
+          { to: getLocalizedPath("reussites", locale), label: "Success stories" },
           { to: getLocalizedPath("temoignages", locale), label: "Testimonials" },
           { to: getLocalizedPath("tuteurs", locale), label: "Tutors" },
         ],
@@ -77,6 +78,7 @@ export default function SiteLayout() {
           { to: getLocalizedPath("maths", locale), label: "Maths" },
           { to: getLocalizedPath("sciences", locale), label: "Sciences" },
           { to: getLocalizedPath("resourcesHub", locale), label: "Ressources" },
+          { to: getLocalizedPath("reussites", locale), label: "Réussites" },
           { to: getLocalizedPath("temoignages", locale), label: "Témoignages" },
           { to: getLocalizedPath("tuteurs", locale), label: "Tuteurs" },
         ],
@@ -110,6 +112,16 @@ export default function SiteLayout() {
     ? ["15-minute diagnostic call", "Online across Quebec", "Math, science, exam prep"]
     : ["Appel diagnostic 15 min", "En ligne partout au Qu\u00E9bec", "Maths, sciences, pr\u00E9paration d'examens"]
 
+  const offerQuickLinks = isEnglish
+    ? [
+        { to: getLocalizedPath("examSprint", locale), label: "Exam sprint" },
+        { to: getLocalizedPath("weeklyFollowUp", locale), label: "Weekly follow-up" },
+      ]
+    : [
+        { to: getLocalizedPath("examSprint", locale), label: "Sprint examen" },
+        { to: getLocalizedPath("weeklyFollowUp", locale), label: "Suivi hebdomadaire" },
+      ]
+
   useEffect(() => {
     if (!location.hash) {
       window.scrollTo(0, 0)
@@ -141,12 +153,12 @@ export default function SiteLayout() {
   return (
     <div className="min-h-screen pb-24 lg:pb-0">
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#071631]/75 backdrop-blur-xl">
-        <div className="mx-auto flex min-h-[4.75rem] w-full max-w-7xl items-center justify-between gap-2 px-4 py-3 sm:h-20 sm:gap-4 sm:px-6 sm:py-0 lg:px-8">
+        <div className="mx-auto flex min-h-[4.75rem] w-full max-w-7xl items-center justify-between gap-1.5 px-3 py-3 sm:h-20 sm:gap-4 sm:px-6 sm:py-0 lg:px-8">
           <Link
             to={getLocalizedPath("home", locale)}
-            className="flex min-w-0 flex-1 items-center gap-3 xl:min-w-[15rem] xl:flex-none"
+            className="flex min-w-0 flex-1 items-center gap-2.5 xl:min-w-[15rem] xl:flex-none"
           >
-            <div className="grid h-11 w-11 shrink-0 place-items-center rounded-[18px] border border-white/15 bg-white/10 text-white shadow-lg shadow-black/10 sm:h-12 sm:w-12">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-[18px] border border-white/15 bg-white/10 text-white shadow-lg shadow-black/10 sm:h-12 sm:w-12">
               <img
                 src="/logo-methode-secondaire-mark-white.svg"
                 alt=""
@@ -154,8 +166,15 @@ export default function SiteLayout() {
               />
             </div>
 
-            <div className="min-w-0 leading-tight">
-              <div className="truncate font-display text-base font-semibold text-white sm:text-lg">Méthode Secondaire</div>
+            <div className="min-w-0 pr-1 leading-[0.95] sm:leading-tight">
+              <div className="font-display font-semibold text-white">
+                <span className="block text-[0.95rem] sm:hidden">
+                  Méthode
+                  <br />
+                  Secondaire
+                </span>
+                <span className="hidden truncate text-base sm:block sm:text-lg">Méthode Secondaire</span>
+              </div>
               <div className="hidden text-xs uppercase tracking-[0.22em] text-white/55 2xl:block">{copy.brandTag}</div>
             </div>
           </Link>
@@ -200,12 +219,12 @@ export default function SiteLayout() {
             </Button>
           </div>
 
-          <div className="flex shrink-0 items-center gap-2 xl:hidden">
+          <div className="flex shrink-0 items-center gap-1.5 xl:hidden">
             <LanguageToggle className="shrink-0" />
 
             <Button
               asChild
-              className="h-11 rounded-full bg-[#f5c977] px-4 text-[#071631] shadow-[0_12px_30px_rgba(245,201,119,0.28)] hover:bg-[#f7d38f]"
+              className="h-10 rounded-full bg-[#f5c977] px-3 text-[#071631] shadow-[0_12px_30px_rgba(245,201,119,0.28)] hover:bg-[#f7d38f] sm:h-11 sm:px-4"
             >
               <a href={`tel:${siteConfig.phone}`} aria-label={copy.callDiagnostic}>
                 <Phone className="h-4 w-4" />
@@ -216,7 +235,7 @@ export default function SiteLayout() {
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
-                  className="h-11 w-11 rounded-full border-white/15 bg-white/5 p-0 text-white hover:bg-white/10 hover:text-white"
+                  className="h-10 w-10 rounded-full border-white/15 bg-white/5 p-0 text-white hover:bg-white/10 hover:text-white sm:h-11 sm:w-11"
                   aria-label={isEnglish ? "Open menu" : "Ouvrir le menu"}
                 >
                   <Menu className="h-5 w-5" />
@@ -275,6 +294,22 @@ export default function SiteLayout() {
                         </a>
                       </Button>
                     </SheetClose>
+                  </div>
+
+                  <div className="mt-4 border-t border-white/10 pt-4">
+                    <div className="mb-2 px-4 text-xs font-semibold uppercase tracking-[0.22em] text-white/45">
+                      {isEnglish ? "Formats" : "Formats"}
+                    </div>
+                    {offerQuickLinks.map((link) => (
+                      <SheetClose asChild key={link.to}>
+                        <NavLink
+                          to={link.to}
+                          className="mb-2 block rounded-2xl px-4 py-3 text-white/85 transition hover:bg-white/10"
+                        >
+                          {link.label}
+                        </NavLink>
+                      </SheetClose>
+                    ))}
                   </div>
 
                   <div className="mt-4 border-t border-white/10 pt-4">
@@ -368,6 +403,14 @@ export default function SiteLayout() {
               <Link to={getLocalizedPath("resourcesHub", locale)} className="transition hover:text-white">
                 {copy.resources}
               </Link>
+              <Link to={getLocalizedPath("reussites", locale)} className="transition hover:text-white">
+                {isEnglish ? "Success stories" : "Réussites"}
+              </Link>
+              {offerQuickLinks.map((link) => (
+                <Link key={link.to} to={link.to} className="transition hover:text-white">
+                  {link.label}
+                </Link>
+              ))}
               <Link to={getLocalizedPath("temoignages", locale)} className="transition hover:text-white">
                 {copy.testimonials}
               </Link>

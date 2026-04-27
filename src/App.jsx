@@ -5,6 +5,7 @@ import SiteLayout from "@/layouts/SiteLayout"
 
 const Accueil = lazy(() => import("@/pages/Accueil"))
 const AccueilEn = lazy(() => import("@/pages/AccueilEn"))
+const CaseStudies = lazy(() => import("@/pages/CaseStudies"))
 const DevenirTuteur = lazy(() => import("@/pages/DevenirTuteur"))
 const LocalLanding = lazy(() => import("@/pages/LocalLanding"))
 const Maths = lazy(() => import("@/pages/Maths"))
@@ -37,6 +38,8 @@ export default function App() {
             <Route path="/en/science-tutoring" element={<Sciences />} />
             <Route path="/temoignages" element={<Temoignages />} />
             <Route path="/en/testimonials" element={<Temoignages />} />
+            <Route path="/reussites" element={<CaseStudies />} />
+            <Route path="/en/success-stories" element={<CaseStudies />} />
             <Route path="/tuteurs" element={<Tuteurs />} />
             <Route path="/en/tutors" element={<Tuteurs />} />
             <Route path="/tutorat-montreal" element={<LocalLanding forcedRouteKey="montreal" />} />
@@ -67,8 +70,6 @@ export default function App() {
             <Route path="/en/resources/secondary-5-chemistry-help" element={<ResourceArticle />} />
             <Route path="/ressources/tuteur-maths-montreal-secondaire-4" element={<ResourceArticle />} />
             <Route path="/en/resources/montreal-secondary-4-math-tutor" element={<ResourceArticle />} />
-            <Route path="/reussites" element={<Navigate to="/temoignages" replace />} />
-            <Route path="/en/success-stories" element={<Navigate to="/en/testimonials" replace />} />
             <Route path="/devenir-tuteur" element={<DevenirTuteur />} />
             <Route path="/en/become-a-tutor" element={<DevenirTuteur />} />
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -2,6 +2,7 @@ import { Link, useLocation } from "react-router-dom"
 import { ArrowRight, Compass, Sparkles } from "lucide-react"
 
 import MotionCard from "@/components/MotionCard"
+import OfferPathwaysSection from "@/components/OfferPathwaysSection"
 import ResourceGridSection from "@/components/ResourceGridSection"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
@@ -148,6 +149,23 @@ export default function ResourcesHub() {
         </section>
 
         <ResourceGridSection locale={locale} className="pt-20" showHubLink={false} />
+
+        <OfferPathwaysSection
+          locale={locale}
+          className="pt-20"
+          heading={{
+            eyebrow: locale === "en" ? "Best pages to push now" : "Pages d'offre a pousser maintenant",
+            title:
+              locale === "en"
+                ? "The two offer pages that should keep receiving internal links"
+                : "Les deux pages d'offre qui meritent de recevoir le plus de liens internes",
+          }}
+          description={
+            locale === "en"
+              ? "Resource content should not stop at advice. These offer pages are the most natural conversion targets once a family recognizes its situation."
+              : "Les ressources ne doivent pas s'arreter au conseil. Ces pages d'offre sont les cibles de conversion les plus naturelles une fois qu'une famille reconnait sa situation."
+          }
+        />
       </main>
     </div>
   )

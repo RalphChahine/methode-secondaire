@@ -280,7 +280,9 @@ export default function Temoignages() {
                 variant="outline"
                 className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
               >
-                <Link to={getLocalizedPath("home", locale)}>{copy.ctaSecondary}</Link>
+                <Link to={getLocalizedPath("reussites", locale)}>
+                  {locale === "en" ? "See case studies" : "Voir les cas types"}
+                </Link>
               </Button>
             </div>
           </div>
@@ -306,6 +308,34 @@ export default function Temoignages() {
         </section>
 
         <VerifiedReviewsSection locale={locale} className="pt-20" limit={4} showLink={false} />
+
+        <div className="pt-8">
+          <MotionCard className="rounded-[28px] border-white/10 bg-white/[0.04] p-6 text-white">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-3xl">
+                <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
+                  {locale === "en" ? "More context for parents" : "Plus de contexte pour les parents"}
+                </div>
+                <p className="mt-3 text-sm leading-7 text-white/72">
+                  {locale === "en"
+                    ? "Real testimonials reassure. Representative case studies help parents recognize their own situation more concretely."
+                    : "Les vrais témoignages rassurent. Les cas types aident un parent à reconnaître sa propre situation de façon beaucoup plus concrète."}
+                </p>
+              </div>
+
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+              >
+                <Link to={getLocalizedPath("reussites", locale)}>
+                  {locale === "en" ? "Open case studies" : "Ouvrir les cas types"}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+          </MotionCard>
+        </div>
 
         <section className="pt-20">
           <SectionHeader
@@ -382,7 +412,9 @@ export default function Temoignages() {
                   variant="outline"
                   className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
                 >
-                  <Link to={getLocalizedPath("devenirTuteur", locale)}>{copy.finalSecondary}</Link>
+                  <Link to={getLocalizedPath("reussites", locale)}>
+                    {locale === "en" ? "See case studies" : "Voir les cas types"}
+                  </Link>
                 </Button>
               </div>
             </MotionCard>

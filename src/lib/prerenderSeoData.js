@@ -92,6 +92,28 @@ const basePageSeo = {
       ogType: "website",
     },
   },
+  reussites: {
+    fr: {
+      title: "Réussites et cas types | Méthode Secondaire",
+      description:
+        "Découvrez des cas types inspirés de situations fréquentes en tutorat secondaire: maths, sciences, Sprint examen, suivi hebdomadaire et remise à niveau ciblée.",
+      keywords:
+        "cas type tutorat secondaire, réussite maths secondaire, réussite sciences secondaire, sprint examen, suivi hebdomadaire, tutorat québec",
+      name: "Réussites et cas types",
+      schemaType: "CollectionPage",
+      ogType: "website",
+    },
+    en: {
+      title: "Success stories and case studies | Méthode Secondaire",
+      description:
+        "Explore representative case studies inspired by common high school tutoring situations in math, science, exam sprint support, weekly follow-up and catch-up tutoring.",
+      keywords:
+        "high school tutoring case studies, math tutoring success story, science tutoring success story, exam sprint tutoring, weekly follow-up tutoring",
+      name: "Success stories and case studies",
+      schemaType: "CollectionPage",
+      ogType: "website",
+    },
+  },
   tuteurs: {
     fr: {
       title: "Tuteurs et spécialités | Méthode Secondaire",

@@ -45,6 +45,7 @@ export default function OfferLanding({ forcedRouteKey }) {
     (locale === "en"
       ? "When the situation is urgent but still fuzzy, the diagnostic or a short call is usually the fastest first move. Weekly follow-up is still better discussed by phone first."
       : "Quand la situation est urgente mais encore floue, le diagnostic ou un court appel reste souvent le premier pas le plus rapide. Un suivi hebdomadaire se discute quand même mieux d'abord par téléphone.")
+  const breadcrumbLabel = locale === "en" ? "Home" : "Accueil"
 
   function openDiagnostic() {
     if (typeof window === "undefined") {
@@ -129,6 +130,24 @@ export default function OfferLanding({ forcedRouteKey }) {
         },
       })),
     },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: breadcrumbLabel,
+          item: absoluteUrl(getLocalizedPath("home", locale)),
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: page.eyebrow,
+          item: absoluteUrl(path),
+        },
+      ],
+    },
   ]
 
   return (
@@ -154,6 +173,13 @@ export default function OfferLanding({ forcedRouteKey }) {
       <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
         <section className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
           <div className="max-w-3xl">
+            <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-white/55">
+              <Link to={getLocalizedPath("home", locale)} className="transition hover:text-white">
+                {breadcrumbLabel}
+              </Link>
+              <ChevronRight className="h-4 w-4" />
+              <span className="text-white/75">{page.eyebrow}</span>
+            </div>
             <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
               {page.eyebrow}
             </Badge>

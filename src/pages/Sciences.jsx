@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 
 import MotionCard from "@/components/MotionCard"
+import OfferPathwaysSection from "@/components/OfferPathwaysSection"
 import ResourceGridSection from "@/components/ResourceGridSection"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
@@ -319,6 +320,23 @@ export default function Sciences() {
             locale === "en"
               ? "These pages focus on science exam prep, physics, chemistry and catch-up periods where structure matters more than generic practice."
         : "Ces pages visent la révision de sciences, la physique, la chimie et les périodes de rattrapage où la structure compte plus qu'une pratique diffuse."
+          }
+        />
+
+        <OfferPathwaysSection
+          locale={locale}
+          className="pt-20"
+          heading={{
+            eyebrow: locale === "en" ? "Best next offer pages" : "Offres a pousser ensuite",
+            title:
+              locale === "en"
+                ? "From science tutoring, the strongest next pages are Exam sprint and Weekly follow-up"
+                : "Depuis la page sciences, les suites les plus fortes sont Sprint examen et Suivi hebdomadaire",
+          }}
+          description={
+            locale === "en"
+              ? "These two pages help families move from subject interest into the right support format, which makes them useful both for indexing and for leads."
+              : "Ces deux pages font le pont entre l'interet pour la matiere et le bon format d'accompagnement, ce qui les rend utiles a la fois pour l'indexation et pour les leads."
           }
         />
 

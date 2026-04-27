@@ -709,6 +709,16 @@ export default function Accueil() {
                 <ChevronRight className="h-4 w-4" />
               </Link>
             </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+            >
+              <Link to="/reussites">
+                Voir des cas types
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </div>
         </motion.section>
 

@@ -440,6 +440,12 @@ export default function AccueilEn() {
                 <ChevronRight className="h-4 w-4" />
               </Link>
             </Button>
+            <Button asChild variant="outline" className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white">
+              <Link to="/en/success-stories">
+                See case studies
+                <ChevronRight className="h-4 w-4" />
+              </Link>
+            </Button>
           </div>
         </section>
 
