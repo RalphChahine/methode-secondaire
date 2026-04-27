@@ -53,8 +53,10 @@ export default function SiteLayout() {
         quickLinks: "Quick links",
         about:
           "Private tutoring in math and science for high school students across Quebec. A clear, structured and reassuring approach to help students understand better, practice better and perform better.",
-        math: "Math tutoring",
-        science: "Science tutoring",
+        math: "High school math tutoring",
+        science: "High school science tutoring",
+        homework: "Homework help",
+        support: "Academic support",
         resources: "Resources",
         testimonials: "Testimonials",
         tutors: "Tutors",
@@ -94,8 +96,10 @@ export default function SiteLayout() {
         quickLinks: "Accès rapide",
         about:
           "Tutorat privé en mathématiques et en sciences pour les élèves du secondaire au Québec. Une approche claire, structurée et rassurante pour mieux comprendre, mieux pratiquer et mieux performer.",
-        math: "Tutorat maths",
-        science: "Tutorat sciences",
+        math: "Tutorat en mathématiques",
+        science: "Tutorat en sciences",
+        homework: "Aide aux devoirs",
+        support: "Soutien scolaire",
         resources: "Ressources",
         testimonials: "Témoignages",
         tutors: "Tuteurs",
@@ -120,6 +124,22 @@ export default function SiteLayout() {
     : [
         { to: getLocalizedPath("examSprint", locale), label: "Sprint examen" },
         { to: getLocalizedPath("weeklyFollowUp", locale), label: "Suivi hebdomadaire" },
+      ]
+
+  const serviceQuickLinks = isEnglish
+    ? [
+        { to: getLocalizedPath("homeworkHelpSecondary", locale), label: "Homework help" },
+        { to: getLocalizedPath("academicSupportSecondary", locale), label: "Academic support" },
+        { to: getLocalizedPath("mathTutorMontreal", locale), label: "Montreal math tutor" },
+        { to: getLocalizedPath("homeworkHelpMontreal", locale), label: "Montreal homework help" },
+        { to: getLocalizedPath("scienceTutorLaval", locale), label: "Laval science tutor" },
+      ]
+    : [
+        { to: getLocalizedPath("homeworkHelpSecondary", locale), label: "Aide aux devoirs" },
+        { to: getLocalizedPath("academicSupportSecondary", locale), label: "Soutien scolaire" },
+        { to: getLocalizedPath("mathTutorMontreal", locale), label: "Tuteur maths Montréal" },
+        { to: getLocalizedPath("homeworkHelpMontreal", locale), label: "Aide aux devoirs Montréal" },
+        { to: getLocalizedPath("scienceTutorLaval", locale), label: "Tuteur sciences Laval" },
       ]
 
   useEffect(() => {
@@ -195,7 +215,7 @@ export default function SiteLayout() {
               variant="outline"
               className="rounded-full border-white/15 bg-white/5 px-5 text-white hover:bg-white/10 hover:text-white"
             >
-              <Link to={getLocalizedPath("devenirTuteur", locale)}>{copy.joinTutor}</Link>
+              <Link to={getLocalizedPath("employmentTutorSecondary", locale)}>{copy.joinTutor}</Link>
             </Button>
 
             <Button
@@ -258,7 +278,7 @@ export default function SiteLayout() {
 
                   <SheetClose asChild>
                     <NavLink
-                      to={getLocalizedPath("devenirTuteur", locale)}
+                      to={getLocalizedPath("employmentTutorSecondary", locale)}
                       className="rounded-2xl px-4 py-3 text-white/85 transition hover:bg-white/10"
                     >
                       {copy.joinTutor}
@@ -301,6 +321,16 @@ export default function SiteLayout() {
                       {isEnglish ? "Formats" : "Formats"}
                     </div>
                     {offerQuickLinks.map((link) => (
+                      <SheetClose asChild key={link.to}>
+                        <NavLink
+                          to={link.to}
+                          className="mb-2 block rounded-2xl px-4 py-3 text-white/85 transition hover:bg-white/10"
+                        >
+                          {link.label}
+                        </NavLink>
+                      </SheetClose>
+                    ))}
+                    {serviceQuickLinks.map((link) => (
                       <SheetClose asChild key={link.to}>
                         <NavLink
                           to={link.to}
@@ -411,6 +441,11 @@ export default function SiteLayout() {
                   {link.label}
                 </Link>
               ))}
+              {serviceQuickLinks.map((link) => (
+                <Link key={link.to} to={link.to} className="transition hover:text-white">
+                  {link.label}
+                </Link>
+              ))}
               <Link to={getLocalizedPath("temoignages", locale)} className="transition hover:text-white">
                 {copy.testimonials}
               </Link>
@@ -426,7 +461,7 @@ export default function SiteLayout() {
               <Link to={getLocalizedPath("quebecOnline", locale)} className="transition hover:text-white">
                 {copy.onlineQuebec}
               </Link>
-              <Link to={getLocalizedPath("devenirTuteur", locale)} className="transition hover:text-white">
+              <Link to={getLocalizedPath("employmentTutorSecondary", locale)} className="transition hover:text-white">
                 {copy.joinTutor}
               </Link>
               {copy.sections.map((section) => (

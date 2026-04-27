@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 
 import MotionCard from "@/components/MotionCard"
+import KeywordIntentSection from "@/components/KeywordIntentSection"
 import OfferPathwaysSection from "@/components/OfferPathwaysSection"
 import ResourceGridSection from "@/components/ResourceGridSection"
 import Seo from "@/components/Seo"
@@ -90,11 +91,11 @@ const contentByLocale = {
       "Si la matière a commencé à s'accumuler ou qu'un examen approche, on peut repartir avec une stratégie claire très vite.",
     finalPrimary: "Réserver une séance ciblée",
     finalSecondary: "Retour à l'accueil",
-    seoTitle: "Tutorat de maths au secondaire | Méthode Secondaire",
+    seoTitle: "Tutorat en mathématiques au secondaire | Méthode Secondaire",
     seoDescription:
-      "Tutorat de mathématiques au secondaire 1 à 5 au Québec. Algèbre, fonctions, géométrie, trigonométrie et examens avec une méthode claire.",
+      "Tutorat en mathématiques au secondaire 1 à 5 au Québec. Tuteur de maths, aide aux devoirs, algèbre, fonctions, géométrie, trigonométrie et examens avec une méthode claire.",
     seoKeywords:
-      "tutorat maths secondaire, cours privés maths Québec, aide devoirs maths secondaire, préparation examen maths secondaire",
+      "tutorat en mathématiques secondaire, tuteur maths secondaire, aide aux devoirs maths secondaire, soutien scolaire maths, préparation examen maths secondaire",
     schemaName: "Tutorat de mathématiques au secondaire",
     schemaType: "Tutorat privé de mathématiques pour le secondaire 1 à 5",
   },
@@ -162,11 +163,11 @@ const contentByLocale = {
       "If the subject has started piling up or an exam is approaching, we can rebuild a clear strategy quickly.",
     finalPrimary: "Book a focused session",
     finalSecondary: "Back to home",
-    seoTitle: "High school math tutoring | Méthode Secondaire",
+    seoTitle: "High school math tutoring in Quebec | Méthode Secondaire",
     seoDescription:
-      "High school math tutoring across Quebec. Algebra, functions, geometry, trigonometry and exam prep with a clear method.",
+      "High school math tutoring across Quebec. Math tutor support, homework help, algebra, functions, geometry, trigonometry and exam prep with a clear method.",
     seoKeywords:
-      "high school math tutoring, private math tutor quebec, algebra help high school, math exam preparation",
+      "high school math tutoring quebec, high school math tutor, math homework help, secondary math support, math exam preparation",
     schemaName: "High school math tutoring",
     schemaType: "Private high school math tutoring",
   },
@@ -339,6 +340,8 @@ export default function Maths() {
               : "Ces deux pages aident les familles a choisir entre une urgence avant examen et un rythme plus stable a long terme, ce qui les rend fortes a la fois pour le SEO et pour la conversion."
           }
         />
+
+        <KeywordIntentSection locale={locale} className="pt-20" />
 
         <section className="pt-20">
           <MotionCard className="rounded-[34px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-8 text-white sm:p-10">

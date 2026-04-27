@@ -30,6 +30,7 @@ import {
   VerifiedReviewsSection,
 } from "@/components/ConversionSections"
 import GrowthProgramSection from "@/components/GrowthProgramSection"
+import KeywordIntentSection from "@/components/KeywordIntentSection"
 import LeadForm from "@/components/LeadForm"
 import MotionCard from "@/components/MotionCard"
 import ResourceGridSection from "@/components/ResourceGridSection"
@@ -194,7 +195,7 @@ export default function AccueilEn() {
         title="Méthode Secondaire | High school math and science tutoring"
         description="Private high school math and science tutoring across Quebec. Clear teaching, structured follow-up and simple booking."
         path="/en"
-        keywords="high school math tutoring, high school science tutoring, private tutor quebec, exam preparation"
+        keywords="high school math tutoring, high school science tutor, high school homework help, high school academic support, private tutor quebec"
         jsonLd={homeSchemas}
         lang="en-CA"
         locale="en_CA"
@@ -299,6 +300,7 @@ export default function AccueilEn() {
         </section>
 
         <GrowthProgramSection locale="en" className="pt-20" />
+        <KeywordIntentSection locale="en" className="pt-20" />
 
         <section id="methode" className="scroll-mt-32 pt-20">
           <SectionHeader

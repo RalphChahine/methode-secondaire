@@ -23,6 +23,7 @@ import {
   getHtmlLang,
   getLocaleFromPath,
   getLocalizedPath,
+  getRouteKeyFromPath,
   getOgLocale,
 } from "@/lib/i18n"
 import { siteConfig } from "@/lib/seo"
@@ -107,6 +108,32 @@ const contentByLocale = {
     processTitle: "Un parcours de recrutement simple et sérieux",
     processDescription:
       "Le but est de protéger la qualité tout en gardant une expérience fluide pour les bons candidats.",
+    searchIntentEyebrow: "Recherches fréquentes",
+    searchIntentTitle: "Les recherches qui amènent souvent les bons candidats ici",
+    searchIntentDescription:
+      "Une seule bonne page peut couvrir plusieurs requêtes proches quand l'intention est la même. Ici, on parle surtout de devenir tuteur, de chercher un emploi de tuteur au secondaire ou de faire du tutorat en ligne au Québec.",
+    searchIntents: [
+      {
+        title: "Devenir tuteur en ligne au Québec",
+        description:
+          "Pour les personnes qui veulent accompagner des élèves du secondaire en maths ou en sciences à distance, avec un cadre sérieux, clair et déjà crédible.",
+      },
+      {
+        title: "Emploi tuteur secondaire en maths ou sciences",
+        description:
+          "Pour les profils qui cherchent un poste de tuteur au secondaire avec une vraie attente de pédagogie, de fiabilité et de bonnes explications.",
+      },
+      {
+        title: "Étudiant en enseignement ou enseignant qui veut un complément",
+        description:
+          "Cette page parle aussi aux étudiants en enseignement, finissants, enseignants et profils scientifiques qui veulent enseigner dans un format plus souple.",
+      },
+      {
+        title: "Tuteur Montréal, Laval ou en ligne",
+        description:
+          "Le besoin peut être entièrement en ligne partout au Québec, ou parfois plus local selon le secteur autour de Montréal et Laval.",
+      },
+    ],
     applicationEyebrow: "Candidature",
     applicationTitle: "Postuler directement depuis le site",
     applicationDescription:
@@ -141,6 +168,11 @@ const contentByLocale = {
           "Nous privilégions des personnes fiables, pédagogues et structurées, capables d'expliquer proprement, de rassurer les familles et de maintenir un vrai niveau d'exigence.",
       },
       {
+        question: "La page convient-elle aussi à un étudiant en enseignement ou à un enseignant ?",
+        answer:
+          "Oui. Elle peut convenir à des étudiants en enseignement, des finissants, des enseignants ou des profils solides en maths et sciences qui veulent faire du tutorat au secondaire avec une approche claire et sérieuse.",
+      },
+      {
         question: "Comment puis-je postuler ?",
         answer:
           "Vous pouvez candidater directement via le formulaire de la page ou par email en présentant vos matières, votre disponibilité et votre approche pédagogique.",
@@ -152,11 +184,11 @@ const contentByLocale = {
       "Si vous aimez faire progresser les élèves avec rigueur, calme et clarté, cette page est là pour vous permettre de postuler simplement et professionnellement.",
     finalPrimary: "Postuler maintenant",
     finalSecondary: "Lire les témoignages",
-    seoTitle: "Recrutement de tuteurs en maths et sciences | Méthode Secondaire",
+    seoTitle: "Devenir tuteur | Emploi tuteur maths et sciences au Québec | Méthode Secondaire",
     seoDescription:
-      "Méthode Secondaire recrute des tuteurs en mathématiques et en sciences pour le secondaire au Québec, en ligne et selon le secteur en présentiel. Profil recherché, standards et candidature.",
+      "Postulez pour un emploi de tuteur en mathématiques et en sciences au secondaire avec Méthode Secondaire. Tutorat en ligne au Québec, présentiel selon le secteur, profil recherché et candidature.",
     seoKeywords:
-      "recrutement tuteur maths, recrutement tuteur sciences, emploi tuteur secondaire Québec, devenir tuteur privé, tutorat en ligne Québec, tuteur Montréal, tuteur Laval",
+      "devenir tuteur, devenir tuteur en ligne québec, emploi tuteur secondaire, emploi tuteur maths, emploi tuteur sciences, recrutement tuteur montréal, recrutement tuteur laval",
     schemaDescription:
       "Page de recrutement de tuteurs en mathématiques et en sciences pour le secondaire au Québec, en ligne et en présentiel selon le secteur.",
     jobPostingTitle: "Tuteur en mathématiques et sciences au secondaire",
@@ -261,6 +293,32 @@ const contentByLocale = {
     processTitle: "A simple and serious hiring path",
     processDescription:
       "The goal is to protect quality while keeping the experience smooth for strong candidates.",
+    searchIntentEyebrow: "Common candidate searches",
+    searchIntentTitle: "The searches that often bring strong applicants here",
+    searchIntentDescription:
+      "One strong page can cover several close queries when the search intent is the same. Here, that intent is mostly about becoming a tutor, finding tutor jobs, or teaching high school math and science online in Quebec.",
+    searchIntents: [
+      {
+        title: "Become an online tutor in Quebec",
+        description:
+          "For people who want to support high school students in math or science online, inside a serious and already credible brand.",
+      },
+      {
+        title: "High school math and science tutor jobs",
+        description:
+          "For candidates looking for real tutor work with strong expectations around teaching clarity, reliability and communication.",
+      },
+      {
+        title: "A strong fit for teachers and education students",
+        description:
+          "This page also speaks to education students, recent graduates, teachers and science-minded applicants who want a more flexible teaching format.",
+      },
+      {
+        title: "Montreal, Laval or online tutoring opportunities",
+        description:
+          "Some opportunities are fully online across Quebec, while some may also align with local availability around Montreal and Laval.",
+      },
+    ],
     applicationEyebrow: "Application",
     applicationTitle: "Apply directly through the website",
     applicationDescription:
@@ -295,6 +353,11 @@ const contentByLocale = {
           "We prioritize reliable, highly pedagogical and well-structured tutors who can explain clearly, reassure families and maintain strong academic standards.",
       },
       {
+        question: "Is this a good fit for teachers or education students?",
+        answer:
+          "Yes. The page is relevant for education students, recent graduates, teachers and strong math or science profiles who want to tutor high school students with clarity and professionalism.",
+      },
+      {
         question: "How do I apply?",
         answer:
           "You can apply directly through the form on this page or by email with your subjects, availability and teaching approach.",
@@ -306,11 +369,11 @@ const contentByLocale = {
       "If you love helping students progress with rigor, calm and clarity, this page is here to let you apply simply and professionally.",
     finalPrimary: "Apply now",
     finalSecondary: "Read testimonials",
-    seoTitle: "Math and science tutor jobs | Méthode Secondaire",
+    seoTitle: "Become a tutor | Math and science tutor jobs in Quebec | Méthode Secondaire",
     seoDescription:
-      "Apply for high school math and science tutor jobs with Méthode Secondaire across Quebec. Explore the profile, standards and application process.",
+      "Apply for high school math and science tutor jobs with Méthode Secondaire across Quebec. Explore online tutor opportunities, hiring standards and the application process.",
     seoKeywords:
-      "math tutor jobs Quebec, science tutor jobs Quebec, online tutor jobs Quebec, high school tutor Montreal, become a private tutor",
+      "become a tutor quebec, math tutor jobs quebec, science tutor jobs quebec, online tutor jobs quebec, high school tutor montreal, private tutor jobs",
     schemaDescription:
       "Hiring page for high school math and science tutors across Quebec, online and in person depending on area.",
     jobPostingTitle: "High school math and science tutor",
@@ -337,11 +400,54 @@ const contentByLocale = {
   },
 }
 
-export default function DevenirTuteur() {
+const routeVariantOverrides = {
+  employmentTutorSecondary: {
+    fr: {
+      badge: "Emploi tuteur • Secondaire",
+      heroTitle: "Emploi tuteur au secondaire : rejoindre une marque claire pour enseigner les maths et les sciences",
+      heroText:
+        "Cette page est pensée pour les personnes qui cherchent un emploi de tuteur au secondaire au Québec, surtout en maths et en sciences, avec un cadre sérieux, une mission claire et un vrai niveau d'exigence pédagogique.",
+      ctaPrimary: "Postuler pour l'emploi tuteur",
+      seoTitle: "Emploi tuteur secondaire | Maths et sciences au Québec | Méthode Secondaire",
+      seoDescription:
+        "Emploi de tuteur au secondaire au Québec en maths et sciences. Postulez chez Méthode Secondaire pour du tutorat en ligne ou selon le secteur à Montréal et Laval.",
+      seoKeywords:
+        "emploi tuteur secondaire, emploi tuteur maths, emploi tuteur sciences, devenir tuteur en ligne québec, recrutement tuteur secondaire montréal, recrutement tuteur secondaire laval",
+      schemaDescription:
+        "Page emploi tuteur secondaire en mathématiques et en sciences au Québec, pour des candidatures en ligne et selon le secteur à Montréal et Laval.",
+      jobPostingTitle: "Emploi tuteur secondaire en mathématiques et sciences",
+      jobPostingDescription:
+        "Méthode Secondaire recrute pour un emploi de tuteur au secondaire en mathématiques, sciences, physique et chimie au Québec. Le cadre convient aux profils pédagogues, fiables et capables d'expliquer clairement.",
+    },
+    en: {
+      badge: "Tutor jobs • High school",
+      heroTitle: "High school tutor jobs in Quebec for math and science tutors who teach clearly",
+      heroText:
+        "This page is built for applicants looking for high school tutor jobs in Quebec, especially in math and science, inside a serious brand with clear standards and real pedagogical expectations.",
+      ctaPrimary: "Apply for tutor jobs",
+      seoTitle: "High school tutor jobs in Quebec | Math and science | Méthode Secondaire",
+      seoDescription:
+        "Apply for high school tutor jobs in Quebec in math and science. Join Méthode Secondaire for online tutoring and, depending on the area, local opportunities around Montreal and Laval.",
+      seoKeywords:
+        "high school tutor jobs quebec, math tutor jobs quebec, science tutor jobs quebec, online tutor jobs quebec, montreal tutor jobs, laval tutor jobs",
+      schemaDescription:
+        "Hiring page for high school tutor jobs in math and science across Quebec, online and, depending on area, around Montreal and Laval.",
+      jobPostingTitle: "High school math and science tutor jobs in Quebec",
+      jobPostingDescription:
+        "Méthode Secondaire hires for high school tutor jobs in math, science, physics and chemistry across Quebec. We look for reliable, highly pedagogical tutors who explain clearly and teach with structure.",
+    },
+  },
+}
+
+export default function DevenirTuteur({ forcedRouteKey }) {
   const location = useLocation()
   const locale = getLocaleFromPath(location.pathname)
-  const copy = contentByLocale[locale]
-  const path = getLocalizedPath("devenirTuteur", locale)
+  const routeKey = forcedRouteKey || getRouteKeyFromPath(location.pathname) || "devenirTuteur"
+  const copy = {
+    ...contentByLocale[locale],
+    ...(routeVariantOverrides[routeKey]?.[locale] || {}),
+  }
+  const path = getLocalizedPath(routeKey, locale)
 
   const pageSchema = {
     "@context": "https://schema.org",
@@ -420,7 +526,7 @@ export default function DevenirTuteur() {
         lang={getHtmlLang(locale)}
         locale={getOgLocale(locale)}
         alternateLocale={getAlternateOgLocale(locale)}
-        alternates={buildAlternates("devenirTuteur")}
+        alternates={buildAlternates(routeKey)}
       />
 
       <div className="pointer-events-none absolute inset-0">
@@ -560,6 +666,26 @@ export default function DevenirTuteur() {
                 </div>
                 <h2 className="mt-4 font-display text-2xl font-semibold">{step.title}</h2>
                 <p className="mt-3 text-sm leading-7 text-white/72">{step.description}</p>
+              </MotionCard>
+            ))}
+          </div>
+        </section>
+
+        <section className="pt-20">
+          <SectionHeader
+            eyebrow={copy.searchIntentEyebrow}
+            title={copy.searchIntentTitle}
+            description={copy.searchIntentDescription}
+          />
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+            {copy.searchIntents.map((item) => (
+              <MotionCard key={item.title} className="rounded-[28px] border-white/10 bg-[#0a1d43]/75 p-6 text-white">
+                <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
+                  {locale === "en" ? "Search intent" : "Intention de recherche"}
+                </div>
+                <h2 className="mt-4 font-display text-2xl font-semibold">{item.title}</h2>
+                <p className="mt-3 text-sm leading-7 text-white/72">{item.description}</p>
               </MotionCard>
             ))}
           </div>

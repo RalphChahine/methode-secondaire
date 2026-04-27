@@ -46,6 +46,21 @@ export default function OfferLanding({ forcedRouteKey }) {
       ? "When the situation is urgent but still fuzzy, the diagnostic or a short call is usually the fastest first move. Weekly follow-up is still better discussed by phone first."
       : "Quand la situation est urgente mais encore floue, le diagnostic ou un court appel reste souvent le premier pas le plus rapide. Un suivi hebdomadaire se discute quand même mieux d'abord par téléphone.")
   const breadcrumbLabel = locale === "en" ? "Home" : "Accueil"
+  const heroPanelTitle =
+    page?.heroPanelTitle ||
+    (locale === "en"
+      ? "A clearer entry point when the need is already real"
+      : "Une porte d'entree plus claire quand le besoin est deja reel")
+  const heroPanelText =
+    page?.heroPanelText ||
+    (locale === "en"
+      ? "The goal is not to add random tutoring hours. The goal is to create more clarity, better decisions and the right next move for the family."
+      : "Le but n'est pas d'ajouter des heures au hasard. Le but est de creer plus de clarte, de meilleures decisions et la bonne prochaine etape pour la famille.")
+  const relatedDescription =
+    page?.relatedDescription ||
+    (locale === "en"
+      ? "These pages are the most natural next steps when a family is comparing one focused need with broader tutoring support."
+      : "Ces pages sont les suites les plus naturelles quand une famille compare un besoin cible avec un accompagnement plus large.")
 
   function openDiagnostic() {
     if (typeof window === "undefined") {

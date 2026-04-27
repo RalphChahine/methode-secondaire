@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom"
 import { ArrowRight, Compass, Sparkles } from "lucide-react"
 
+import KeywordIntentSection from "@/components/KeywordIntentSection"
 import MotionCard from "@/components/MotionCard"
 import OfferPathwaysSection from "@/components/OfferPathwaysSection"
 import ResourceGridSection from "@/components/ResourceGridSection"
@@ -25,14 +26,14 @@ const seoByLocale = {
     description:
       "Guides utiles sur la préparation aux examens, le rattrapage scolaire et les points de blocage fréquents en maths et sciences au secondaire.",
     keywords:
-      "ressources tutorat secondaire, blog tutorat maths, blog tutorat sciences, rattrapage scolaire secondaire, préparation examens secondaire",
+      "ressources tutorat secondaire, aide aux devoirs secondaire, soutien scolaire secondaire, blog tutorat maths, blog tutorat sciences",
   },
   en: {
     title: "High school tutoring resources | Méthode Secondaire",
     description:
       "Useful guides about exam prep, catch-up tutoring and common math and science pain points for high school students in Quebec.",
     keywords:
-      "high school tutoring resources, math tutoring blog, science tutoring guide, catch-up tutoring, exam prep guide",
+      "high school tutoring resources, high school homework help, high school academic support, math tutoring blog, science tutoring guide",
   },
 }
 
@@ -149,6 +150,8 @@ export default function ResourcesHub() {
         </section>
 
         <ResourceGridSection locale={locale} className="pt-20" showHubLink={false} />
+
+        <KeywordIntentSection locale={locale} className="pt-20" />
 
         <OfferPathwaysSection
           locale={locale}

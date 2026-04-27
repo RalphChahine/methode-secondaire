@@ -33,6 +33,7 @@ import {
   VerifiedReviewsSection,
 } from "@/components/ConversionSections"
 import GrowthProgramSection from "@/components/GrowthProgramSection"
+import KeywordIntentSection from "@/components/KeywordIntentSection"
 import LeadForm from "@/components/LeadForm"
 import MotionCard from "@/components/MotionCard"
 import ResourceGridSection from "@/components/ResourceGridSection"
@@ -337,7 +338,7 @@ export default function Accueil() {
         title="Méthode Secondaire | Tutorat en maths et sciences au secondaire"
         description="Tutorat privé en mathématiques et en sciences pour le secondaire 1 à 5 au Québec. Révision claire, méthode structurée, réservation simple."
         path="/"
-        keywords="tutorat maths secondaire, tutorat sciences secondaire, cours privés mathématiques Québec, soutien scolaire secondaire Montréal, préparation examens ministériels"
+        keywords="tutorat en mathématiques secondaire, tuteur sciences secondaire, aide aux devoirs secondaire, soutien scolaire secondaire, tutorat privé québec"
         jsonLd={homeSchemas}
         lang={getHtmlLang("fr")}
         locale={getOgLocale("fr")}
@@ -784,7 +785,7 @@ export default function Accueil() {
                   variant="outline"
                   className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
                 >
-                  <Link to={getLocalizedPath("devenirTuteur", "fr")}>Devenir tuteur</Link>
+                  <Link to={getLocalizedPath("employmentTutorSecondary", "fr")}>Devenir tuteur</Link>
                 </Button>
               </div>
             </MotionCard>
@@ -802,6 +803,8 @@ export default function Accueil() {
           }}
             description="Examen qui approche, secondaire 4 qui bascule, retard qui s'accumule : ces pages répondent à des recherches précises juste avant qu'une famille appelle ou réserve."
         />
+
+        <KeywordIntentSection locale="fr" className="pt-20" />
 
         <GrowthProgramSection locale="fr" className="pt-20" />
 

@@ -11,6 +11,38 @@ export const routeCatalog = {
   quebecOnline: { fr: "/tutorat-en-ligne-quebec", en: "/en/quebec-online-tutoring" },
   examSprint: { fr: "/sprint-examen", en: "/en/exam-sprint" },
   weeklyFollowUp: { fr: "/suivi-hebdomadaire", en: "/en/weekly-follow-up" },
+  mathTutoringSecondary: {
+    fr: "/tutorat-en-mathematiques-secondaire",
+    en: "/en/high-school-math-tutoring-quebec",
+  },
+  scienceTutorSecondary: {
+    fr: "/tuteur-sciences-secondaire",
+    en: "/en/high-school-science-tutor-quebec",
+  },
+  homeworkHelpSecondary: {
+    fr: "/aide-aux-devoirs-secondaire",
+    en: "/en/high-school-homework-help",
+  },
+  academicSupportSecondary: {
+    fr: "/soutien-scolaire-secondaire",
+    en: "/en/high-school-academic-support",
+  },
+  mathTutorMontreal: {
+    fr: "/tuteur-maths-montreal",
+    en: "/en/montreal-math-tutor",
+  },
+  homeworkHelpMontreal: {
+    fr: "/aide-aux-devoirs-montreal",
+    en: "/en/montreal-homework-help",
+  },
+  scienceTutorLaval: {
+    fr: "/tuteur-sciences-laval",
+    en: "/en/laval-science-tutor",
+  },
+  employmentTutorSecondary: {
+    fr: "/emploi-tuteur-secondaire",
+    en: "/en/high-school-tutor-jobs-quebec",
+  },
   resourcesHub: { fr: "/ressources", en: "/en/resources" },
   mathExamPrep: {
     fr: "/ressources/preparation-examen-maths-secondaire",

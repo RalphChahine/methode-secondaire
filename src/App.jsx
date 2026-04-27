@@ -52,6 +52,50 @@ export default function App() {
             <Route path="/en/exam-sprint" element={<OfferLanding forcedRouteKey="examSprint" />} />
             <Route path="/suivi-hebdomadaire" element={<OfferLanding forcedRouteKey="weeklyFollowUp" />} />
             <Route path="/en/weekly-follow-up" element={<OfferLanding forcedRouteKey="weeklyFollowUp" />} />
+            <Route
+              path="/tutorat-en-mathematiques-secondaire"
+              element={<OfferLanding forcedRouteKey="mathTutoringSecondary" />}
+            />
+            <Route
+              path="/en/high-school-math-tutoring-quebec"
+              element={<OfferLanding forcedRouteKey="mathTutoringSecondary" />}
+            />
+            <Route
+              path="/tuteur-sciences-secondaire"
+              element={<OfferLanding forcedRouteKey="scienceTutorSecondary" />}
+            />
+            <Route
+              path="/en/high-school-science-tutor-quebec"
+              element={<OfferLanding forcedRouteKey="scienceTutorSecondary" />}
+            />
+            <Route
+              path="/aide-aux-devoirs-secondaire"
+              element={<OfferLanding forcedRouteKey="homeworkHelpSecondary" />}
+            />
+            <Route
+              path="/en/high-school-homework-help"
+              element={<OfferLanding forcedRouteKey="homeworkHelpSecondary" />}
+            />
+            <Route
+              path="/soutien-scolaire-secondaire"
+              element={<OfferLanding forcedRouteKey="academicSupportSecondary" />}
+            />
+            <Route
+              path="/en/high-school-academic-support"
+              element={<OfferLanding forcedRouteKey="academicSupportSecondary" />}
+            />
+            <Route path="/tuteur-maths-montreal" element={<OfferLanding forcedRouteKey="mathTutorMontreal" />} />
+            <Route path="/en/montreal-math-tutor" element={<OfferLanding forcedRouteKey="mathTutorMontreal" />} />
+            <Route
+              path="/aide-aux-devoirs-montreal"
+              element={<OfferLanding forcedRouteKey="homeworkHelpMontreal" />}
+            />
+            <Route
+              path="/en/montreal-homework-help"
+              element={<OfferLanding forcedRouteKey="homeworkHelpMontreal" />}
+            />
+            <Route path="/tuteur-sciences-laval" element={<OfferLanding forcedRouteKey="scienceTutorLaval" />} />
+            <Route path="/en/laval-science-tutor" element={<OfferLanding forcedRouteKey="scienceTutorLaval" />} />
             <Route path="/ressources" element={<ResourcesHub />} />
             <Route path="/en/resources" element={<ResourcesHub />} />
             <Route path="/ressources/preparation-examen-maths-secondaire" element={<ResourceArticle />} />
@@ -72,6 +116,14 @@ export default function App() {
             <Route path="/en/resources/montreal-secondary-4-math-tutor" element={<ResourceArticle />} />
             <Route path="/devenir-tuteur" element={<DevenirTuteur />} />
             <Route path="/en/become-a-tutor" element={<DevenirTuteur />} />
+            <Route
+              path="/emploi-tuteur-secondaire"
+              element={<DevenirTuteur forcedRouteKey="employmentTutorSecondary" />}
+            />
+            <Route
+              path="/en/high-school-tutor-jobs-quebec"
+              element={<DevenirTuteur forcedRouteKey="employmentTutorSecondary" />}
+            />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
         </Routes>

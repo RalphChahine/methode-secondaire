@@ -196,11 +196,11 @@ const copyByLocale = {
       "Appelez d'abord et on pourra orienter le besoin vers le bon type d'accompagnement, en maths ou en sciences.",
     finalButton: "Appeler maintenant",
     finalSecondary: "Devenir tuteur",
-    seoTitle: "Tuteurs et spécialités | Méthode Secondaire",
+    seoTitle: "Tuteurs en maths et sciences au secondaire | Méthode Secondaire",
     seoDescription:
-      "Découvrez les profils, spécialités et standards pédagogiques de Méthode Secondaire pour le tutorat au secondaire.",
+      "Découvrez nos tuteurs en mathématiques et en sciences pour le secondaire au Québec, ainsi que notre approche en aide aux devoirs, rattrapage et préparation d'examens.",
     seoKeywords:
-      "tuteurs maths secondaire, tuteurs sciences secondaire, tutorat québec, profils tuteurs secondaire, soutien scolaire montréal",
+      "tuteur maths secondaire, tuteur sciences secondaire, tutorat en mathématiques québec, aide aux devoirs secondaire, soutien scolaire secondaire, tuteur montréal",
   },
   en: {
     badge: "Our team • Profiles and specialties",
@@ -234,11 +234,11 @@ const copyByLocale = {
       "Call first and we can guide the need toward the right kind of support, in math or science.",
     finalButton: "Call now",
     finalSecondary: "Become a tutor",
-    seoTitle: "Tutors and specialties | Méthode Secondaire",
+    seoTitle: "High school math and science tutors in Quebec | Méthode Secondaire",
     seoDescription:
-      "Explore the tutor profiles, specialties and teaching standards behind Méthode Secondaire.",
+      "Explore our high school math and science tutors in Quebec, along with our approach to homework help, catch-up support and exam preparation.",
     seoKeywords:
-      "math tutors high school, science tutors high school, tutoring quebec, tutor profiles, montreal academic support",
+      "high school math tutor quebec, high school science tutor quebec, homework help high school, academic support quebec, montreal tutor",
   },
 }
 
@@ -457,7 +457,7 @@ export default function Tuteurs() {
                   variant="outline"
                   className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
                 >
-                  <Link to={getLocalizedPath("devenirTuteur", locale)}>{copy.finalSecondary}</Link>
+                  <Link to={getLocalizedPath("employmentTutorSecondary", locale)}>{copy.finalSecondary}</Link>
                 </Button>
               </div>
             </div>

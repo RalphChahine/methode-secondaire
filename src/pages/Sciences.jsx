@@ -9,6 +9,7 @@ import {
 } from "lucide-react"
 
 import MotionCard from "@/components/MotionCard"
+import KeywordIntentSection from "@/components/KeywordIntentSection"
 import OfferPathwaysSection from "@/components/OfferPathwaysSection"
 import ResourceGridSection from "@/components/ResourceGridSection"
 import Seo from "@/components/Seo"
@@ -90,11 +91,11 @@ const contentByLocale = {
       "Que le besoin soit en chimie, en physique ou en préparation d'évaluation, on peut remettre les concepts à leur place rapidement.",
     finalPrimary: "Réserver une séance ciblée",
     finalSecondary: "Retour à l'accueil",
-    seoTitle: "Tutorat de sciences au secondaire | Méthode Secondaire",
+    seoTitle: "Tuteur de sciences au secondaire | Méthode Secondaire",
     seoDescription:
-      "Tutorat de sciences au secondaire 1 à 5 au Québec. Physique, chimie, électricité, labos et préparation d'examens avec une méthode claire.",
+      "Tuteur de sciences au secondaire 1 à 5 au Québec. Tutorat en sciences, physique, chimie, aide aux devoirs, labos et préparation d'examens avec une méthode claire.",
     seoKeywords:
-      "tutorat sciences secondaire, cours privés sciences Québec, aide physique secondaire, aide chimie secondaire, préparation examen sciences",
+      "tuteur sciences secondaire, tutorat sciences secondaire, aide aux devoirs sciences, aide physique secondaire, aide chimie secondaire",
     schemaName: "Tutorat de sciences au secondaire",
     schemaType: "Tutorat privé de sciences pour le secondaire 1 à 5",
   },
@@ -162,11 +163,11 @@ const contentByLocale = {
       "Whether the need is chemistry, physics or exam preparation, we can put the concepts back in place quickly.",
     finalPrimary: "Book a focused session",
     finalSecondary: "Back to home",
-    seoTitle: "High school science tutoring | Méthode Secondaire",
+    seoTitle: "High school science tutor in Quebec | Méthode Secondaire",
     seoDescription:
-      "High school science tutoring across Quebec. Physics, chemistry, electricity, labs and exam preparation with a clear method.",
+      "High school science tutoring across Quebec. Science tutor support, physics, chemistry, homework help, labs and exam preparation with a clear method.",
     seoKeywords:
-      "high school science tutoring, private science tutor quebec, physics help high school, chemistry help high school",
+      "high school science tutor quebec, high school science tutoring, science homework help, physics help high school, chemistry help high school",
     schemaName: "High school science tutoring",
     schemaType: "Private high school science tutoring",
   },
@@ -339,6 +340,8 @@ export default function Sciences() {
               : "Ces deux pages font le pont entre l'interet pour la matiere et le bon format d'accompagnement, ce qui les rend utiles a la fois pour l'indexation et pour les leads."
           }
         />
+
+        <KeywordIntentSection locale={locale} className="pt-20" />
 
         <section className="pt-20">
           <MotionCard className="rounded-[34px] border-white/10 bg-[linear-gradient(135deg,rgba(115,214,255,0.14),rgba(255,255,255,0.06))] p-8 text-white sm:p-10">
