@@ -36,7 +36,7 @@ export default function SiteLayout() {
           { to: getLocalizedPath("home", locale), label: "Home" },
           { to: getLocalizedPath("maths", locale), label: "Math tutoring" },
           { to: getLocalizedPath("sciences", locale), label: "Science tutoring" },
-          { to: getLocalizedPath("resourcesHub", locale), label: "Resources" },
+          { to: getLocalizedPath("blogHub", locale), label: "Blog" },
           { to: getLocalizedPath("reussites", locale), label: "Success stories" },
           { to: getLocalizedPath("temoignages", locale), label: "Testimonials" },
           { to: getLocalizedPath("tuteurs", locale), label: "Tutors" },
@@ -58,6 +58,7 @@ export default function SiteLayout() {
         homework: "Homework help",
         support: "Academic support",
         resources: "Resources",
+        blog: "Blog",
         testimonials: "Testimonials",
         tutors: "Tutors",
         montreal: "Montreal tutoring",
@@ -79,7 +80,7 @@ export default function SiteLayout() {
           { to: getLocalizedPath("home", locale), label: "Accueil" },
           { to: getLocalizedPath("maths", locale), label: "Maths" },
           { to: getLocalizedPath("sciences", locale), label: "Sciences" },
-          { to: getLocalizedPath("resourcesHub", locale), label: "Ressources" },
+          { to: getLocalizedPath("blogHub", locale), label: "Blogue" },
           { to: getLocalizedPath("reussites", locale), label: "Réussites" },
           { to: getLocalizedPath("temoignages", locale), label: "Témoignages" },
           { to: getLocalizedPath("tuteurs", locale), label: "Tuteurs" },
@@ -101,6 +102,7 @@ export default function SiteLayout() {
         homework: "Aide aux devoirs",
         support: "Soutien scolaire",
         resources: "Ressources",
+        blog: "Blogue",
         testimonials: "Témoignages",
         tutors: "Tuteurs",
         montreal: "Tutorat Montréal",
@@ -432,6 +434,9 @@ export default function SiteLayout() {
               </Link>
               <Link to={getLocalizedPath("resourcesHub", locale)} className="transition hover:text-white">
                 {copy.resources}
+              </Link>
+              <Link to={getLocalizedPath("blogHub", locale)} className="transition hover:text-white">
+                {copy.blog}
               </Link>
               <Link to={getLocalizedPath("reussites", locale)} className="transition hover:text-white">
                 {isEnglish ? "Success stories" : "Réussites"}

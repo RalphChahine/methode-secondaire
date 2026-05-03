@@ -1,7 +1,20 @@
 import { localPageConfigs } from "./conversionContent.js"
+import { blogHubCopyByLocale, blogRouteKeys, getBlogPageContent } from "./blogContent.js"
 import { getOfferPageConfig, offerRouteKeys } from "./offerContent.js"
 import { getResourcePageContent, resourceHubCopyByLocale, resourceRouteKeys } from "./resourceContent.js"
 import { routeCatalog } from "./routes.js"
+import { getRobotsDirective, shouldIncludeInSitemap } from "./searchIndexStrategy.js"
+
+function createPageEntry(routeKey, locale, payload) {
+  return {
+    routeKey,
+    locale,
+    path: routeCatalog[routeKey][locale],
+    robots: getRobotsDirective(routeKey),
+    includeInSitemap: shouldIncludeInSitemap(routeKey),
+    ...payload,
+  }
+}
 
 const basePageSeo = {
   home: {
@@ -200,6 +213,28 @@ const basePageSeo = {
       ogType: "website",
     },
   },
+  blogHub: {
+    fr: {
+      title: "Blogue tutorat secondaire fonde sur la recherche | Methode Secondaire",
+      description:
+        "Des articles fondes sur des etudes scientifiques pour aider les parents du secondaire a mieux comprendre l'anxiete en maths, les devoirs, le tutorat et la revision.",
+      keywords:
+        "blogue tutorat secondaire, recherches education secondaire, anxiete maths secondaire, aide aux devoirs recherche, tutorat scientifique",
+      name: blogHubCopyByLocale.fr.title,
+      schemaType: "CollectionPage",
+      ogType: "website",
+    },
+    en: {
+      title: "Research-backed high school tutoring blog | Methode Secondaire",
+      description:
+        "Evidence-based articles for high school families about math anxiety, homework, tutoring, science learning and exam revision.",
+      keywords:
+        "high school tutoring blog, education research for parents, math anxiety blog, homework help research, tutoring evidence",
+      name: blogHubCopyByLocale.en.title,
+      schemaType: "CollectionPage",
+      ogType: "website",
+    },
+  },
 }
 
 export function getPrerenderPageEntries() {
@@ -207,12 +242,7 @@ export function getPrerenderPageEntries() {
 
   for (const [routeKey, localizedMeta] of Object.entries(basePageSeo)) {
     for (const locale of ["fr", "en"]) {
-      entries.push({
-        routeKey,
-        locale,
-        path: routeCatalog[routeKey][locale],
-        ...localizedMeta[locale],
-      })
+      entries.push(createPageEntry(routeKey, locale, localizedMeta[locale]))
     }
   }
 
@@ -220,17 +250,16 @@ export function getPrerenderPageEntries() {
     for (const locale of ["fr", "en"]) {
       const page = localPageConfigs[routeKey][locale]
 
-      entries.push({
-        routeKey,
-        locale,
-        path: routeCatalog[routeKey][locale],
-        title: page.seoTitle,
-        description: page.seoDescription,
-        keywords: page.keywords,
-        name: page.heroTitle,
-        schemaType: "Service",
-        ogType: "website",
-      })
+      entries.push(
+        createPageEntry(routeKey, locale, {
+          title: page.seoTitle,
+          description: page.seoDescription,
+          keywords: page.keywords,
+          name: page.heroTitle,
+          schemaType: "Service",
+          ogType: "website",
+        }),
+      )
     }
   }
 
@@ -238,17 +267,16 @@ export function getPrerenderPageEntries() {
     for (const locale of ["fr", "en"]) {
       const page = getOfferPageConfig(routeKey, locale)
 
-      entries.push({
-        routeKey,
-        locale,
-        path: routeCatalog[routeKey][locale],
-        title: page.seoTitle,
-        description: page.seoDescription,
-        keywords: page.keywords,
-        name: page.heroTitle,
-        schemaType: "Service",
-        ogType: "website",
-      })
+      entries.push(
+        createPageEntry(routeKey, locale, {
+          title: page.seoTitle,
+          description: page.seoDescription,
+          keywords: page.keywords,
+          name: page.heroTitle,
+          schemaType: "Service",
+          ogType: "website",
+        }),
+      )
     }
   }
 
@@ -256,17 +284,33 @@ export function getPrerenderPageEntries() {
     for (const locale of ["fr", "en"]) {
       const page = getResourcePageContent(routeKey, locale)
 
-      entries.push({
-        routeKey,
-        locale,
-        path: routeCatalog[routeKey][locale],
-        title: page.seoTitle,
-        description: page.seoDescription,
-        keywords: page.keywords,
-        name: page.heroTitle,
-        schemaType: "Article",
-        ogType: "article",
-      })
+      entries.push(
+        createPageEntry(routeKey, locale, {
+          title: page.seoTitle,
+          description: page.seoDescription,
+          keywords: page.keywords,
+          name: page.heroTitle,
+          schemaType: "Article",
+          ogType: "article",
+        }),
+      )
+    }
+  }
+
+  for (const routeKey of blogRouteKeys) {
+    for (const locale of ["fr", "en"]) {
+      const page = getBlogPageContent(routeKey, locale)
+
+      entries.push(
+        createPageEntry(routeKey, locale, {
+          title: page.seoTitle,
+          description: page.seoDescription,
+          keywords: page.keywords,
+          name: page.heroTitle,
+          schemaType: "Article",
+          ogType: "article",
+        }),
+      )
     }
   }
 

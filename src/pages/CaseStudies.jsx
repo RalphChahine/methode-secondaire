@@ -25,6 +25,7 @@ import {
   getLocalizedPath,
   getOgLocale,
 } from "@/lib/i18n"
+import { getRobotsDirective } from "@/lib/searchIndexStrategy"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
 
 const contentByLocale = {
@@ -287,6 +288,7 @@ export default function CaseStudies() {
         locale={getOgLocale(locale)}
         alternateLocale={getAlternateOgLocale(locale)}
         alternates={buildAlternates("reussites")}
+        robots={getRobotsDirective("reussites")}
       />
 
       <div className="pointer-events-none absolute inset-0">

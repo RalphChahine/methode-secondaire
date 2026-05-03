@@ -1,6 +1,7 @@
 import { Link, useLocation } from "react-router-dom"
 import { ArrowRight, Compass, Sparkles } from "lucide-react"
 
+import BlogGridSection from "@/components/BlogGridSection"
 import KeywordIntentSection from "@/components/KeywordIntentSection"
 import LocalOpportunitySection from "@/components/LocalOpportunitySection"
 import MilestoneOpportunitySection from "@/components/MilestoneOpportunitySection"
@@ -152,6 +153,23 @@ export default function ResourcesHub() {
         </section>
 
         <ResourceGridSection locale={locale} className="pt-20" showHubLink={false} />
+
+        <BlogGridSection
+          locale={locale}
+          className="pt-20"
+          heading={{
+            eyebrow: locale === "en" ? "Research-backed blog" : "Blogue fonde sur la recherche",
+            title:
+              locale === "en"
+                ? "Articles built to reassure parents and attract stronger intent"
+                : "Des articles pensés pour rassurer les parents et attirer des recherches plus fortes",
+          }}
+          description={
+            locale === "en"
+              ? "Some families want advice, but many want proof. These articles connect scientific studies to real parent situations in math, science and homework."
+              : "Certaines familles veulent des conseils, mais beaucoup veulent aussi des preuves. Ces articles relient des études scientifiques à de vraies situations parentales en maths, en sciences et autour des devoirs."
+          }
+        />
 
         <KeywordIntentSection locale={locale} className="pt-20" />
 

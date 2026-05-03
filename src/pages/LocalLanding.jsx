@@ -21,6 +21,7 @@ import {
   getOgLocale,
   getRouteKeyFromPath,
 } from "@/lib/i18n"
+import { getRobotsDirective } from "@/lib/searchIndexStrategy"
 import { siteConfig } from "@/lib/seo"
 
 export default function LocalLanding({ forcedRouteKey }) {
@@ -29,6 +30,8 @@ export default function LocalLanding({ forcedRouteKey }) {
   const routeKey = forcedRouteKey || getRouteKeyFromPath(location.pathname)
   const page = localPageConfigs[routeKey]?.[locale]
   const path = getLocalizedPath(routeKey, locale)
+  const valuePoints = getLocalValuePoints(routeKey, page?.city, locale)
+  const decisionPoints = getLocalDecisionPoints(routeKey, locale)
 
   if (!page) {
     return (
@@ -127,6 +130,7 @@ export default function LocalLanding({ forcedRouteKey }) {
         locale={getOgLocale(locale)}
         alternateLocale={getAlternateOgLocale(locale)}
         alternates={buildAlternates(routeKey)}
+        robots={getRobotsDirective(routeKey)}
       />
 
       <div className="pointer-events-none absolute inset-0">
@@ -201,6 +205,53 @@ export default function LocalLanding({ forcedRouteKey }) {
                 : "Les familles veulent comprendre rapidement si l'accompagnement sera sérieux, clair et bien organisé. C'est exactement ce que cette page montre."}
             </div>
           </MotionCard>
+        </section>
+
+        <section className="pt-20">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.04] p-7 text-white">
+              <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
+                {locale === "en" ? "Why families choose this route" : "Pourquoi des familles choisissent ce format"}
+              </div>
+              <h2 className="mt-4 font-display text-3xl font-semibold">
+                {locale === "en"
+                  ? `What families in ${page.city} are really paying for`
+                  : `Ce que les familles de ${page.city} achètent vraiment`}
+              </h2>
+              <div className="mt-6 space-y-4 text-sm text-white/80">
+                {valuePoints.map((point) => (
+                  <div
+                    key={point}
+                    className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
+                  >
+                    <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                    {point}
+                  </div>
+                ))}
+              </div>
+            </MotionCard>
+
+            <MotionCard className="rounded-[32px] border-white/10 bg-[#091a3a]/85 p-7 text-white">
+              <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
+                {locale === "en" ? "Call or book?" : "Appeler ou réserver ?"}
+              </div>
+              <h2 className="mt-4 font-display text-3xl font-semibold">
+                {locale === "en"
+                  ? "The fastest next step depends on how clear the need already is"
+                  : "Le bon prochain pas dépend surtout du niveau de clarté du besoin"}
+              </h2>
+              <div className="mt-6 space-y-4 text-sm text-white/78">
+                {decisionPoints.map((point) => (
+                  <div
+                    key={point}
+                    className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
+                  >
+                    {point}
+                  </div>
+                ))}
+              </div>
+            </MotionCard>
+          </div>
         </section>
 
         <GuaranteeSection locale={locale} className="pt-20" />
@@ -286,4 +337,85 @@ function SectionHeader({ eyebrow, title, description }) {
       <p className="mt-4 text-base leading-8 text-white/72 sm:text-lg">{description}</p>
     </div>
   )
+}
+
+function getLocalValuePoints(routeKey, city, locale) {
+  const cityLabel = city || (locale === "en" ? "your area" : "votre secteur")
+
+  const map = {
+    montreal:
+      locale === "en"
+        ? [
+            "A faster decision between a one-time session, an exam sprint or a steadier weekly format.",
+            "A clearer plan for families who want serious math or science support in Montreal without guessing which format fits.",
+            "A better mix of flexibility, clarity and tutor matching before the student loses more time.",
+          ]
+        : [
+            "Un tri plus rapide entre séance ponctuelle, Sprint examen et accompagnement plus régulier.",
+            "Un plan plus clair pour les familles qui veulent une aide sérieuse en maths ou en sciences à Montréal sans réserver à l'aveugle.",
+            "Un meilleur équilibre entre flexibilité, clarté et bon choix de profil avant que l'élève perde encore du temps.",
+          ],
+    laval:
+      locale === "en"
+        ? [
+            "A simpler path for families in Laval who want clarity before adding more tutoring hours.",
+            "A better decision between online continuity, local availability and the right subject focus.",
+            "Support that helps the student regain structure instead of only reacting to the next test.",
+          ]
+        : [
+            "Un parcours plus simple pour les familles de Laval qui veulent d'abord de la clarté avant d'ajouter des heures.",
+            "Une meilleure décision entre continuité en ligne, disponibilité locale et vraie matière prioritaire.",
+            "Un accompagnement qui aide l'élève à retrouver une structure plutôt que de simplement réagir au prochain test.",
+          ],
+    quebecOnline:
+      locale === "en"
+        ? [
+            "Fast access across Quebec without waiting for a specific neighbourhood or travel slot.",
+            "A strong fit for families who want structure, continuity and easier scheduling around school life.",
+            "A clearer route for students who need math or science support now, even when the right local match is not nearby.",
+          ]
+        : [
+            "Un accès rapide partout au Québec sans dépendre d'un quartier précis ou d'un déplacement.",
+            "Un très bon format pour les familles qui veulent de la structure, de la continuité et une logistique plus légère.",
+            "Un chemin plus clair pour les élèves qui ont besoin d'aide en maths ou en sciences maintenant, même sans profil local immédiat.",
+          ],
+  }
+
+  return (
+    map[routeKey] ||
+    (locale === "en"
+      ? [
+          `A clearer tutoring decision for families in ${cityLabel}.`,
+          "A faster path between confusion, diagnosis and the right next step.",
+          "Support that creates structure instead of only adding another isolated hour.",
+        ]
+      : [
+          `Une décision plus claire pour les familles de ${cityLabel}.`,
+          "Un chemin plus rapide entre la confusion actuelle, le diagnostic et la bonne suite.",
+          "Un accompagnement qui crée une vraie structure au lieu d'ajouter seulement une heure isolée.",
+        ])
+  )
+}
+
+function getLocalDecisionPoints(routeKey, locale) {
+  const onlineSpecific =
+    routeKey === "quebecOnline"
+      ? locale === "en"
+        ? "If the main question is pace, grade level or whether online support will hold attention well enough, a short call usually saves time before booking."
+        : "Si la vraie question porte surtout sur le rythme, le niveau ou la capacité de l'élève à bien suivre en ligne, un court appel fait souvent gagner du temps avant de réserver."
+      : locale === "en"
+        ? "If the family is still comparing online support with local in-person options, a quick call helps choose the smartest format first."
+        : "Si la famille hésite encore entre un format en ligne et une option plus locale, un appel rapide aide à choisir le bon cadre avant tout."
+
+  return locale === "en"
+    ? [
+        "Book directly when the subject, chapter and urgency are already clear.",
+        "Call first when the student needs weekly follow-up, has several weak areas or the parent still cannot name the real block yet.",
+        onlineSpecific,
+      ]
+    : [
+        "Réservez directement quand la matière, le chapitre et l'urgence sont déjà bien identifiés.",
+        "Appelez d'abord quand l'élève a besoin d'un suivi hebdomadaire, de plusieurs ajustements ou que le parent n'arrive pas encore à nommer le vrai blocage.",
+        onlineSpecific,
+      ]
 }

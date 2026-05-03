@@ -28,6 +28,7 @@ import {
   getRouteKeyFromPath,
 } from "@/lib/i18n"
 import { getOfferPageConfig } from "@/lib/offerContent"
+import { getRobotsDirective } from "@/lib/searchIndexStrategy"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
 
 export default function OfferLanding({ forcedRouteKey }) {
@@ -60,6 +61,8 @@ export default function OfferLanding({ forcedRouteKey }) {
     (locale === "en"
       ? "These pages are the most natural next steps when a family is comparing one focused need with broader tutoring support."
       : "Ces pages sont les suites les plus naturelles quand une famille compare un besoin ciblé avec un accompagnement plus large.")
+  const valuePoints = getValuePoints(routeKey, locale)
+  const notFitPoints = getNotFitPoints(routeKey, locale)
 
   function openDiagnostic() {
     if (typeof window === "undefined") {
@@ -176,6 +179,7 @@ export default function OfferLanding({ forcedRouteKey }) {
         locale={getOgLocale(locale)}
         alternateLocale={getAlternateOgLocale(locale)}
         alternates={buildAlternates(routeKey)}
+        robots={getRobotsDirective(routeKey)}
       />
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -313,6 +317,53 @@ export default function OfferLanding({ forcedRouteKey }) {
           </div>
         </section>
 
+        <section className="pt-20">
+          <div className="grid gap-4 lg:grid-cols-2">
+            <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.04] p-7 text-white">
+              <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
+                {locale === "en" ? "Why families pay for this" : "Ce que les familles achetent vraiment"}
+              </div>
+              <h2 className="mt-4 font-display text-3xl font-semibold">
+                {locale === "en"
+                  ? "More than tutoring time"
+                  : "Plus qu'une simple heure de tutorat"}
+              </h2>
+              <div className="mt-6 space-y-4 text-sm text-white/80">
+                {valuePoints.map((point) => (
+                  <div
+                    key={point}
+                    className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
+                  >
+                    <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                    {point}
+                  </div>
+                ))}
+              </div>
+            </MotionCard>
+
+            <MotionCard className="rounded-[32px] border-white/10 bg-[#091a3a]/85 p-7 text-white">
+              <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
+                {locale === "en" ? "When another format is smarter" : "Quand un autre format est plus intelligent"}
+              </div>
+              <h2 className="mt-4 font-display text-3xl font-semibold">
+                {locale === "en"
+                  ? "Not every family needs the same next step"
+                  : "Toutes les familles n'ont pas besoin du meme prochain pas"}
+              </h2>
+              <div className="mt-6 space-y-4 text-sm text-white/78">
+                {notFitPoints.map((point) => (
+                  <div
+                    key={point}
+                    className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
+                  >
+                    {point}
+                  </div>
+                ))}
+              </div>
+            </MotionCard>
+          </div>
+        </section>
+
         <VerifiedReviewsSection locale={locale} className="pt-20" limit={3} showLink />
         <GuaranteeSection locale={locale} className="pt-20" />
         <AiDiagnosticSection locale={locale} className="pt-20" />
@@ -436,5 +487,165 @@ function SectionHeader({ eyebrow, title, description }) {
       </h2>
       {description ? <p className="mt-4 text-base leading-8 text-white/72 sm:text-lg">{description}</p> : null}
     </div>
+  )
+}
+
+function getValuePoints(routeKey, locale) {
+  const map = {
+    examSprint:
+      locale === "en"
+        ? [
+            "A shorter path from confusion to clear priorities before the exam.",
+            "A calmer revision plan built around what matters most now.",
+            "Clearer decisions about what to review, what to skip and when to book again.",
+          ]
+        : [
+            "Un chemin plus court entre la confusion actuelle et des priorites claires avant l'examen.",
+            "Un plan de revision plus calme, construit autour de ce qui compte vraiment maintenant.",
+            "De meilleures decisions sur quoi revoir, quoi laisser de cote et quand reprendre une seance.",
+          ],
+    weeklyFollowUp:
+      locale === "en"
+        ? [
+            "Continuity from week to week instead of restarting from zero each time.",
+            "A clearer rhythm for homework, tests and recurring weak points.",
+            "Support that protects confidence before the school year becomes heavier.",
+          ]
+        : [
+            "De la continuite d'une semaine a l'autre au lieu de repartir de zero chaque fois.",
+            "Un rythme plus clair entre devoirs, evaluations et difficultes qui reviennent.",
+            "Un accompagnement qui protege la confiance avant que l'annee devienne trop lourde.",
+          ],
+    ministerialExamSec4:
+      locale === "en"
+        ? [
+            "A more strategic review than simply replaying the whole course.",
+            "A sharper method for Secondary 4 questions that really matter.",
+            "Clearer exam priorities before time and stress take over.",
+          ]
+        : [
+            "Une revision plus strategique que le simple fait de refaire tout le cours.",
+            "Une methode plus nette pour les questions de secondaire 4 qui comptent vraiment.",
+            "Des priorites d'examen plus claires avant que le temps et le stress prennent toute la place.",
+          ],
+    entryToSecondary:
+      locale === "en"
+        ? [
+            "A transition plan that secures the basics before the first weeks drift.",
+            "More structure around work habits, math foundations and confidence.",
+            "A better decision between summer prep, targeted reset and steady follow-up.",
+          ]
+        : [
+            "Un plan de transition qui securise les bases avant que les premieres semaines se brouillent.",
+            "Plus de structure autour des habitudes de travail, des bases en maths et de la confiance.",
+            "Une meilleure decision entre preparation d'ete, remise a niveau ciblee et suivi plus regulier.",
+          ],
+    summerSupportSecondary:
+      locale === "en"
+        ? [
+            "A summer plan that creates real academic ground instead of vague good intentions.",
+            "Better choices between retake prep, catch-up work and getting ahead.",
+            "A stronger bridge into September with less improvisation.",
+          ]
+        : [
+            "Un plan d'ete qui cree une vraie base au lieu de simples bonnes intentions floues.",
+            "De meilleures decisions entre reprise, rattrapage et prise d'avance.",
+            "Un meilleur pont vers la rentree avec moins d'improvisation.",
+          ],
+  }
+
+  return (
+    map[routeKey] ||
+    (locale === "en"
+      ? [
+          "A clearer diagnosis of the real academic need.",
+          "More structure around the next step instead of random tutoring hours.",
+          "Support that helps the family decide faster and with less guesswork.",
+        ]
+      : [
+          "Un diagnostic plus clair du vrai besoin scolaire.",
+          "Plus de structure autour de la prochaine etape plutot que des heures ajoutees au hasard.",
+          "Un accompagnement qui aide la famille a decider plus vite et avec moins d'hesitation.",
+        ])
+  )
+}
+
+function getNotFitPoints(routeKey, locale) {
+  const map = {
+    examSprint:
+      locale === "en"
+        ? [
+            "If the issue has been building for months across several subjects, weekly follow-up is often smarter than a pure sprint.",
+            "If the family still cannot name the real problem, a short call should come before direct booking.",
+            "If the student needs long-term method rebuilding, one urgent session will not carry the whole year alone.",
+          ]
+        : [
+            "Si le probleme s'accumule depuis des mois dans plusieurs matieres, un suivi hebdomadaire est souvent plus intelligent qu'un pur sprint.",
+            "Si la famille ne sait pas encore nommer le vrai probleme, un court appel devrait venir avant la reservation directe.",
+            "Si l'eleve a besoin de reconstruire sa methode sur le long terme, une seule seance urgente ne portera pas toute l'annee.",
+          ],
+    weeklyFollowUp:
+      locale === "en"
+        ? [
+            "If the need is extremely urgent and the chapter is already well identified, a focused booked session can be faster first.",
+            "If the family mainly wants a one-off review before a nearby test, the Exam sprint format may fit better.",
+            "If the student is already stable and only needs one quick clarification, a full recurring plan may be too much.",
+          ]
+        : [
+            "Si le besoin est tres urgent et que le chapitre est deja bien identifie, une seance ciblee reservee directement peut aller plus vite.",
+            "Si la famille veut surtout une revision ponctuelle avant un examen proche, le format Sprint examen peut mieux convenir.",
+            "Si l'eleve est deja stable et a seulement besoin d'une clarification rapide, un vrai suivi regulier peut etre trop large.",
+          ],
+    ministerialExamSec4:
+      locale === "en"
+        ? [
+            "If the date is still far away and the issue is broader than the exam itself, weekly support may help more.",
+            "If the family is mostly worried about the transition into the next grade, a broader catch-up or summer plan may fit better.",
+            "If the chapters are still unknown, call first so the review plan is not built on guesswork.",
+          ]
+        : [
+            "Si l'echeance est encore loin et que le probleme depasse l'examen lui-meme, un suivi plus regulier peut aider davantage.",
+            "Si l'inquietude concerne surtout la transition vers l'annee suivante, une remise a niveau plus large ou un plan d'ete peut mieux convenir.",
+            "Si les chapitres restent flous, il vaut mieux appeler d'abord pour ne pas construire la revision sur des suppositions.",
+          ],
+    entryToSecondary:
+      locale === "en"
+        ? [
+            "If the family already has a very precise math chapter to fix, a targeted session may be enough first.",
+            "If the student is already in the middle of the year with recurring problems, weekly follow-up may be more useful than a transition page.",
+            "If the true goal is summer retake preparation, the summer support format is usually a better fit.",
+          ]
+        : [
+            "Si la famille a deja un chapitre de maths tres precis a corriger, une seance ciblee peut suffire comme premier pas.",
+            "Si l'eleve est deja bien entre dans l'annee avec des difficultes recurrentes, un suivi hebdomadaire peut etre plus utile qu'une page de transition.",
+            "Si le vrai besoin est une reprise ou un rattrapage d'ete, le format cours d'ete sera souvent plus adapte.",
+          ],
+    summerSupportSecondary:
+      locale === "en"
+        ? [
+            "If the exam is very close right now, summer support is too broad and an Exam sprint is usually faster.",
+            "If the student already needs continuity during the school year, weekly follow-up may be the stronger frame.",
+            "If the family is unsure whether the problem is transition, retake or catch-up, calling first is smarter than booking blindly.",
+          ]
+        : [
+            "Si l'examen est tres proche maintenant, le format d'ete est trop large et un Sprint examen est souvent plus rapide.",
+            "Si l'eleve a deja besoin de continuite pendant l'annee, le suivi hebdomadaire sera souvent plus fort.",
+            "Si la famille hesite entre transition, reprise ou rattrapage, appeler d'abord est plus intelligent que reserver a l'aveugle.",
+          ],
+  }
+
+  return (
+    map[routeKey] ||
+    (locale === "en"
+      ? [
+          "If the need is still blurry, calling first often saves time.",
+          "If the issue is broader than one chapter or one exam, a wider follow-up format may help more.",
+          "If the family mostly needs reassurance about direction, the diagnostic is often the best first move.",
+        ]
+      : [
+          "Si le besoin reste flou, appeler d'abord fait souvent gagner du temps.",
+          "Si le probleme depasse un chapitre ou un examen, un format de suivi plus large peut aider davantage.",
+          "Si la famille a surtout besoin d'etre rassuree sur la direction a prendre, le diagnostic est souvent le meilleur premier pas.",
+        ])
   )
 }

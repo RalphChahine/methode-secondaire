@@ -5,6 +5,8 @@ import SiteLayout from "@/layouts/SiteLayout"
 
 const Accueil = lazy(() => import("@/pages/Accueil"))
 const AccueilEn = lazy(() => import("@/pages/AccueilEn"))
+const BlogArticle = lazy(() => import("@/pages/BlogArticle"))
+const BlogHub = lazy(() => import("@/pages/BlogHub"))
 const CaseStudies = lazy(() => import("@/pages/CaseStudies"))
 const DevenirTuteur = lazy(() => import("@/pages/DevenirTuteur"))
 const LocalLanding = lazy(() => import("@/pages/LocalLanding"))
@@ -146,6 +148,20 @@ export default function App() {
             />
             <Route path="/ressources" element={<ResourcesHub />} />
             <Route path="/en/resources" element={<ResourcesHub />} />
+            <Route path="/blogue" element={<BlogHub />} />
+            <Route path="/en/blog" element={<BlogHub />} />
+            <Route path="/blogue/anxiete-maths-secondaire-recherche" element={<BlogArticle />} />
+            <Route path="/en/blog/math-anxiety-high-school-research" element={<BlogArticle />} />
+            <Route path="/blogue/recherche-tutorat-prive-secondaire" element={<BlogArticle />} />
+            <Route path="/en/blog/tutoring-research-high-school" element={<BlogArticle />} />
+            <Route path="/blogue/aide-aux-devoirs-recherche" element={<BlogArticle />} />
+            <Route path="/en/blog/homework-help-research" element={<BlogArticle />} />
+            <Route path="/blogue/revision-maths-pratique-espacee" element={<BlogArticle />} />
+            <Route path="/en/blog/spaced-practice-math-revision" element={<BlogArticle />} />
+            <Route path="/blogue/ecrire-pour-mieux-apprendre-en-sciences" element={<BlogArticle />} />
+            <Route path="/en/blog/writing-to-learn-science" element={<BlogArticle />} />
+            <Route path="/blogue/parents-aider-sans-mettre-de-pression" element={<BlogArticle />} />
+            <Route path="/en/blog/parent-support-without-pressure" element={<BlogArticle />} />
             <Route path="/ressources/preparation-examen-maths-secondaire" element={<ResourceArticle />} />
             <Route path="/en/resources/high-school-math-exam-prep" element={<ResourceArticle />} />
             <Route path="/ressources/preparation-examen-sciences-secondaire" element={<ResourceArticle />} />

@@ -25,6 +25,7 @@ import {
 
 import BookingEmbed from "@/components/BookingEmbed"
 import AiDiagnosticSection from "@/components/AiDiagnosticSection"
+import BlogGridSection from "@/components/BlogGridSection"
 import DecisionPathwaysSection from "@/components/DecisionPathwaysSection"
 import {
   GuaranteeSection,
@@ -804,6 +805,17 @@ export default function Accueil() {
             title: "Des ressources pensées pour les vraies urgences parentales",
           }}
             description="Examen qui approche, secondaire 4 qui bascule, retard qui s'accumule : ces pages répondent à des recherches précises juste avant qu'une famille appelle ou réserve."
+        />
+
+        <BlogGridSection
+          locale="fr"
+          className="pt-20"
+          routeKeys={["blogMathAnxiety", "blogHomeworkResearch", "blogTutoringEvidence"]}
+          heading={{
+            eyebrow: "Blogue recherche",
+            title: "Des articles plus solides que du simple contenu SEO",
+          }}
+          description="Des articles qui relient des études à de vraies questions de parents : blocages en maths, devoirs, tutorat, stress et progression."
         />
 
         <KeywordIntentSection locale="fr" className="pt-20" />

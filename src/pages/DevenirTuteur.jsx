@@ -26,6 +26,7 @@ import {
   getRouteKeyFromPath,
   getOgLocale,
 } from "@/lib/i18n"
+import { getRobotsDirective } from "@/lib/searchIndexStrategy"
 import { siteConfig } from "@/lib/seo"
 
 const contentByLocale = {
@@ -527,6 +528,7 @@ export default function DevenirTuteur({ forcedRouteKey }) {
         locale={getOgLocale(locale)}
         alternateLocale={getAlternateOgLocale(locale)}
         alternates={buildAlternates(routeKey)}
+        robots={getRobotsDirective(routeKey)}
       />
 
       <div className="pointer-events-none absolute inset-0">

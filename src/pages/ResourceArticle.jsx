@@ -24,6 +24,7 @@ import {
   getRouteKeyFromPath,
 } from "@/lib/i18n"
 import { getResourcePageContent, resourceRouteKeys } from "@/lib/resourceContent"
+import { getRobotsDirective } from "@/lib/searchIndexStrategy"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
 
 const serviceRouteByResource = {
@@ -171,6 +172,7 @@ export default function ResourceArticle() {
         locale={getOgLocale(locale)}
         alternateLocale={getAlternateOgLocale(locale)}
         alternates={buildAlternates(routeKey)}
+        robots={getRobotsDirective(routeKey)}
       />
 
       <div className="pointer-events-none absolute inset-0">

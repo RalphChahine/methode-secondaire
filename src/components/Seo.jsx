@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 
+import { INDEX_ROBOTS } from "@/lib/searchIndexStrategy"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
 
 function upsertMeta(attribute, key, content) {
@@ -42,6 +43,7 @@ export default function Seo({
   locale = siteConfig.locale,
   alternateLocale,
   alternates = [],
+  robots = INDEX_ROBOTS,
 }) {
   const canonicalUrl = absoluteUrl(path)
   const imageUrl = image.startsWith("http") ? image : absoluteUrl(image)
@@ -56,7 +58,7 @@ export default function Seo({
     upsertMeta(
       "name",
       "robots",
-      "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+      robots,
     )
     upsertMeta("name", "theme-color", "#071631")
 
@@ -121,6 +123,7 @@ export default function Seo({
     locale,
     title,
     type,
+    robots,
   ])
 
   return null

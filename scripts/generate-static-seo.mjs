@@ -105,6 +105,7 @@ function personalizeHtml(baseHtml, page) {
   html = setTitle(html, page.title)
   html = setMetaByName(html, "description", page.description)
   html = setMetaByName(html, "keywords", page.keywords)
+  html = setMetaByName(html, "robots", page.robots)
   html = setMetaByProperty(html, "og:type", page.ogType || "website")
   html = setMetaByProperty(html, "og:title", page.title)
   html = setMetaByProperty(html, "og:description", page.description)
@@ -142,6 +143,7 @@ async function writePageHtml(page, baseHtml) {
 
 function buildSitemap(pages) {
   const urls = pages
+    .filter((page) => page.includeInSitemap !== false)
     .map(
       (page) => `  <url>
     <loc>${escapeHtml(absoluteUrl(page.path))}</loc>

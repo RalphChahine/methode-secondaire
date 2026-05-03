@@ -68,6 +68,31 @@ export const routeCatalog = {
     en: "/en/high-school-tutor-jobs-quebec",
   },
   resourcesHub: { fr: "/ressources", en: "/en/resources" },
+  blogHub: { fr: "/blogue", en: "/en/blog" },
+  blogMathAnxiety: {
+    fr: "/blogue/anxiete-maths-secondaire-recherche",
+    en: "/en/blog/math-anxiety-high-school-research",
+  },
+  blogTutoringEvidence: {
+    fr: "/blogue/recherche-tutorat-prive-secondaire",
+    en: "/en/blog/tutoring-research-high-school",
+  },
+  blogHomeworkResearch: {
+    fr: "/blogue/aide-aux-devoirs-recherche",
+    en: "/en/blog/homework-help-research",
+  },
+  blogSpacingMath: {
+    fr: "/blogue/revision-maths-pratique-espacee",
+    en: "/en/blog/spaced-practice-math-revision",
+  },
+  blogScienceWriting: {
+    fr: "/blogue/ecrire-pour-mieux-apprendre-en-sciences",
+    en: "/en/blog/writing-to-learn-science",
+  },
+  blogParentSupport: {
+    fr: "/blogue/parents-aider-sans-mettre-de-pression",
+    en: "/en/blog/parent-support-without-pressure",
+  },
   mathExamPrep: {
     fr: "/ressources/preparation-examen-maths-secondaire",
     en: "/en/resources/high-school-math-exam-prep",
