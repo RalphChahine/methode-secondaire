@@ -4,7 +4,11 @@ import { getOfferPageConfig, offerRouteKeys } from "./offerContent.js"
 import { getResourcePageContent, resourceHubCopyByLocale, resourceRouteKeys } from "./resourceContent.js"
 import { routeCatalog } from "./routes.js"
 import { getRobotsDirective, shouldIncludeInSitemap } from "./searchIndexStrategy.js"
-import { getSecondary4MathTheoryContent } from "./secondary4MathTheoryContent.js"
+import {
+  getSecondary4MathConceptPage,
+  getSecondary4MathTheoryContent,
+  secondary4MathConceptRouteKeys,
+} from "./secondary4MathTheoryContent.js"
 
 function createPageEntry(routeKey, locale, payload) {
   return {
@@ -326,6 +330,23 @@ export function getPrerenderPageEntries() {
           description: page.seoDescription,
           keywords: page.keywords,
           name: page.heroTitle,
+          schemaType: "Article",
+          ogType: "article",
+        }),
+      )
+    }
+  }
+
+  for (const routeKey of secondary4MathConceptRouteKeys) {
+    for (const locale of ["fr", "en"]) {
+      const page = getSecondary4MathConceptPage(routeKey, locale)
+
+      entries.push(
+        createPageEntry(routeKey, locale, {
+          title: page.seoTitle,
+          description: page.seoDescription,
+          keywords: page.seoKeywords,
+          name: page.title,
           schemaType: "Article",
           ogType: "article",
         }),

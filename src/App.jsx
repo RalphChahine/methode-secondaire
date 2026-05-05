@@ -2,6 +2,7 @@ import { Suspense, lazy } from "react"
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom"
 
 import SiteLayout from "@/layouts/SiteLayout"
+import { secondary4MathConceptPages } from "@/lib/secondary4MathTheoryContent"
 
 const Accueil = lazy(() => import("@/pages/Accueil"))
 const AccueilEn = lazy(() => import("@/pages/AccueilEn"))
@@ -15,6 +16,7 @@ const OfferLanding = lazy(() => import("@/pages/OfferLanding"))
 const ResourceArticle = lazy(() => import("@/pages/ResourceArticle"))
 const ResourcesHub = lazy(() => import("@/pages/ResourcesHub"))
 const Secondary4MathTheory = lazy(() => import("@/pages/Secondary4MathTheory"))
+const Secondary4MathConcept = lazy(() => import("@/pages/Secondary4MathConcept"))
 const Sciences = lazy(() => import("@/pages/Sciences"))
 const Temoignages = lazy(() => import("@/pages/Temoignages"))
 const Tuteurs = lazy(() => import("@/pages/Tuteurs"))
@@ -133,6 +135,12 @@ export default function App() {
             />
             <Route path="/theorie-maths-secondaire-4" element={<Secondary4MathTheory />} />
             <Route path="/en/secondary-4-math-theory" element={<Secondary4MathTheory />} />
+            {secondary4MathConceptPages.map((page) => (
+              <Route key={page.routeKey} path={page.frPath} element={<Secondary4MathConcept />} />
+            ))}
+            {secondary4MathConceptPages.map((page) => (
+              <Route key={`${page.routeKey}-en`} path={page.enPath} element={<Secondary4MathConcept />} />
+            ))}
             <Route
               path="/preparation-examen-ministere-secondaire-4"
               element={<OfferLanding forcedRouteKey="ministerialExamSec4" />}

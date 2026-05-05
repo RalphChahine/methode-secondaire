@@ -1,5 +1,241 @@
 export const secondary4MathTheoryRouteKey = "secondary4MathTheory"
 
+export const secondary4MathConceptPages = [
+  {
+    routeKey: "sec4CstExponentNotation",
+    sequenceKey: "cst",
+    moduleIndex: 0,
+    frPath: "/theorie-maths-secondaire-4/notation-exponentielle",
+    enPath: "/en/secondary-4-math-theory/exponential-notation",
+  },
+  {
+    routeKey: "sec4CstQuadratic",
+    sequenceKey: "cst",
+    moduleIndex: 1,
+    frPath: "/theorie-maths-secondaire-4/fonction-quadratique",
+    enPath: "/en/secondary-4-math-theory/quadratic-function",
+  },
+  {
+    routeKey: "sec4CstExponential",
+    sequenceKey: "cst",
+    moduleIndex: 2,
+    frPath: "/theorie-maths-secondaire-4/fonction-exponentielle",
+    enPath: "/en/secondary-4-math-theory/exponential-function",
+  },
+  {
+    routeKey: "sec4CstPeriodic",
+    sequenceKey: "cst",
+    moduleIndex: 3,
+    frPath: "/theorie-maths-secondaire-4/fonctions-periodiques",
+    enPath: "/en/secondary-4-math-theory/periodic-functions",
+  },
+  {
+    routeKey: "sec4CstStepFunction",
+    sequenceKey: "cst",
+    moduleIndex: 4,
+    frPath: "/theorie-maths-secondaire-4/fonction-en-escalier",
+    enPath: "/en/secondary-4-math-theory/step-function",
+  },
+  {
+    routeKey: "sec4CstPiecewise",
+    sequenceKey: "cst",
+    moduleIndex: 5,
+    frPath: "/theorie-maths-secondaire-4/fonction-definie-par-parties",
+    enPath: "/en/secondary-4-math-theory/piecewise-function",
+  },
+  {
+    routeKey: "sec4CstSystems",
+    sequenceKey: "cst",
+    moduleIndex: 6,
+    frPath: "/theorie-maths-secondaire-4/systemes-equations",
+    enPath: "/en/secondary-4-math-theory/systems-of-equations",
+  },
+  {
+    routeKey: "sec4CstRightTriangleTrig",
+    sequenceKey: "cst",
+    moduleIndex: 7,
+    frPath: "/theorie-maths-secondaire-4/trigonometrie-triangle-rectangle",
+    enPath: "/en/secondary-4-math-theory/right-triangle-trigonometry",
+  },
+  {
+    routeKey: "sec4CstSineHeron",
+    sequenceKey: "cst",
+    moduleIndex: 8,
+    frPath: "/theorie-maths-secondaire-4/loi-sinus-formule-heron",
+    enPath: "/en/secondary-4-math-theory/sine-law-heron-formula",
+  },
+  {
+    routeKey: "sec4CstSimilarityProof",
+    sequenceKey: "cst",
+    moduleIndex: 9,
+    frPath: "/theorie-maths-secondaire-4/similitude-isometrie-demonstration",
+    enPath: "/en/secondary-4-math-theory/similarity-congruence-proof",
+  },
+  {
+    routeKey: "sec4CstLineEquations",
+    sequenceKey: "cst",
+    moduleIndex: 10,
+    frPath: "/theorie-maths-secondaire-4/equations-droites-positions-relatives",
+    enPath: "/en/secondary-4-math-theory/line-equations-relative-position",
+  },
+  {
+    routeKey: "sec4CstDistanceCorrelation",
+    sequenceKey: "cst",
+    moduleIndex: 11,
+    frPath: "/theorie-maths-secondaire-4/distance-correlation-regression",
+    enPath: "/en/secondary-4-math-theory/distance-correlation-regression",
+  },
+  {
+    routeKey: "sec4TsAlgebraExpressions",
+    sequenceKey: "ts",
+    moduleIndex: 0,
+    frPath: "/theorie-maths-secondaire-4/expressions-algebriques-ts",
+    enPath: "/en/secondary-4-math-theory/algebraic-expressions-ts",
+  },
+  {
+    routeKey: "sec4TsFactoring",
+    sequenceKey: "ts",
+    moduleIndex: 1,
+    frPath: "/theorie-maths-secondaire-4/factorisation-ts",
+    enPath: "/en/secondary-4-math-theory/factoring-ts",
+  },
+  {
+    routeKey: "sec4TsRationalExpressions",
+    sequenceKey: "ts",
+    moduleIndex: 2,
+    frPath: "/theorie-maths-secondaire-4/expressions-rationnelles-ts",
+    enPath: "/en/secondary-4-math-theory/rational-expressions-ts",
+  },
+  {
+    routeKey: "sec4TsEquationsInequalities",
+    sequenceKey: "ts",
+    moduleIndex: 3,
+    frPath: "/theorie-maths-secondaire-4/equations-inequations-ts",
+    enPath: "/en/secondary-4-math-theory/equations-inequalities-ts",
+  },
+  {
+    routeKey: "sec4TsSystems",
+    sequenceKey: "ts",
+    moduleIndex: 4,
+    frPath: "/theorie-maths-secondaire-4/systemes-equations-ts",
+    enPath: "/en/secondary-4-math-theory/systems-ts",
+  },
+  {
+    routeKey: "sec4TsQuadratic",
+    sequenceKey: "ts",
+    moduleIndex: 5,
+    frPath: "/theorie-maths-secondaire-4/fonction-quadratique-ts",
+    enPath: "/en/secondary-4-math-theory/quadratic-function-ts",
+  },
+  {
+    routeKey: "sec4TsSquareRoot",
+    sequenceKey: "ts",
+    moduleIndex: 6,
+    frPath: "/theorie-maths-secondaire-4/fonction-racine-carree",
+    enPath: "/en/secondary-4-math-theory/square-root-function",
+  },
+  {
+    routeKey: "sec4TsExpLog",
+    sequenceKey: "ts",
+    moduleIndex: 7,
+    frPath: "/theorie-maths-secondaire-4/fonctions-exponentielles-logarithmiques",
+    enPath: "/en/secondary-4-math-theory/exponential-logarithmic-functions",
+  },
+  {
+    routeKey: "sec4TsPiecewiseInteger",
+    sequenceKey: "ts",
+    moduleIndex: 8,
+    frPath: "/theorie-maths-secondaire-4/fonction-partie-entiere-ts",
+    enPath: "/en/secondary-4-math-theory/greatest-integer-piecewise-ts",
+  },
+  {
+    routeKey: "sec4TsTrigAreaProof",
+    sequenceKey: "ts",
+    moduleIndex: 9,
+    frPath: "/theorie-maths-secondaire-4/trigonometrie-aire-demonstration-ts",
+    enPath: "/en/secondary-4-math-theory/trigonometry-area-proof-ts",
+  },
+  {
+    routeKey: "sec4TsAnalyticStats",
+    sequenceKey: "ts",
+    moduleIndex: 10,
+    frPath: "/theorie-maths-secondaire-4/geometrie-analytique-statistiques-ts",
+    enPath: "/en/secondary-4-math-theory/analytic-geometry-statistics-ts",
+  },
+  {
+    routeKey: "sec4SnAlgebraExpressions",
+    sequenceKey: "sn",
+    moduleIndex: 0,
+    frPath: "/theorie-maths-secondaire-4/expressions-algebriques-sn",
+    enPath: "/en/secondary-4-math-theory/algebraic-expressions-sn",
+  },
+  {
+    routeKey: "sec4SnFactoring",
+    sequenceKey: "sn",
+    moduleIndex: 1,
+    frPath: "/theorie-maths-secondaire-4/factorisation-sn",
+    enPath: "/en/secondary-4-math-theory/factoring-sn",
+  },
+  {
+    routeKey: "sec4SnRationalExpressions",
+    sequenceKey: "sn",
+    moduleIndex: 2,
+    frPath: "/theorie-maths-secondaire-4/expressions-rationnelles-sn",
+    enPath: "/en/secondary-4-math-theory/rational-expressions-sn",
+  },
+  {
+    routeKey: "sec4SnEquationsInequalities",
+    sequenceKey: "sn",
+    moduleIndex: 3,
+    frPath: "/theorie-maths-secondaire-4/equations-inequations-sn",
+    enPath: "/en/secondary-4-math-theory/equations-inequalities-sn",
+  },
+  {
+    routeKey: "sec4SnParametersFunctions",
+    sequenceKey: "sn",
+    moduleIndex: 4,
+    frPath: "/theorie-maths-secondaire-4/parametres-proprietes-fonctions-sn",
+    enPath: "/en/secondary-4-math-theory/parameters-function-properties-sn",
+  },
+  {
+    routeKey: "sec4SnQuadraticInteger",
+    sequenceKey: "sn",
+    moduleIndex: 5,
+    frPath: "/theorie-maths-secondaire-4/fonction-quadratique-partie-entiere-sn",
+    enPath: "/en/secondary-4-math-theory/quadratic-greatest-integer-sn",
+  },
+  {
+    routeKey: "sec4SnTrianglesSolids",
+    sequenceKey: "sn",
+    moduleIndex: 6,
+    frPath: "/theorie-maths-secondaire-4/triangles-semblables-solides-equivalents-sn",
+    enPath: "/en/secondary-4-math-theory/similar-triangles-equivalent-solids-sn",
+  },
+  {
+    routeKey: "sec4SnMetricTrig",
+    sequenceKey: "sn",
+    moduleIndex: 7,
+    frPath: "/theorie-maths-secondaire-4/relations-metriques-trigonometrie-sn",
+    enPath: "/en/secondary-4-math-theory/metric-relations-trigonometry-sn",
+  },
+  {
+    routeKey: "sec4SnSineCosineLaw",
+    sequenceKey: "sn",
+    moduleIndex: 8,
+    frPath: "/theorie-maths-secondaire-4/loi-sinus-loi-cosinus-sn",
+    enPath: "/en/secondary-4-math-theory/sine-law-cosine-law-sn",
+  },
+  {
+    routeKey: "sec4SnAnalyticStats",
+    sequenceKey: "sn",
+    moduleIndex: 9,
+    frPath: "/theorie-maths-secondaire-4/geometrie-analytique-statistiques-sn",
+    enPath: "/en/secondary-4-math-theory/analytic-geometry-statistics-sn",
+  },
+]
+
+export const secondary4MathConceptRouteKeys = secondary4MathConceptPages.map((page) => page.routeKey)
+
 const frSequences = [
   {
     key: "cst",
@@ -1130,4 +1366,95 @@ const contentByLocale = {
 
 export function getSecondary4MathTheoryContent(locale) {
   return contentByLocale[locale] ?? contentByLocale.fr
+}
+
+function getConceptDefinition(routeKey) {
+  return secondary4MathConceptPages.find((page) => page.routeKey === routeKey) ?? null
+}
+
+export function getSecondary4MathConceptRouteKey(sequenceKey, moduleIndex) {
+  return (
+    secondary4MathConceptPages.find(
+      (page) => page.sequenceKey === sequenceKey && page.moduleIndex === moduleIndex,
+    )?.routeKey ?? null
+  )
+}
+
+export function getSecondary4MathConceptPage(routeKey, locale) {
+  const definition = getConceptDefinition(routeKey)
+
+  if (!definition) {
+    return null
+  }
+
+  const theory = getSecondary4MathTheoryContent(locale)
+  const sequence = theory.sequences.find((item) => item.key === definition.sequenceKey)
+  const module = sequence?.modules?.[definition.moduleIndex]
+
+  if (!sequence || !module) {
+    return null
+  }
+
+  const relatedRouteKeys = secondary4MathConceptPages
+    .filter(
+      (page) =>
+        page.sequenceKey === definition.sequenceKey &&
+        page.routeKey !== routeKey &&
+        Math.abs(page.moduleIndex - definition.moduleIndex) <= 2,
+    )
+    .slice(0, 3)
+    .map((page) => page.routeKey)
+
+  const isEnglish = locale === "en"
+  const pageTitle = isEnglish
+    ? `${module.title} | Secondary 4 Math Theory`
+    : `${module.title} | Théorie maths secondaire 4`
+
+  const pageDescription = isEnglish
+    ? `${module.title} in Secondary 4 math: clear theory, key ideas, frequent traps and focused help when students get stuck in ${sequence.label}.`
+    : `${module.title} en maths secondaire 4 : théorie claire, idées essentielles, pièges fréquents et aide ciblée quand un élève bloque en ${sequence.label}.`
+
+  const pageKeywords = isEnglish
+    ? `${module.title.toLowerCase()} secondary 4, ${sequence.label.toLowerCase()} math theory, secondary 4 math theory, ${module.title.toLowerCase()} quebec`
+    : `${module.title.toLowerCase()} secondaire 4, théorie ${module.title.toLowerCase()}, maths secondaire 4 ${sequence.label.toLowerCase()}, notion maths secondaire 4`
+
+  return {
+    routeKey,
+    sequenceKey: definition.sequenceKey,
+    sequenceLabel: sequence.label,
+    sequenceTitle: sequence.title,
+    title: module.title,
+    lead: module.lead,
+    essentials: module.essentials,
+    pitfalls: module.pitfalls,
+    relatedRouteKeys,
+    seoTitle: pageTitle,
+    seoDescription: pageDescription,
+    seoKeywords: pageKeywords,
+    heroEyebrow: isEnglish ? `${sequence.label} • Detailed theory` : `${sequence.label} • Théorie détaillée`,
+    heroTitle: isEnglish
+      ? `${module.title}: what students need to understand in Secondary 4`
+      : `${module.title} : ce qu’un élève doit vraiment comprendre en secondaire 4`,
+    heroText: module.lead,
+    understandTitle: isEnglish ? "What to understand first" : "Ce qu’il faut comprendre d’abord",
+    trapTitle: isEnglish ? "What traps students most" : "Ce qui piège le plus souvent",
+    useItTitle: isEnglish ? "When this concept shows up" : "Quand cette notion revient",
+    useItPoints: isEnglish
+      ? [
+          "In homework where the correct tool is not obvious at first glance.",
+          "In chapter tests where method choice matters more than speed.",
+          "In review weeks where similar-looking notions start blending together.",
+        ]
+      : [
+          "Dans des devoirs où l’outil à choisir n’est pas évident au premier regard.",
+          "Dans des tests de chapitre où le choix de méthode compte plus que la vitesse.",
+          "Dans les semaines de révision où des notions proches commencent à se mélanger.",
+        ],
+    reserveTitle: isEnglish ? "When a focused session helps on this exact notion" : "Quand une séance ciblée aide vraiment sur cette notion",
+    reserveText: isEnglish
+      ? "If the student recognizes the chapter name but still cannot launch the right approach alone, one targeted session often saves more time than several hours of scattered practice."
+      : "Si l’élève reconnaît le nom du chapitre mais n’arrive toujours pas à lancer la bonne démarche seul, une séance ciblée fait souvent gagner plus de temps que plusieurs heures de pratique éparpillée.",
+    reserveButton: theory.moduleReserveCta,
+    examButton: theory.moduleExamCta,
+  }
 }

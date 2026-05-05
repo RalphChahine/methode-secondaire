@@ -24,6 +24,7 @@ import {
 } from "@/lib/i18n"
 import {
   getSecondary4MathTheoryContent,
+  getSecondary4MathConceptRouteKey,
   secondary4MathTheoryRouteKey,
 } from "@/lib/secondary4MathTheoryContent"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
@@ -189,7 +190,10 @@ export default function Secondary4MathTheory() {
                 </MotionCard>
 
                 <div className="grid gap-4 md:grid-cols-2">
-                  {sequence.modules.map((module) => (
+                  {sequence.modules.map((module, moduleIndex) => {
+                    const conceptRouteKey = getSecondary4MathConceptRouteKey(sequence.key, moduleIndex)
+
+                    return (
                     <MotionCard
                       key={module.title}
                       className="rounded-[28px] border-white/10 bg-[#091a3a]/88 p-6 text-white"
@@ -239,9 +243,18 @@ export default function Secondary4MathTheory() {
                         >
                           {copy.moduleExamCta}
                         </Link>
+                        {conceptRouteKey && (
+                          <Link
+                            to={getLocalizedPath(conceptRouteKey, locale)}
+                            className="rounded-full border border-white/12 bg-white/6 px-4 py-2 text-xs font-medium text-white/86 transition hover:bg-white/10"
+                          >
+                            {locale === "en" ? "Theory page" : "Page théorie"}
+                          </Link>
+                        )}
                       </div>
                     </MotionCard>
-                  ))}
+                    )
+                  })}
                 </div>
               </div>
 

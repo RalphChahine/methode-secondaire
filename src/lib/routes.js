@@ -1,3 +1,15 @@
+import { secondary4MathConceptPages } from "./secondary4MathTheoryContent.js"
+
+const secondary4MathConceptRouteCatalog = Object.fromEntries(
+  secondary4MathConceptPages.map((page) => [
+    page.routeKey,
+    {
+      fr: page.frPath,
+      en: page.enPath,
+    },
+  ]),
+)
+
 export const routeCatalog = {
   home: { fr: "/", en: "/en" },
   maths: { fr: "/maths", en: "/en/math-tutoring" },
@@ -129,4 +141,5 @@ export const routeCatalog = {
     fr: "/ressources/tuteur-maths-montreal-secondaire-4",
     en: "/en/resources/montreal-secondary-4-math-tutor",
   },
+  ...secondary4MathConceptRouteCatalog,
 }
