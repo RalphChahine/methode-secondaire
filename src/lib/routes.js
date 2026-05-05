@@ -55,6 +55,10 @@ export const routeCatalog = {
     fr: "/cours-ete-secondaire",
     en: "/en/high-school-summer-support",
   },
+  secondary4MathTheory: {
+    fr: "/theorie-maths-secondaire-4",
+    en: "/en/secondary-4-math-theory",
+  },
   ministerialExamSec4: {
     fr: "/preparation-examen-ministere-secondaire-4",
     en: "/en/secondary-4-ministerial-exam-prep",

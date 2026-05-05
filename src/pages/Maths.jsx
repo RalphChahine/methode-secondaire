@@ -14,6 +14,7 @@ import LocalOpportunitySection from "@/components/LocalOpportunitySection"
 import MilestoneOpportunitySection from "@/components/MilestoneOpportunitySection"
 import OfferPathwaysSection from "@/components/OfferPathwaysSection"
 import ResourceGridSection from "@/components/ResourceGridSection"
+import Secondary4TheoryPreviewSection from "@/components/Secondary4TheoryPreviewSection"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -307,6 +308,8 @@ export default function Maths() {
             ))}
           </div>
         </section>
+
+        <Secondary4TheoryPreviewSection locale={locale} className="pt-20" />
 
         <ResourceGridSection
           locale={locale}

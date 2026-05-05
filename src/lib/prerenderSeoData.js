@@ -4,6 +4,7 @@ import { getOfferPageConfig, offerRouteKeys } from "./offerContent.js"
 import { getResourcePageContent, resourceHubCopyByLocale, resourceRouteKeys } from "./resourceContent.js"
 import { routeCatalog } from "./routes.js"
 import { getRobotsDirective, shouldIncludeInSitemap } from "./searchIndexStrategy.js"
+import { getSecondary4MathTheoryContent } from "./secondary4MathTheoryContent.js"
 
 function createPageEntry(routeKey, locale, payload) {
   return {
@@ -231,6 +232,24 @@ const basePageSeo = {
       keywords:
         "high school tutoring blog, education research for parents, math anxiety blog, homework help research, tutoring evidence",
       name: blogHubCopyByLocale.en.title,
+      schemaType: "CollectionPage",
+      ogType: "website",
+    },
+  },
+  secondary4MathTheory: {
+    fr: {
+      title: getSecondary4MathTheoryContent("fr").seoTitle,
+      description: getSecondary4MathTheoryContent("fr").seoDescription,
+      keywords: getSecondary4MathTheoryContent("fr").seoKeywords,
+      name: getSecondary4MathTheoryContent("fr").schemaName,
+      schemaType: "CollectionPage",
+      ogType: "website",
+    },
+    en: {
+      title: getSecondary4MathTheoryContent("en").seoTitle,
+      description: getSecondary4MathTheoryContent("en").seoDescription,
+      keywords: getSecondary4MathTheoryContent("en").seoKeywords,
+      name: getSecondary4MathTheoryContent("en").schemaName,
       schemaType: "CollectionPage",
       ogType: "website",
     },

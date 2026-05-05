@@ -14,6 +14,7 @@ const Maths = lazy(() => import("@/pages/Maths"))
 const OfferLanding = lazy(() => import("@/pages/OfferLanding"))
 const ResourceArticle = lazy(() => import("@/pages/ResourceArticle"))
 const ResourcesHub = lazy(() => import("@/pages/ResourcesHub"))
+const Secondary4MathTheory = lazy(() => import("@/pages/Secondary4MathTheory"))
 const Sciences = lazy(() => import("@/pages/Sciences"))
 const Temoignages = lazy(() => import("@/pages/Temoignages"))
 const Tuteurs = lazy(() => import("@/pages/Tuteurs"))
@@ -130,6 +131,8 @@ export default function App() {
               path="/en/high-school-summer-support"
               element={<OfferLanding forcedRouteKey="summerSupportSecondary" />}
             />
+            <Route path="/theorie-maths-secondaire-4" element={<Secondary4MathTheory />} />
+            <Route path="/en/secondary-4-math-theory" element={<Secondary4MathTheory />} />
             <Route
               path="/preparation-examen-ministere-secondaire-4"
               element={<OfferLanding forcedRouteKey="ministerialExamSec4" />}

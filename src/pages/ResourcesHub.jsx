@@ -8,6 +8,7 @@ import MilestoneOpportunitySection from "@/components/MilestoneOpportunitySectio
 import MotionCard from "@/components/MotionCard"
 import OfferPathwaysSection from "@/components/OfferPathwaysSection"
 import ResourceGridSection from "@/components/ResourceGridSection"
+import Secondary4TheoryPreviewSection from "@/components/Secondary4TheoryPreviewSection"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -153,6 +154,8 @@ export default function ResourcesHub() {
         </section>
 
         <ResourceGridSection locale={locale} className="pt-20" showHubLink={false} />
+
+        <Secondary4TheoryPreviewSection locale={locale} className="pt-20" />
 
         <BlogGridSection
           locale={locale}
