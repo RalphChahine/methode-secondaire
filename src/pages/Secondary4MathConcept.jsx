@@ -125,7 +125,31 @@ export default function Secondary4MathConcept() {
           </MotionCard>
         </section>
 
-        <section className="pt-20 grid gap-6 lg:grid-cols-2">
+        <section className="grid gap-6 pt-20 lg:grid-cols-[1.05fr,0.95fr]">
+          <MotionCard className="glass-panel rounded-[30px] border-white/10 bg-white/[0.05] p-7 text-white">
+            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.definitionTitle}</div>
+            <div className="mt-5 space-y-4">
+              {copy.definitionParagraphs.map((paragraph) => (
+                <p key={paragraph} className="text-sm leading-7 text-white/78 sm:text-[15px]">
+                  {paragraph}
+                </p>
+              ))}
+            </div>
+          </MotionCard>
+
+          <MotionCard className="rounded-[30px] border-white/10 bg-[#091a3a]/88 p-7 text-white">
+            <div className="text-sm uppercase tracking-[0.22em] text-white/45">{copy.formulaTitle}</div>
+            <ul className="mt-5 space-y-4">
+              {copy.formulaBullets.map((item) => (
+                <li key={item} className="text-sm leading-7 text-white/76">
+                  • {item}
+                </li>
+              ))}
+            </ul>
+          </MotionCard>
+        </section>
+
+        <section className="grid gap-6 pt-20 lg:grid-cols-2">
           <MotionCard className="rounded-[30px] border-white/10 bg-[#091a3a]/88 p-7 text-white">
             <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.understandTitle}</div>
             <ul className="mt-5 space-y-4">
@@ -143,6 +167,98 @@ export default function Secondary4MathConcept() {
             <ul className="mt-5 space-y-4">
               {copy.pitfalls.map((item) => (
                 <li key={item} className="text-sm leading-7 text-white/72">
+                  • {item}
+                </li>
+              ))}
+            </ul>
+          </MotionCard>
+        </section>
+
+        <section className="grid gap-6 pt-20 lg:grid-cols-2">
+          <MotionCard className="glass-panel rounded-[30px] border-white/10 bg-white/[0.05] p-7 text-white">
+            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.recognizeTitle}</div>
+            <ul className="mt-5 space-y-4">
+              {copy.recognizeBullets.map((item) => (
+                <li key={item} className="text-sm leading-7 text-white/78">
+                  • {item}
+                </li>
+              ))}
+            </ul>
+          </MotionCard>
+
+          <MotionCard className="glass-panel rounded-[30px] border-white/10 bg-white/[0.05] p-7 text-white">
+            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.methodTitle}</div>
+            <ul className="mt-5 space-y-4">
+              {copy.methodBullets.map((item) => (
+                <li key={item} className="text-sm leading-7 text-white/78">
+                  • {item}
+                </li>
+              ))}
+            </ul>
+          </MotionCard>
+        </section>
+
+        <section className="pt-12">
+          <MotionCard className="rounded-[26px] border border-[#f5c977]/30 bg-[rgba(245,201,119,0.09)] p-6 text-white">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="max-w-3xl">
+                <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">
+                  {locale === "en" ? "Need help on this exact chapter?" : "Besoin d'aide sur ce chapitre précis?"}
+                </div>
+                <p className="mt-2 text-sm leading-7 text-white/78 sm:text-[15px]">
+                  {locale === "en"
+                    ? "If the theory feels familiar but the exercise still does not start, a targeted session is usually faster than rereading the same notes three times."
+                    : "Si la théorie semble familière mais que l'exercice ne part toujours pas, une séance ciblée fait souvent gagner plus de temps que relire les mêmes notes trois fois."}
+                </p>
+              </div>
+              <Button
+                asChild
+                className="rounded-full bg-[#f5c977] px-5 py-5 text-sm text-[#071631] hover:bg-[#f7d38f]"
+              >
+                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                  {copy.reserveButton}
+                </a>
+              </Button>
+            </div>
+          </MotionCard>
+        </section>
+
+        <section className="grid gap-6 pt-20 lg:grid-cols-[1.05fr,0.95fr]">
+          <MotionCard className="rounded-[30px] border-white/10 bg-[#091a3a]/88 p-7 text-white">
+            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.masteryTitle}</div>
+            <ul className="mt-5 space-y-4">
+              {copy.masteryBullets.map((item) => (
+                <li key={item} className="text-sm leading-7 text-white/78">
+                  • {item}
+                </li>
+              ))}
+            </ul>
+          </MotionCard>
+
+          <MotionCard className="glass-panel rounded-[30px] border-white/10 bg-white/[0.05] p-7 text-white">
+            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.exampleTitle}</div>
+            <p className="mt-5 text-sm leading-7 text-white/78 sm:text-[15px]">{copy.exampleText}</p>
+          </MotionCard>
+        </section>
+
+        <section className="grid gap-6 pt-20 lg:grid-cols-[1.1fr,0.9fr]">
+          <MotionCard className="glass-panel rounded-[30px] border-white/10 bg-white/[0.05] p-8 text-white">
+            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.vocabularyTitle}</div>
+            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+              {copy.vocabulary.map((item) => (
+                <div key={item.term} className="rounded-[22px] border border-white/10 bg-white/5 p-4">
+                  <div className="text-sm font-semibold text-white">{item.term}</div>
+                  <p className="mt-2 text-sm leading-7 text-white/72">{item.text}</p>
+                </div>
+              ))}
+            </div>
+          </MotionCard>
+
+          <MotionCard className="rounded-[30px] border-white/10 bg-[#091a3a]/88 p-7 text-white">
+            <div className="text-sm uppercase tracking-[0.22em] text-white/45">{copy.selfCheckTitle}</div>
+            <ul className="mt-5 space-y-4">
+              {copy.selfCheck.map((item) => (
+                <li key={item} className="text-sm leading-7 text-white/76">
                   • {item}
                 </li>
               ))}
