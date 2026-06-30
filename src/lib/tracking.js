@@ -116,7 +116,9 @@ export function trackLeadSubmission(detail = {}) {
     lead_source: detail.source_page || "website",
     lead_locale: detail.locale || "",
     lead_priority: detail.priority || "",
+    lead_timeline: detail.timeline || "",
     lead_format: detail.format || "",
+    lead_contact_preference: detail.contact_preference || "",
     value: 1,
     currency: "CAD",
   })

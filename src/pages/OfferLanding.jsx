@@ -1,29 +1,25 @@
+import { CalendarDays, Phone } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
-import {
-  BadgeCheck,
-  CalendarDays,
-  Check,
-  ChevronRight,
-  Clock3,
-  Phone,
-  Sparkles,
-  Target,
-} from "lucide-react"
 
-import AiDiagnosticSection from "@/components/AiDiagnosticSection"
-import { GuaranteeSection, VerifiedReviewsSection } from "@/components/ConversionSections"
-import LeadForm from "@/components/LeadForm"
+import { VerifiedReviewsSection } from "@/components/ConversionSections"
 import MotionCard from "@/components/MotionCard"
 import Seo from "@/components/Seo"
-import { Badge } from "@/components/ui/badge"
+import {
+  ContactSection,
+  FaqGrid,
+  FeatureGrid,
+  FinalCtaSection,
+  HeroShowcase,
+  StepGrid,
+} from "@/components/SimpleMarketingSections"
 import { Button } from "@/components/ui/button"
 import { BOOKING_URL } from "@/config/booking"
 import {
   buildAlternates,
   getAlternateOgLocale,
   getHtmlLang,
-  getLocalizedPath,
   getLocaleFromPath,
+  getLocalizedPath,
   getOgLocale,
   getRouteKeyFromPath,
 } from "@/lib/i18n"
@@ -37,40 +33,6 @@ export default function OfferLanding({ forcedRouteKey }) {
   const routeKey = forcedRouteKey || getRouteKeyFromPath(location.pathname)
   const page = getOfferPageConfig(routeKey, locale)
   const path = getLocalizedPath(routeKey, locale)
-  const showBookingButton = page?.showBookingButton !== false
-  const callLabel = page?.callLabel || (locale === "en" ? "Call first" : "Appeler d'abord")
-  const bookingLabel = page?.bookingLabel || (locale === "en" ? "Book a focused session" : "Réserver une séance ciblée")
-  const heroNote =
-    page?.heroNote ||
-    (locale === "en"
-      ? "When the situation is urgent but still fuzzy, the diagnostic or a short call is usually the fastest first move. Weekly follow-up is still better discussed by phone first."
-      : "Quand la situation est urgente mais encore floue, le diagnostic ou un court appel reste souvent le premier pas le plus rapide. Un suivi hebdomadaire se discute quand même mieux d'abord par téléphone.")
-  const breadcrumbLabel = locale === "en" ? "Home" : "Accueil"
-  const heroPanelTitle =
-    page?.heroPanelTitle ||
-    (locale === "en"
-      ? "A clearer entry point when the need is already real"
-      : "Une porte d'entrée plus claire quand le besoin est déjà réel")
-  const heroPanelText =
-    page?.heroPanelText ||
-    (locale === "en"
-      ? "The goal is not to add random tutoring hours. The goal is to create more clarity, better decisions and the right next move for the family."
-      : "Le but n'est pas d'ajouter des heures au hasard. Le but est de créer plus de clarté, de meilleures décisions et la bonne prochaine étape pour la famille.")
-  const relatedDescription =
-    page?.relatedDescription ||
-    (locale === "en"
-      ? "These pages are the most natural next steps when a family is comparing one focused need with broader tutoring support."
-      : "Ces pages sont les suites les plus naturelles quand une famille compare un besoin ciblé avec un accompagnement plus large.")
-  const valuePoints = getValuePoints(routeKey, locale)
-  const notFitPoints = getNotFitPoints(routeKey, locale)
-
-  function openDiagnostic() {
-    if (typeof window === "undefined") {
-      return
-    }
-
-    window.dispatchEvent(new CustomEvent("methode:open-diagnostic"))
-  }
 
   if (!page) {
     return (
@@ -85,12 +47,7 @@ export default function OfferLanding({ forcedRouteKey }) {
                 ? "This offer page is not available right now."
                 : "Cette page d'offre n'est pas disponible pour le moment."}
             </h1>
-            <p className="mt-4 max-w-3xl text-base leading-8 text-white/72">
-              {locale === "en"
-                ? "You can continue with the main subject pages or use the diagnostic to reach the best next step."
-                : "Vous pouvez continuer avec les pages matières principales ou utiliser le diagnostic pour trouver la meilleure suite."}
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8">
               <Button asChild className="rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
                 <Link to={getLocalizedPath("home", locale)}>
                   {locale === "en" ? "Back to home" : "Retour à l'accueil"}
@@ -103,7 +60,12 @@ export default function OfferLanding({ forcedRouteKey }) {
     )
   }
 
-  const schemas = [
+  const showBookingButton = page.showBookingButton !== false
+  const primaryLabel = page.callLabel || (locale === "en" ? "Call first" : "Appeler d'abord")
+  const secondaryLabel =
+    page.bookingLabel || (locale === "en" ? "Book a focused session" : "Réserver une séance ciblée")
+
+  const schema = [
     {
       "@context": "https://schema.org",
       "@type": "WebPage",
@@ -115,7 +77,7 @@ export default function OfferLanding({ forcedRouteKey }) {
       "@context": "https://schema.org",
       "@type": "Service",
       name: page.heroTitle,
-      serviceType: page.serviceType || (locale === "en" ? "Exam prep tutoring" : "Tutorat préparation examens"),
+      serviceType: page.serviceType || (locale === "en" ? "Tutoring support" : "Accompagnement scolaire"),
       provider: {
         "@type": "EducationalOrganization",
         name: siteConfig.siteName,
@@ -128,44 +90,13 @@ export default function OfferLanding({ forcedRouteKey }) {
         { "@type": "City", name: "Montreal" },
         { "@type": "City", name: "Laval" },
       ],
-      offers: {
-        "@type": "Offer",
-        url: showBookingButton ? BOOKING_URL : absoluteUrl(path),
-        priceCurrency: "CAD",
-        availability: "https://schema.org/InStock",
-      },
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: page.faq.map((entry) => ({
-        "@type": "Question",
-        name: entry.question,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: entry.answer,
-        },
-      })),
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: breadcrumbLabel,
-          item: absoluteUrl(getLocalizedPath("home", locale)),
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: page.eyebrow,
-          item: absoluteUrl(path),
-        },
-      ],
     },
   ]
+
+  const fitItems = page.fitCards.map((card) => ({
+    title: card.title,
+    description: card.description,
+  }))
 
   return (
     <div className="relative overflow-hidden">
@@ -174,7 +105,7 @@ export default function OfferLanding({ forcedRouteKey }) {
         description={page.seoDescription}
         path={path}
         keywords={page.keywords}
-        jsonLd={schemas}
+        jsonLd={schema}
         lang={getHtmlLang(locale)}
         locale={getOgLocale(locale)}
         alternateLocale={getAlternateOgLocale(locale)}
@@ -185,467 +116,114 @@ export default function OfferLanding({ forcedRouteKey }) {
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-16 top-24 h-72 w-72 rounded-full bg-[#7ab4ff]/18 blur-3xl" />
         <div className="absolute right-0 top-16 h-80 w-80 rounded-full bg-[#f5c977]/12 blur-3xl" />
-        <div className="absolute bottom-0 left-1/2 h-[30rem] w-[40rem] -translate-x-1/2 rounded-full bg-[#4a8bff]/10 blur-3xl" />
       </div>
 
       <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
-        <section className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
-          <div className="max-w-3xl">
-            <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-white/55">
-              <Link to={getLocalizedPath("home", locale)} className="transition hover:text-white">
-                {breadcrumbLabel}
-              </Link>
-              <ChevronRight className="h-4 w-4" />
-              <span className="text-white/75">{page.eyebrow}</span>
-            </div>
-            <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
-              {page.eyebrow}
-            </Badge>
+        <HeroShowcase
+          badge={page.eyebrow}
+          title={page.heroTitle}
+          description={page.heroText}
+          primaryAction={{
+            label: primaryLabel,
+            href: `tel:${siteConfig.phone}`,
+            icon: Phone,
+          }}
+          secondaryAction={
+            showBookingButton
+              ? {
+                  label: secondaryLabel,
+                  href: BOOKING_URL,
+                  external: true,
+                  icon: CalendarDays,
+                }
+              : null
+          }
+          panelEyebrow={locale === "en" ? "Best fit" : "Bon fit"}
+          panelTitle={page.fitTitle}
+          panelItems={page.highlights}
+          panelNote={page.fitDescription}
+        />
 
-            <h1 className="balanced-copy mt-7 font-display text-5xl font-semibold leading-[0.95] text-white sm:text-6xl">
-              {page.heroTitle}
-            </h1>
+        <FeatureGrid
+          eyebrow={page.fitEyebrow}
+          title={
+            locale === "en"
+              ? "Who this offer is really for"
+              : "Pour qui cette offre est vraiment utile"
+          }
+          description={page.fitDescription}
+          items={fitItems}
+        />
 
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/72">{page.heroText}</p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button
-                type="button"
-                className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
-                onClick={openDiagnostic}
-              >
-                <Sparkles className="h-4 w-4" />
-                {locale === "en" ? "Start the diagnostic" : "Lancer le diagnostic"}
-              </Button>
-
-              <Button
-                asChild
-                variant="outline"
-                className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
-              >
-                <a href={`tel:${siteConfig.phone}`}>
-                  <Phone className="h-4 w-4" />
-                  {callLabel}
-                </a>
-              </Button>
-
-              {showBookingButton ? (
-                <Button
-                  asChild
-                  variant="outline"
-                  className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
-                >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    <CalendarDays className="h-4 w-4" />
-                    {bookingLabel}
-                  </a>
-                </Button>
-              ) : null}
-            </div>
-
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/68">{heroNote}</p>
-          </div>
-
-          <MotionCard className="glass-panel rounded-[34px] border-white/10 bg-white/[0.05] p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.24em] text-white/45">
-              {locale === "en" ? "Best fit" : "Format idéal"}
-            </div>
-            <h2 className="mt-3 font-display text-3xl font-semibold">{heroPanelTitle}</h2>
-
-            <div className="mt-6 space-y-4 text-sm text-white/80">
-              {page.highlights.map((highlight) => (
-                <div
-                  key={highlight}
-                  className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
-                >
-                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
-                  {highlight}
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 rounded-[24px] border border-white/10 bg-[#081a3a]/80 px-5 py-5 text-sm leading-7 text-white/72">
-              {heroPanelText}
-            </div>
-          </MotionCard>
-        </section>
-
-        <section className="pt-20">
-          <SectionHeader eyebrow={page.fitEyebrow} title={page.fitTitle} description={page.fitDescription} />
-          <div className="mt-8 grid gap-4 lg:grid-cols-3">
-            {page.fitCards.map((card) => (
-              <MotionCard key={card.title} className="glass-panel rounded-[30px] border-white/10 bg-white/[0.04] p-7 text-white">
-                <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
-                  <Target className="h-5 w-5" />
-                </div>
-                <h3 className="mt-5 font-display text-2xl font-semibold">{card.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-white/72">{card.description}</p>
-              </MotionCard>
-            ))}
-          </div>
-        </section>
-
-        <section className="pt-20">
-          <SectionHeader eyebrow={page.processEyebrow} title={page.processTitle} />
-          <div className="mt-8 grid gap-4 lg:grid-cols-3">
-            {page.processSteps.map((step) => (
-              <MotionCard key={step.step} className="rounded-[30px] border-white/10 bg-[#091a3a]/85 p-7 text-white">
-                <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">{step.step}</div>
-                <h3 className="mt-4 font-display text-2xl font-semibold">{step.title}</h3>
-                <p className="mt-3 text-sm leading-7 text-white/72">{step.description}</p>
-              </MotionCard>
-            ))}
-          </div>
-        </section>
-
-        <section className="pt-20">
-          <SectionHeader eyebrow={page.includedEyebrow} title={page.includedTitle} />
-          <div className="mt-8 grid gap-4 lg:grid-cols-2">
-            {page.includedItems.map((item, index) => (
-              <MotionCard
-                key={item}
-                className="glass-panel rounded-[28px] border-white/10 bg-white/[0.04] p-6 text-white"
-              >
-                <div className="flex items-start gap-4">
-                  <div className="rounded-2xl bg-white/10 p-3 text-[#f5c977]">
-                    {index % 2 === 0 ? <Clock3 className="h-5 w-5" /> : <Check className="h-5 w-5" />}
-                  </div>
-                  <p className="text-sm leading-7 text-white/78">{item}</p>
-                </div>
-              </MotionCard>
-            ))}
-          </div>
-        </section>
-
-        <section className="pt-20">
-          <div className="grid gap-4 lg:grid-cols-2">
-            <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.04] p-7 text-white">
-              <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
-                {locale === "en" ? "Why families pay for this" : "Ce que les familles achetent vraiment"}
-              </div>
-              <h2 className="mt-4 font-display text-3xl font-semibold">
-                {locale === "en"
-                  ? "More than tutoring time"
-                  : "Plus qu'une simple heure de tutorat"}
-              </h2>
-              <div className="mt-6 space-y-4 text-sm text-white/80">
-                {valuePoints.map((point) => (
-                  <div
-                    key={point}
-                    className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
-                  >
-                    <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
-                    {point}
-                  </div>
-                ))}
-              </div>
-            </MotionCard>
-
-            <MotionCard className="rounded-[32px] border-white/10 bg-[#091a3a]/85 p-7 text-white">
-              <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
-                {locale === "en" ? "When another format is smarter" : "Quand un autre format est plus intelligent"}
-              </div>
-              <h2 className="mt-4 font-display text-3xl font-semibold">
-                {locale === "en"
-                  ? "Not every family needs the same next step"
-                  : "Toutes les familles n'ont pas besoin du meme prochain pas"}
-              </h2>
-              <div className="mt-6 space-y-4 text-sm text-white/78">
-                {notFitPoints.map((point) => (
-                  <div
-                    key={point}
-                    className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
-                  >
-                    {point}
-                  </div>
-                ))}
-              </div>
-            </MotionCard>
-          </div>
-        </section>
+        <StepGrid
+          eyebrow={page.processEyebrow}
+          title={page.processTitle}
+          description={
+            locale === "en"
+              ? "A shorter path from confusion to a clearer next move."
+              : "Un parcours plus court entre le flou et une prochaine étape plus nette."
+          }
+          steps={page.processSteps}
+        />
 
         <VerifiedReviewsSection locale={locale} className="pt-20" limit={3} showLink />
-        <GuaranteeSection locale={locale} className="pt-20" />
-        <AiDiagnosticSection locale={locale} className="pt-20" />
 
-        <section className="pt-20">
-          <SectionHeader
-            eyebrow={locale === "en" ? "Helpful next pages" : "Pages utiles ensuite"}
-            title={locale === "en" ? "Keep moving with the most relevant pages" : "Continuer avec les pages les plus utiles"}
-            description={relatedDescription}
-          />
-          <div className="mt-8 flex flex-wrap gap-3">
-            {page.relatedLinks.map((entry) => (
-              <Button
-                key={entry.routeKey}
-                asChild
-                variant="outline"
-                className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
-              >
-                <Link to={getLocalizedPath(entry.routeKey, locale)}>
-                  {entry.label}
-                  <ChevronRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            ))}
-          </div>
-        </section>
+        <FaqGrid
+          eyebrow={locale === "en" ? "FAQ" : "FAQ"}
+          title={
+            locale === "en"
+              ? "What families usually ask before moving forward"
+              : "Ce que les familles demandent souvent avant d'avancer"
+          }
+          description={
+            locale === "en"
+              ? "Short answers so the decision feels easier."
+              : "Des réponses courtes pour que la décision soit plus simple."
+          }
+          items={page.faq}
+          columns="lg:grid-cols-3"
+        />
 
-        <section className="pt-20">
-          <SectionHeader
-            eyebrow={locale === "en" ? "FAQ" : "Questions fréquentes"}
-            title={locale === "en" ? "What families often ask before booking" : "Ce que les familles demandent souvent avant de réserver"}
-          />
-          <div className="mt-8 grid gap-4 lg:grid-cols-3">
-            {page.faq.map((entry) => (
-              <MotionCard key={entry.question} className="glass-panel rounded-[28px] border-white/10 bg-white/[0.04] p-6 text-white">
-                <h2 className="font-display text-2xl font-semibold">{entry.question}</h2>
-                <p className="mt-4 text-sm leading-7 text-white/72">{entry.answer}</p>
-              </MotionCard>
-            ))}
-          </div>
-        </section>
+        <ContactSection
+          locale={locale}
+          eyebrow={locale === "en" ? "Contact" : "Contact"}
+          title={page.formTitle}
+          description={page.formText}
+          bullets={[
+            locale === "en"
+              ? "Mention the chapter, exam date or main concern if you know them."
+              : "Mentionnez le chapitre, la date d'examen ou le point le plus urgent si vous les connaissez.",
+            locale === "en"
+              ? "If the need is still unclear, calling first usually saves time."
+              : "Si le besoin reste flou, appeler d'abord fait souvent gagner du temps.",
+            locale === "en"
+              ? "If the need is urgent and already clear, booking can be the fastest route."
+              : "Si le besoin est urgent et déjà clair, la réservation peut être la voie la plus rapide.",
+          ]}
+          pageName={`${routeKey}-${locale}`}
+        />
 
-        <section className="pt-20">
-          <MotionCard className="rounded-[34px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-8 text-white sm:p-10">
-            <div className="max-w-3xl">
-              <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white/85">
-                <Sparkles className="mr-2 h-4 w-4" />
-                {page.eyebrow}
-              </div>
-              <h2 className="mt-5 font-display text-4xl font-semibold sm:text-5xl">{page.ctaTitle}</h2>
-              <p className="mt-4 text-base leading-8 text-white/75 sm:text-lg">{page.ctaText}</p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Button
-                  type="button"
-                  className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
-                  onClick={openDiagnostic}
-                >
-                  {locale === "en" ? "Start the diagnostic" : "Lancer le diagnostic"}
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
-                >
-                  <a href={`tel:${siteConfig.phone}`}>{callLabel}</a>
-                </Button>
-                {showBookingButton ? (
-                  <Button
-                    asChild
-                    variant="outline"
-                    className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
-                  >
-                    <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                      {bookingLabel}
-                    </a>
-                  </Button>
-                ) : null}
-              </div>
-            </div>
-          </MotionCard>
-        </section>
-
-        <section id="contact" className="pt-20">
-          <div className="grid gap-6 lg:grid-cols-[0.9fr,1.1fr]">
-            <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.04] p-7 text-white">
-              <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
-                {locale === "en" ? "Before you send" : "Avant d'envoyer"}
-              </div>
-              <h2 className="mt-4 font-display text-3xl font-semibold">{page.formTitle}</h2>
-              <p className="mt-4 text-sm leading-7 text-white/72">{page.formText}</p>
-              <div className="mt-6 space-y-3 text-sm text-white/80">
-                <div className="flex items-start gap-3">
-                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
-                  {locale === "en"
-                    ? "Mention the subject, chapter and exam date if you know them."
-                    : "Mentionnez la matière, le chapitre et la date de l'examen si vous les connaissez."}
-                </div>
-                <div className="flex items-start gap-3">
-                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
-                  {locale === "en"
-                    ? "If the need is urgent, calling remains the fastest route."
-                    : "Si le besoin est urgent, l'appel reste le chemin le plus rapide."}
-                </div>
-              </div>
-            </MotionCard>
-
-            <LeadForm locale={locale} />
-          </div>
-        </section>
+        <FinalCtaSection
+          badge={page.eyebrow}
+          title={page.ctaTitle}
+          description={page.ctaText}
+          primaryAction={{
+            label: primaryLabel,
+            href: `tel:${siteConfig.phone}`,
+            icon: Phone,
+          }}
+          secondaryAction={
+            showBookingButton
+              ? {
+                  label: secondaryLabel,
+                  href: BOOKING_URL,
+                  external: true,
+                  icon: CalendarDays,
+                }
+              : null
+          }
+        />
       </main>
     </div>
-  )
-}
-
-function SectionHeader({ eyebrow, title, description }) {
-  return (
-    <div className="max-w-3xl">
-      {eyebrow ? <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">{eyebrow}</div> : null}
-      <h2 className="balanced-copy mt-4 font-display text-4xl font-semibold text-white sm:text-5xl">
-        {title}
-      </h2>
-      {description ? <p className="mt-4 text-base leading-8 text-white/72 sm:text-lg">{description}</p> : null}
-    </div>
-  )
-}
-
-function getValuePoints(routeKey, locale) {
-  const map = {
-    examSprint:
-      locale === "en"
-        ? [
-            "A shorter path from confusion to clear priorities before the exam.",
-            "A calmer revision plan built around what matters most now.",
-            "Clearer decisions about what to review, what to skip and when to book again.",
-          ]
-        : [
-            "Un chemin plus court entre la confusion actuelle et des priorites claires avant l'examen.",
-            "Un plan de revision plus calme, construit autour de ce qui compte vraiment maintenant.",
-            "De meilleures decisions sur quoi revoir, quoi laisser de cote et quand reprendre une seance.",
-          ],
-    weeklyFollowUp:
-      locale === "en"
-        ? [
-            "Continuity from week to week instead of restarting from zero each time.",
-            "A clearer rhythm for homework, tests and recurring weak points.",
-            "Support that protects confidence before the school year becomes heavier.",
-          ]
-        : [
-            "De la continuite d'une semaine a l'autre au lieu de repartir de zero chaque fois.",
-            "Un rythme plus clair entre devoirs, evaluations et difficultes qui reviennent.",
-            "Un accompagnement qui protege la confiance avant que l'annee devienne trop lourde.",
-          ],
-    ministerialExamSec4:
-      locale === "en"
-        ? [
-            "A more strategic review than simply replaying the whole course.",
-            "A sharper method for Secondary 4 questions that really matter.",
-            "Clearer exam priorities before time and stress take over.",
-          ]
-        : [
-            "Une revision plus strategique que le simple fait de refaire tout le cours.",
-            "Une methode plus nette pour les questions de secondaire 4 qui comptent vraiment.",
-            "Des priorites d'examen plus claires avant que le temps et le stress prennent toute la place.",
-          ],
-    entryToSecondary:
-      locale === "en"
-        ? [
-            "A transition plan that secures the basics before the first weeks drift.",
-            "More structure around work habits, math foundations and confidence.",
-            "A better decision between summer prep, targeted reset and steady follow-up.",
-          ]
-        : [
-            "Un plan de transition qui securise les bases avant que les premieres semaines se brouillent.",
-            "Plus de structure autour des habitudes de travail, des bases en maths et de la confiance.",
-            "Une meilleure decision entre preparation d'ete, remise a niveau ciblee et suivi plus regulier.",
-          ],
-    summerSupportSecondary:
-      locale === "en"
-        ? [
-            "A summer plan that creates real academic ground instead of vague good intentions.",
-            "Better choices between retake prep, catch-up work and getting ahead.",
-            "A stronger bridge into September with less improvisation.",
-          ]
-        : [
-            "Un plan d'ete qui cree une vraie base au lieu de simples bonnes intentions floues.",
-            "De meilleures decisions entre reprise, rattrapage et prise d'avance.",
-            "Un meilleur pont vers la rentree avec moins d'improvisation.",
-          ],
-  }
-
-  return (
-    map[routeKey] ||
-    (locale === "en"
-      ? [
-          "A clearer diagnosis of the real academic need.",
-          "More structure around the next step instead of random tutoring hours.",
-          "Support that helps the family decide faster and with less guesswork.",
-        ]
-      : [
-          "Un diagnostic plus clair du vrai besoin scolaire.",
-          "Plus de structure autour de la prochaine etape plutot que des heures ajoutees au hasard.",
-          "Un accompagnement qui aide la famille a decider plus vite et avec moins d'hesitation.",
-        ])
-  )
-}
-
-function getNotFitPoints(routeKey, locale) {
-  const map = {
-    examSprint:
-      locale === "en"
-        ? [
-            "If the issue has been building for months across several subjects, weekly follow-up is often smarter than a pure sprint.",
-            "If the family still cannot name the real problem, a short call should come before direct booking.",
-            "If the student needs long-term method rebuilding, one urgent session will not carry the whole year alone.",
-          ]
-        : [
-            "Si le probleme s'accumule depuis des mois dans plusieurs matieres, un suivi hebdomadaire est souvent plus intelligent qu'un pur sprint.",
-            "Si la famille ne sait pas encore nommer le vrai probleme, un court appel devrait venir avant la reservation directe.",
-            "Si l'eleve a besoin de reconstruire sa methode sur le long terme, une seule seance urgente ne portera pas toute l'annee.",
-          ],
-    weeklyFollowUp:
-      locale === "en"
-        ? [
-            "If the need is extremely urgent and the chapter is already well identified, a focused booked session can be faster first.",
-            "If the family mainly wants a one-off review before a nearby test, the Exam sprint format may fit better.",
-            "If the student is already stable and only needs one quick clarification, a full recurring plan may be too much.",
-          ]
-        : [
-            "Si le besoin est tres urgent et que le chapitre est deja bien identifie, une seance ciblee reservee directement peut aller plus vite.",
-            "Si la famille veut surtout une revision ponctuelle avant un examen proche, le format Sprint examen peut mieux convenir.",
-            "Si l'eleve est deja stable et a seulement besoin d'une clarification rapide, un vrai suivi regulier peut etre trop large.",
-          ],
-    ministerialExamSec4:
-      locale === "en"
-        ? [
-            "If the date is still far away and the issue is broader than the exam itself, weekly support may help more.",
-            "If the family is mostly worried about the transition into the next grade, a broader catch-up or summer plan may fit better.",
-            "If the chapters are still unknown, call first so the review plan is not built on guesswork.",
-          ]
-        : [
-            "Si l'echeance est encore loin et que le probleme depasse l'examen lui-meme, un suivi plus regulier peut aider davantage.",
-            "Si l'inquietude concerne surtout la transition vers l'annee suivante, une remise a niveau plus large ou un plan d'ete peut mieux convenir.",
-            "Si les chapitres restent flous, il vaut mieux appeler d'abord pour ne pas construire la revision sur des suppositions.",
-          ],
-    entryToSecondary:
-      locale === "en"
-        ? [
-            "If the family already has a very precise math chapter to fix, a targeted session may be enough first.",
-            "If the student is already in the middle of the year with recurring problems, weekly follow-up may be more useful than a transition page.",
-            "If the true goal is summer retake preparation, the summer support format is usually a better fit.",
-          ]
-        : [
-            "Si la famille a deja un chapitre de maths tres precis a corriger, une seance ciblee peut suffire comme premier pas.",
-            "Si l'eleve est deja bien entre dans l'annee avec des difficultes recurrentes, un suivi hebdomadaire peut etre plus utile qu'une page de transition.",
-            "Si le vrai besoin est une reprise ou un rattrapage d'ete, le format cours d'ete sera souvent plus adapte.",
-          ],
-    summerSupportSecondary:
-      locale === "en"
-        ? [
-            "If the exam is very close right now, summer support is too broad and an Exam sprint is usually faster.",
-            "If the student already needs continuity during the school year, weekly follow-up may be the stronger frame.",
-            "If the family is unsure whether the problem is transition, retake or catch-up, calling first is smarter than booking blindly.",
-          ]
-        : [
-            "Si l'examen est tres proche maintenant, le format d'ete est trop large et un Sprint examen est souvent plus rapide.",
-            "Si l'eleve a deja besoin de continuite pendant l'annee, le suivi hebdomadaire sera souvent plus fort.",
-            "Si la famille hesite entre transition, reprise ou rattrapage, appeler d'abord est plus intelligent que reserver a l'aveugle.",
-          ],
-  }
-
-  return (
-    map[routeKey] ||
-    (locale === "en"
-      ? [
-          "If the need is still blurry, calling first often saves time.",
-          "If the issue is broader than one chapter or one exam, a wider follow-up format may help more.",
-          "If the family mostly needs reassurance about direction, the diagnostic is often the best first move.",
-        ]
-      : [
-          "Si le besoin reste flou, appeler d'abord fait souvent gagner du temps.",
-          "Si le probleme depasse un chapitre ou un examen, un format de suivi plus large peut aider davantage.",
-          "Si la famille a surtout besoin d'etre rassuree sur la direction a prendre, le diagnostic est souvent le meilleur premier pas.",
-        ])
   )
 }

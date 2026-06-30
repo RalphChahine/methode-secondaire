@@ -102,6 +102,16 @@ export default function ResourcesHub() {
                 variant="outline"
                 className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
               >
+                <Link to={getLocalizedPath("teenMathScienceSlide", locale)}>
+                  {locale === "en" ? "Read the parent guide" : "Voir le guide parents"}
+                </Link>
+              </Button>
+
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+              >
                 <Link to={getLocalizedPath("home", locale)}>
                   {locale === "en" ? "Back to home" : "Retour à l'accueil"}
                 </Link>

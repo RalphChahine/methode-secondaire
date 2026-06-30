@@ -910,6 +910,8 @@ function TutorApplicationForm({ copy }) {
 
       <input type="hidden" name="_subject" value="Candidature tuteur - Méthode Secondaire" />
       <input type="hidden" name="_template" value="table" />
+      <input type="hidden" name="pipeline_type" value="tutor_application" />
+      <input type="hidden" name="source_page" value="become-a-tutor" />
 
       <Button
         type="submit"

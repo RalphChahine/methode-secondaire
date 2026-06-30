@@ -7,6 +7,8 @@ export const resourceRouteKeys = [
   "physicsHelp",
   "chemistrySec5",
   "montrealSec4Math",
+  "parentSupportSignals",
+  "teenMathScienceSlide",
 ]
 
 export const resourceHubCopyByLocale = {
@@ -1097,6 +1099,275 @@ export const resourcePageContent = {
       ctaText:
         "A first call can quickly clarify the level, urgency and the kind of support that will help right away.",
       relatedRouteKeys: ["sec4Math", "mathExamPrep", "mathMinisterial"],
+    },
+  },
+  parentSupportSignals: {
+    fr: {
+      cardTitle: "Signes qu'un eleve a besoin d'un soutien plus encadre",
+      cardDescription:
+        "Un mini-guide concret pour les parents qui veulent savoir quand agir, quoi regarder et comment orienter leur jeune avant que le retard s'installe.",
+      eyebrow: "Guide parent",
+      heroTitle:
+        "Les signes qu'un eleve du secondaire a besoin d'un soutien plus encadre, et quoi faire en premier",
+      heroText:
+        "Quand un eleve commence a glisser, le vrai signal n'est pas toujours une mauvaise note. Souvent, le probleme apparait d'abord dans la methode, la confiance, la facon d'etudier ou l'evitement. Ce guide aide les parents a reconnaitre les signes utiles plus tot et a choisir une prochaine etape plus claire.",
+      seoTitle: "Signes qu'un eleve a besoin d'un soutien scolaire | Methode Secondaire",
+      seoDescription:
+        "Guide parent utile pour reconnaitre les signes qu'un eleve du secondaire a besoin d'un soutien plus encadre en maths, sciences, francais ou methodes de travail.",
+      keywords:
+        "signes soutien scolaire secondaire, eleve secondaire en difficulte, quand prendre un tuteur secondaire, guide parent soutien scolaire",
+      quickSignalsTitle: "Les signes qui meritent de retenir votre attention",
+      quickSignals: [
+        "Le jeune passe du temps a etudier, mais ne sait pas vraiment par ou commencer.",
+        "La confiance baisse vite devant les maths, les sciences, le francais ou les examens.",
+        "Les devoirs s'etirent, les revisions deviennent evitees ou trop emotionnelles, et la maison se tend.",
+      ],
+      planTitle: "Quoi faire en premier quand vous voyez ces signes",
+      planSteps: [
+        {
+          title: "Identifier ou ca bloque vraiment",
+          description:
+            "Avant de conclure qu'il faut seulement plus d'effort, verifier si le vrai frein vient de la comprehension, de la methode, du rythme, du stress ou d'un trou de base.",
+        },
+        {
+          title: "Remettre une structure simple",
+          description:
+            "Un eleve qui se sent submerge a souvent besoin d'un plan court, d'objectifs clairs et d'une facon plus stable d'aborder ses matieres.",
+        },
+        {
+          title: "Aller chercher de l'aide avant que le retard durcisse",
+          description:
+            "Quand le signal est repetitif, un accompagnement externe bien cible peut eviter que la confiance baisse davantage et que les chapitres s'empilent.",
+        },
+      ],
+      mistakesTitle: "Les faux bons reflexes les plus frequents",
+      mistakes: [
+        "Attendre une grosse baisse de note avant d'agir.",
+        "Confondre manque de motivation et manque de structure.",
+        "Changer de strategie chaque semaine sans vrai plan stable.",
+      ],
+      tutoringTitle: "Quand Methode Secondaire devient un bon fit",
+      tutoringPoints: [
+        "Quand il faut remettre de l'ordre en mathematiques, sciences, francais ou methodes de travail.",
+        "Quand votre jeune a besoin d'un cadre humain, clair et plus rassurant que des revisions improvisees.",
+        "Quand vous voulez un soutien premium, cible et realiste plutot qu'une solution generique.",
+      ],
+      faq: [
+        {
+          question: "Comment savoir si mon jeune a besoin d'un tuteur ou seulement d'une meilleure methode ?",
+          answer:
+            "Quand la confusion, l'evitement, le stress ou la perte de confiance reviennent malgre vos ajustements a la maison, un regard externe structure aide souvent a clarifier la bonne prochaine etape.",
+        },
+        {
+          question: "Faut-il attendre un echec avant d'aller chercher de l'aide ?",
+          answer:
+            "Non. Le meilleur moment est souvent juste avant que le retard devienne plus lourd, quand les signes commencent a revenir de facon repetee.",
+        },
+      ],
+      ctaTitle: "Vous reconnaissez votre jeune dans ces signes ?",
+      ctaText:
+        "Methode Secondaire peut vous aider a clarifier la situation, cadrer le besoin et proposer un accompagnement plus structurant en maths, sciences, francais ou methodes de travail.",
+      relatedRouteKeys: ["catchUp", "mathExamPrep", "scienceExamPrep"],
+    },
+    en: {
+      cardTitle: "Signs a student needs more structured support",
+      cardDescription:
+        "A practical parent guide to spot when a high school student needs more support and what to do before the gap gets harder to close.",
+      eyebrow: "Parent guide",
+      heroTitle: "Signs a high school student needs more structured support, and what to do first",
+      heroText:
+        "When a student starts slipping, the real warning sign is not always a bad grade. The problem often shows up first in study method, confidence, avoidance or rising stress. This guide helps families notice those patterns earlier and choose a clearer next step.",
+      seoTitle: "Signs a student needs academic support | Methode Secondaire",
+      seoDescription:
+        "A practical parent guide to recognize when a high school student needs more structured support in math, science, French or study method.",
+      keywords:
+        "signs student needs tutoring, high school academic support signs, when to hire a tutor, parent guide tutoring",
+      quickSignalsTitle: "The signs worth paying attention to",
+      quickSignals: [
+        "The student spends time studying but does not really know where to begin.",
+        "Confidence drops quickly around math, science, French or exam periods.",
+        "Homework stretches out, revision gets avoided and school stress starts affecting the home dynamic.",
+      ],
+      planTitle: "What to do first when you notice these signs",
+      planSteps: [
+        {
+          title: "Identify the real block",
+          description:
+            "Before assuming the answer is simply more effort, check whether the real issue is comprehension, method, pace, stress or weak foundations.",
+        },
+        {
+          title: "Rebuild simple structure",
+          description:
+            "A student who feels overwhelmed often needs a short plan, clear priorities and a more stable way to approach the work.",
+        },
+        {
+          title: "Get help before the gap hardens",
+          description:
+            "When the pattern repeats, targeted outside support can keep confidence from dropping further and stop chapters from piling up.",
+        },
+      ],
+      mistakesTitle: "The most common false good ideas",
+      mistakes: [
+        "Waiting for a major grade drop before acting.",
+        "Confusing low motivation with low structure.",
+        "Switching strategies every week without a stable plan.",
+      ],
+      tutoringTitle: "When Methode Secondaire is the right fit",
+      tutoringPoints: [
+        "When math, science, French or study method need to be put back in order.",
+        "When your student needs a more human, calmer and more structured framework.",
+        "When your family wants premium, targeted support instead of a generic solution.",
+      ],
+      faq: [
+        {
+          question: "How do we know whether our student needs tutoring or just a better method?",
+          answer:
+            "When confusion, avoidance, stress or loss of confidence keep returning even after home adjustments, an outside structured perspective often helps clarify the next step.",
+        },
+        {
+          question: "Should families wait for failure before getting help?",
+          answer:
+            "No. The best moment is often just before the gap becomes heavier, when the warning signs start repeating.",
+        },
+      ],
+      ctaTitle: "Do these signs sound familiar?",
+      ctaText:
+        "Methode Secondaire can help you clarify the situation, frame the need and build more structured support in math, science, French or study method.",
+      relatedRouteKeys: ["catchUp", "mathExamPrep", "scienceExamPrep"],
+    },
+  },
+  teenMathScienceSlide: {
+    fr: {
+      cardTitle: "Mon ado commence a decrocher en maths ou en sciences",
+      cardDescription:
+        "Un guide parent pour reconnaitre les vrais signaux, eviter les mauvaises reactions et remettre la situation en mouvement.",
+      eyebrow: "Guide parents",
+      heroTitle: "Que faire quand un ado commence a decrocher en maths ou en sciences au secondaire",
+      heroText:
+        "Beaucoup de parents sentent que quelque chose glisse avant meme une grosse chute de notes. Les devoirs deviennent plus lourds, les explications ferment vite, la confiance baisse et chaque semaine coute plus cher en energie. Le bon reflexe n'est pas de mettre plus de pression. C'est de clarifier ce qui bloque vraiment et de remettre un cadre plus net.",
+      seoTitle: "Mon ado decroche en maths ou en sciences | Methode Secondaire",
+      seoDescription:
+        "Guide parent au Quebec pour savoir quoi faire quand un ado commence a decrocher en maths ou en sciences au secondaire: signaux, erreurs a eviter et prochaine etape utile.",
+      keywords:
+        "ado decroche maths, ado decroche sciences, parent aide secondaire quebec, baisse notes maths secondaire, soutien scolaire ado quebec",
+      quickSignalsTitle: "Les signes qui meritent d'etre pris au serieux",
+      quickSignals: [
+        "Votre ado comprend un peu en classe, mais se bloque seul a la maison devant les devoirs.",
+        "Les notes ne s'effondrent pas toujours d'un coup, mais l'evitement, l'irritation ou la fatigue scolaire reviennent chaque semaine.",
+        "Les explications a la maison tournent vite en tension parce que personne n'arrive a clarifier le vrai probleme.",
+      ],
+      planTitle: "Le plan le plus utile pour les parents cette semaine",
+      planSteps: [
+        {
+          title: "Nommer la friction precise",
+          description:
+            "Verifier si le blocage vient surtout des bases, de la methode, du stress, du rythme scolaire ou d'un chapitre en particulier.",
+        },
+        {
+          title: "Reduire la pression improductive",
+          description:
+            "Remplacer les longues discussions floues par un point court: qu'est-ce qui est confus, qu'est-ce qui est urgent et quelle est la prochaine petite victoire realiste.",
+        },
+        {
+          title: "Remettre un cadre exterieur si le pattern se repete",
+          description:
+            "Quand le meme blocage revient, un regard exterieur structure aide souvent plus qu'un nouveau sprint de supervision a la maison.",
+        },
+      ],
+      mistakesTitle: "Les reactions qui aggravent souvent la situation",
+      mistakes: [
+        "Attendre une grosse catastrophe scolaire avant d'agir.",
+        "Confondre manque d'effort et manque de structure.",
+        "Multiplier les solutions improvisees sans garder un plan stable d'une semaine a l'autre.",
+      ],
+      tutoringTitle: "Quand un soutien plus premium devient vraiment utile",
+      tutoringPoints: [
+        "Quand la famille veut comprendre vite si le besoin est ponctuel, regulier ou plus large qu'un simple devoir.",
+        "Quand l'eleve a besoin d'un adulte calme, credible et capable de remettre la matiere en ordre sans alourdir le climat a la maison.",
+        "Quand les maths, les sciences, le francais ou la methode de travail commencent a affecter la confiance plus que la note seule.",
+      ],
+      faq: [
+        {
+          question: "Comment savoir si c'est seulement une passe ou un vrai besoin d'aide ?",
+          answer:
+            "Quand la confusion, l'evitement ou la baisse de confiance reviennent sur plusieurs semaines, il vaut mieux clarifier la situation tot plutot que d'attendre une plus grosse rupture.",
+        },
+        {
+          question: "Faut-il commencer par des exercices de plus a la maison ?",
+          answer:
+            "Pas forcement. Quand la structure manque, ajouter du volume peut juste ajouter de la fatigue. Le plus utile est souvent de mieux cadrer le probleme avant de rajouter du travail.",
+        },
+      ],
+      ctaTitle: "Vous reconnaissez votre ado dans ce tableau ?",
+      ctaText:
+        "Methode Secondaire peut vous aider a poser un diagnostic plus clair, choisir la bonne forme d'accompagnement et remettre les maths ou les sciences dans un cadre plus respirable.",
+      relatedRouteKeys: ["parentSupportSignals", "catchUp", "scienceExamPrep"],
+    },
+    en: {
+      cardTitle: "When a teen starts slipping in math or science",
+      cardDescription:
+        "A parent guide to recognize the real warning signs, avoid common mistakes and put the situation back in motion.",
+      eyebrow: "Parent guide",
+      heroTitle: "What to do when a teenager starts falling behind in math or science",
+      heroText:
+        "Many parents can feel something is sliding before there is even a dramatic grade drop. Homework gets heavier, explanations shut down quickly, confidence dips and every week costs more energy. The best move is not to add more pressure. It is to clarify the real block and rebuild a steadier framework.",
+      seoTitle: "Teen falling behind in math or science | Methode Secondaire",
+      seoDescription:
+        "A Quebec parent guide on what to do when a teenager starts falling behind in math or science: warning signs, mistakes to avoid and the most useful next step.",
+      keywords:
+        "teen falling behind math, teen falling behind science, parent guide quebec tutoring, math grade drop high school, science support quebec",
+      quickSignalsTitle: "Warning signs worth taking seriously",
+      quickSignals: [
+        "Your teenager follows a bit in class, but freezes alone during homework.",
+        "Grades do not always collapse overnight, but avoidance, irritation or school fatigue keep coming back each week.",
+        "Homework talks at home turn tense because nobody can clearly define the real problem.",
+      ],
+      planTitle: "The most useful plan for parents this week",
+      planSteps: [
+        {
+          title: "Name the exact friction",
+          description:
+            "Check whether the block is mostly about foundations, method, stress, pace or one specific chapter.",
+        },
+        {
+          title: "Reduce unproductive pressure",
+          description:
+            "Replace long vague discussions with a short reset: what is confusing, what is urgent and what is the next realistic small win.",
+        },
+        {
+          title: "Bring in outside structure if the pattern repeats",
+          description:
+            "When the same block keeps returning, structured outside support often helps more than another round of home supervision.",
+        },
+      ],
+      mistakesTitle: "Reactions that often make it worse",
+      mistakes: [
+        "Waiting for a major academic crisis before acting.",
+        "Confusing low effort with low structure.",
+        "Trying multiple improvised fixes without keeping a stable plan from week to week.",
+      ],
+      tutoringTitle: "When premium support becomes genuinely useful",
+      tutoringPoints: [
+        "When the family wants quick clarity on whether the need is focused, recurring or broader than homework help.",
+        "When the student needs a calm, credible adult who can reorganize the subject without worsening the tone at home.",
+        "When math, science, French or study method issues start affecting confidence as much as marks.",
+      ],
+      faq: [
+        {
+          question: "How do we know if this is just a phase or a real support issue?",
+          answer:
+            "When confusion, avoidance or falling confidence repeat over several weeks, it is usually smarter to clarify early instead of waiting for a bigger break.",
+        },
+        {
+          question: "Should families start by adding more practice at home?",
+          answer:
+            "Not always. When structure is the real issue, more volume can simply add fatigue. It is often more helpful to frame the problem better before adding work.",
+        },
+      ],
+      ctaTitle: "Does this sound like your teenager?",
+      ctaText:
+        "Methode Secondaire can help you build a clearer diagnosis, choose the right kind of support and put math or science back into a calmer structure.",
+      relatedRouteKeys: ["parentSupportSignals", "catchUp", "scienceExamPrep"],
     },
   },
 }

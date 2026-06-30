@@ -1,20 +1,14 @@
-import { Link, useLocation } from "react-router-dom"
-import {
-  ArrowRight,
-  BadgeCheck,
-  HeartHandshake,
-  Quote,
-  ShieldCheck,
-  Sparkles,
-  Star,
-  TrendingUp,
-} from "lucide-react"
+import { CalendarDays, HeartHandshake, Phone, ShieldCheck, TrendingUp } from "lucide-react"
+import { useLocation } from "react-router-dom"
 
 import { VerifiedReviewsSection } from "@/components/ConversionSections"
-import MotionCard from "@/components/MotionCard"
 import Seo from "@/components/Seo"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import {
+  FeatureGrid,
+  FinalCtaSection,
+  HeroShowcase,
+  QuoteGrid,
+} from "@/components/SimpleMarketingSections"
 import { BOOKING_URL } from "@/config/booking"
 import {
   buildAlternates,
@@ -28,188 +22,112 @@ import { siteConfig } from "@/lib/seo"
 
 const contentByLocale = {
   fr: {
+    badge: "Avis vérifiés • Parents et élèves",
+    title: "Des témoignages qui donnent confiance avant même la première séance.",
+    description:
+      "Les familles veulent sentir si le service est sérieux, humain et réellement utile. Cette page va droit au but.",
+    panelEyebrow: "Ce qui revient le plus",
+    panelTitle: "Progression, calme et confiance",
+    panelItems: [
+      "Des notes qui remontent après une période difficile.",
+      "Une méthode plus claire qui reste après la séance.",
+      "Moins de stress à la maison et avant les examens.",
+    ],
     signals: [
       {
         icon: TrendingUp,
         title: "Progression visible",
-        description: "Les familles parlent de notes qui remontent, mais surtout d'une vraie stabilité dans la méthode.",
+        description: "Les familles parlent de résultats qui remontent, mais surtout d'un cap beaucoup plus clair.",
       },
       {
         icon: HeartHandshake,
-        title: "Année sauvée",
-        description: "Quand la matière semblait perdue, plusieurs retours parlent d'un véritable tournant dans l'année scolaire.",
+        title: "Année relancée",
+        description: "Quand ça allait mal depuis un moment, plusieurs retours parlent d'un vrai tournant.",
       },
       {
         icon: ShieldCheck,
         title: "Confiance retrouvée",
-        description: "Le changement le plus fréquent: moins de panique, plus de calme et plus de contrôle avant les évaluations.",
+        description: "Le changement le plus marquant reste souvent le calme qui revient chez l'élève et le parent.",
       },
     ],
-    testimonials: [
+    quotes: [
       {
-        quote:
-          "Mon fils est passé d'un échec à 92 % en maths. On a senti un vrai déclic, mais surtout une méthode qui est restée.",
+        text: "Mon fils est passé d'un échec à 92 % en maths. Le plus fort n'était pas juste la note, mais la méthode qui est restée.",
         author: "Parent d'un élève de secondaire 4",
-        tag: "Mathématiques",
+        tag: "Maths",
       },
       {
-        quote:
-          "Honnêtement, vous avez sauvé son année. On ne parlait plus seulement de tutorat, on parlait d'un retour complet de confiance.",
+        text: "Vous avez sauvé son année. On a senti un vrai changement dans sa confiance et dans sa façon d'aborder l'école.",
         author: "Parent d'un élève de secondaire 5",
         tag: "Suivi régulier",
       },
       {
-        quote:
-          "Pour la première fois, ma fille est sortie d'un examen en disant qu'elle savait ce qu'elle faisait du début à la fin.",
-        author: "Parent d'une élève de secondaire 3",
-        tag: "Préparation d'examen",
-      },
-      {
-        quote:
-          "On voyait enfin une vraie structure: comprendre, pratiquer, corriger. La différence s'est ressentie très vite.",
-        author: "Parent d'un élève de secondaire 2",
-        tag: "Méthode",
-      },
-      {
-        quote:
-          "Avant, les sciences étaient juste du par coeur stressant. Maintenant, il comprend ce qu'il fait et ses résultats suivent.",
-        author: "Parent d'un élève de secondaire 5",
+        text: "Avant, les sciences étaient juste stressantes. Maintenant, il comprend ce qu'il fait et ça paraît.",
+        author: "Parent d'un élève du secondaire",
         tag: "Sciences",
       },
-      {
-        quote:
-          "Le plus grand changement n'a pas été seulement la note. C'était la confiance retrouvée et le calme à la maison.",
-        author: "Parent d'un élève du secondaire",
-        tag: "Impact global",
-      },
     ],
-    themes: [
-      "Des notes qui remontent après une période difficile",
-      "Une méthode plus claire et plus stable",
-      "Des examens abordés avec beaucoup moins de stress",
-      "Une relation plus saine avec les maths et les sciences",
-    ],
-    badge: "Avis vérifiés • Parents et élèves",
-    heroTitle:
-      "Des retours qui donnent envie d'avancer, et qui donnent confiance avant même la première séance.",
-    heroText:
-      "Retours anonymisés avec contexte de suivi, publiés pour montrer une preuve sociale plus solide tout en protégeant la confidentialité des familles.",
-    ctaPrimary: "Réserver une séance ciblée",
-    ctaSecondary: "Retour à l'accueil",
-    asideEyebrow: "Ce qui revient le plus souvent",
-    asideTitle: "Des familles qui sentent une vraie différence",
-    sectionOneEyebrow: "Paroles de familles",
-    sectionOneTitle: "Des témoignages qui parlent de résultats, mais aussi de sérénité",
-    sectionOneDescription:
-      "Quand une famille prend le temps d'écrire après une belle progression, ce sont souvent ces mots-là qui reviennent.",
-    sectionTwoEyebrow: "Impact ressenti",
-    sectionTwoTitle: "Ce que ces messages disent au fond",
-    sectionTwoDescription:
-      "Au-delà des notes, les retours parlent surtout d'un élève qui recommence à croire qu'il est capable.",
-    themesTitle: "Thèmes récurrents",
-    finalTitle: "Une page qui rassure avant même le premier contact",
-    finalText:
-      "Quand un parent lit des retours comme ceux-ci, il comprend tout de suite que l'objectif n'est pas seulement d'aider pour un devoir, mais de produire une vraie progression durable.",
-    finalPrimary: "Réserver une séance ciblée",
-    finalSecondary: "Voir la page devenir tuteur",
+    ctaTitle: "Prêt à avancer avec plus de confiance ?",
+    ctaDescription:
+      "Si ces retours vous ressemblent, on peut déjà cadrer la situation et choisir la meilleure suite.",
     seoTitle: "Témoignages | Méthode Secondaire",
     seoDescription:
-      "Découvrez des témoignages anonymisés de parents et d'élèves en maths et sciences au secondaire: progression, confiance et résultats.",
-    seoKeywords:
-      "avis vérifiés tutorat secondaire, avis tutorat maths, avis tutorat sciences, progression scolaire Québec",
-    schemaName: "Témoignages",
+      "Découvrez des témoignages de parents et d'élèves en tutorat maths et sciences au secondaire: progression, confiance et résultats.",
+    seoKeywords: "témoignages tutorat secondaire, avis tuteur maths, avis tuteur sciences, progression scolaire québec",
   },
   en: {
+    badge: "Verified reviews • Parents and students",
+    title: "Feedback that builds trust before the first session even starts.",
+    description:
+      "Families want to feel whether the service is serious, human and genuinely useful. This page keeps it direct.",
+    panelEyebrow: "What comes back most",
+    panelTitle: "Progress, calm and confidence",
+    panelItems: [
+      "Marks rising after a difficult stretch.",
+      "A clearer method that stays after the session.",
+      "Less stress at home and before exams.",
+    ],
     signals: [
       {
         icon: TrendingUp,
         title: "Visible progress",
-        description: "Families talk about marks going up, but even more about a method that finally feels stable.",
+        description: "Families talk about marks improving, but even more about having a clearer direction.",
       },
       {
         icon: HeartHandshake,
-        title: "A school year turned around",
-        description: "When the subject felt lost, several messages describe a real turning point in the school year.",
+        title: "A year turned around",
+        description: "When school had been going badly for a while, several reviews describe a real turning point.",
       },
       {
         icon: ShieldCheck,
         title: "Confidence restored",
-        description: "The most common shift is less panic, more calm and far more control before evaluations.",
+        description: "The most striking change is often the calm that comes back for both student and parent.",
       },
     ],
-    testimonials: [
+    quotes: [
       {
-        quote:
-          "My son went from failing to 92% in math. We felt a real breakthrough, but most of all a method that stayed with him.",
+        text: "My son went from failing to 92% in math. The biggest win was not only the grade, but the method that stayed.",
         author: "Parent of a Secondary 4 student",
-        tag: "Mathematics",
+        tag: "Math",
       },
       {
-        quote:
-          "Honestly, you saved the year. It stopped feeling like tutoring and started feeling like confidence coming back.",
+        text: "You saved the year. We felt a real change in confidence and in how school was being approached.",
         author: "Parent of a Secondary 5 student",
         tag: "Weekly support",
       },
       {
-        quote:
-          "For the first time, my daughter came out of an exam saying she knew exactly what she was doing from start to finish.",
-        author: "Parent of a Secondary 3 student",
-        tag: "Exam preparation",
-      },
-      {
-        quote:
-          "We could finally see a real structure: understand, practice, correct. The difference showed up very quickly.",
-        author: "Parent of a Secondary 2 student",
-        tag: "Method",
-      },
-      {
-        quote:
-          "Science used to feel like stressful memorization. Now he understands what he is doing and the results are following.",
-        author: "Parent of a Secondary 5 student",
+        text: "Science used to feel stressful. Now he understands what he is doing and it shows.",
+        author: "Parent of a high school student",
         tag: "Science",
       },
-      {
-        quote:
-          "The biggest change was not just the grade. It was the confidence that came back, and the calm at home.",
-        author: "Parent of a high school student",
-        tag: "Overall impact",
-      },
     ],
-    themes: [
-      "Marks rising after a difficult stretch",
-      "A clearer and more stable method",
-      "Exams approached with much less stress",
-      "A healthier relationship with math and science",
-    ],
-    badge: "Verified reviews • Parents and students",
-    heroTitle:
-      "The kind of feedback that builds trust before the very first session.",
-    heroText:
-      "These reviews are anonymized and published with tutoring context to create stronger social proof while protecting family privacy.",
-    ctaPrimary: "Book a focused session",
-    ctaSecondary: "Back to home",
-    asideEyebrow: "What comes back most often",
-    asideTitle: "Families who feel a real difference",
-    sectionOneEyebrow: "From families",
-    sectionOneTitle: "Testimonials about results, but also about peace of mind",
-    sectionOneDescription:
-      "When families take the time to write after real progress, these are the kinds of words that keep coming back.",
-    sectionTwoEyebrow: "What it really means",
-    sectionTwoTitle: "What these messages say underneath the marks",
-    sectionTwoDescription:
-      "Beyond grades, the feedback usually points to a student who starts believing again that success is possible.",
-    themesTitle: "Recurring themes",
-    finalTitle: "A page that reassures families before the first conversation",
-    finalText:
-      "When a parent reads feedback like this, they immediately understand that the goal is not just homework help, but real long-term progress.",
-    finalPrimary: "Book a focused session",
-    finalSecondary: "See the tutor page",
+    ctaTitle: "Ready to move forward with more confidence?",
+    ctaDescription:
+      "If these stories feel familiar, we can already frame the situation and choose the strongest next step.",
     seoTitle: "Testimonials | Méthode Secondaire",
     seoDescription:
-      "Read anonymized parent and student testimonials about high school math and science tutoring: progress, confidence and results.",
-    seoKeywords:
-      "verified tutoring reviews, math tutor reviews, science tutor reviews, quebec academic progress",
-    schemaName: "Testimonials",
+      "Read parent and student testimonials about high school math and science tutoring: progress, confidence and results.",
+    seoKeywords: "tutoring testimonials, math tutor reviews, science tutor reviews, quebec tutoring results",
   },
 }
 
@@ -219,17 +137,12 @@ export default function Temoignages() {
   const copy = contentByLocale[locale]
   const path = getLocalizedPath("temoignages", locale)
 
-  const testimonialsSchema = {
+  const schema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: copy.schemaName,
+    name: copy.seoTitle,
     url: `${siteConfig.siteUrl}${path}`,
     description: copy.seoDescription,
-    publisher: {
-      "@type": "EducationalOrganization",
-      name: siteConfig.siteName,
-      url: siteConfig.siteUrl,
-    },
   }
 
   return (
@@ -239,7 +152,7 @@ export default function Temoignages() {
         description={copy.seoDescription}
         path={path}
         keywords={copy.seoKeywords}
-        jsonLd={testimonialsSchema}
+        jsonLd={schema}
         lang={getHtmlLang(locale)}
         locale={getOgLocale(locale)}
         alternateLocale={getAlternateOgLocale(locale)}
@@ -252,187 +165,75 @@ export default function Temoignages() {
       </div>
 
       <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
-        <section className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
-          <div className="max-w-3xl">
-            <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
-              {copy.badge}
-            </Badge>
+        <HeroShowcase
+          badge={copy.badge}
+          title={copy.title}
+          description={copy.description}
+          primaryAction={{
+            label: locale === "en" ? "Call now" : "Appeler maintenant",
+            href: `tel:${siteConfig.phone}`,
+            icon: Phone,
+          }}
+          secondaryAction={{
+            label: locale === "en" ? "Book a session" : "Réserver une séance",
+            href: BOOKING_URL,
+            external: true,
+            icon: CalendarDays,
+          }}
+          panelEyebrow={copy.panelEyebrow}
+          panelTitle={copy.panelTitle}
+          panelItems={copy.panelItems}
+        />
 
-            <h1 className="balanced-copy mt-7 font-display text-5xl font-semibold leading-[0.95] text-white sm:text-6xl">
-              {copy.heroTitle}
-            </h1>
-
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/72">{copy.heroText}</p>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button
-                asChild
-                className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
-              >
-                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                  {copy.ctaPrimary}
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-              </Button>
-
-              <Button
-                asChild
-                variant="outline"
-                className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
-              >
-                <Link to={getLocalizedPath("reussites", locale)}>
-                  {locale === "en" ? "See case studies" : "Voir les cas types"}
-                </Link>
-              </Button>
-            </div>
-          </div>
-
-          <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.24em] text-white/45">{copy.asideEyebrow}</div>
-            <div className="mt-3 font-display text-3xl font-semibold">{copy.asideTitle}</div>
-
-            <div className="mt-6 space-y-4">
-              {copy.signals.map((signal) => (
-                <div key={signal.title} className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-4">
-                  <div className="flex items-center gap-3">
-                    <div className="rounded-2xl bg-[#f5c977] p-2.5 text-[#071631]">
-                      <signal.icon className="h-4 w-4" />
-                    </div>
-                    <div className="font-semibold text-white">{signal.title}</div>
-                  </div>
-                  <p className="mt-3 text-sm leading-7 text-white/72">{signal.description}</p>
-                </div>
-              ))}
-            </div>
-          </MotionCard>
-        </section>
+        <FeatureGrid
+          eyebrow={locale === "en" ? "Why it matters" : "Pourquoi ça compte"}
+          title={
+            locale === "en"
+              ? "What strong testimonials really communicate"
+              : "Ce que de bons témoignages communiquent vraiment"
+          }
+          description={
+            locale === "en"
+              ? "They do more than show results. They reassure families before the first conversation."
+              : "Ils montrent plus que des résultats. Ils rassurent les familles avant même le premier échange."
+          }
+          items={copy.signals}
+        />
 
         <VerifiedReviewsSection locale={locale} className="pt-20" limit={4} showLink={false} />
 
-        <div className="pt-8">
-          <MotionCard className="rounded-[28px] border-white/10 bg-white/[0.04] p-6 text-white">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="max-w-3xl">
-                <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
-                  {locale === "en" ? "More context for parents" : "Plus de contexte pour les parents"}
-                </div>
-                <p className="mt-3 text-sm leading-7 text-white/72">
-                  {locale === "en"
-                    ? "Real testimonials reassure. Representative case studies help parents recognize their own situation more concretely."
-                    : "Les vrais témoignages rassurent. Les cas types aident un parent à reconnaître sa propre situation de façon beaucoup plus concrète."}
-                </p>
-              </div>
+        <QuoteGrid
+          eyebrow={locale === "en" ? "From families" : "Paroles de familles"}
+          title={
+            locale === "en"
+              ? "A few short stories parents immediately understand"
+              : "Quelques retours courts qu'un parent comprend tout de suite"
+          }
+          description={
+            locale === "en"
+              ? "No long detour. Just the kind of feedback that helps a family trust the next step."
+              : "Pas de long détour. Juste le type de retour qui aide une famille à faire confiance au prochain pas."
+          }
+          quotes={copy.quotes}
+        />
 
-              <Button
-                asChild
-                variant="outline"
-                className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
-              >
-                <Link to={getLocalizedPath("reussites", locale)}>
-                  {locale === "en" ? "Open case studies" : "Ouvrir les cas types"}
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-            </div>
-          </MotionCard>
-        </div>
-
-        <section className="pt-20">
-          <SectionHeader
-            eyebrow={copy.sectionOneEyebrow}
-            title={copy.sectionOneTitle}
-            description={copy.sectionOneDescription}
-          />
-
-          <div className="mt-8 grid gap-4 xl:grid-cols-3">
-            {copy.testimonials.map((testimonial) => (
-              <MotionCard key={testimonial.quote} className="rounded-[30px] border-white/10 bg-[#091a3a]/85 p-7 text-white">
-                <div className="flex items-center justify-between gap-4">
-                  <div className="inline-flex rounded-2xl bg-white/10 p-3 text-[#f5c977]">
-                    <Quote className="h-5 w-5" />
-                  </div>
-                  <Badge className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-white/85 hover:bg-white/10">
-                    {testimonial.tag}
-                  </Badge>
-                </div>
-
-                <div className="mt-5 flex gap-1 text-[#f5c977]">
-                  {Array.from({ length: 5 }).map((_, index) => (
-                    <Star key={index} className="h-4 w-4 fill-current" />
-                  ))}
-                </div>
-
-                <blockquote className="mt-5 text-lg leading-8 text-white/90">
-                  “{testimonial.quote}”
-                </blockquote>
-
-                <div className="mt-6 text-sm text-white/60">{testimonial.author}</div>
-              </MotionCard>
-            ))}
-          </div>
-        </section>
-
-        <section className="pt-20">
-          <SectionHeader
-            eyebrow={copy.sectionTwoEyebrow}
-            title={copy.sectionTwoTitle}
-            description={copy.sectionTwoDescription}
-          />
-
-          <div className="mt-8 grid gap-4 lg:grid-cols-2">
-            <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
-              <div className="text-sm uppercase tracking-[0.24em] text-white/45">{copy.themesTitle}</div>
-              <ul className="mt-6 space-y-4 text-sm text-white/80">
-                {copy.themes.map((theme) => (
-                  <li key={theme} className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4">
-                    <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
-                    {theme}
-                  </li>
-                ))}
-              </ul>
-            </MotionCard>
-
-            <MotionCard className="rounded-[32px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-7 text-white">
-              <div className="inline-flex rounded-2xl bg-white/10 p-3 text-[#f5c977]">
-                <Sparkles className="h-5 w-5" />
-              </div>
-              <h2 className="mt-5 font-display text-3xl font-semibold">{copy.finalTitle}</h2>
-              <p className="mt-3 text-sm leading-7 text-white/75">{copy.finalText}</p>
-              <div className="mt-8 flex flex-wrap gap-3">
-                <Button
-                  asChild
-                  className="rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]"
-                >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    {copy.finalPrimary}
-                  </a>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
-                >
-                  <Link to={getLocalizedPath("reussites", locale)}>
-                    {locale === "en" ? "See case studies" : "Voir les cas types"}
-                  </Link>
-                </Button>
-              </div>
-            </MotionCard>
-          </div>
-        </section>
+        <FinalCtaSection
+          badge={copy.badge}
+          title={copy.ctaTitle}
+          description={copy.ctaDescription}
+          primaryAction={{
+            label: locale === "en" ? "Call now" : "Appeler maintenant",
+            href: `tel:${siteConfig.phone}`,
+            icon: Phone,
+          }}
+          secondaryAction={{
+            label: locale === "en" ? "Book a session" : "Réserver une séance",
+            href: BOOKING_URL,
+            external: true,
+            icon: CalendarDays,
+          }}
+        />
       </main>
-    </div>
-  )
-}
-
-function SectionHeader({ eyebrow, title, description }) {
-  return (
-    <div className="max-w-3xl">
-      <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">{eyebrow}</div>
-      <h2 className="balanced-copy mt-4 font-display text-4xl font-semibold text-white sm:text-5xl">
-        {title}
-      </h2>
-      <p className="mt-4 text-base leading-8 text-white/72 sm:text-lg">{description}</p>
     </div>
   )
 }

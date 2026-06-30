@@ -1,14 +1,17 @@
+import { CalendarDays, MapPin, Phone } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
-import { ArrowRight, BadgeCheck, MapPin } from "lucide-react"
 
-import {
-  GuaranteeSection,
-  OperationalPromisesSection,
-  VerifiedReviewsSection,
-} from "@/components/ConversionSections"
+import { VerifiedReviewsSection } from "@/components/ConversionSections"
 import MotionCard from "@/components/MotionCard"
 import Seo from "@/components/Seo"
-import { Badge } from "@/components/ui/badge"
+import {
+  ContactSection,
+  FaqGrid,
+  FeatureGrid,
+  FinalCtaSection,
+  HeroShowcase,
+  StepGrid,
+} from "@/components/SimpleMarketingSections"
 import { Button } from "@/components/ui/button"
 import { BOOKING_URL } from "@/config/booking"
 import { localPageConfigs } from "@/lib/conversionContent"
@@ -30,8 +33,6 @@ export default function LocalLanding({ forcedRouteKey }) {
   const routeKey = forcedRouteKey || getRouteKeyFromPath(location.pathname)
   const page = localPageConfigs[routeKey]?.[locale]
   const path = getLocalizedPath(routeKey, locale)
-  const valuePoints = getLocalValuePoints(routeKey, page?.city, locale)
-  const decisionPoints = getLocalDecisionPoints(routeKey, locale)
 
   if (!page) {
     return (
@@ -43,27 +44,13 @@ export default function LocalLanding({ forcedRouteKey }) {
             </div>
             <h1 className="mt-4 font-display text-4xl font-semibold">
               {locale === "en"
-                ? "This page is temporarily unavailable."
-                : "Cette page est momentanément indisponible."}
+                ? "This page is not available right now."
+                : "Cette page n'est pas disponible pour le moment."}
             </h1>
-            <p className="mt-4 max-w-3xl text-base leading-8 text-white/72">
-              {locale === "en"
-                ? "You can continue with the main tutoring pages or explore the tutor profiles while we guide you to the best next step."
-                : "Vous pouvez continuer avec les pages principales ou consulter les profils tuteurs pendant que nous vous guidons vers la meilleure suite."}
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8">
               <Button asChild className="rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
                 <Link to={getLocalizedPath("home", locale)}>
                   {locale === "en" ? "Back to home" : "Retour à l'accueil"}
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
-              >
-                <Link to={getLocalizedPath("tuteurs", locale)}>
-                  {locale === "en" ? "See tutors" : "Voir les tuteurs"}
                 </Link>
               </Button>
             </div>
@@ -73,7 +60,52 @@ export default function LocalLanding({ forcedRouteKey }) {
     )
   }
 
-  const schemas = [
+  const locationCards = page.highlights.map((entry, index) => ({
+    title:
+      locale === "en"
+        ? ["Clarity first", "Right format", "Serious support"][index] || `Reason ${index + 1}`
+        : ["Clarté d'abord", "Bon format", "Accompagnement sérieux"][index] || `Point ${index + 1}`,
+    description: entry,
+  }))
+
+  const steps =
+    locale === "en"
+      ? [
+          {
+            step: "01",
+            title: "Explain the local need",
+            description: `Tell us what is happening for the student in ${page.city} and whether the need is urgent, weekly or subject-specific.`,
+          },
+          {
+            step: "02",
+            title: "We choose the smartest format",
+            description: "We help decide between a one-time session, steadier follow-up or online support across Quebec.",
+          },
+          {
+            step: "03",
+            title: "The family moves forward with a clearer plan",
+            description: "The next step becomes easier because the path, format and priorities are more explicit.",
+          },
+        ]
+      : [
+          {
+            step: "01",
+            title: "Expliquez le besoin local",
+            description: `Dites-nous ce qui se passe pour l'élève à ${page.city} et si le besoin est urgent, régulier ou lié à une matière précise.`,
+          },
+          {
+            step: "02",
+            title: "On choisit le format le plus intelligent",
+            description: "On vous aide à trancher entre séance ponctuelle, suivi plus régulier ou soutien en ligne partout au Québec.",
+          },
+          {
+            step: "03",
+            title: "La famille avance avec un plan plus clair",
+            description: "La suite devient plus simple parce que le cadre, le rythme et les priorités sont mieux définis.",
+          },
+        ]
+
+  const schema = [
     {
       "@context": "https://schema.org",
       "@type": "WebPage",
@@ -97,24 +129,6 @@ export default function LocalLanding({ forcedRouteKey }) {
         telephone: siteConfig.phone,
         email: siteConfig.email,
       },
-      offers: {
-        "@type": "Offer",
-        url: BOOKING_URL,
-        priceCurrency: "CAD",
-        availability: "https://schema.org/InStock",
-      },
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      mainEntity: page.faq.map((entry) => ({
-        "@type": "Question",
-        name: entry.question,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: entry.answer,
-        },
-      })),
     },
   ]
 
@@ -125,7 +139,7 @@ export default function LocalLanding({ forcedRouteKey }) {
         description={page.seoDescription}
         path={path}
         keywords={page.keywords}
-        jsonLd={schemas}
+        jsonLd={schema}
         lang={getHtmlLang(locale)}
         locale={getOgLocale(locale)}
         alternateLocale={getAlternateOgLocale(locale)}
@@ -139,283 +153,135 @@ export default function LocalLanding({ forcedRouteKey }) {
       </div>
 
       <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
-        <section className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
-          <div className="max-w-3xl">
-            <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
-              {page.eyebrow}
-            </Badge>
+        <HeroShowcase
+          badge={page.eyebrow}
+          title={page.heroTitle}
+          description={page.heroText}
+          primaryAction={{
+            label: locale === "en" ? "Call first" : "Appeler d'abord",
+            href: `tel:${siteConfig.phone}`,
+            icon: Phone,
+          }}
+          secondaryAction={{
+            label: locale === "en" ? "Book a focused session" : "Réserver une séance ciblée",
+            href: BOOKING_URL,
+            external: true,
+            icon: CalendarDays,
+          }}
+          panelEyebrow={locale === "en" ? "Local reassurance" : "Repères locaux"}
+          panelTitle={
+            locale === "en"
+              ? `A clearer experience for families in ${page.city}`
+              : `Une expérience plus claire pour les familles de ${page.city}`
+          }
+          panelItems={page.highlights}
+          panelNote={
+            locale === "en"
+              ? "The goal is to make the next step feel easier, more serious and more structured."
+              : "Le but est de rendre le prochain pas plus simple, plus sérieux et plus structuré."
+          }
+        />
 
-            <h1 className="balanced-copy mt-7 font-display text-5xl font-semibold leading-[0.95] text-white sm:text-6xl">
-              {page.heroTitle}
-            </h1>
+        <FeatureGrid
+          eyebrow={locale === "en" ? "Why families choose this page" : "Pourquoi cette page aide"}
+          title={
+            locale === "en"
+              ? `What families in ${page.city} usually want clarified`
+              : `Ce que les familles de ${page.city} veulent clarifier rapidement`
+          }
+          description={
+            locale === "en"
+              ? "The strongest local pages are the ones that make the decision easier, not heavier."
+              : "Les meilleures pages locales sont celles qui rendent la décision plus simple, pas plus lourde."
+          }
+          items={locationCards}
+        />
 
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/72">{page.heroText}</p>
+        <StepGrid
+          eyebrow={locale === "en" ? "Steps" : "Étapes"}
+          title={
+            locale === "en"
+              ? `A simpler path for tutoring in ${page.city}`
+              : `Un parcours plus simple pour le tutorat à ${page.city}`
+          }
+          description={
+            locale === "en"
+              ? "The page now helps parents understand the next move quickly."
+              : "La page aide maintenant les parents à comprendre le prochain pas rapidement."
+          }
+          steps={steps}
+        />
 
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button
-                asChild
-                className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
-              >
-                <a href={`tel:${siteConfig.phone}`}>
-                  {locale === "en" ? "Call for a diagnostic" : "Appeler pour un diagnostic"}
-                </a>
-              </Button>
-
-              <Button
-                asChild
-                variant="outline"
-                className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
-              >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    <ArrowRight className="h-4 w-4" />
-                  {locale === "en" ? "Book a focused session" : "Réserver une séance ciblée"}
-                  </a>
-              </Button>
-            </div>
-
-            <p className="mt-4 text-sm leading-7 text-white/68">
-              {locale === "en"
-                ? "A short phone call is often the easiest way to explain the situation before booking. Weekly follow-up is best discussed by phone first."
-                : "Un court appel est souvent la façon la plus simple d'expliquer la situation avant de réserver. Un suivi hebdomadaire se discute mieux d'abord par téléphone."}
-            </p>
-          </div>
-
-          <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.24em] text-white/45">
-              {locale === "en" ? "What families appreciate" : "Ce que les familles apprécient"}
-            </div>
-            <div className="mt-3 font-display text-3xl font-semibold">
-              {locale === "en"
-                ? `A clear, reassuring experience for families in ${page.city}`
-                : `Un accompagnement clair et rassurant pour les familles de ${page.city}`}
-            </div>
-
-            <ul className="mt-6 space-y-4 text-sm text-white/80">
-              {page.highlights.map((highlight) => (
-                <li key={highlight} className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4">
-                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
-                  {highlight}
-                </li>
-              ))}
-            </ul>
-
-            <div className="mt-6 rounded-[24px] border border-white/10 bg-[#081a38]/80 px-5 py-5 text-sm leading-7 text-white/72">
-              {locale === "en"
-                ? "Families want to understand quickly whether the support will feel serious, clear and well organized. That is exactly what this page is here to show."
-                : "Les familles veulent comprendre rapidement si l'accompagnement sera sérieux, clair et bien organisé. C'est exactement ce que cette page montre."}
-            </div>
-          </MotionCard>
-        </section>
-
-        <section className="pt-20">
-          <div className="grid gap-4 lg:grid-cols-2">
-            <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.04] p-7 text-white">
-              <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
-                {locale === "en" ? "Why families choose this route" : "Pourquoi des familles choisissent ce format"}
-              </div>
-              <h2 className="mt-4 font-display text-3xl font-semibold">
-                {locale === "en"
-                  ? `What families in ${page.city} are really paying for`
-                  : `Ce que les familles de ${page.city} achètent vraiment`}
-              </h2>
-              <div className="mt-6 space-y-4 text-sm text-white/80">
-                {valuePoints.map((point) => (
-                  <div
-                    key={point}
-                    className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
-                  >
-                    <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
-                    {point}
-                  </div>
-                ))}
-              </div>
-            </MotionCard>
-
-            <MotionCard className="rounded-[32px] border-white/10 bg-[#091a3a]/85 p-7 text-white">
-              <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
-                {locale === "en" ? "Call or book?" : "Appeler ou réserver ?"}
-              </div>
-              <h2 className="mt-4 font-display text-3xl font-semibold">
-                {locale === "en"
-                  ? "The fastest next step depends on how clear the need already is"
-                  : "Le bon prochain pas dépend surtout du niveau de clarté du besoin"}
-              </h2>
-              <div className="mt-6 space-y-4 text-sm text-white/78">
-                {decisionPoints.map((point) => (
-                  <div
-                    key={point}
-                    className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
-                  >
-                    {point}
-                  </div>
-                ))}
-              </div>
-            </MotionCard>
-          </div>
-        </section>
-
-        <GuaranteeSection locale={locale} className="pt-20" />
-        <OperationalPromisesSection locale={locale} className="pt-20" />
         <VerifiedReviewsSection locale={locale} className="pt-20" limit={2} showLink />
 
-        <section className="pt-20">
-          <SectionHeader
-            eyebrow={locale === "en" ? "Local FAQ" : "FAQ locale"}
-            title={
-              locale === "en"
-                ? `Common questions about tutoring in ${page.city}`
-                : `Questions fréquentes sur le tutorat à ${page.city}`
-            }
-            description={
-              locale === "en"
-                ? "These questions answer the practical concerns families often have before booking locally."
-                : "Ces réponses couvrent les questions pratiques que les familles se posent souvent avant de réserver localement."
-            }
-          />
+        <FaqGrid
+          eyebrow={locale === "en" ? "Local FAQ" : "FAQ locale"}
+          title={
+            locale === "en"
+              ? `Common local questions about tutoring in ${page.city}`
+              : `Questions locales fréquentes sur le tutorat à ${page.city}`
+          }
+          description={
+            locale === "en"
+              ? "Short practical answers before booking."
+              : "Des réponses pratiques et courtes avant de réserver."
+          }
+          items={page.faq}
+          columns="lg:grid-cols-3"
+        />
 
-          <div className="mt-8 grid gap-4 lg:grid-cols-3">
-            {page.faq.map((entry) => (
-              <MotionCard key={entry.question} className="glass-panel rounded-[28px] border-white/10 bg-white/[0.04] p-6 text-white">
-                <h2 className="font-display text-2xl font-semibold">{entry.question}</h2>
-                <p className="mt-4 text-sm leading-7 text-white/72">{entry.answer}</p>
-              </MotionCard>
-            ))}
-          </div>
-        </section>
+        <ContactSection
+          locale={locale}
+          eyebrow={locale === "en" ? "Contact" : "Contact"}
+          title={
+            locale === "en"
+              ? `Tell us what is happening in ${page.city}`
+              : `Parlez-nous de la situation à ${page.city}`
+          }
+          description={
+            locale === "en"
+              ? "If the need is clear, booking works well. If the family still needs direction, calling first is often better."
+              : "Si le besoin est clair, la réservation fonctionne bien. Si la famille a encore besoin d'orientation, appeler d'abord aide souvent davantage."
+          }
+          bullets={[
+            locale === "en"
+              ? "Mention the subject, grade level and whether the need is one-time or weekly."
+              : "Mentionnez la matière, le niveau et si le besoin est ponctuel ou hebdomadaire.",
+            locale === "en"
+              ? "If online support is acceptable, say it right away."
+              : "Si le format en ligne vous convient, dites-le dès le départ.",
+            locale === "en"
+              ? "If an exam is coming, include the date."
+              : "Si un examen approche, indiquez la date.",
+          ]}
+          pageName={`${routeKey}-${locale}`}
+        />
 
-        <section className="pt-20">
-          <MotionCard className="rounded-[34px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-8 text-white sm:p-10">
-            <div className="max-w-3xl">
-              <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white/85">
-                <MapPin className="mr-2 h-4 w-4" />
-                {page.city}
-              </div>
-              <h2 className="mt-5 font-display text-4xl font-semibold sm:text-5xl">
-                {locale === "en"
-                  ? "Ready to move forward with a clearer tutoring plan?"
-                  : "Prêt à avancer avec un plan de tutorat plus clair?"}
-              </h2>
-              <p className="mt-4 text-base leading-8 text-white/75 sm:text-lg">
-                {locale === "en"
-                  ? "Call first for regular follow-up, or book a focused session if the need is already clear."
-                  : "Appelez d'abord pour un suivi régulier, ou réservez une séance ciblée si le besoin est déjà clair."}
-              </p>
-              <div className="mt-7 flex flex-wrap gap-3">
-                <Button
-                  asChild
-                  className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
-                >
-                  <a href={`tel:${siteConfig.phone}`}>
-                    {locale === "en" ? "Call now" : "Appeler maintenant"}
-                  </a>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
-                >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    {locale === "en" ? "Book a focused session" : "Réserver une séance ciblée"}
-                  </a>
-                </Button>
-              </div>
-            </div>
-          </MotionCard>
-        </section>
+        <FinalCtaSection
+          badge={page.city}
+          title={
+            locale === "en"
+              ? `Ready to move forward with a clearer tutoring plan in ${page.city}?`
+              : `Prêt à avancer avec un plan de tutorat plus clair à ${page.city} ?`
+          }
+          description={
+            locale === "en"
+              ? "We can help you choose the right first move now."
+              : "On peut vous aider à choisir le bon premier pas dès maintenant."
+          }
+          primaryAction={{
+            label: locale === "en" ? "Call now" : "Appeler maintenant",
+            href: `tel:${siteConfig.phone}`,
+            icon: Phone,
+          }}
+          secondaryAction={{
+            label: locale === "en" ? "Book a session" : "Réserver une séance",
+            href: BOOKING_URL,
+            external: true,
+            icon: MapPin,
+          }}
+        />
       </main>
     </div>
   )
-}
-
-function SectionHeader({ eyebrow, title, description }) {
-  return (
-    <div className="max-w-3xl">
-      <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">{eyebrow}</div>
-      <h2 className="balanced-copy mt-4 font-display text-4xl font-semibold text-white sm:text-5xl">
-        {title}
-      </h2>
-      <p className="mt-4 text-base leading-8 text-white/72 sm:text-lg">{description}</p>
-    </div>
-  )
-}
-
-function getLocalValuePoints(routeKey, city, locale) {
-  const cityLabel = city || (locale === "en" ? "your area" : "votre secteur")
-
-  const map = {
-    montreal:
-      locale === "en"
-        ? [
-            "A faster decision between a one-time session, an exam sprint or a steadier weekly format.",
-            "A clearer plan for families who want serious math or science support in Montreal without guessing which format fits.",
-            "A better mix of flexibility, clarity and tutor matching before the student loses more time.",
-          ]
-        : [
-            "Un tri plus rapide entre séance ponctuelle, Sprint examen et accompagnement plus régulier.",
-            "Un plan plus clair pour les familles qui veulent une aide sérieuse en maths ou en sciences à Montréal sans réserver à l'aveugle.",
-            "Un meilleur équilibre entre flexibilité, clarté et bon choix de profil avant que l'élève perde encore du temps.",
-          ],
-    laval:
-      locale === "en"
-        ? [
-            "A simpler path for families in Laval who want clarity before adding more tutoring hours.",
-            "A better decision between online continuity, local availability and the right subject focus.",
-            "Support that helps the student regain structure instead of only reacting to the next test.",
-          ]
-        : [
-            "Un parcours plus simple pour les familles de Laval qui veulent d'abord de la clarté avant d'ajouter des heures.",
-            "Une meilleure décision entre continuité en ligne, disponibilité locale et vraie matière prioritaire.",
-            "Un accompagnement qui aide l'élève à retrouver une structure plutôt que de simplement réagir au prochain test.",
-          ],
-    quebecOnline:
-      locale === "en"
-        ? [
-            "Fast access across Quebec without waiting for a specific neighbourhood or travel slot.",
-            "A strong fit for families who want structure, continuity and easier scheduling around school life.",
-            "A clearer route for students who need math or science support now, even when the right local match is not nearby.",
-          ]
-        : [
-            "Un accès rapide partout au Québec sans dépendre d'un quartier précis ou d'un déplacement.",
-            "Un très bon format pour les familles qui veulent de la structure, de la continuité et une logistique plus légère.",
-            "Un chemin plus clair pour les élèves qui ont besoin d'aide en maths ou en sciences maintenant, même sans profil local immédiat.",
-          ],
-  }
-
-  return (
-    map[routeKey] ||
-    (locale === "en"
-      ? [
-          `A clearer tutoring decision for families in ${cityLabel}.`,
-          "A faster path between confusion, diagnosis and the right next step.",
-          "Support that creates structure instead of only adding another isolated hour.",
-        ]
-      : [
-          `Une décision plus claire pour les familles de ${cityLabel}.`,
-          "Un chemin plus rapide entre la confusion actuelle, le diagnostic et la bonne suite.",
-          "Un accompagnement qui crée une vraie structure au lieu d'ajouter seulement une heure isolée.",
-        ])
-  )
-}
-
-function getLocalDecisionPoints(routeKey, locale) {
-  const onlineSpecific =
-    routeKey === "quebecOnline"
-      ? locale === "en"
-        ? "If the main question is pace, grade level or whether online support will hold attention well enough, a short call usually saves time before booking."
-        : "Si la vraie question porte surtout sur le rythme, le niveau ou la capacité de l'élève à bien suivre en ligne, un court appel fait souvent gagner du temps avant de réserver."
-      : locale === "en"
-        ? "If the family is still comparing online support with local in-person options, a quick call helps choose the smartest format first."
-        : "Si la famille hésite encore entre un format en ligne et une option plus locale, un appel rapide aide à choisir le bon cadre avant tout."
-
-  return locale === "en"
-    ? [
-        "Book directly when the subject, chapter and urgency are already clear.",
-        "Call first when the student needs weekly follow-up, has several weak areas or the parent still cannot name the real block yet.",
-        onlineSpecific,
-      ]
-    : [
-        "Réservez directement quand la matière, le chapitre et l'urgence sont déjà bien identifiés.",
-        "Appelez d'abord quand l'élève a besoin d'un suivi hebdomadaire, de plusieurs ajustements ou que le parent n'arrive pas encore à nommer le vrai blocage.",
-        onlineSpecific,
-      ]
 }

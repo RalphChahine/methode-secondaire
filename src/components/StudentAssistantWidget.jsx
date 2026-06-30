@@ -42,6 +42,7 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
   const [draft, setDraft] = useState("")
   const [isSending, setIsSending] = useState(false)
   const [error, setError] = useState("")
+  const [showTrigger, setShowTrigger] = useState(false)
   const endRef = useRef(null)
 
   useEffect(() => {
@@ -90,6 +91,21 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
       window.removeEventListener("methode:open-diagnostic", handleOpenDiagnostic)
       window.removeEventListener("methode:jump-contact", handleJumpContact)
     }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return undefined
+    }
+
+    function handleScroll() {
+      setShowTrigger(window.scrollY > 320)
+    }
+
+    handleScroll()
+    window.addEventListener("scroll", handleScroll, { passive: true })
+
+    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
   const starters = useMemo(() => copy.starterQuestions.slice(0, 4), [copy.starterQuestions])
@@ -145,12 +161,17 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
   }
 
   return (
-    <div className="fixed bottom-24 right-3 z-50 max-w-[calc(100vw-1rem)] lg:bottom-6 lg:right-6 lg:max-w-none">
+    <div className="fixed bottom-28 right-3 z-50 sm:bottom-24 lg:bottom-6 lg:right-6 lg:max-w-none">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <Button className="max-w-[calc(100vw-1rem)] rounded-full bg-[#f5c977] px-4 py-5 text-sm text-[#071631] shadow-[0_18px_45px_rgba(245,201,119,0.3)] hover:bg-[#f7d38f] sm:px-5 sm:py-6 sm:text-base">
+          <Button
+            className={cn(
+              "h-12 w-12 rounded-full bg-[#f5c977] p-0 text-[#071631] shadow-[0_18px_45px_rgba(245,201,119,0.3)] transition-all duration-300 hover:bg-[#f7d38f] sm:h-auto sm:w-auto sm:max-w-[calc(100vw-1rem)] sm:px-5 sm:py-6 sm:text-base",
+              showTrigger || open ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0",
+            )}
+          >
             <MessageSquareMore className="h-4 w-4" />
-            {copy.buttonLabel}
+            <span className="sr-only sm:not-sr-only sm:ml-2">{copy.buttonLabel}</span>
           </Button>
         </SheetTrigger>
 

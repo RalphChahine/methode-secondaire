@@ -189,6 +189,10 @@ export default function App() {
             <Route path="/en/resources/secondary-5-chemistry-help" element={<ResourceArticle />} />
             <Route path="/ressources/tuteur-maths-montreal-secondaire-4" element={<ResourceArticle />} />
             <Route path="/en/resources/montreal-secondary-4-math-tutor" element={<ResourceArticle />} />
+            <Route path="/ressources/signes-soutien-scolaire-secondaire" element={<ResourceArticle />} />
+            <Route path="/en/resources/high-school-support-warning-signs" element={<ResourceArticle />} />
+            <Route path="/ressources/ado-decroche-maths-sciences" element={<ResourceArticle />} />
+            <Route path="/en/resources/teen-falling-behind-math-science" element={<ResourceArticle />} />
             <Route path="/devenir-tuteur" element={<DevenirTuteur />} />
             <Route path="/en/become-a-tutor" element={<DevenirTuteur />} />
             <Route

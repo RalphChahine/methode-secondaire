@@ -141,5 +141,13 @@ export const routeCatalog = {
     fr: "/ressources/tuteur-maths-montreal-secondaire-4",
     en: "/en/resources/montreal-secondary-4-math-tutor",
   },
+  parentSupportSignals: {
+    fr: "/ressources/signes-soutien-scolaire-secondaire",
+    en: "/en/resources/high-school-support-warning-signs",
+  },
+  teenMathScienceSlide: {
+    fr: "/ressources/ado-decroche-maths-sciences",
+    en: "/en/resources/teen-falling-behind-math-science",
+  },
   ...secondary4MathConceptRouteCatalog,
 }

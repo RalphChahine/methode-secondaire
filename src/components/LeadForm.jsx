@@ -19,6 +19,8 @@ const copyByLocale = {
     namePlaceholder: "Nom de l'\u00E9l\u00E8ve ou du parent",
     emailLabel: "Email",
     emailPlaceholder: "adresse@email.com",
+    phoneLabel: "T\u00E9l\u00E9phone (optionnel)",
+    phonePlaceholder: "514 555-1234",
     subjectLabel: "Niveau et mati\u00E8re",
     subjectPlaceholder: "Ex. secondaire 4 maths ou secondaire 5 sciences",
     priorityLabel: "Besoin le plus urgent",
@@ -29,11 +31,26 @@ const copyByLocale = {
       { value: "catch-up", label: "Rattrapage ou remise \u00E0 niveau" },
       { value: "unsure", label: "Je ne suis pas encore certain" },
     ],
+    timelineLabel: "Quand voulez-vous commencer ?",
+    timelinePlaceholder: "Choisir l'horizon le plus proche",
+    timelineOptions: [
+      { value: "this-week", label: "Cette semaine" },
+      { value: "two-weeks", label: "Dans 2 semaines" },
+      { value: "this-month", label: "Ce mois-ci" },
+      { value: "flexible", label: "Pas urgent, je veux d'abord clarifier" },
+    ],
     formatLabel: "Format souhait\u00E9",
     formatOptions: [
       { value: "online", label: "En ligne" },
       { value: "in-person", label: "Pr\u00E9sentiel si possible" },
       { value: "either", label: "Les deux me conviennent" },
+    ],
+    contactPreferenceLabel: "Meilleur premier suivi",
+    contactPreferenceOptions: [
+      { value: "call", label: "Appel" },
+      { value: "email", label: "Email" },
+      { value: "text", label: "Texto" },
+      { value: "either", label: "Peu importe" },
     ],
     messageLabel: "Message",
     messagePlaceholder: "D\u00E9crivez bri\u00E8vement la situation, les difficult\u00E9s ou l'objectif.",
@@ -60,6 +77,8 @@ const copyByLocale = {
     namePlaceholder: "Student or parent name",
     emailLabel: "Email",
     emailPlaceholder: "name@email.com",
+    phoneLabel: "Phone (optional)",
+    phonePlaceholder: "514 555-1234",
     subjectLabel: "Level and subject",
     subjectPlaceholder: "Ex. Secondary 4 math or Secondary 5 science",
     priorityLabel: "Most urgent need",
@@ -70,10 +89,25 @@ const copyByLocale = {
       { value: "catch-up", label: "Catch-up or academic reset" },
       { value: "unsure", label: "I am not fully sure yet" },
     ],
+    timelineLabel: "When do you want to start?",
+    timelinePlaceholder: "Choose the closest timeline",
+    timelineOptions: [
+      { value: "this-week", label: "This week" },
+      { value: "two-weeks", label: "Within 2 weeks" },
+      { value: "this-month", label: "This month" },
+      { value: "flexible", label: "Not urgent, I want clarity first" },
+    ],
     formatLabel: "Preferred format",
     formatOptions: [
       { value: "online", label: "Online" },
       { value: "in-person", label: "In person if possible" },
+      { value: "either", label: "Either works" },
+    ],
+    contactPreferenceLabel: "Best first follow-up",
+    contactPreferenceOptions: [
+      { value: "call", label: "Call" },
+      { value: "email", label: "Email" },
+      { value: "text", label: "Text message" },
       { value: "either", label: "Either works" },
     ],
     messageLabel: "Message",
@@ -97,9 +131,12 @@ function getInitialValues(copy) {
   return {
     nom: "",
     email: "",
+    telephone: "",
     sujet: "",
     priorite: "",
+    timeline: "",
     format: copy.formatOptions[2].value,
+    contactPreference: copy.contactPreferenceOptions[3].value,
     message: "",
   }
 }
@@ -134,6 +171,7 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
         ...current,
         sujet: current.sujet || [levelLabel, subjectLabel].filter(Boolean).join(" - "),
         priorite: detail.answers.goal || current.priorite,
+        timeline: detail.answers.timing || current.timeline,
         format: detail.answers.format || current.format,
         message: detail.result.suggestedMessage || current.message,
       }))
@@ -158,15 +196,19 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
     const data = new FormData()
     data.append("nom", values.nom)
     data.append("email", values.email)
+    data.append("telephone", values.telephone)
     data.append("sujet", values.sujet)
     data.append("priorite", values.priorite)
+    data.append("timeline", values.timeline)
     data.append("format", values.format)
+    data.append("contact_preference", values.contactPreference)
     data.append("message", values.message)
     data.append("_subject", copy.emailSubject)
     data.append("_template", "table")
     data.append("_gotcha", "")
     data.append("site_locale", locale)
     data.append("source_page", pageName)
+    data.append("pipeline_type", "parent_lead")
 
     try {
       const response = await fetch("https://formspree.io/f/mzddpkaz", {
@@ -186,7 +228,9 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
               locale,
               source_page: pageName,
               priority: values.priorite,
+              timeline: values.timeline,
               format: values.format,
+              contact_preference: values.contactPreference,
             },
           }),
         )
@@ -284,6 +328,17 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
         </Field>
       </div>
 
+      <Field label={copy.phoneLabel}>
+        <Input
+          name="telephone"
+          type="tel"
+          value={values.telephone}
+          onChange={(event) => updateValue("telephone", event.target.value)}
+          className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
+          placeholder={copy.phonePlaceholder}
+        />
+      </Field>
+
       <Field label={copy.subjectLabel}>
         <Input
           name="sujet"
@@ -315,6 +370,27 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
           </select>
         </Field>
 
+        <Field label={copy.timelineLabel}>
+          <select
+            name="timeline"
+            required
+            value={values.timeline}
+            onChange={(event) => updateValue("timeline", event.target.value)}
+            className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
+          >
+            <option value="" disabled className="bg-[#06132f] text-white/45">
+              {copy.timelinePlaceholder}
+            </option>
+            {copy.timelineOptions.map((option) => (
+              <option key={option.value} value={option.value} className="bg-[#06132f] text-white">
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </Field>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
         <Field label={copy.formatLabel}>
           <select
             name="format"
@@ -323,6 +399,21 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
             className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
           >
             {copy.formatOptions.map((option) => (
+              <option key={option.value} value={option.value} className="bg-[#06132f] text-white">
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </Field>
+
+        <Field label={copy.contactPreferenceLabel}>
+          <select
+            name="contact_preference"
+            value={values.contactPreference}
+            onChange={(event) => updateValue("contactPreference", event.target.value)}
+            className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
+          >
+            {copy.contactPreferenceOptions.map((option) => (
               <option key={option.value} value={option.value} className="bg-[#06132f] text-white">
                 {option.label}
               </option>
