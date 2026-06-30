@@ -59,21 +59,21 @@ const trustItems = [
 const steps = [
   {
     step: "01",
-    title: "Vous nous dites où ça bloque",
+    title: "Vous remplissez le formulaire de l'élève",
     description:
-      "Matière, niveau, examen, retard, perte de confiance ou besoin hebdomadaire: on part de la situation réelle, pas d'un formulaire abstrait.",
+      "Vous indiquez le niveau, la matière, ce qui bloque, les objectifs et toute info utile sur l'élève. On veut comprendre la situation vite et clairement.",
   },
   {
     step: "02",
-    title: "On recommande le bon format",
+    title: "On vous rappelle pour cadrer le besoin",
     description:
-      "Séance ciblée, sprint avant examen ou suivi hebdomadaire: on oriente vers le cadre le plus utile avant de faire perdre du temps à la famille.",
+      "On valide avec vous l'urgence, le bon format, la fréquence et le type d'accompagnement le plus logique pour éviter les allers-retours inutiles.",
   },
   {
     step: "03",
-    title: "L'élève repart avec un plan plus clair",
+    title: "On fait le jumelage et on lance la première séance",
     description:
-      "On remet la matière en ordre, on travaille ce qui compte et la famille voit enfin une direction simple, crédible et rassurante.",
+      "On choisit le bon tuteur, on fixe la première rencontre et l'élève démarre avec un cadre clair, une méthode et un vrai plan de match.",
   },
 ]
 
@@ -284,8 +284,8 @@ export default function Accueil() {
         <StepGrid
           id="processus"
           eyebrow="Comment ça marche"
-          title="Un parcours simple en 3 étapes"
-          description="Le parent a besoin d'aller vite, et l'élève a besoin d'un cadre utile dès le départ."
+          title="Un onboarding simple en 3 étapes"
+          description="Pas de parcours compliqué: vous remplissez le formulaire, on vous rappelle, puis on lance le bon jumelage avec le tuteur."
           steps={steps}
         />
 
@@ -431,7 +431,7 @@ export default function Accueil() {
           locale="fr"
           eyebrow="Contact"
           title="Décrivez le besoin en une minute"
-          description="Dites-nous la matière, le niveau et ce qui inquiète le plus. On vous orientera vers le format le plus utile sans compliquer la démarche."
+          description="Dites-nous la matière, le niveau et ce qui inquiète le plus. Vous remplissez le formulaire, on vous rappelle, puis on organise le bon jumelage."
           bullets={[
             "Mentionnez la matière, le niveau et ce qui bloque le plus.",
             "Si un examen approche, dites-le dès le départ.",

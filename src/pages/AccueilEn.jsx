@@ -59,21 +59,21 @@ const trustItems = [
 const steps = [
   {
     step: "01",
-    title: "You tell us where things are getting stuck",
+    title: "You fill out the student form",
     description:
-      "Subject, grade, exam pressure, backlog, confidence drop or weekly need: we start with the real situation, not an abstract form.",
+      "You share the grade, subject, biggest challenges, goals and any useful context about the student so we can understand the situation quickly.",
   },
   {
     step: "02",
-    title: "We recommend the right format",
+    title: "We call you back to frame the need",
     description:
-      "Focused session, exam sprint or weekly follow-up: we guide the family toward the format that actually fits the need.",
+      "We confirm the urgency, the right format, the best rhythm and the most useful support plan before anything starts.",
   },
   {
     step: "03",
-    title: "The student leaves with a clearer plan",
+    title: "We match the student and launch the first session",
     description:
-      "We reorganize the subject, focus on what matters and give the family a calmer, more credible direction.",
+      "We choose the right tutor, schedule the first session and start with a clearer framework, stronger method and a real plan.",
   },
 ]
 
@@ -279,8 +279,8 @@ export default function AccueilEn() {
         <StepGrid
           id="processus"
           eyebrow="How it works"
-          title="A simple path in 3 steps"
-          description="Parents need speed, and students need a framework that becomes useful right away."
+          title="A simple 3-step onboarding"
+          description="No complicated process: you fill out the form, we call you back, then we match the student and launch the first session."
           steps={steps}
         />
 
@@ -424,7 +424,7 @@ export default function AccueilEn() {
           locale="en"
           eyebrow="Contact"
           title="Describe the need in one minute"
-          description="Tell us the subject, grade level and biggest concern. We will guide you toward the most useful format without making the process heavier."
+          description="Tell us the subject, grade level and biggest concern. You fill out the form, we call you back, then we organize the right tutor match."
           bullets={[
             "Mention the subject, grade level and what feels most blocked.",
             "If an exam is close, say it right away.",
