@@ -44,6 +44,28 @@ const basePageSeo = {
       ogType: "website",
     },
   },
+  thankYou: {
+    fr: {
+      title: "Demande reçue | Méthode Secondaire",
+      description:
+        "Votre demande parent a été reçue. Méthode Secondaire vous rappelle avec une suite claire pour le tutorat en maths ou sciences.",
+      keywords:
+        "demande tutorat reçue, rappel parent tutorat, tutorat maths sciences secondaire",
+      name: "Demande reçue",
+      schemaType: "WebPage",
+      ogType: "website",
+    },
+    en: {
+      title: "Request received | Méthode Secondaire",
+      description:
+        "Your parent request was received. Méthode Secondaire will call back with a clear next step for math or science tutoring.",
+      keywords:
+        "tutoring request received, parent tutoring callback, high school math science tutoring",
+      name: "Request received",
+      schemaType: "WebPage",
+      ogType: "website",
+    },
+  },
   maths: {
     fr: {
       title: "Tutorat en mathématiques au secondaire | Méthode Secondaire",
