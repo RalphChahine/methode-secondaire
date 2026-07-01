@@ -205,13 +205,13 @@ export const verifiedReviewsByLocale = {
 
 export const tutorProfilesByLocale = {
   fr: {
-    eyebrow: "Notre équipe",
-    title: "Des profils clairs pour choisir le bon accompagnement",
+    eyebrow: "Petite équipe active",
+    title: "Deux profils actifs pour couvrir les besoins les plus fréquents",
     description:
-      "Chaque profil aide à comprendre la spécialité, le style d'accompagnement et le type de besoin auquel il répond le mieux.",
+      "On garde une équipe courte pour mieux cadrer les demandes, protéger les créneaux et choisir le bon accompagnement au lieu d'empiler des profils.",
     profiles: [
       {
-        name: "Profil Maths Examens",
+        name: "Tuteur Maths Examens",
         role: "Maths secondaire 4 à 5",
         format: "En ligne partout au Québec • Présentiel selon secteur",
         focus: "Algèbre, fonctions, trigonométrie et préparation aux évaluations",
@@ -219,7 +219,7 @@ export const tutorProfilesByLocale = {
         ideal: "Idéal pour les élèves qui comprennent par étapes et veulent une méthode reproductible.",
       },
       {
-        name: "Profil Sciences Analyse",
+        name: "Tuteur Sciences Analyse",
         role: "Sciences, chimie et physique",
         format: "En ligne • Montréal et Laval selon disponibilité",
         focus: "Concepts, formules, questions à développement et logique de labo",
@@ -238,13 +238,13 @@ export const tutorProfilesByLocale = {
     cta: "Lire les témoignages",
   },
   en: {
-    eyebrow: "Our team",
-    title: "Clear tutor profiles to help families choose well",
+    eyebrow: "Small active team",
+    title: "Two active profiles covering the most common needs",
     description:
-      "Each profile helps families understand the specialty, teaching style and student needs it serves best.",
+      "We keep the team intentionally short so requests are framed better, time slots stay protected and families get the right support instead of a long profile list.",
     profiles: [
       {
-        name: "Math Exam Profile",
+        name: "Math Exam Tutor",
         role: "High school math, Secondary 4 to 5",
         format: "Online across Quebec • In person depending on area",
         focus: "Algebra, functions, trigonometry and major evaluation prep",
@@ -252,7 +252,7 @@ export const tutorProfilesByLocale = {
         ideal: "Best for students who need step-by-step clarity and a reusable method.",
       },
       {
-        name: "Science Analysis Profile",
+        name: "Science Analysis Tutor",
         role: "Science, chemistry and physics",
         format: "Online • Montreal and Laval depending on availability",
         focus: "Concepts, formulas, long-form answers and lab logic",

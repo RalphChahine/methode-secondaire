@@ -1,4 +1,4 @@
-import { CalendarDays, Phone, ShieldCheck, Sparkles, Target } from "lucide-react"
+import { ClipboardList, Phone, ShieldCheck, Sparkles, Target } from "lucide-react"
 import { useLocation } from "react-router-dom"
 
 import { TutorRosterSection } from "@/components/ConversionSections"
@@ -7,7 +7,6 @@ import {
   FinalCtaSection,
   HeroShowcase,
 } from "@/components/SimpleMarketingSections"
-import { BOOKING_URL } from "@/config/booking"
 import {
   buildAlternates,
   getAlternateOgLocale,
@@ -22,9 +21,9 @@ import { siteConfig } from "@/lib/seo"
 const contentByLocale = {
   fr: {
     badge: "Tuteurs • Profils et spécialités",
-    title: "Des profils pensés pour rassurer les parents et faire avancer les élèves.",
+    title: "Deux profils actifs, choisis pour les besoins les plus fréquents.",
     description:
-      "Cette page n'a plus besoin d'en faire trop. Elle sert surtout à montrer que le tutorat est sérieux, humain et bien cadré.",
+      "La force actuelle, ce n'est pas une énorme liste de tuteurs. C'est un petit noyau fiable, capable de couvrir les maths, les sciences et les départs bien cadrés.",
     panelEyebrow: "Ce qu'un parent veut sentir",
     panelTitle: "Un tutorat fiable et clair",
     panelItems: [
@@ -68,7 +67,7 @@ const contentByLocale = {
     ],
     ctaTitle: "Besoin d'être orienté vers le bon profil rapidement ?",
     ctaDescription:
-      "On peut déjà cadrer le besoin et vous guider vers l'accompagnement le plus pertinent.",
+      "Remplissez la demande parent: on valide le besoin, la disponibilité et le meilleur premier départ avant de proposer un profil.",
     seoTitle: "Tuteurs en maths et sciences au secondaire | Méthode Secondaire",
     seoDescription:
       "Découvrez nos profils de tuteurs en mathématiques et en sciences pour le secondaire au Québec, avec une approche claire et rassurante pour les familles.",
@@ -76,9 +75,9 @@ const contentByLocale = {
   },
   en: {
     badge: "Tutors • Profiles and specialties",
-    title: "Profiles designed to reassure parents and move students forward.",
+    title: "Two active profiles for the most common family needs.",
     description:
-      "This page no longer tries to do too much. It mainly exists to show that the tutoring experience is serious, human and well structured.",
+      "The current strength is not a huge tutor list. It is a small reliable core covering math, science and well-framed starts.",
     panelEyebrow: "What a parent wants to feel",
     panelTitle: "Reliable, clear tutoring",
     panelItems: [
@@ -122,7 +121,7 @@ const contentByLocale = {
     ],
     ctaTitle: "Need help finding the right profile quickly?",
     ctaDescription:
-      "We can already frame the need and guide you toward the most relevant support style.",
+      "Fill out the parent request: we confirm the need, availability and best starting point before suggesting a profile.",
     seoTitle: "High school math and science tutors | Méthode Secondaire",
     seoDescription:
       "Explore our high school math and science tutor profiles in Quebec, with a clear and reassuring approach for families.",
@@ -174,10 +173,9 @@ export default function Tuteurs() {
             icon: Phone,
           }}
           secondaryAction={{
-            label: locale === "en" ? "Book a session" : "Réserver une séance",
-            href: BOOKING_URL,
-            external: true,
-            icon: CalendarDays,
+            label: locale === "en" ? "Parent request" : "Demande parent",
+            to: `${getLocalizedPath("home", locale)}#demande`,
+            icon: ClipboardList,
           }}
           panelEyebrow={copy.panelEyebrow}
           panelTitle={copy.panelTitle}
@@ -185,7 +183,7 @@ export default function Tuteurs() {
           journey={getParentJourney(locale)}
         />
 
-        <TutorRosterSection locale={locale} className="pt-20" limit={3} />
+        <TutorRosterSection locale={locale} className="pt-20" limit={2} />
 
         <FinalCtaSection
           badge={copy.badge}
@@ -197,10 +195,9 @@ export default function Tuteurs() {
             icon: Phone,
           }}
           secondaryAction={{
-            label: locale === "en" ? "Book a session" : "Réserver une séance",
-            href: BOOKING_URL,
-            external: true,
-            icon: CalendarDays,
+            label: locale === "en" ? "Fill out the request" : "Remplir la demande",
+            to: `${getLocalizedPath("home", locale)}#demande`,
+            icon: ClipboardList,
           }}
         />
       </main>

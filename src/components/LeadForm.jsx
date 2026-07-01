@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import { CalendarDays, Check, Clock3, Phone, Sparkles } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { BOOKING_URL } from "@/config/booking"
+import { getLocalizedPath } from "@/lib/i18n"
 import { getDiagnosticAnswerLabel } from "@/lib/leadDiagnostic"
 import { siteConfig } from "@/lib/seo"
 
@@ -144,6 +146,7 @@ function getInitialValues(copy) {
 export default function LeadForm({ locale = "fr", pageName = "website", variant = "default" }) {
   const copy = copyByLocale[locale] || copyByLocale.fr
   const isHero = variant === "hero"
+  const navigate = useNavigate()
   const [status, setStatus] = useState("idle")
   const [diagnosticInjected, setDiagnosticInjected] = useState(false)
   const [values, setValues] = useState(() => getInitialValues(copy))
@@ -240,6 +243,7 @@ export default function LeadForm({ locale = "fr", pageName = "website", variant 
       setStatus("success")
       setValues(getInitialValues(copy))
       setDiagnosticInjected(false)
+      navigate(getLocalizedPath("thankYou", locale))
     } catch {
       setStatus("error")
     }

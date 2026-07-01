@@ -10,6 +10,7 @@ const BlogArticle = lazy(() => import("@/pages/BlogArticle"))
 const BlogHub = lazy(() => import("@/pages/BlogHub"))
 const CaseStudies = lazy(() => import("@/pages/CaseStudies"))
 const DevenirTuteur = lazy(() => import("@/pages/DevenirTuteur"))
+const LeadThanks = lazy(() => import("@/pages/LeadThanks"))
 const LocalLanding = lazy(() => import("@/pages/LocalLanding"))
 const Maths = lazy(() => import("@/pages/Maths"))
 const OfferLanding = lazy(() => import("@/pages/OfferLanding"))
@@ -37,6 +38,8 @@ export default function App() {
           <Route element={<SiteLayout />}>
             <Route path="/" element={<Accueil />} />
             <Route path="/en" element={<AccueilEn />} />
+            <Route path="/demande-recue" element={<LeadThanks />} />
+            <Route path="/en/request-received" element={<LeadThanks />} />
             <Route path="/maths" element={<Maths />} />
             <Route path="/en/math-tutoring" element={<Maths />} />
             <Route path="/sciences" element={<Sciences />} />

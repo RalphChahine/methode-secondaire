@@ -165,13 +165,15 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button
+            aria-label={copy.buttonLabel}
+            title={copy.buttonLabel}
             className={cn(
-              "h-12 w-12 rounded-full bg-[#f5c977] p-0 text-[#071631] shadow-[0_18px_45px_rgba(245,201,119,0.3)] transition-all duration-300 hover:bg-[#f7d38f] sm:h-auto sm:w-auto sm:max-w-[calc(100vw-1rem)] sm:px-5 sm:py-6 sm:text-base",
+              "h-12 w-12 rounded-full bg-[#f5c977] p-0 text-[#071631] shadow-[0_18px_45px_rgba(245,201,119,0.3)] transition-all duration-300 hover:bg-[#f7d38f]",
               showTrigger || open ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0",
             )}
           >
             <MessageSquareMore className="h-4 w-4" />
-            <span className="sr-only sm:not-sr-only sm:ml-2">{copy.buttonLabel}</span>
+            <span className="sr-only">{copy.buttonLabel}</span>
           </Button>
         </SheetTrigger>
 

@@ -12,6 +12,7 @@ const secondary4MathConceptRouteCatalog = Object.fromEntries(
 
 export const routeCatalog = {
   home: { fr: "/", en: "/en" },
+  thankYou: { fr: "/demande-recue", en: "/en/request-received" },
   maths: { fr: "/maths", en: "/en/math-tutoring" },
   sciences: { fr: "/sciences", en: "/en/science-tutoring" },
   temoignages: { fr: "/temoignages", en: "/en/testimonials" },
