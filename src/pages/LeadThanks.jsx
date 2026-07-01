@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom"
-import { ArrowRight, BadgeCheck, ClipboardList, Clock3, Phone } from "lucide-react"
+import { ArrowRight, BadgeCheck, CalendarCheck, ClipboardList, Clock3, CreditCard, Phone } from "lucide-react"
 
 import MotionCard from "@/components/MotionCard"
 import Seo from "@/components/Seo"
@@ -49,6 +49,19 @@ const copyByLocale = {
     ],
     reassurance:
       "Aucune obligation après le formulaire. Le premier retour sert surtout à éviter le mauvais format et à rendre la suite plus claire.",
+    handoffTitle: "Horaire et paiement",
+    handoffItems: [
+      {
+        icon: CalendarCheck,
+        title: "Créneau confirmé après validation",
+        description: "On confirme le tuteur, l'heure et le format avant d'envoyer l'invitation calendrier.",
+      },
+      {
+        icon: CreditCard,
+        title: "Paiement seulement quand la séance est claire",
+        description: "Le paiement se fait par lien sécurisé ou Interac après confirmation du bon départ.",
+      },
+    ],
     call: "Appeler si urgent",
     home: "Retour à l'accueil",
     resources: "Voir les ressources parents",
@@ -87,6 +100,19 @@ const copyByLocale = {
     ],
     reassurance:
       "No commitment after the form. The first reply is mainly there to avoid the wrong format and make the next step clearer.",
+    handoffTitle: "Schedule and payment",
+    handoffItems: [
+      {
+        icon: CalendarCheck,
+        title: "Slot confirmed after validation",
+        description: "We confirm the tutor, time and format before sending the calendar invitation.",
+      },
+      {
+        icon: CreditCard,
+        title: "Payment only once the session is clear",
+        description: "Payment happens by secure link or Interac after the right start is confirmed.",
+      },
+    ],
     call: "Call if urgent",
     home: "Back to home",
     resources: "See parent resources",
@@ -192,6 +218,24 @@ export default function LeadThanks() {
 
           <MotionCard className="panel-gold rounded-[30px] p-7 text-white">
             <p className="text-sm leading-7 text-white/80">{copy.reassurance}</p>
+            <div className="mt-6 border-t border-white/10 pt-6">
+              <h2 className="font-display text-2xl font-semibold">{copy.handoffTitle}</h2>
+              <div className="mt-4 space-y-3">
+                {copy.handoffItems.map((item) => {
+                  const Icon = item.icon
+
+                  return (
+                    <div key={item.title} className="flex items-start gap-3 rounded-[20px] border border-white/10 bg-white/5 px-4 py-4">
+                      <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                      <div>
+                        <div className="text-sm font-semibold text-white">{item.title}</div>
+                        <p className="mt-1 text-sm leading-6 text-white/70">{item.description}</p>
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
             <div className="mt-6">
               <Button
                 asChild

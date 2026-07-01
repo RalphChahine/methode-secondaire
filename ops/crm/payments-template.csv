@@ -1,0 +1,2 @@
+payment_id,session_id,lead_id,parent_name,email,offer,amount_cad,payment_method,payment_status,payment_link,invoice_id,due_date,paid_at,tutor_payout_cad,payout_status,notes,created_at,updated_at
+PAY-001,SESSION-001,LEAD-EXAMPLE,Parent name,parent@example.com,first_session,75,stripe_payment_link,not_requested,,,,,0,not_due,,2026-07-01T09:00:00-04:00,2026-07-01T09:00:00-04:00

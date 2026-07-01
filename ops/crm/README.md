@@ -17,6 +17,10 @@ Le script crée aussi:
 - `Matching Queue`: demandes prêtes à recevoir un tuteur.
 - `Ops Dashboard`: compteurs rapides pour savoir quoi traiter maintenant.
 - `Tutor Roster`: capacité, matières, formats et statut des tuteurs.
+- `Sessions`: séances proposées, confirmées et synchronisées au calendrier.
+- `Payments`: paiements parents et paiements tuteurs.
+
+Le workflow horaire + paiement est détaillé dans `scheduling-and-payments.md`.
 
 ## Stages
 
