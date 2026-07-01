@@ -4,10 +4,8 @@ import { useLocation } from "react-router-dom"
 import { TutorRosterSection } from "@/components/ConversionSections"
 import Seo from "@/components/Seo"
 import {
-  FeatureGrid,
   FinalCtaSection,
   HeroShowcase,
-  StepGrid,
 } from "@/components/SimpleMarketingSections"
 import { BOOKING_URL } from "@/config/booking"
 import {
@@ -18,6 +16,7 @@ import {
   getLocalizedPath,
   getOgLocale,
 } from "@/lib/i18n"
+import { getParentJourney } from "@/lib/parentJourney"
 import { siteConfig } from "@/lib/seo"
 
 const contentByLocale = {
@@ -183,39 +182,10 @@ export default function Tuteurs() {
           panelEyebrow={copy.panelEyebrow}
           panelTitle={copy.panelTitle}
           panelItems={copy.panelItems}
-        />
-
-        <FeatureGrid
-          eyebrow={locale === "en" ? "Why this page matters" : "Pourquoi cette page compte"}
-          title={
-            locale === "en"
-              ? "Parents do not just choose a subject. They choose a support style."
-              : "Les parents ne choisissent pas juste une matière. Ils choisissent aussi un style d'accompagnement."
-          }
-          description={
-            locale === "en"
-              ? "This page now helps families understand that difference much faster."
-              : "Cette page aide maintenant les familles à comprendre cette différence beaucoup plus vite."
-          }
-          items={copy.cards}
+          journey={getParentJourney(locale)}
         />
 
         <TutorRosterSection locale={locale} className="pt-20" limit={3} />
-
-        <StepGrid
-          eyebrow={locale === "en" ? "Steps" : "Étapes"}
-          title={
-            locale === "en"
-              ? "How we help families choose the right tutor"
-              : "Comment on aide les familles à choisir le bon tuteur"
-          }
-          description={
-            locale === "en"
-              ? "A simpler, shorter process keeps the decision easier."
-              : "Un processus plus simple et plus court rend la décision plus facile."
-          }
-          steps={copy.steps}
-        />
 
         <FinalCtaSection
           badge={copy.badge}

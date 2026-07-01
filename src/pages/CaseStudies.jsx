@@ -2,7 +2,6 @@ import { Link, useLocation } from "react-router-dom"
 import {
   ArrowRight,
   BadgeCheck,
-  CalendarDays,
   HeartHandshake,
   LineChart,
   Phone,
@@ -13,10 +12,10 @@ import {
 
 import MotionCard from "@/components/MotionCard"
 import CaseStudiesPremiumSection from "@/components/CaseStudiesPremiumSection"
+import ParentJourneyNote from "@/components/ParentJourneyNote"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { BOOKING_URL } from "@/config/booking"
 import {
   buildAlternates,
   getAlternateOgLocale,
@@ -125,7 +124,7 @@ const contentByLocale = {
       "Ces cas types servent à montrer qu'il existe plusieurs bons points d'entrée: appel, diagnostic, séance ciblée ou suivi régulier. L'important est surtout de choisir le bon format selon la vraie situation.",
     primary: "Voir les témoignages",
     secondary: "Appeler pour en parler",
-    tertiary: "Réserver une séance ciblée",
+    tertiary: "Remplir la demande parent",
     seoTitle: "Réussites et cas types | Méthode Secondaire",
     seoDescription:
       "Découvrez des cas types inspirés de situations fréquentes en tutorat secondaire: maths, sciences, Sprint examen, suivi hebdomadaire et remise à niveau ciblée.",
@@ -228,7 +227,7 @@ const contentByLocale = {
       "These case studies show that there are different strong entry points: a call, the diagnostic, a focused session or recurring support. What matters most is choosing the right format for the real situation.",
     primary: "See testimonials",
     secondary: "Call to discuss",
-    tertiary: "Book a focused session",
+    tertiary: "Fill out the parent request",
     seoTitle: "Success stories and case studies | Methode Secondaire",
     seoDescription:
       "Explore representative case studies inspired by common high school tutoring situations in math, science, exam sprint support, weekly follow-up and catch-up tutoring.",
@@ -338,6 +337,8 @@ export default function CaseStudies() {
                 </a>
               </Button>
             </div>
+
+            <ParentJourneyNote locale={locale} className="mt-6 max-w-2xl" />
           </div>
 
           <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
@@ -443,10 +444,10 @@ export default function CaseStudies() {
                   variant="outline"
                   className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
                 >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    <CalendarDays className="h-4 w-4" />
+                  <Link to={`${getLocalizedPath("home", locale)}#demande`}>
                     {copy.tertiary}
-                  </a>
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
                 </Button>
                 <Button
                   asChild

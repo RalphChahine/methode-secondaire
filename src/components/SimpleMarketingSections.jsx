@@ -30,6 +30,7 @@ export function HeroShowcase({
   panelItems = [],
   panelNote,
   leadForm,
+  journey,
 }) {
   const hasLeadForm = Boolean(leadForm)
   const onboardingSteps = leadForm?.steps?.length
@@ -176,6 +177,18 @@ export function HeroShowcase({
               {primaryAction ? <ActionButton action={primaryAction} /> : null}
               {secondaryAction ? <ActionButton action={secondaryAction} variant="outline" /> : null}
             </div>
+
+            {journey ? (
+              <div className="panel-soft mt-6 max-w-2xl rounded-[24px] px-4 py-4 text-white sm:px-5">
+                <div className="rule-label text-[0.62rem]">{journey.eyebrow}</div>
+                <p className="mt-2 text-sm leading-7 text-white/76">{journey.text}</p>
+                {journey.action ? (
+                  <div className="mt-3">
+                    <ActionButton action={journey.action} variant="outline" />
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
 
             {stats.length ? (
               <div className="mt-10 hidden gap-3 sm:grid sm:grid-cols-3">

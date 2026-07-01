@@ -4,7 +4,6 @@ import { useLocation } from "react-router-dom"
 import { VerifiedReviewsSection } from "@/components/ConversionSections"
 import Seo from "@/components/Seo"
 import {
-  FeatureGrid,
   FinalCtaSection,
   HeroShowcase,
   QuoteGrid,
@@ -18,6 +17,7 @@ import {
   getLocalizedPath,
   getOgLocale,
 } from "@/lib/i18n"
+import { getParentJourney } from "@/lib/parentJourney"
 import { siteConfig } from "@/lib/seo"
 
 const contentByLocale = {
@@ -183,21 +183,7 @@ export default function Temoignages() {
           panelEyebrow={copy.panelEyebrow}
           panelTitle={copy.panelTitle}
           panelItems={copy.panelItems}
-        />
-
-        <FeatureGrid
-          eyebrow={locale === "en" ? "Why it matters" : "Pourquoi ça compte"}
-          title={
-            locale === "en"
-              ? "What strong testimonials really communicate"
-              : "Ce que de bons témoignages communiquent vraiment"
-          }
-          description={
-            locale === "en"
-              ? "They do more than show results. They reassure families before the first conversation."
-              : "Ils montrent plus que des résultats. Ils rassurent les familles avant même le premier échange."
-          }
-          items={copy.signals}
+          journey={getParentJourney(locale)}
         />
 
         <VerifiedReviewsSection locale={locale} className="pt-20" limit={4} showLink={false} />

@@ -52,7 +52,7 @@ const copyByLocale = {
       { value: "text", label: "Texto" },
       { value: "either", label: "Peu importe" },
     ],
-    messageLabel: "Ce qu'on doit savoir",
+    messageLabel: "Décrivez la situation",
     messagePlaceholder: "Ex. examen bient\u00F4t, notes qui baissent, devoirs difficiles, stress, chapitre bloquant...",
     submitIdle: "Envoyer et \u00EAtre rappel\u00E9",
     submitSending: "Envoi en cours...",
@@ -110,7 +110,7 @@ const copyByLocale = {
       { value: "text", label: "Text message" },
       { value: "either", label: "Either works" },
     ],
-    messageLabel: "What should we know?",
+    messageLabel: "Describe the situation",
     messagePlaceholder: "Ex. exam soon, grades dropping, hard homework, stress, blocked chapter...",
     submitIdle: "Send and get a callback",
     submitSending: "Sending...",
@@ -432,18 +432,16 @@ export default function LeadForm({ locale = "fr", pageName = "website", variant 
         </div>
       ) : null}
 
-      {!isHero ? (
-        <Field label={copy.messageLabel}>
-          <Textarea
-            name="message"
-            required
-            value={values.message}
-            onChange={(event) => updateValue("message", event.target.value)}
-            className="min-h-[140px] rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
-            placeholder={copy.messagePlaceholder}
-          />
-        </Field>
-      ) : null}
+      <Field label={copy.messageLabel}>
+        <Textarea
+          name="message"
+          required
+          value={values.message}
+          onChange={(event) => updateValue("message", event.target.value)}
+          className={`${isHero ? "min-h-[96px]" : "min-h-[140px]"} rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35`}
+          placeholder={copy.messagePlaceholder}
+        />
+      </Field>
 
       <Button
         type="submit"

@@ -1,15 +1,12 @@
-import { Calculator, CalendarDays, LineChart, Phone, Sigma, Target, Triangle } from "lucide-react"
+import { CalendarDays, LineChart, Phone, Sigma, Target, Triangle } from "lucide-react"
 import { useLocation } from "react-router-dom"
 
-import { VerifiedReviewsSection } from "@/components/ConversionSections"
 import Seo from "@/components/Seo"
 import {
   ContactSection,
   FaqGrid,
   FeatureGrid,
-  FinalCtaSection,
   HeroShowcase,
-  StepGrid,
 } from "@/components/SimpleMarketingSections"
 import { BOOKING_URL } from "@/config/booking"
 import {
@@ -20,6 +17,7 @@ import {
   getLocalizedPath,
   getOgLocale,
 } from "@/lib/i18n"
+import { getParentJourney } from "@/lib/parentJourney"
 import { siteConfig } from "@/lib/seo"
 
 const contentByLocale = {
@@ -280,6 +278,7 @@ export default function Maths() {
           panelTitle={copy.panelTitle}
           panelItems={copy.panelItems}
           panelNote={copy.panelNote}
+          journey={getParentJourney(locale)}
         />
 
         <FeatureGrid
@@ -289,15 +288,6 @@ export default function Maths() {
           items={copy.skills}
           columns="md:grid-cols-2"
         />
-
-        <StepGrid
-          eyebrow={copy.stepsEyebrow}
-          title={copy.stepsTitle}
-          description={copy.stepsDescription}
-          steps={copy.steps}
-        />
-
-        <VerifiedReviewsSection locale={locale} className="pt-20" limit={3} showLink />
 
         <FaqGrid
           eyebrow="FAQ"
@@ -317,23 +307,6 @@ export default function Maths() {
           description={copy.contactDescription}
           bullets={copy.contactBullets}
           pageName={`maths-${locale}`}
-        />
-
-        <FinalCtaSection
-          badge={copy.ctaBadge}
-          title={copy.ctaTitle}
-          description={copy.ctaDescription}
-          primaryAction={{
-            label: locale === "en" ? "Call now" : "Appeler maintenant",
-            href: `tel:${siteConfig.phone}`,
-            icon: Phone,
-          }}
-          secondaryAction={{
-            label: locale === "en" ? "Book a session" : "Réserver une séance",
-            href: BOOKING_URL,
-            external: true,
-            icon: Calculator,
-          }}
         />
       </main>
     </div>

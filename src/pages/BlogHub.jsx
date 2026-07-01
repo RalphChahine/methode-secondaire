@@ -3,6 +3,7 @@ import { ArrowRight, Microscope, Sparkles } from "lucide-react"
 
 import BlogGridSection from "@/components/BlogGridSection"
 import MotionCard from "@/components/MotionCard"
+import ParentJourneyNote from "@/components/ParentJourneyNote"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -114,6 +115,8 @@ export default function BlogHub() {
                 </Link>
               </Button>
             </div>
+
+            <ParentJourneyNote locale={locale} className="mt-6 max-w-2xl" />
           </div>
 
           <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">

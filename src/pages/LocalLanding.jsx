@@ -1,16 +1,13 @@
-import { CalendarDays, MapPin, Phone } from "lucide-react"
+import { CalendarDays, Phone } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
 
-import { VerifiedReviewsSection } from "@/components/ConversionSections"
 import MotionCard from "@/components/MotionCard"
 import Seo from "@/components/Seo"
 import {
   ContactSection,
   FaqGrid,
   FeatureGrid,
-  FinalCtaSection,
   HeroShowcase,
-  StepGrid,
 } from "@/components/SimpleMarketingSections"
 import { Button } from "@/components/ui/button"
 import { BOOKING_URL } from "@/config/booking"
@@ -24,6 +21,7 @@ import {
   getOgLocale,
   getRouteKeyFromPath,
 } from "@/lib/i18n"
+import { getParentJourney } from "@/lib/parentJourney"
 import { getRobotsDirective } from "@/lib/searchIndexStrategy"
 import { siteConfig } from "@/lib/seo"
 
@@ -67,43 +65,6 @@ export default function LocalLanding({ forcedRouteKey }) {
         : ["Clarté d'abord", "Bon format", "Accompagnement sérieux"][index] || `Point ${index + 1}`,
     description: entry,
   }))
-
-  const steps =
-    locale === "en"
-      ? [
-          {
-            step: "01",
-            title: "Explain the local need",
-            description: `Tell us what is happening for the student in ${page.city} and whether the need is urgent, weekly or subject-specific.`,
-          },
-          {
-            step: "02",
-            title: "We choose the smartest format",
-            description: "We help decide between a one-time session, steadier follow-up or online support across Quebec.",
-          },
-          {
-            step: "03",
-            title: "The family moves forward with a clearer plan",
-            description: "The next step becomes easier because the path, format and priorities are more explicit.",
-          },
-        ]
-      : [
-          {
-            step: "01",
-            title: "Expliquez le besoin local",
-            description: `Dites-nous ce qui se passe pour l'élève à ${page.city} et si le besoin est urgent, régulier ou lié à une matière précise.`,
-          },
-          {
-            step: "02",
-            title: "On choisit le format le plus intelligent",
-            description: "On vous aide à trancher entre séance ponctuelle, suivi plus régulier ou soutien en ligne partout au Québec.",
-          },
-          {
-            step: "03",
-            title: "La famille avance avec un plan plus clair",
-            description: "La suite devient plus simple parce que le cadre, le rythme et les priorités sont mieux définis.",
-          },
-        ]
 
   const schema = [
     {
@@ -180,6 +141,7 @@ export default function LocalLanding({ forcedRouteKey }) {
               ? "The goal is to make the next step feel easier, more serious and more structured."
               : "Le but est de rendre le prochain pas plus simple, plus sérieux et plus structuré."
           }
+          journey={getParentJourney(locale)}
         />
 
         <FeatureGrid
@@ -195,39 +157,6 @@ export default function LocalLanding({ forcedRouteKey }) {
               : "Les meilleures pages locales sont celles qui rendent la décision plus simple, pas plus lourde."
           }
           items={locationCards}
-        />
-
-        <StepGrid
-          eyebrow={locale === "en" ? "Steps" : "Étapes"}
-          title={
-            locale === "en"
-              ? `A simpler path for tutoring in ${page.city}`
-              : `Un parcours plus simple pour le tutorat à ${page.city}`
-          }
-          description={
-            locale === "en"
-              ? "The page now helps parents understand the next move quickly."
-              : "La page aide maintenant les parents à comprendre le prochain pas rapidement."
-          }
-          steps={steps}
-        />
-
-        <VerifiedReviewsSection locale={locale} className="pt-20" limit={2} showLink />
-
-        <FaqGrid
-          eyebrow={locale === "en" ? "Local FAQ" : "FAQ locale"}
-          title={
-            locale === "en"
-              ? `Common local questions about tutoring in ${page.city}`
-              : `Questions locales fréquentes sur le tutorat à ${page.city}`
-          }
-          description={
-            locale === "en"
-              ? "Short practical answers before booking."
-              : "Des réponses pratiques et courtes avant de réserver."
-          }
-          items={page.faq}
-          columns="lg:grid-cols-3"
         />
 
         <ContactSection
@@ -257,29 +186,20 @@ export default function LocalLanding({ forcedRouteKey }) {
           pageName={`${routeKey}-${locale}`}
         />
 
-        <FinalCtaSection
-          badge={page.city}
+        <FaqGrid
+          eyebrow={locale === "en" ? "Local FAQ" : "FAQ locale"}
           title={
             locale === "en"
-              ? `Ready to move forward with a clearer tutoring plan in ${page.city}?`
-              : `Prêt à avancer avec un plan de tutorat plus clair à ${page.city} ?`
+              ? `Common local questions about tutoring in ${page.city}`
+              : `Questions locales fréquentes sur le tutorat à ${page.city}`
           }
           description={
             locale === "en"
-              ? "We can help you choose the right first move now."
-              : "On peut vous aider à choisir le bon premier pas dès maintenant."
+              ? "Short practical answers before booking."
+              : "Des réponses pratiques et courtes avant de réserver."
           }
-          primaryAction={{
-            label: locale === "en" ? "Call now" : "Appeler maintenant",
-            href: `tel:${siteConfig.phone}`,
-            icon: Phone,
-          }}
-          secondaryAction={{
-            label: locale === "en" ? "Book a session" : "Réserver une séance",
-            href: BOOKING_URL,
-            external: true,
-            icon: MapPin,
-          }}
+          items={page.faq}
+          columns="lg:grid-cols-3"
         />
       </main>
     </div>

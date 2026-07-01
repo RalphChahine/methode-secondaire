@@ -1,16 +1,13 @@
 import { CalendarDays, Phone } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
 
-import { VerifiedReviewsSection } from "@/components/ConversionSections"
 import MotionCard from "@/components/MotionCard"
 import Seo from "@/components/Seo"
 import {
   ContactSection,
   FaqGrid,
   FeatureGrid,
-  FinalCtaSection,
   HeroShowcase,
-  StepGrid,
 } from "@/components/SimpleMarketingSections"
 import { Button } from "@/components/ui/button"
 import { BOOKING_URL } from "@/config/booking"
@@ -24,6 +21,7 @@ import {
   getRouteKeyFromPath,
 } from "@/lib/i18n"
 import { getOfferPageConfig } from "@/lib/offerContent"
+import { getParentJourney } from "@/lib/parentJourney"
 import { getRobotsDirective } from "@/lib/searchIndexStrategy"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
 
@@ -142,6 +140,7 @@ export default function OfferLanding({ forcedRouteKey }) {
           panelTitle={page.fitTitle}
           panelItems={page.highlights}
           panelNote={page.fitDescription}
+          journey={getParentJourney(locale)}
         />
 
         <FeatureGrid
@@ -153,35 +152,6 @@ export default function OfferLanding({ forcedRouteKey }) {
           }
           description={page.fitDescription}
           items={fitItems}
-        />
-
-        <StepGrid
-          eyebrow={page.processEyebrow}
-          title={page.processTitle}
-          description={
-            locale === "en"
-              ? "A shorter path from confusion to a clearer next move."
-              : "Un parcours plus court entre le flou et une prochaine étape plus nette."
-          }
-          steps={page.processSteps}
-        />
-
-        <VerifiedReviewsSection locale={locale} className="pt-20" limit={3} showLink />
-
-        <FaqGrid
-          eyebrow={locale === "en" ? "FAQ" : "FAQ"}
-          title={
-            locale === "en"
-              ? "What families usually ask before moving forward"
-              : "Ce que les familles demandent souvent avant d'avancer"
-          }
-          description={
-            locale === "en"
-              ? "Short answers so the decision feels easier."
-              : "Des réponses courtes pour que la décision soit plus simple."
-          }
-          items={page.faq}
-          columns="lg:grid-cols-3"
         />
 
         <ContactSection
@@ -203,25 +173,20 @@ export default function OfferLanding({ forcedRouteKey }) {
           pageName={`${routeKey}-${locale}`}
         />
 
-        <FinalCtaSection
-          badge={page.eyebrow}
-          title={page.ctaTitle}
-          description={page.ctaText}
-          primaryAction={{
-            label: primaryLabel,
-            href: `tel:${siteConfig.phone}`,
-            icon: Phone,
-          }}
-          secondaryAction={
-            showBookingButton
-              ? {
-                  label: secondaryLabel,
-                  href: BOOKING_URL,
-                  external: true,
-                  icon: CalendarDays,
-                }
-              : null
+        <FaqGrid
+          eyebrow={locale === "en" ? "FAQ" : "FAQ"}
+          title={
+            locale === "en"
+              ? "What families usually ask before moving forward"
+              : "Ce que les familles demandent souvent avant d'avancer"
           }
+          description={
+            locale === "en"
+              ? "Short answers so the decision feels easier."
+              : "Des réponses courtes pour que la décision soit plus simple."
+          }
+          items={page.faq}
+          columns="lg:grid-cols-3"
         />
       </main>
     </div>

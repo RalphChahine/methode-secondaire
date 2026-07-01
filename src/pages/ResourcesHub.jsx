@@ -2,13 +2,10 @@ import { Link, useLocation } from "react-router-dom"
 import { ArrowRight, Compass, Sparkles } from "lucide-react"
 
 import BlogGridSection from "@/components/BlogGridSection"
-import KeywordIntentSection from "@/components/KeywordIntentSection"
-import LocalOpportunitySection from "@/components/LocalOpportunitySection"
-import MilestoneOpportunitySection from "@/components/MilestoneOpportunitySection"
 import MotionCard from "@/components/MotionCard"
 import OfferPathwaysSection from "@/components/OfferPathwaysSection"
+import ParentJourneyNote from "@/components/ParentJourneyNote"
 import ResourceGridSection from "@/components/ResourceGridSection"
-import Secondary4TheoryPreviewSection from "@/components/Secondary4TheoryPreviewSection"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -117,6 +114,8 @@ export default function ResourcesHub() {
                 </Link>
               </Button>
             </div>
+
+            <ParentJourneyNote locale={locale} className="mt-6 max-w-2xl" />
           </div>
 
           <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
@@ -165,8 +164,6 @@ export default function ResourcesHub() {
 
         <ResourceGridSection locale={locale} className="pt-20" showHubLink={false} />
 
-        <Secondary4TheoryPreviewSection locale={locale} className="pt-20" />
-
         <BlogGridSection
           locale={locale}
           className="pt-20"
@@ -183,12 +180,6 @@ export default function ResourcesHub() {
               : "Certaines familles veulent des conseils, mais beaucoup veulent aussi des preuves. Ces articles relient des études scientifiques à de vraies situations parentales en maths, en sciences et autour des devoirs."
           }
         />
-
-        <KeywordIntentSection locale={locale} className="pt-20" />
-
-        <LocalOpportunitySection locale={locale} className="pt-20" />
-
-        <MilestoneOpportunitySection locale={locale} className="pt-20" />
 
         <OfferPathwaysSection
           locale={locale}

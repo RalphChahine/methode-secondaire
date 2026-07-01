@@ -1,6 +1,6 @@
 import { useEffect } from "react"
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
-import { CalendarDays, Menu, Phone } from "lucide-react"
+import { ClipboardList, Menu, Phone } from "lucide-react"
 
 import LanguageToggle from "@/components/LanguageToggle"
 import StudentAssistantWidget from "@/components/StudentAssistantWidget"
@@ -14,7 +14,6 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet"
-import { BOOKING_URL } from "@/config/booking"
 import { getLocaleFromPath, getLocalizedPath } from "@/lib/i18n"
 import { siteConfig } from "@/lib/seo"
 
@@ -24,7 +23,6 @@ export default function SiteLayout() {
   const locale = getLocaleFromPath(location.pathname)
   const isEnglish = locale === "en"
   const homePath = getLocalizedPath("home", locale)
-  const isHomePage = location.pathname === homePath
 
   const copy = isEnglish
     ? {
@@ -41,11 +39,12 @@ export default function SiteLayout() {
           { id: "processus", label: "How it works" },
           { id: "offres", label: "Offers" },
           { id: "faq", label: "FAQ" },
-          { id: "contact", label: "Contact" },
+          { id: "demande", label: "Parent form" },
         ],
         call: "Call",
         book: "Book a session",
-        callPrompt: "Weekly follow-up is best framed by phone first.",
+        form: "Parent form",
+        callPrompt: "Step 1 is the parent request. Then we call back with the next clear move.",
         footerBlurb:
           "Private math and science tutoring for high school students across Quebec. A simple, structured and reassuring experience for parents.",
         footerLinks: [
@@ -72,11 +71,12 @@ export default function SiteLayout() {
           { id: "processus", label: "Étapes" },
           { id: "offres", label: "Offres" },
           { id: "faq", label: "FAQ" },
-          { id: "contact", label: "Contact" },
+          { id: "demande", label: "Formulaire" },
         ],
         call: "Appeler",
         book: "Réserver une séance",
-        callPrompt: "Le suivi régulier se cadre mieux par téléphone d'abord.",
+        form: "Demande parent",
+        callPrompt: "L'étape 1, c'est la demande parent. Ensuite, on rappelle avec le prochain pas clair.",
         footerBlurb:
           "Tutorat privé en maths et en sciences pour les élèves du secondaire au Québec. Une expérience simple, claire et rassurante pour les parents.",
         footerLinks: [
@@ -160,9 +160,7 @@ export default function SiteLayout() {
               variant="outline"
               className="rounded-full border-white/15 bg-white/5 px-5 text-white hover:bg-white/10 hover:text-white"
             >
-              <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                {copy.book}
-              </a>
+              <Link to={`${homePath}#demande`}>{copy.form}</Link>
             </Button>
           </div>
 
@@ -242,9 +240,10 @@ export default function SiteLayout() {
                       variant="outline"
                       className="w-full rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
                     >
-                      <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                        {copy.book}
-                      </a>
+                      <Link to={`${homePath}#demande`}>
+                        <ClipboardList className="h-4 w-4" />
+                        {copy.form}
+                      </Link>
                     </Button>
                   </SheetClose>
                 </div>
@@ -293,15 +292,13 @@ export default function SiteLayout() {
               <a className="block transition hover:text-white" href={`mailto:${siteConfig.email}`}>
                 {siteConfig.email}
               </a>
-              <a
+              <Link
                 className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-white transition hover:bg-white/10"
-                href={BOOKING_URL}
-                target="_blank"
-                rel="noreferrer"
+                to={`${homePath}#demande`}
               >
-                <CalendarDays className="h-4 w-4 text-[#f5c977]" />
-                {copy.book}
-              </a>
+                <ClipboardList className="h-4 w-4 text-[#f5c977]" />
+                {copy.form}
+              </Link>
             </div>
           </div>
         </div>
@@ -327,15 +324,10 @@ export default function SiteLayout() {
             variant="outline"
             className="min-w-0 rounded-full border-white/15 bg-white/5 px-3 text-xs text-white hover:bg-white/10 hover:text-white sm:text-sm"
           >
-            <a
-              href={isHomePage ? "#demande" : BOOKING_URL}
-              target={isHomePage ? undefined : "_blank"}
-              rel={isHomePage ? undefined : "noreferrer"}
-              aria-label={isHomePage ? (isEnglish ? "Form" : "Formulaire") : copy.book}
-            >
-              <CalendarDays className="h-4 w-4" />
-              {isHomePage ? (isEnglish ? "Form" : "Formulaire") : copy.book}
-            </a>
+            <Link to={`${homePath}#demande`} aria-label={copy.form}>
+              <ClipboardList className="h-4 w-4" />
+              {copy.form}
+            </Link>
           </Button>
         </div>
       </div>

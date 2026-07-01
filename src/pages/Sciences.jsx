@@ -1,15 +1,12 @@
 import { CalendarDays, FlaskConical, Gauge, NotebookPen, Phone, Target, Zap } from "lucide-react"
 import { useLocation } from "react-router-dom"
 
-import { VerifiedReviewsSection } from "@/components/ConversionSections"
 import Seo from "@/components/Seo"
 import {
   ContactSection,
   FaqGrid,
   FeatureGrid,
-  FinalCtaSection,
   HeroShowcase,
-  StepGrid,
 } from "@/components/SimpleMarketingSections"
 import { BOOKING_URL } from "@/config/booking"
 import {
@@ -20,6 +17,7 @@ import {
   getLocalizedPath,
   getOgLocale,
 } from "@/lib/i18n"
+import { getParentJourney } from "@/lib/parentJourney"
 import { siteConfig } from "@/lib/seo"
 
 const contentByLocale = {
@@ -284,6 +282,7 @@ export default function Sciences() {
           panelTitle={copy.panelTitle}
           panelItems={copy.panelItems}
           panelNote={copy.panelNote}
+          journey={getParentJourney(locale)}
         />
 
         <FeatureGrid
@@ -293,15 +292,6 @@ export default function Sciences() {
           items={copy.modules}
           columns="md:grid-cols-2"
         />
-
-        <StepGrid
-          eyebrow={copy.stepsEyebrow}
-          title={copy.stepsTitle}
-          description={copy.stepsDescription}
-          steps={copy.steps}
-        />
-
-        <VerifiedReviewsSection locale={locale} className="pt-20" limit={3} showLink />
 
         <FaqGrid
           eyebrow="FAQ"
@@ -321,23 +311,6 @@ export default function Sciences() {
           description={copy.contactDescription}
           bullets={copy.contactBullets}
           pageName={`sciences-${locale}`}
-        />
-
-        <FinalCtaSection
-          badge={copy.ctaBadge}
-          title={copy.ctaTitle}
-          description={copy.ctaDescription}
-          primaryAction={{
-            label: locale === "en" ? "Call now" : "Appeler maintenant",
-            href: `tel:${siteConfig.phone}`,
-            icon: Phone,
-          }}
-          secondaryAction={{
-            label: locale === "en" ? "Book a session" : "Réserver une séance",
-            href: BOOKING_URL,
-            external: true,
-            icon: CalendarDays,
-          }}
         />
       </main>
     </div>
