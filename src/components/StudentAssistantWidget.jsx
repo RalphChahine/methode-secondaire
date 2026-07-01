@@ -161,7 +161,7 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
   }
 
   return (
-    <div className="fixed bottom-28 right-3 z-50 sm:bottom-24 lg:bottom-6 lg:right-6 lg:max-w-none">
+    <div className="fixed bottom-6 right-6 z-50 hidden lg:block lg:max-w-none">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button

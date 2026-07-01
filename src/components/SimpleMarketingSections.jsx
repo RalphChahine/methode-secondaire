@@ -4,8 +4,11 @@ import {
   BadgeCheck,
   CalendarDays,
   ChevronRight,
+  ClipboardCheck,
   Mail,
+  MessageCircle,
   Phone,
+  ShieldCheck,
 } from "lucide-react"
 
 import LeadForm from "@/components/LeadForm"
@@ -26,15 +29,25 @@ export function HeroShowcase({
   panelTitle,
   panelItems = [],
   panelNote,
+  leadForm,
 }) {
+  const hasLeadForm = Boolean(leadForm)
+  const onboardingSteps = leadForm?.steps?.length
+    ? leadForm.steps
+    : [
+        { label: "Describe" },
+        { label: "Callback" },
+        { label: "Start" },
+      ]
+
   return (
-    <section className="relative pt-4 sm:pt-6">
-      <div className="section-shell noise-overlay px-6 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-10">
+    <section className="relative pt-0">
+      <div className="section-shell noise-overlay px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-8">
         <div className="grid-fade absolute inset-0 opacity-60" />
         <div className="pointer-events-none absolute -left-20 top-20 h-56 w-56 rounded-full bg-[#6d9fff]/18 blur-3xl" />
         <div className="pointer-events-none absolute right-0 top-0 h-64 w-64 rounded-full bg-[#f5c977]/12 blur-3xl" />
 
-        <div className="relative grid gap-10 lg:grid-cols-[1.08fr,0.92fr] lg:items-start">
+        <div className="relative grid gap-8 lg:grid-cols-[0.9fr,0.78fr] lg:items-start">
           <div className="max-w-4xl">
             {badge ? (
               <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
@@ -42,11 +55,11 @@ export function HeroShowcase({
               </Badge>
             ) : null}
 
-            <h1 className="balanced-copy mt-7 max-w-5xl font-display text-5xl font-semibold leading-[0.92] text-white sm:text-6xl lg:text-7xl">
+            <h1 className="balanced-copy mt-7 max-w-5xl font-display text-[2.35rem] font-semibold leading-[0.98] text-white sm:text-5xl lg:text-6xl">
               {title}
             </h1>
 
-            <p className="balanced-copy mt-6 max-w-2xl text-lg leading-8 text-white/72 sm:text-xl">
+            <p className="balanced-copy mt-6 max-w-2xl text-base leading-7 text-white/72 sm:text-xl sm:leading-8">
               {description}
             </p>
 
@@ -56,7 +69,7 @@ export function HeroShowcase({
             </div>
 
             {stats.length ? (
-              <div className="mt-10 grid gap-3 sm:grid-cols-3">
+              <div className="mt-10 hidden gap-3 sm:grid sm:grid-cols-3">
                 {stats.map((stat, index) => (
                   <div
                     key={stat.label}
@@ -75,39 +88,90 @@ export function HeroShowcase({
           </div>
 
           <div className="space-y-4">
-            <MotionCard className="panel-ink rounded-[36px] p-7 text-white sm:p-8">
-              {panelEyebrow ? (
-                <div className="rule-label text-[0.68rem]">{panelEyebrow}</div>
-              ) : null}
-
-              {panelTitle ? (
-                <div className="balanced-copy mt-4 font-display text-3xl font-semibold leading-tight sm:text-[2.2rem]">
-                  {panelTitle}
+            {hasLeadForm ? (
+              <MotionCard
+                id={leadForm.id}
+                className="panel-ink rounded-[32px] p-5 text-white sm:p-6 lg:sticky lg:top-28"
+              >
+                <div className="flex items-center gap-2 text-sm font-semibold text-[#f5c977]">
+                  <ShieldCheck className="h-4 w-4" />
+                  {leadForm.eyebrow}
                 </div>
-              ) : null}
 
-              <div className="mt-7 space-y-4">
-                {panelItems.map((item, index) => (
-                  <div
-                    key={item}
-                    className="panel-soft rounded-[26px] px-5 py-5 transition duration-200 hover:bg-white/[0.08]"
-                  >
-                    <div className="grid gap-3 sm:grid-cols-[4.5rem,1fr] sm:items-start">
-                      <div className="font-display text-3xl text-[#f5c977] sm:text-4xl">
-                        {`0${index + 1}`}
+                <h2 className="balanced-copy mt-3 font-display text-2xl font-semibold leading-tight sm:text-3xl">
+                  {leadForm.title}
+                </h2>
+                <p className="mt-3 text-sm leading-7 text-white/72">{leadForm.description}</p>
+
+                <div className="mt-5 grid grid-cols-3 gap-2">
+                  {onboardingSteps.map((step, index) => (
+                    <div
+                      key={step.label}
+                      className="rounded-[22px] border border-white/10 bg-white/[0.045] px-2 py-3 text-center"
+                    >
+                      <div className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[#f5c977] text-lg font-extrabold text-[#071631] shadow-[0_14px_30px_rgba(245,201,119,0.22)]">
+                        {index + 1}
                       </div>
-                      <div className="text-sm leading-7 text-white/82 sm:text-[0.97rem]">{item}</div>
+                      <div className="mt-2 text-[0.7rem] font-semibold leading-snug text-white/82 sm:text-xs">
+                        {step.label}
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-
-              {panelNote ? (
-                <div className="mt-6 rounded-[28px] bg-[#091939] px-5 py-5 text-sm leading-7 text-white/74">
-                  {panelNote}
+                  ))}
                 </div>
-              ) : null}
-            </MotionCard>
+
+                <div className="mt-5">
+                  <LeadForm locale={leadForm.locale} pageName={leadForm.pageName} variant="hero" />
+                </div>
+
+                {leadForm.trustItems?.length ? (
+                  <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                    {leadForm.trustItems.map((item) => (
+                      <div
+                        key={item}
+                        className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 text-xs text-white/72"
+                      >
+                        <ClipboardCheck className="h-3.5 w-3.5 shrink-0 text-[#f5c977]" />
+                        <span>{item}</span>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </MotionCard>
+            ) : (
+              <MotionCard className="panel-ink rounded-[36px] p-7 text-white sm:p-8">
+                {panelEyebrow ? (
+                  <div className="rule-label text-[0.68rem]">{panelEyebrow}</div>
+                ) : null}
+
+                {panelTitle ? (
+                  <div className="balanced-copy mt-4 font-display text-3xl font-semibold leading-tight sm:text-[2.2rem]">
+                    {panelTitle}
+                  </div>
+                ) : null}
+
+                <div className="mt-7 space-y-4">
+                  {panelItems.map((item, index) => (
+                    <div
+                      key={item}
+                      className="panel-soft rounded-[26px] px-5 py-5 transition duration-200 hover:bg-white/[0.08]"
+                    >
+                      <div className="grid gap-3 sm:grid-cols-[4.5rem,1fr] sm:items-start">
+                        <div className="font-display text-3xl text-[#f5c977] sm:text-4xl">
+                          {`0${index + 1}`}
+                        </div>
+                        <div className="text-sm leading-7 text-white/82 sm:text-[0.97rem]">{item}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {panelNote ? (
+                  <div className="mt-6 rounded-[28px] bg-[#091939] px-5 py-5 text-sm leading-7 text-white/74">
+                    {panelNote}
+                  </div>
+                ) : null}
+              </MotionCard>
+            )}
           </div>
         </div>
       </div>
@@ -185,25 +249,28 @@ export function StepGrid({ id, eyebrow, title, description, steps }) {
     <section id={id} className="pt-20">
       <SectionIntro eyebrow={eyebrow} title={title} description={description} />
 
-      <div className="mt-8 grid gap-4">
+      <div className="mt-8 grid gap-4 lg:grid-cols-3">
         {steps.map((step, index) => (
           <MotionCard
             key={step.title}
-            className={`rounded-[34px] p-0 text-white ${
+            className={`relative overflow-hidden rounded-[30px] p-6 text-white sm:p-7 ${
               index === 1 ? "panel-gold" : "panel-ink"
             }`}
           >
-            <div className="grid gap-6 px-6 py-6 sm:px-8 sm:py-8 lg:grid-cols-[10rem,1fr] lg:items-start">
-              <div>
-                <div className="rule-label text-[0.68rem]">{step.step || `0${index + 1}`}</div>
-                <div className="mt-3 font-editorial text-5xl italic text-white/88 sm:text-6xl">
-                  {step.step || `0${index + 1}`}
-                </div>
+            <div className="flex items-start gap-4">
+              <div className="grid h-20 w-20 shrink-0 place-items-center rounded-full bg-[#f5c977] text-[#071631] shadow-[0_18px_42px_rgba(245,201,119,0.24)]">
+                <span className="font-display text-4xl font-semibold">{index + 1}</span>
               </div>
 
-              <div className="max-w-3xl">
-                <h3 className="balanced-copy font-display text-2xl font-semibold sm:text-3xl">{step.title}</h3>
-                <p className="mt-4 text-sm leading-7 text-white/74 sm:text-base">{step.description}</p>
+              <div className="min-w-0 pt-1">
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-semibold text-white/70">
+                  <MessageCircle className="h-3.5 w-3.5 text-[#f5c977]" />
+                  {step.step || `0${index + 1}`}
+                </div>
+                <h3 className="balanced-copy font-display text-2xl font-semibold leading-tight sm:text-3xl">
+                  {step.title}
+                </h3>
+                <p className="mt-4 text-sm leading-7 text-white/74">{step.description}</p>
               </div>
             </div>
           </MotionCard>
@@ -371,6 +438,7 @@ export function ContactSection({
   description,
   bullets = [],
   pageName = "website",
+  showForm = true,
 }) {
   const copy =
     locale === "en"
@@ -379,19 +447,27 @@ export function ContactSection({
           bookLabel: "Book a session",
           locationLabel: "Online across Quebec, in person depending on area",
           callNote: "Weekly follow-up is usually easier to frame by phone first.",
+          urgentTitle: "Need help choosing the next step?",
+          urgentText:
+            "Call if the situation is urgent, or jump back to the form and we will guide the first decision.",
+          formAnchor: "Back to the form",
         }
       : {
           cardEyebrow: "Contact direct",
           bookLabel: "Réserver une séance",
           locationLabel: "En ligne partout au Québec, présentiel selon le secteur",
           callNote: "Le suivi hebdomadaire se cadre souvent mieux par téléphone d'abord.",
+          urgentTitle: "Besoin d'aide pour choisir le prochain pas ?",
+          urgentText:
+            "Appelez si la situation est urgente, ou revenez au formulaire: on vous aide à cadrer la première décision.",
+          formAnchor: "Retour au formulaire",
         }
 
   return (
     <section id="contact" className="pt-20">
       <SectionIntro eyebrow={eyebrow} title={title} description={description} />
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-[0.9fr,1.1fr]">
+      <div className={`mt-8 grid gap-6 ${showForm ? "lg:grid-cols-[0.9fr,1.1fr]" : "lg:grid-cols-[0.95fr,1.05fr]"}`}>
         <div className="section-shell noise-overlay px-6 py-7 text-white sm:px-7 sm:py-8">
           <div className="rule-label relative z-10 text-[0.68rem]">{copy.cardEyebrow}</div>
 
@@ -423,11 +499,39 @@ export function ContactSection({
           ) : null}
         </div>
 
-        <MotionCard className="section-shell noise-overlay rounded-[34px] p-7 text-white sm:p-8">
-          <div className="relative z-10">
-            <LeadForm locale={locale} pageName={pageName} />
-          </div>
-        </MotionCard>
+        {showForm ? (
+          <MotionCard className="section-shell noise-overlay rounded-[34px] p-7 text-white sm:p-8">
+            <div className="relative z-10">
+              <LeadForm locale={locale} pageName={pageName} />
+            </div>
+          </MotionCard>
+        ) : (
+          <MotionCard className="panel-gold rounded-[30px] p-7 text-white sm:p-8">
+            <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
+              <Phone className="h-5 w-5" />
+            </div>
+            <h3 className="balanced-copy mt-5 font-display text-3xl font-semibold">{copy.urgentTitle}</h3>
+            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/78 sm:text-base">{copy.urgentText}</p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Button asChild className="rounded-full bg-[#071631] px-6 py-6 text-base text-white hover:bg-[#0b2048]">
+                <a href={`tel:${siteConfig.phone}`}>
+                  <Phone className="h-4 w-4" />
+                  {locale === "en" ? "Call now" : "Appeler maintenant"}
+                </a>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-full border-[#071631]/15 bg-white/70 px-6 py-6 text-base text-[#071631] hover:bg-white"
+              >
+                <a href="#demande">
+                  {copy.formAnchor}
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+              </Button>
+            </div>
+          </MotionCard>
+        )}
       </div>
     </section>
   )
@@ -476,7 +580,8 @@ function ActionButton({ action, variant = "default", fullWidth = false }) {
       ? "rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
       : "rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f] shadow-[0_18px_45px_rgba(245,201,119,0.22)]"
 
-  const className = `${baseClass} ${fullWidth ? "w-full py-6" : "px-6 py-6 text-base"}`
+  const mobileClass = action.hideOnMobile ? "hidden sm:inline-flex" : ""
+  const className = `${mobileClass} ${baseClass} ${fullWidth ? "w-full py-6" : "px-6 py-6 text-base"}`
   const content = (
     <>
       {action.icon ? <action.icon className="h-4 w-4" /> : null}

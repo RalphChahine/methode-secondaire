@@ -10,29 +10,29 @@ import { siteConfig } from "@/lib/seo"
 
 const copyByLocale = {
   fr: {
-    noteTitle: "R\u00E9ponse rapide et orient\u00E9e action",
+    noteTitle: "On vous guide apr\u00E8s le formulaire",
     noteText:
-      "D\u00E9crivez la situation en une minute. Le retour permet ensuite de vous orienter vers le bon format ou le bon tuteur.",
-    quickReply: "R\u00E9ponse vis\u00E9e sous 24 h ouvrables.",
+      "D\u00E9crivez la situation en une minute. Vous n'avez pas \u00E0 choisir le plan parfait: on vous aide \u00E0 cadrer la suite.",
+    quickReply: "R\u00E9ponse sous 24 h ouvrables.",
     injectedSummary: "Le r\u00E9sum\u00E9 du diagnostic a \u00E9t\u00E9 ajout\u00E9 automatiquement.",
-    nameLabel: "Nom",
-    namePlaceholder: "Nom de l'\u00E9l\u00E8ve ou du parent",
+    nameLabel: "Votre nom",
+    namePlaceholder: "Nom du parent",
     emailLabel: "Email",
     emailPlaceholder: "adresse@email.com",
-    phoneLabel: "T\u00E9l\u00E9phone (optionnel)",
+    phoneLabel: "T\u00E9l\u00E9phone pour le rappel",
     phonePlaceholder: "514 555-1234",
-    subjectLabel: "Niveau et mati\u00E8re",
-    subjectPlaceholder: "Ex. secondaire 4 maths ou secondaire 5 sciences",
-    priorityLabel: "Besoin le plus urgent",
-    priorityPlaceholder: "Choisir la situation qui ressemble le plus",
+    subjectLabel: "Niveau + mati\u00E8re",
+    subjectPlaceholder: "Ex. secondaire 4 maths",
+    priorityLabel: "Ce qui inqui\u00E8te le plus",
+    priorityPlaceholder: "Choisir le besoin principal",
     priorityOptions: [
       { value: "exam-prep", label: "Pr\u00E9paration d'examens" },
       { value: "weekly", label: "Suivi hebdomadaire" },
       { value: "catch-up", label: "Rattrapage ou remise \u00E0 niveau" },
       { value: "unsure", label: "Je ne suis pas encore certain" },
     ],
-    timelineLabel: "Quand voulez-vous commencer ?",
-    timelinePlaceholder: "Choisir l'horizon le plus proche",
+    timelineLabel: "Quand voulez-vous de l'aide ?",
+    timelinePlaceholder: "Choisir le moment le plus proche",
     timelineOptions: [
       { value: "this-week", label: "Cette semaine" },
       { value: "two-weeks", label: "Dans 2 semaines" },
@@ -52,14 +52,14 @@ const copyByLocale = {
       { value: "text", label: "Texto" },
       { value: "either", label: "Peu importe" },
     ],
-    messageLabel: "Message",
-    messagePlaceholder: "D\u00E9crivez bri\u00E8vement la situation, les difficult\u00E9s ou l'objectif.",
-    submitIdle: "Envoyer la demande",
+    messageLabel: "Ce qu'on doit savoir",
+    messagePlaceholder: "Ex. examen bient\u00F4t, notes qui baissent, devoirs difficiles, stress, chapitre bloquant...",
+    submitIdle: "Envoyer et \u00EAtre rappel\u00E9",
     submitSending: "Envoi en cours...",
-    formNote: "Plus le contexte est clair, plus l'orientation peut \u00EAtre rapide d\u00E8s le premier retour.",
+    formNote: "Sans engagement. Le premier retour sert \u00E0 clarifier le besoin et le bon prochain pas.",
     successTitle: "Demande envoy\u00E9e",
     successText:
-      "La demande a bien \u00E9t\u00E9 transmise. Si le besoin est urgent, vous pouvez aussi appeler tout de suite pour cadrer la suite plus vite.",
+      "La demande a bien \u00E9t\u00E9 transmise. On vous revient avec une suite claire. Si le besoin est urgent, vous pouvez aussi appeler tout de suite.",
     successCall: "Appeler maintenant",
     successBook: "R\u00E9server directement",
     successReset: "Envoyer un autre message",
@@ -68,29 +68,29 @@ const copyByLocale = {
     emailSubject: "Nouvelle demande - M\u00E9thode Secondaire",
   },
   en: {
-    noteTitle: "Fast, action-oriented reply",
+    noteTitle: "We guide you after the form",
     noteText:
-      "Describe the situation in a minute. The reply can then guide you toward the right format or tutor profile.",
+      "Describe the situation in one minute. You do not need to choose the perfect plan: we help you frame the next step.",
     quickReply: "Target reply within one business day.",
     injectedSummary: "The diagnostic summary was added automatically.",
-    nameLabel: "Name",
-    namePlaceholder: "Student or parent name",
+    nameLabel: "Your name",
+    namePlaceholder: "Parent name",
     emailLabel: "Email",
     emailPlaceholder: "name@email.com",
-    phoneLabel: "Phone (optional)",
+    phoneLabel: "Phone for the callback",
     phonePlaceholder: "514 555-1234",
-    subjectLabel: "Level and subject",
-    subjectPlaceholder: "Ex. Secondary 4 math or Secondary 5 science",
-    priorityLabel: "Most urgent need",
-    priorityPlaceholder: "Choose the closest situation",
+    subjectLabel: "Grade + subject",
+    subjectPlaceholder: "Ex. Secondary 4 math",
+    priorityLabel: "Biggest concern",
+    priorityPlaceholder: "Choose the main need",
     priorityOptions: [
       { value: "exam-prep", label: "Exam preparation" },
       { value: "weekly", label: "Weekly follow-up" },
       { value: "catch-up", label: "Catch-up or academic reset" },
       { value: "unsure", label: "I am not fully sure yet" },
     ],
-    timelineLabel: "When do you want to start?",
-    timelinePlaceholder: "Choose the closest timeline",
+    timelineLabel: "When do you want help?",
+    timelinePlaceholder: "Choose the closest timing",
     timelineOptions: [
       { value: "this-week", label: "This week" },
       { value: "two-weeks", label: "Within 2 weeks" },
@@ -110,14 +110,14 @@ const copyByLocale = {
       { value: "text", label: "Text message" },
       { value: "either", label: "Either works" },
     ],
-    messageLabel: "Message",
-    messagePlaceholder: "Briefly describe the situation, challenge or goal.",
-    submitIdle: "Send request",
+    messageLabel: "What should we know?",
+    messagePlaceholder: "Ex. exam soon, grades dropping, hard homework, stress, blocked chapter...",
+    submitIdle: "Send and get a callback",
     submitSending: "Sending...",
-    formNote: "The clearer the context, the faster the first reply can point you in the right direction.",
+    formNote: "No commitment. The first reply is there to clarify the need and the right next step.",
     successTitle: "Request sent",
     successText:
-      "Your request was sent successfully. If the need is urgent, you can also call right away to frame the next step faster.",
+      "Your request was sent successfully. We will reply with a clear next step. If the need is urgent, you can also call right away.",
     successCall: "Call now",
     successBook: "Book directly",
     successReset: "Send another message",
@@ -141,8 +141,9 @@ function getInitialValues(copy) {
   }
 }
 
-export default function LeadForm({ locale = "fr", pageName = "website" }) {
+export default function LeadForm({ locale = "fr", pageName = "website", variant = "default" }) {
   const copy = copyByLocale[locale] || copyByLocale.fr
+  const isHero = variant === "hero"
   const [status, setStatus] = useState("idle")
   const [diagnosticInjected, setDiagnosticInjected] = useState(false)
   const [values, setValues] = useState(() => getInitialValues(copy))
@@ -285,25 +286,27 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div className="rounded-[24px] border border-white/10 bg-[#0a1d43]/70 px-5 py-4 text-white">
-        <div className="flex items-center gap-2 text-sm font-semibold text-white">
-          <Clock3 className="h-4 w-4 text-[#f5c977]" />
-          {copy.noteTitle}
+    <form onSubmit={handleSubmit} className={isHero ? "space-y-3" : "space-y-4"}>
+      {!isHero ? (
+        <div className="rounded-[24px] border border-white/10 bg-[#0a1d43]/70 px-5 py-4 text-white">
+          <div className="flex items-center gap-2 text-sm font-semibold text-white">
+            <Clock3 className="h-4 w-4 text-[#f5c977]" />
+            {copy.noteTitle}
+          </div>
+          <p className="mt-2 text-sm leading-7 text-white/72">{copy.noteText}</p>
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <p className="text-xs font-semibold text-[#f5c977]">{copy.quickReply}</p>
+            {diagnosticInjected && (
+              <div className="inline-flex items-center gap-1 rounded-full border border-[#f5c977]/25 bg-[#f5c977]/10 px-3 py-1 text-xs text-[#f8deb0]">
+                <Sparkles className="h-3 w-3" />
+                {copy.injectedSummary}
+              </div>
+            )}
+          </div>
         </div>
-        <p className="mt-2 text-sm leading-7 text-white/72">{copy.noteText}</p>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <p className="text-xs uppercase tracking-[0.22em] text-[#f5c977]">{copy.quickReply}</p>
-          {diagnosticInjected && (
-            <div className="inline-flex items-center gap-1 rounded-full border border-[#f5c977]/25 bg-[#f5c977]/10 px-3 py-1 text-xs text-[#f8deb0]">
-              <Sparkles className="h-3 w-3" />
-              {copy.injectedSummary}
-            </div>
-          )}
-        </div>
-      </div>
+      ) : null}
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className={`grid ${isHero ? "gap-3 sm:grid-cols-2" : "gap-4 sm:grid-cols-2"}`}>
         <Field label={copy.nameLabel}>
           <Input
             name="nom"
@@ -315,123 +318,132 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
           />
         </Field>
 
-        <Field label={copy.emailLabel}>
+        <Field label={copy.phoneLabel}>
           <Input
-            name="email"
-            type="email"
+            name="telephone"
+            type="tel"
             required
-            value={values.email}
-            onChange={(event) => updateValue("email", event.target.value)}
+            value={values.telephone}
+            onChange={(event) => updateValue("telephone", event.target.value)}
             className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
-            placeholder={copy.emailPlaceholder}
+            placeholder={copy.phonePlaceholder}
           />
         </Field>
       </div>
 
-      <Field label={copy.phoneLabel}>
-        <Input
-          name="telephone"
-          type="tel"
-          value={values.telephone}
-          onChange={(event) => updateValue("telephone", event.target.value)}
-          className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
-          placeholder={copy.phonePlaceholder}
-        />
-      </Field>
+      {isHero ? (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label={copy.subjectLabel}>
+            <Input
+              name="sujet"
+              required
+              value={values.sujet}
+              onChange={(event) => updateValue("sujet", event.target.value)}
+              className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
+              placeholder={copy.subjectPlaceholder}
+            />
+          </Field>
 
-      <Field label={copy.subjectLabel}>
-        <Input
-          name="sujet"
-          required
-          value={values.sujet}
-          onChange={(event) => updateValue("sujet", event.target.value)}
-          className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
-          placeholder={copy.subjectPlaceholder}
-        />
-      </Field>
+          <PriorityField copy={copy} value={values.priorite} onChange={(value) => updateValue("priorite", value)} />
+        </div>
+      ) : (
+        <>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Field label={copy.emailLabel}>
+              <Input
+                name="email"
+                type="email"
+                required
+                value={values.email}
+                onChange={(event) => updateValue("email", event.target.value)}
+                className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
+                placeholder={copy.emailPlaceholder}
+              />
+            </Field>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={copy.priorityLabel}>
-          <select
-            name="priorite"
+            <Field label={copy.subjectLabel}>
+              <Input
+                name="sujet"
+                required
+                value={values.sujet}
+                onChange={(event) => updateValue("sujet", event.target.value)}
+                className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
+                placeholder={copy.subjectPlaceholder}
+              />
+            </Field>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2">
+            <PriorityField copy={copy} value={values.priorite} onChange={(value) => updateValue("priorite", value)} />
+
+            <Field label={copy.timelineLabel}>
+              <select
+                name="timeline"
+                required
+                value={values.timeline}
+                onChange={(event) => updateValue("timeline", event.target.value)}
+                className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
+              >
+                <option value="" disabled className="bg-[#06132f] text-white/45">
+                  {copy.timelinePlaceholder}
+                </option>
+                {copy.timelineOptions.map((option) => (
+                  <option key={option.value} value={option.value} className="bg-[#06132f] text-white">
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          </div>
+        </>
+      )}
+
+      {!isHero ? (
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field label={copy.formatLabel}>
+            <select
+              name="format"
+              value={values.format}
+              onChange={(event) => updateValue("format", event.target.value)}
+              className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
+            >
+              {copy.formatOptions.map((option) => (
+                <option key={option.value} value={option.value} className="bg-[#06132f] text-white">
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </Field>
+
+          <Field label={copy.contactPreferenceLabel}>
+            <select
+              name="contact_preference"
+              value={values.contactPreference}
+              onChange={(event) => updateValue("contactPreference", event.target.value)}
+              className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
+            >
+              {copy.contactPreferenceOptions.map((option) => (
+                <option key={option.value} value={option.value} className="bg-[#06132f] text-white">
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </Field>
+        </div>
+      ) : null}
+
+      {!isHero ? (
+        <Field label={copy.messageLabel}>
+          <Textarea
+            name="message"
             required
-            value={values.priorite}
-            onChange={(event) => updateValue("priorite", event.target.value)}
-            className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
-          >
-            <option value="" disabled className="bg-[#06132f] text-white/45">
-              {copy.priorityPlaceholder}
-            </option>
-            {copy.priorityOptions.map((option) => (
-              <option key={option.value} value={option.value} className="bg-[#06132f] text-white">
-                {option.label}
-              </option>
-            ))}
-          </select>
+            value={values.message}
+            onChange={(event) => updateValue("message", event.target.value)}
+            className="min-h-[140px] rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
+            placeholder={copy.messagePlaceholder}
+          />
         </Field>
-
-        <Field label={copy.timelineLabel}>
-          <select
-            name="timeline"
-            required
-            value={values.timeline}
-            onChange={(event) => updateValue("timeline", event.target.value)}
-            className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
-          >
-            <option value="" disabled className="bg-[#06132f] text-white/45">
-              {copy.timelinePlaceholder}
-            </option>
-            {copy.timelineOptions.map((option) => (
-              <option key={option.value} value={option.value} className="bg-[#06132f] text-white">
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label={copy.formatLabel}>
-          <select
-            name="format"
-            value={values.format}
-            onChange={(event) => updateValue("format", event.target.value)}
-            className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
-          >
-            {copy.formatOptions.map((option) => (
-              <option key={option.value} value={option.value} className="bg-[#06132f] text-white">
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-
-        <Field label={copy.contactPreferenceLabel}>
-          <select
-            name="contact_preference"
-            value={values.contactPreference}
-            onChange={(event) => updateValue("contactPreference", event.target.value)}
-            className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
-          >
-            {copy.contactPreferenceOptions.map((option) => (
-              <option key={option.value} value={option.value} className="bg-[#06132f] text-white">
-                {option.label}
-              </option>
-            ))}
-          </select>
-        </Field>
-      </div>
-
-      <Field label={copy.messageLabel}>
-        <Textarea
-          name="message"
-          required
-          value={values.message}
-          onChange={(event) => updateValue("message", event.target.value)}
-          className="min-h-[140px] rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
-          placeholder={copy.messagePlaceholder}
-        />
-      </Field>
+      ) : null}
 
       <Button
         type="submit"
@@ -449,6 +461,29 @@ export default function LeadForm({ locale = "fr", pageName = "website" }) {
         </div>
       )}
     </form>
+  )
+}
+
+function PriorityField({ copy, value, onChange }) {
+  return (
+    <Field label={copy.priorityLabel}>
+      <select
+        name="priorite"
+        required
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
+      >
+        <option value="" disabled className="bg-[#06132f] text-white/45">
+          {copy.priorityPlaceholder}
+        </option>
+        {copy.priorityOptions.map((option) => (
+          <option key={option.value} value={option.value} className="bg-[#06132f] text-white">
+            {option.label}
+          </option>
+        ))}
+      </select>
+    </Field>
   )
 }
 

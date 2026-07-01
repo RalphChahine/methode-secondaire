@@ -23,6 +23,8 @@ export default function SiteLayout() {
   const navigate = useNavigate()
   const locale = getLocaleFromPath(location.pathname)
   const isEnglish = locale === "en"
+  const homePath = getLocalizedPath("home", locale)
+  const isHomePage = location.pathname === homePath
 
   const copy = isEnglish
     ? {
@@ -103,8 +105,6 @@ export default function SiteLayout() {
   }, [location.hash, location.pathname])
 
   function goToSection(id) {
-    const homePath = getLocalizedPath("home", locale)
-
     if (location.pathname === homePath) {
       document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" })
       return
@@ -327,9 +327,14 @@ export default function SiteLayout() {
             variant="outline"
             className="min-w-0 rounded-full border-white/15 bg-white/5 px-3 text-xs text-white hover:bg-white/10 hover:text-white sm:text-sm"
           >
-            <a href={BOOKING_URL} target="_blank" rel="noreferrer" aria-label={copy.book}>
+            <a
+              href={isHomePage ? "#demande" : BOOKING_URL}
+              target={isHomePage ? undefined : "_blank"}
+              rel={isHomePage ? undefined : "noreferrer"}
+              aria-label={isHomePage ? (isEnglish ? "Form" : "Formulaire") : copy.book}
+            >
               <CalendarDays className="h-4 w-4" />
-              {copy.book}
+              {isHomePage ? (isEnglish ? "Form" : "Formulaire") : copy.book}
             </a>
           </Button>
         </div>

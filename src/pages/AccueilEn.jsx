@@ -1,118 +1,70 @@
 import {
   ArrowRight,
   BrainCircuit,
-  Calculator,
-  CalendarDays,
-  FlaskConical,
   Phone,
   ShieldCheck,
-  Sparkles,
   Target,
 } from "lucide-react"
-import { Link } from "react-router-dom"
 
 import { VerifiedReviewsSection } from "@/components/ConversionSections"
-import MotionCard from "@/components/MotionCard"
 import Seo from "@/components/Seo"
 import {
-  ComparisonSplit,
   ContactSection,
   FaqGrid,
   FeatureGrid,
-  FinalCtaSection,
   HeroShowcase,
   PricingGrid,
   StepGrid,
 } from "@/components/SimpleMarketingSections"
-import { Button } from "@/components/ui/button"
 import { BOOKING_URL } from "@/config/booking"
-import { buildAlternates, getLocalizedPath } from "@/lib/i18n"
+import { buildAlternates } from "@/lib/i18n"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
 
 const stats = [
-  { label: "Grades", value: "Secondary 1 to 5" },
-  { label: "Formats", value: "Math, science, follow-up and exams" },
-  { label: "Reply", value: "Within one business day" },
+  { label: "For whom", value: "Secondary 1 to 5" },
+  { label: "Need", value: "Math, science or exams" },
+  { label: "Next step", value: "Callback within one business day" },
 ]
 
 const trustItems = [
   {
     icon: BrainCircuit,
-    title: "We clarify what is really blocking progress",
+    title: "We clarify before selling a session",
     description:
-      "Chapter, method, stress, exam pressure or lost rhythm: we define the real need before suggesting the next step.",
+      "Grade, subject, exam pressure, stress or lost rhythm: we put simple words on the situation quickly.",
   },
   {
     icon: ShieldCheck,
-    title: "Parents know what to expect",
+    title: "Parents stay in control",
     description:
-      "Recommended format, pace, priority subject and next move: the framework stays readable from the start.",
+      "You know why a format is recommended, what happens next and when the student can start.",
   },
   {
     icon: Target,
-    title: "Students move forward more consistently",
+    title: "Students start with a concrete framework",
     description:
-      "The goal is less confusion, stronger method and progress a family can actually feel from one week to the next.",
+      "The goal is less confusion, stronger method and progress that is easier for the family to read.",
   },
 ]
 
 const steps = [
   {
-    step: "01",
-    title: "You fill out the student form",
+    step: "1 minute",
+    title: "You describe the need",
     description:
-      "You share the grade, subject, biggest challenges, goals and any useful context about the student so we can understand the situation quickly.",
+      "Grade, subject, urgency and the main concern. The form stays short so you can take action right away.",
   },
   {
-    step: "02",
-    title: "We call you back to frame the need",
+    step: "Callback",
+    title: "We clarify with you",
     description:
-      "We confirm the urgency, the right format, the best rhythm and the most useful support plan before anything starts.",
+      "We confirm the urgency, the right format and the most logical rhythm so you do not have to guess alone.",
   },
   {
-    step: "03",
-    title: "We match the student and launch the first session",
+    step: "Start",
+    title: "We launch the right match",
     description:
-      "We choose the right tutor, schedule the first session and start with a clearer framework, stronger method and a real plan.",
-  },
-]
-
-const offerCards = [
-  {
-    icon: Calculator,
-    title: "High school math",
-    description:
-      "Algebra, functions, geometry, trigonometry and exam preparation with a method the student can actually reuse.",
-    bullets: ["Algebra, functions and geometry", "Secondary 1 to 5", "When math starts feeling heavy"],
-    action: {
-      label: "Explore the math page",
-      to: getLocalizedPath("maths", "en"),
-      trailing: true,
-    },
-  },
-  {
-    icon: FlaskConical,
-    title: "High school science",
-    description:
-      "Physics, chemistry, labs and long-form answers explained with more logic and less overload.",
-    bullets: ["Physics, chemistry and labs", "Logic and long answers", "Useful before exams or catch-up periods"],
-    action: {
-      label: "Explore the science page",
-      to: getLocalizedPath("sciences", "en"),
-      trailing: true,
-    },
-  },
-  {
-    icon: Sparkles,
-    title: "Exam sprint",
-    description:
-      "The right format when time is tight and a student needs to regain control before an exam arrives too fast.",
-    bullets: ["Targeted review", "Clear priorities", "For fast-approaching deadlines"],
-    action: {
-      label: "See the exam sprint",
-      to: getLocalizedPath("examSprint", "en"),
-      trailing: true,
-    },
+      "We choose the tutor, schedule the first session and the student starts with a clear plan.",
   },
 ]
 
@@ -120,8 +72,8 @@ const plans = [
   {
     title: "One-time session",
     price: "$75 / h",
-    description: "Best for an urgent need, one specific chapter or a tightly scoped review.",
-    bullets: ["Direct booking", "Math or science", "Online or in person"],
+    description: "For one chapter, an urgent question or a review before a test.",
+    bullets: ["Simple and fast", "Math or science", "Best when the need is clear"],
     action: {
       label: "Book now",
       href: BOOKING_URL,
@@ -131,8 +83,8 @@ const plans = [
   {
     title: "Weekly follow-up",
     price: "$70 / h",
-    description: "The strongest format when the goal is calmer, more durable progress across the school year.",
-    bullets: ["Call first", "Recurring time slot", "Excellent in-year support"],
+    description: "For rebuilding rhythm, method and confidence week after week.",
+    bullets: ["Recommended framing call", "Recurring time slot", "Most reassuring during the year"],
     highlight: true,
     highlightLabel: "Core offer",
     action: {
@@ -144,7 +96,7 @@ const plans = [
   {
     title: "Intensive block",
     price: "On request",
-    description: "For a compressed catch-up period, a reset or a heavy exam window.",
+    description: "For catching up quickly before an exam, a heavy term or a reset period.",
     bullets: ["Short plan", "Clear priorities", "Flexible format"],
     action: {
       label: "Book a first session",
@@ -224,189 +176,55 @@ export default function AccueilEn() {
         <div className="absolute bottom-0 left-1/2 h-[34rem] w-[44rem] -translate-x-1/2 rounded-full bg-[#4a8bff]/10 blur-3xl" />
       </div>
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-8 sm:px-6 lg:px-8 lg:pb-28 lg:pt-14">
+      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-4 sm:px-6 lg:px-8 lg:pb-28 lg:pt-8">
         <HeroShowcase
           badge="Quebec • Secondary 1 to 5"
-          title="Private tutoring that brings back calm, method and momentum."
-          description="Math, science, exam preparation and weekly follow-up for high school students across Quebec. We help families understand the need, choose the right format and move forward with more confidence."
+          title="Is your teen stuck in math or science? We guide you in 3 steps."
+          description="Fill out the form, we clarify the need with you, then we organize the right tutor. Simple, reassuring and guided."
           primaryAction={{
-            label: "Call to clarify the need",
-            href: `tel:${siteConfig.phone}`,
-            icon: Phone,
+            label: "Start the form",
+            href: "#demande",
+            icon: ArrowRight,
           }}
           secondaryAction={{
-            label: "Book a first session",
-            href: BOOKING_URL,
-            external: true,
-            icon: CalendarDays,
+            label: "Call if urgent",
+            href: `tel:${siteConfig.phone}`,
+            icon: Phone,
+            hideOnMobile: true,
           }}
           stats={stats}
-          panelEyebrow="When families usually reach out"
-          panelTitle="The situations where we help most"
-          panelItems={[
-            "When concepts have piled up and the student no longer knows where to restart.",
-            "When an exam is close and revision still feels messy.",
-            "When weekly support is needed to rebuild rhythm and confidence.",
-          ]}
-          panelNote="The first role of Méthode Secondaire is to frame the situation quickly, then recommend the right next step: focused session, exam sprint or weekly follow-up."
-        />
-
-        <FeatureGrid
-          eyebrow="Why families choose this framework"
-          title="A clearer experience from the first call to the first real progress"
-          description="No generic funnel, no blurry choice between random profiles. We guide the family toward the right subject, format and rhythm."
-          items={trustItems}
-        />
-
-        <ComparisonSplit
-          eyebrow="Why it matters"
-          title="Well-framed support works better than improvised tutoring"
-          description="When the need is defined clearly from the beginning, parents lose less time and students move forward more steadily."
-          leftTitle="Generic tutoring"
-          leftPoints={[
-            "A session gets booked without knowing whether the format is the right one.",
-            "Follow-through depends mostly on the parent pushing the process.",
-            "The student may understand in the moment without rebuilding a real method.",
-          ]}
-          rightTitle="Méthode Secondaire"
-          rightPoints={[
-            "We clarify the subject, urgency and type of block first.",
-            "We recommend a focused session or weekly follow-up based on the real need.",
-            "Progress stays easier to read for the family from one session to the next.",
-          ]}
+          leadForm={{
+            id: "demande",
+            locale: "en",
+            pageName: "home-en-hero",
+            eyebrow: "Parent request",
+            title: "Tell us where it is stuck.",
+            description: "A few details are enough to understand the situation and reply with a clear next step.",
+            steps: [{ label: "Describe" }, { label: "Callback" }, { label: "Start" }],
+            trustItems: ["No commitment", "24 h callback", "Clear plan"],
+          }}
         />
 
         <StepGrid
           id="processus"
           eyebrow="How it works"
-          title="A simple 3-step onboarding"
-          description="No complicated process: you fill out the form, we call you back, then we match the student and launch the first session."
+          title="The path is deliberately simple"
+          description="Parents do not have to compare random profiles or guess the right format. We understand first, then we act."
           steps={steps}
         />
 
-        <section id="offres" className="pt-20">
-          <div className="section-shell noise-overlay px-6 py-7 sm:px-8 sm:py-8">
-            <div className="grid gap-8 lg:grid-cols-[1.02fr,0.98fr]">
-              <div className="relative z-10">
-                <div className="rule-label text-[0.68rem]">Main format</div>
-                <h2 className="balanced-copy mt-4 font-display text-4xl font-semibold leading-[0.95] text-white sm:text-5xl">
-                  Weekly follow-up when the goal is to build something stable.
-                </h2>
-                <p className="mt-4 max-w-2xl text-base leading-8 text-white/72 sm:text-lg">
-                  When the same problem comes back every week, a one-off session is not always enough. Regular
-                  follow-up is often the best format for rebuilding subject knowledge, method and rhythm.
-                </p>
-
-                <div className="panel-gold mt-8 rounded-[32px] px-6 py-6 text-white sm:px-7 sm:py-7">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <div className="rule-label text-[0.68rem]">Recommended support</div>
-                      <h3 className="mt-3 font-display text-3xl font-semibold">Weekly follow-up</h3>
-                    </div>
-                    <div className="rounded-full bg-[#f5c977] px-4 py-1.5 text-sm font-semibold text-[#071631]">
-                      $70 / h
-                    </div>
-                  </div>
-
-                  <p className="mt-4 max-w-2xl text-sm leading-7 text-white/82">
-                    The right format when the goal is to create stability, lower weekly friction and rebuild
-                    academic structure over time.
-                  </p>
-
-                  <ul className="mt-5 space-y-3 text-sm text-white/84">
-                    {[
-                      "We often start with a short call to understand the level, priority subject and right pace.",
-                      "This works especially well for students who need durable structure, not only a quick boost.",
-                      "Families can see more clearly what is improving from one week to the next.",
-                    ].map((item) => (
-                      <li key={item} className="flex items-start gap-3">
-                        <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#071631]" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <div className="mt-7 flex flex-wrap gap-3">
-                    <Button asChild className="rounded-full bg-[#071631] px-6 py-6 text-base text-white hover:bg-[#0b2048]">
-                      <a href={`tel:${siteConfig.phone}`}>
-                        <Phone className="h-4 w-4" />
-                        Call to discuss it
-                      </a>
-                    </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="rounded-full border-[#071631]/15 bg-white/70 px-6 py-6 text-base text-[#071631] hover:bg-white"
-                    >
-                      <Link to={getLocalizedPath("weeklyFollowUp", "en")}>
-                        See the dedicated page
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-
-              <div className="relative z-10">
-                <div className="rule-label text-[0.68rem]">Other formats</div>
-                <h3 className="balanced-copy mt-4 font-display text-3xl font-semibold text-white">
-                  Simple entry points depending on the situation
-                </h3>
-                <p className="mt-4 max-w-2xl text-sm leading-7 text-white/72 sm:text-base">
-                  If the need is more specific, families can also start with a subject page or a more urgent format.
-                </p>
-
-                <div className="mt-6 grid gap-4">
-                  {offerCards.map((item, index) => (
-                    <MotionCard
-                      key={item.title}
-                      className={`rounded-[30px] p-6 text-white sm:p-7 ${
-                        index === 1 ? "panel-gold" : "panel-soft"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-4">
-                        <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
-                          <item.icon className="h-5 w-5" />
-                        </div>
-                        <div className="text-xs uppercase tracking-[0.24em] text-white/42">{`0${index + 1}`}</div>
-                      </div>
-
-                      <h4 className="balanced-copy mt-5 font-display text-2xl font-semibold">{item.title}</h4>
-                      <p className="mt-3 text-sm leading-7 text-white/74">{item.description}</p>
-
-                      <ul className="mt-5 space-y-3 text-sm text-white/82">
-                        {item.bullets.map((bullet) => (
-                          <li key={bullet} className="flex items-start gap-3">
-                            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
-                            <span>{bullet}</span>
-                          </li>
-                        ))}
-                      </ul>
-
-                      <div className="mt-6">
-                        <Button
-                          asChild
-                          variant="outline"
-                          className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
-                        >
-                          <Link to={item.action.to}>
-                            {item.action.label}
-                            <ArrowRight className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                      </div>
-                    </MotionCard>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+        <FeatureGrid
+          eyebrow="Why it feels safer"
+          title="A simple framework before the first session"
+          description="We remove the blurry decisions: you explain the situation, we guide the format, then the student starts with a method."
+          items={trustItems}
+        />
 
         <PricingGrid
+          id="offres"
           eyebrow="Pricing"
-          title="Pricing that is simple to understand"
-          description="Parents can quickly see which format matches the situation without decoding a complicated offer."
+          title="Three formats that are easy to understand"
+          description="One-time need, weekly follow-up or intensive block: the form helps us recommend the right starting point."
           plans={plans}
         />
 
@@ -423,31 +241,15 @@ export default function AccueilEn() {
         <ContactSection
           locale="en"
           eyebrow="Contact"
-          title="Describe the need in one minute"
-          description="Tell us the subject, grade level and biggest concern. You fill out the form, we call you back, then we organize the right tutor match."
+          title="Prefer to talk to someone first?"
+          description="The form is the simplest path. If the situation is urgent or sensitive, you can also call directly."
           bullets={[
-            "Mention the subject, grade level and what feels most blocked.",
-            "If an exam is close, say it right away.",
-            "For weekly follow-up, a short call is often the strongest first move.",
+            "The form above gives us the basic context.",
+            "A call is useful when an exam or concern is pressing.",
+            "Either way, parents get a clear next step.",
           ]}
           pageName="home-en"
-        />
-
-        <FinalCtaSection
-          badge="Math • Science • Follow-up • Quebec"
-          title="The right first step depends on what the student needs now."
-          description="If the situation is clear, a focused session may be enough. If the same issue keeps coming back each week, we can frame more durable support now."
-          primaryAction={{
-            label: "Call now",
-            href: `tel:${siteConfig.phone}`,
-            icon: Phone,
-          }}
-          secondaryAction={{
-            label: "Book a session",
-            href: BOOKING_URL,
-            external: true,
-            icon: CalendarDays,
-          }}
+          showForm={false}
         />
       </main>
     </div>
