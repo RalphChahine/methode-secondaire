@@ -9,7 +9,14 @@ Base simple pour suivre les demandes parent sans construire une plateforme trop 
 3. Lancer `setupCrm`.
 4. Déployer le script en Web App.
 5. Mettre l'URL dans `VITE_CRM_WEBHOOK_URL`.
-6. Garder une seule vue principale: `À rappeler aujourd'hui`.
+6. Garder une seule vue principale au quotidien: `A rappeler aujourd'hui`.
+7. Remplir `Tutor Roster` avant de matcher un parent.
+
+Le script crée aussi:
+
+- `Matching Queue`: demandes prêtes à recevoir un tuteur.
+- `Ops Dashboard`: compteurs rapides pour savoir quoi traiter maintenant.
+- `Tutor Roster`: capacité, matières, formats et statut des tuteurs.
 
 ## Stages
 
@@ -41,10 +48,36 @@ Base simple pour suivre les demandes parent sans construire une plateforme trop 
 2. Appeler le parent.
 3. Remplir `callback_notes` pendant ou juste après l'appel.
 4. Choisir `offer_recommended`.
-5. Choisir `assigned_tutor` ou laisser `unassigned`.
-6. Mettre `crm_stage = callback_done`.
-7. Mettre `next_action`.
-8. Mettre `next_action_due`.
+5. Si le besoin est clair, mettre `lead_status = ready_to_match`.
+6. Choisir `assigned_tutor` ou laisser `unassigned`.
+7. Mettre `crm_stage = callback_done`.
+8. Mettre `next_action`.
+9. Mettre `next_action_due`.
+
+## Workflow matching
+
+1. Ouvrir `Matching Queue`.
+2. Vérifier matière, niveau, format, urgence et préférence de contact.
+3. Ouvrir `Tutor Roster`.
+4. Choisir un tuteur `active` avec `available_slots > 0`.
+5. Mettre son nom dans `assigned_tutor`.
+6. Mettre `crm_stage = matched`.
+7. Mettre `next_action = book_first_session`.
+8. Proposer deux créneaux au parent.
+
+## Roster tuteurs
+
+Champs essentiels:
+
+- `status`: `active`, `paused`, `backup`, `inactive`.
+- `subjects`: exemple `math, physics`.
+- `levels`: exemple `sec3, sec4, sec5`.
+- `formats`: `online`, `in_person`, `either`.
+- `weekly_capacity`: nombre d'élèves ou blocs hebdo possibles.
+- `active_students`: charge actuelle.
+- `available_slots`: calculé automatiquement.
+
+Règle simple: ne jamais promettre un jumelage avant d'avoir vérifié `available_slots`.
 
 ## Prochaine action par situation
 

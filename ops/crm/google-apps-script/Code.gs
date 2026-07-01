@@ -3,6 +3,9 @@ const CRM_CONFIG_SHEET_NAME = "Config";
 const CRM_DAILY_VIEW_NAME = "A rappeler aujourd'hui";
 const CRM_FIRST_SESSION_VIEW_NAME = "Premieres seances";
 const CRM_ACTIVE_VIEW_NAME = "Suivis actifs";
+const CRM_MATCHING_VIEW_NAME = "Matching Queue";
+const CRM_TUTOR_SHEET_NAME = "Tutor Roster";
+const CRM_DASHBOARD_SHEET_NAME = "Ops Dashboard";
 
 const CRM_COLUMNS = [
   "lead_id",
@@ -62,11 +65,34 @@ const NEXT_ACTION_OPTIONS = [
   "close_lead",
 ];
 
+const TUTOR_COLUMNS = [
+  "tutor_id",
+  "tutor_name",
+  "status",
+  "subjects",
+  "levels",
+  "formats",
+  "zones",
+  "languages",
+  "weekly_capacity",
+  "active_students",
+  "available_slots",
+  "new_students_this_week",
+  "notes",
+  "last_updated_at",
+];
+
+const TUTOR_STATUS_OPTIONS = ["active", "paused", "backup", "inactive"];
+const TUTOR_FORMAT_OPTIONS = ["online", "in_person", "either"];
+const TUTOR_LANGUAGE_OPTIONS = ["fr", "en", "bilingual"];
+
 function setupCrm() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   const sheet = getOrCreateSheet_(spreadsheet, CRM_SHEET_NAME);
   setupLeadSheet_(sheet);
+  setupTutorRosterSheet_(getOrCreateSheet_(spreadsheet, CRM_TUTOR_SHEET_NAME));
   setupViews_(spreadsheet);
+  setupDashboard_(spreadsheet);
   setupConfigSheet_(spreadsheet);
 }
 
@@ -97,13 +123,18 @@ function doPost(event) {
 function ensureCrmReady_(spreadsheet) {
   const sheet = getOrCreateSheet_(spreadsheet, CRM_SHEET_NAME);
   setupLeadSheet_(sheet);
+  setupTutorRosterSheet_(getOrCreateSheet_(spreadsheet, CRM_TUTOR_SHEET_NAME));
 
-  const missingView = [CRM_DAILY_VIEW_NAME, CRM_FIRST_SESSION_VIEW_NAME, CRM_ACTIVE_VIEW_NAME].some(
+  const missingView = [CRM_DAILY_VIEW_NAME, CRM_FIRST_SESSION_VIEW_NAME, CRM_ACTIVE_VIEW_NAME, CRM_MATCHING_VIEW_NAME].some(
     (sheetName) => !spreadsheet.getSheetByName(sheetName)
   );
 
   if (missingView) {
     setupViews_(spreadsheet);
+  }
+
+  if (!spreadsheet.getSheetByName(CRM_DASHBOARD_SHEET_NAME)) {
+    setupDashboard_(spreadsheet);
   }
 
   if (!spreadsheet.getSheetByName(CRM_CONFIG_SHEET_NAME)) {
@@ -173,6 +204,33 @@ function setupLeadSheet_(sheet) {
   sheet.autoResizeColumns(1, CRM_COLUMNS.length);
 }
 
+function setupTutorRosterSheet_(sheet) {
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(TUTOR_COLUMNS);
+  }
+
+  const headerRange = sheet.getRange(1, 1, 1, TUTOR_COLUMNS.length);
+  headerRange.setValues([TUTOR_COLUMNS]);
+  headerRange.setFontWeight("bold");
+  headerRange.setBackground("#102044");
+  headerRange.setFontColor("#ffffff");
+  sheet.setFrozenRows(1);
+
+  if (!sheet.getFilter()) {
+    sheet.getRange(1, 1, Math.max(sheet.getMaxRows(), 2), TUTOR_COLUMNS.length).createFilter();
+  }
+
+  applyTutorValidation_(sheet, "status", TUTOR_STATUS_OPTIONS);
+  applyTutorValidation_(sheet, "formats", TUTOR_FORMAT_OPTIONS);
+  applyTutorValidation_(sheet, "languages", TUTOR_LANGUAGE_OPTIONS);
+
+  const availableSlotsColumn = TUTOR_COLUMNS.indexOf("available_slots") + 1;
+  sheet
+    .getRange(2, availableSlotsColumn)
+    .setFormula('=ARRAYFORMULA(IF(A2:A="","",IF(I2:I-J2:J<0,0,I2:I-J2:J)))');
+  sheet.autoResizeColumns(1, TUTOR_COLUMNS.length);
+}
+
 function setupViews_(spreadsheet) {
   const views = [
     {
@@ -187,6 +245,11 @@ function setupViews_(spreadsheet) {
       name: CRM_ACTIVE_VIEW_NAME,
       formula: '=FILTER(\'Parent Leads\'!A:AA,\'Parent Leads\'!C:C="active_follow_up")',
     },
+    {
+      name: CRM_MATCHING_VIEW_NAME,
+      formula:
+        '=FILTER(\'Parent Leads\'!A:AA,((\'Parent Leads\'!D:D="ready_to_match")+(\'Parent Leads\'!E:E="assign_tutor")+(\'Parent Leads\'!C:C="callback_done"))>0)',
+    },
   ];
 
   views.forEach((view) => {
@@ -197,14 +260,41 @@ function setupViews_(spreadsheet) {
   });
 }
 
+function setupDashboard_(spreadsheet) {
+  const sheet = getOrCreateSheet_(spreadsheet, CRM_DASHBOARD_SHEET_NAME);
+  sheet.clear();
+  sheet.getRange(1, 1, 1, 3).setValues([["Metric", "Value", "Decision"]]);
+  sheet.getRange(2, 1, 7, 3).setValues([
+    ["Leads to call", '=COUNTIF(\'Parent Leads\'!D:D,"callback_needed")', "Open daily before outreach"],
+    [
+      "Ready to match",
+      '=COUNTIF(\'Parent Leads\'!D:D,"ready_to_match")+COUNTIF(\'Parent Leads\'!E:E,"assign_tutor")',
+      "Choose tutor or confirm slot",
+    ],
+    ["First sessions booked", '=COUNTIF(\'Parent Leads\'!C:C,"first_session_booked")', "Send prep note before session"],
+    ["Active follow-up", '=COUNTIF(\'Parent Leads\'!C:C,"active_follow_up")', "Check progress weekly"],
+    ["High urgency leads", '=COUNTIF(\'Parent Leads\'!S:S,"high")', "Same-day callback if possible"],
+    ["Active tutors", '=COUNTIF(\'Tutor Roster\'!C:C,"active")', "Keep roster current"],
+    ["Open tutor slots", '=SUM(\'Tutor Roster\'!K:K)', "Only sell what can be served well"],
+  ]);
+
+  sheet.getRange(1, 1, 1, 3).setFontWeight("bold").setBackground("#071631").setFontColor("#ffffff");
+  sheet.getRange(2, 1, 7, 1).setFontWeight("bold");
+  sheet.setFrozenRows(1);
+  sheet.autoResizeColumns(1, 3);
+}
+
 function setupConfigSheet_(spreadsheet) {
   const sheet = getOrCreateSheet_(spreadsheet, CRM_CONFIG_SHEET_NAME);
   sheet.clear();
   sheet.getRange(1, 1, 1, 2).setValues([["Key", "Values"]]);
-  sheet.getRange(2, 1, 3, 2).setValues([
+  sheet.getRange(2, 1, 6, 2).setValues([
     ["crm_stage", CRM_STAGE_OPTIONS.join(", ")],
     ["lead_status", LEAD_STATUS_OPTIONS.join(", ")],
     ["next_action", NEXT_ACTION_OPTIONS.join(", ")],
+    ["tutor_status", TUTOR_STATUS_OPTIONS.join(", ")],
+    ["tutor_formats", TUTOR_FORMAT_OPTIONS.join(", ")],
+    ["tutor_languages", TUTOR_LANGUAGE_OPTIONS.join(", ")],
   ]);
   sheet.getRange(1, 1, 1, 2).setFontWeight("bold").setBackground("#071631").setFontColor("#ffffff");
   sheet.autoResizeColumns(1, 2);
@@ -212,6 +302,20 @@ function setupConfigSheet_(spreadsheet) {
 
 function applyValidation_(sheet, columnName, options) {
   const columnIndex = CRM_COLUMNS.indexOf(columnName) + 1;
+  if (columnIndex <= 0) {
+    return;
+  }
+
+  const rule = SpreadsheetApp.newDataValidation()
+    .requireValueInList(options, true)
+    .setAllowInvalid(false)
+    .build();
+
+  sheet.getRange(2, columnIndex, sheet.getMaxRows() - 1, 1).setDataValidation(rule);
+}
+
+function applyTutorValidation_(sheet, columnName, options) {
+  const columnIndex = TUTOR_COLUMNS.indexOf(columnName) + 1;
   if (columnIndex <= 0) {
     return;
   }
