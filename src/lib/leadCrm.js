@@ -50,33 +50,45 @@ export function buildLeadCrmPayload({ locale = "fr", pageName = "website", value
   }
 }
 
-export async function sendLeadToCrmWebhook(payload, webhookUrl) {
+export async function sendLeadToCrmWebhook(payload, webhookUrl, proxyUrl = "/api/lead-crm") {
+  const directBody = JSON.stringify(payload)
+
+  try {
+    const response = await fetch(proxyUrl, {
+      method: "POST",
+      keepalive: true,
+      body: JSON.stringify({
+        payload,
+        webhookUrl: webhookUrl || "",
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+
+    if (response.ok) {
+      return { sent: true, via: "proxy" }
+    }
+  } catch {
+    // Fallback below keeps local/dev forms usable if the proxy is unavailable.
+  }
+
   if (!webhookUrl) {
     return { skipped: true }
   }
 
-  const body = JSON.stringify(payload)
-
   try {
-    if (typeof navigator !== "undefined" && typeof navigator.sendBeacon === "function") {
-      const blob = new Blob([body], { type: "text/plain;charset=UTF-8" })
-      const queued = navigator.sendBeacon(webhookUrl, blob)
-
-      if (queued) {
-        return { queued: true }
-      }
-    }
-
     await fetch(webhookUrl, {
       method: "POST",
+      keepalive: true,
       mode: "no-cors",
-      body,
+      body: directBody,
       headers: {
         "Content-Type": "text/plain;charset=UTF-8",
       },
     })
 
-    return { sent: true }
+    return { sent: true, via: "direct" }
   } catch {
     return { error: true }
   }

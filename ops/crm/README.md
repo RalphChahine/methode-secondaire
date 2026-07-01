@@ -8,7 +8,7 @@ Base simple pour suivre les demandes parent sans construire une plateforme trop 
 2. Installer le script dans `google-apps-script/Code.gs`.
 3. Lancer `setupCrm`.
 4. Déployer le script en Web App.
-5. Mettre l'URL dans `VITE_CRM_WEBHOOK_URL`.
+5. Mettre l'URL dans `CRM_WEBHOOK_URL` sur Vercel. `VITE_CRM_WEBHOOK_URL` reste un fallback local.
 6. Garder une seule vue principale au quotidien: `A rappeler aujourd'hui`.
 7. Remplir `Tutor Roster` avant de matcher un parent.
 
@@ -21,6 +21,17 @@ Le script crée aussi:
 - `Payments`: paiements parents et paiements tuteurs.
 
 Le workflow horaire + paiement est détaillé dans `scheduling-and-payments.md`.
+
+## Branchement site
+
+Le formulaire envoie d'abord a Formspree, puis appelle `/api/lead-crm`.
+
+Cette route Vercel relaie le lead vers Google Apps Script cote serveur. C'est plus fiable qu'un envoi direct navigateur vers Apps Script, parce que les redirections Google et les restrictions navigateur ne peuvent plus bloquer silencieusement la copie CRM.
+
+Variables:
+
+- `CRM_WEBHOOK_URL`: URL Apps Script du Web App, cote serveur Vercel.
+- `VITE_CRM_WEBHOOK_URL`: fallback local ou ancien deploiement.
 
 ## Stages
 

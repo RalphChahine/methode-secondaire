@@ -17,13 +17,13 @@ Ce dossier contient le script qui transforme une Google Sheet en mini CRM.
 
 ## Brancher le site
 
-Ajouter l'URL dans l'environnement du site:
+Ajouter l'URL dans l'environnement serveur du site:
 
 ```env
-VITE_CRM_WEBHOOK_URL=https://script.google.com/macros/s/XXXXX/exec
+CRM_WEBHOOK_URL=https://script.google.com/macros/s/XXXXX/exec
 ```
 
-Le formulaire continue d'envoyer à Formspree. Si cette variable existe, une copie du lead est aussi envoyée à Google Sheets.
+Le formulaire continue d'envoyer à Formspree. La route `/api/lead-crm` relaie ensuite une copie du lead à Google Sheets. `VITE_CRM_WEBHOOK_URL` peut rester en fallback local, mais le déploiement Vercel doit privilégier `CRM_WEBHOOK_URL`.
 
 ## Onglets créés
 

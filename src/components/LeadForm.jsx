@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { BOOKING_URL } from "@/config/booking"
-import { CRM_WEBHOOK_URL } from "@/config/crm"
+import { CRM_PROXY_URL, CRM_WEBHOOK_URL } from "@/config/crm"
 import { getLocalizedPath } from "@/lib/i18n"
 import { buildLeadCrmMetadata, buildLeadCrmPayload, sendLeadToCrmWebhook } from "@/lib/leadCrm"
 import { getDiagnosticAnswerLabel } from "@/lib/leadDiagnostic"
@@ -231,7 +231,7 @@ export default function LeadForm({ locale = "fr", pageName = "website", variant 
         throw new Error("Submission failed")
       }
 
-      void sendLeadToCrmWebhook(crmPayload, CRM_WEBHOOK_URL)
+      void sendLeadToCrmWebhook(crmPayload, CRM_WEBHOOK_URL, CRM_PROXY_URL)
 
       if (typeof window !== "undefined") {
         window.dispatchEvent(
