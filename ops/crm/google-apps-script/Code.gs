@@ -70,19 +70,44 @@ function setupCrm() {
   setupConfigSheet_(spreadsheet);
 }
 
+function doGet() {
+  return jsonResponse_({
+    ok: true,
+    service: "methode-secondaire-parent-crm",
+    spreadsheet_id: SpreadsheetApp.getActiveSpreadsheet().getId(),
+  });
+}
+
 function doPost(event) {
   try {
     const payload = parsePayload_(event);
     const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
-    const sheet = getOrCreateSheet_(spreadsheet, CRM_SHEET_NAME);
-    setupLeadSheet_(sheet);
+    ensureCrmReady_(spreadsheet);
 
+    const sheet = getOrCreateSheet_(spreadsheet, CRM_SHEET_NAME);
     const row = CRM_COLUMNS.map((column) => normalizeValue_(payload[column]));
     sheet.appendRow(row);
 
     return jsonResponse_({ ok: true, lead_id: payload.lead_id || "" });
   } catch (error) {
     return jsonResponse_({ ok: false, error: String(error) });
+  }
+}
+
+function ensureCrmReady_(spreadsheet) {
+  const sheet = getOrCreateSheet_(spreadsheet, CRM_SHEET_NAME);
+  setupLeadSheet_(sheet);
+
+  const missingView = [CRM_DAILY_VIEW_NAME, CRM_FIRST_SESSION_VIEW_NAME, CRM_ACTIVE_VIEW_NAME].some(
+    (sheetName) => !spreadsheet.getSheetByName(sheetName)
+  );
+
+  if (missingView) {
+    setupViews_(spreadsheet);
+  }
+
+  if (!spreadsheet.getSheetByName(CRM_CONFIG_SHEET_NAME)) {
+    setupConfigSheet_(spreadsheet);
   }
 }
 
