@@ -21,9 +21,9 @@ import { siteConfig } from "@/lib/seo"
 const contentByLocale = {
   fr: {
     badge: "Tuteurs • Profils et spécialités",
-    title: "Deux profils actifs, choisis pour les besoins les plus fréquents.",
+    title: "Des profils pensés pour rassurer les parents et faire avancer les élèves.",
     description:
-      "La force actuelle, ce n'est pas une énorme liste de tuteurs. C'est un petit noyau fiable, capable de couvrir les maths, les sciences et les départs bien cadrés.",
+      "La page reste simple: elle montre le type d'accompagnement, la pédagogie attendue et la façon dont on choisit un bon jumelage.",
     panelEyebrow: "Ce qu'un parent veut sentir",
     panelTitle: "Un tutorat fiable et clair",
     panelItems: [
@@ -75,9 +75,9 @@ const contentByLocale = {
   },
   en: {
     badge: "Tutors • Profiles and specialties",
-    title: "Two active profiles for the most common family needs.",
+    title: "Profiles designed to reassure parents and move students forward.",
     description:
-      "The current strength is not a huge tutor list. It is a small reliable core covering math, science and well-framed starts.",
+      "The page stays simple: it shows the support style, teaching standard and how a good match is chosen.",
     panelEyebrow: "What a parent wants to feel",
     panelTitle: "Reliable, clear tutoring",
     panelItems: [

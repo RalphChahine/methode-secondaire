@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { BOOKING_URL } from "@/config/booking"
 import { getLocalizedPath } from "@/lib/i18n"
+import { buildLeadCrmMetadata } from "@/lib/leadCrm"
 import { getDiagnosticAnswerLabel } from "@/lib/leadDiagnostic"
 import { siteConfig } from "@/lib/seo"
 
@@ -210,9 +211,10 @@ export default function LeadForm({ locale = "fr", pageName = "website", variant 
     data.append("_subject", copy.emailSubject)
     data.append("_template", "table")
     data.append("_gotcha", "")
-    data.append("site_locale", locale)
-    data.append("source_page", pageName)
-    data.append("pipeline_type", "parent_lead")
+
+    Object.entries(buildLeadCrmMetadata({ locale, pageName, values })).forEach(([key, value]) => {
+      data.append(key, value)
+    })
 
     try {
       const response = await fetch("https://formspree.io/f/mzddpkaz", {

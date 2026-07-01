@@ -1,0 +1,2 @@
+lead_id,received_at,crm_stage,lead_status,next_action,next_action_due,lead_owner,source_page,site_locale,parent_name,phone,email,student_level_subject,main_concern,timeline,format,contact_preference,recommended_track,urgency_score,message,assigned_tutor,offer_recommended,callback_notes,first_session_date,first_session_summary,last_contacted_at,close_reason
+LEAD-0001,2026-07-01T00:00:00.000Z,new_request,callback_needed,call_parent,,unassigned,home-fr-hero,fr,,,,,,,,diagnostic_call,needs_clarification,,,,,,,

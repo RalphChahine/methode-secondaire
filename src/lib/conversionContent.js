@@ -205,10 +205,10 @@ export const verifiedReviewsByLocale = {
 
 export const tutorProfilesByLocale = {
   fr: {
-    eyebrow: "Petite équipe active",
-    title: "Deux profils actifs pour couvrir les besoins les plus fréquents",
+    eyebrow: "Profils pédagogiques",
+    title: "Des profils clairs pour choisir le bon accompagnement",
     description:
-      "On garde une équipe courte pour mieux cadrer les demandes, protéger les créneaux et choisir le bon accompagnement au lieu d'empiler des profils.",
+      "Chaque profil aide à comprendre la spécialité, le style d'accompagnement et le type de besoin auquel il répond le mieux.",
     profiles: [
       {
         name: "Tuteur Maths Examens",
@@ -238,10 +238,10 @@ export const tutorProfilesByLocale = {
     cta: "Lire les témoignages",
   },
   en: {
-    eyebrow: "Small active team",
-    title: "Two active profiles covering the most common needs",
+    eyebrow: "Teaching profiles",
+    title: "Clear tutor profiles to help families choose well",
     description:
-      "We keep the team intentionally short so requests are framed better, time slots stay protected and families get the right support instead of a long profile list.",
+      "Each profile helps families understand the specialty, teaching style and student needs it serves best.",
     profiles: [
       {
         name: "Math Exam Tutor",

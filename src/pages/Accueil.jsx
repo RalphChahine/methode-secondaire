@@ -9,7 +9,6 @@ import {
   HeroShowcase,
   PricingGrid,
 } from "@/components/SimpleMarketingSections"
-import ScaleReadinessSection from "@/components/ScaleReadinessSection"
 import { BOOKING_URL } from "@/config/booking"
 import { buildAlternates, getAlternateOgLocale, getHtmlLang, getOgLocale } from "@/lib/i18n"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
@@ -176,8 +175,6 @@ export default function Accueil() {
             trustItems: ["Sans engagement", "Rappel sous 24 h", "Plan clair"],
           }}
         />
-
-        <ScaleReadinessSection locale="fr" />
 
         <PricingGrid
           id="offres"
