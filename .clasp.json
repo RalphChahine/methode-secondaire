@@ -1,0 +1,17 @@
+{
+  "scriptId": "1RXmeoIo8sLnAJ5GaDE8iX9DJZTtzsHe3gbGJrTWQyM82MBHidfhDBfMO",
+  "rootDir": "ops\\crm\\google-apps-script",
+  "parentId": "1u61ysIzly2HHqz2VfyReeLZA9tS5f0Ie1rnD1OV1i60",
+  "scriptExtensions": [
+    ".js",
+    ".gs"
+  ],
+  "htmlExtensions": [
+    ".html"
+  ],
+  "jsonExtensions": [
+    ".json"
+  ],
+  "filePushOrder": [],
+  "skipSubdirectories": false
+}
