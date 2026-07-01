@@ -1,70 +1,36 @@
 import {
   ArrowRight,
-  BrainCircuit,
   Phone,
-  ShieldCheck,
-  Target,
 } from "lucide-react"
 
-import { VerifiedReviewsSection } from "@/components/ConversionSections"
 import Seo from "@/components/Seo"
 import {
-  ContactSection,
   FaqGrid,
-  FeatureGrid,
   HeroShowcase,
   PricingGrid,
-  StepGrid,
 } from "@/components/SimpleMarketingSections"
 import { BOOKING_URL } from "@/config/booking"
 import { buildAlternates, getAlternateOgLocale, getHtmlLang, getOgLocale } from "@/lib/i18n"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
 
-const stats = [
-  { label: "Pour qui", value: "Secondaire 1 à 5" },
-  { label: "Besoin", value: "Maths, sciences ou examens" },
-  { label: "Suite", value: "Rappel sous 24 h ouvrables" },
-]
-
-const trustItems = [
-  {
-    icon: BrainCircuit,
-    title: "On clarifie avant de vendre une séance",
-    description:
-      "Niveau, matière, examen, stress ou perte de rythme: on met vite des mots simples sur la situation.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Le parent reste en contrôle",
-    description:
-      "Vous savez pourquoi on recommande un format, ce qui se passe ensuite et quand l'élève commence.",
-  },
-  {
-    icon: Target,
-    title: "L'élève part avec un cadre concret",
-    description:
-      "Le but est de réduire le flou, installer une méthode et rendre la progression plus visible.",
-  },
-]
-
 const steps = [
   {
-    step: "1 minute",
-    title: "Vous décrivez le besoin",
+    title: "Décrivez le besoin",
+    mobileLabel: "Décrire",
     description:
-      "Niveau, matière, urgence et ce qui inquiète le plus. Le formulaire reste court pour que vous puissiez agir tout de suite.",
+      "Niveau, matière et ce qui inquiète le plus.",
   },
   {
-    step: "Rappel",
-    title: "On clarifie avec vous",
+    title: "On vous rappelle",
+    mobileLabel: "Rappel",
     description:
-      "On valide l'urgence, le bon format et le rythme logique. Vous n'avez pas à deviner seul quel tutorat choisir.",
+      "On clarifie le bon format et l'urgence.",
   },
   {
-    step: "Départ",
-    title: "On lance le bon jumelage",
+    title: "On démarre",
+    mobileLabel: "Démarrer",
     description:
-      "On choisit le tuteur, on fixe la première rencontre et l'élève commence avec un plan clair.",
+      "On choisit le tuteur et la première séance.",
   },
 ]
 
@@ -184,8 +150,8 @@ export default function Accueil() {
       <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-4 sm:px-6 lg:px-8 lg:pb-28 lg:pt-8">
         <HeroShowcase
           badge="Québec • Secondaire 1 à 5"
-          title="Votre ado bloque en maths ou sciences ? On vous guide en 3 étapes."
-          description="Remplissez le formulaire, on clarifie avec vous, puis on organise le bon tuteur. Simple, rassurant, sans choisir au hasard."
+          title="1-2-3. On démarre simplement."
+          description="Maths, sciences ou examens: le parent remplit le formulaire, on rappelle, puis on lance le bon accompagnement."
           primaryAction={{
             label: "Commencer le formulaire",
             href: "#demande",
@@ -197,32 +163,17 @@ export default function Accueil() {
             icon: Phone,
             hideOnMobile: true,
           }}
-          stats={stats}
           leadForm={{
             id: "demande",
             locale: "fr",
             pageName: "home-fr-hero",
             eyebrow: "Demande parent",
-            title: "Dites-nous où ça bloque.",
-            description: "Quelques infos suffisent pour comprendre la situation et vous rappeler avec un prochain pas clair.",
-            steps: [{ label: "Décrire" }, { label: "Rappel" }, { label: "Démarrer" }],
+            title: "On commence ici.",
+            description: "Formulaire court. On vous revient avec le prochain pas clair.",
+            processEyebrow: "Comment ça marche",
+            steps,
             trustItems: ["Sans engagement", "Rappel sous 24 h", "Plan clair"],
           }}
-        />
-
-        <StepGrid
-          id="processus"
-          eyebrow="Comment ça marche"
-          title="Le parcours est volontairement simple"
-          description="Le parent n'a pas à comparer dix profils ni à deviner le bon format. On commence par comprendre, puis on agit."
-          steps={steps}
-        />
-
-        <FeatureGrid
-          eyebrow="Pourquoi c'est rassurant"
-          title="Un cadre simple avant même la première séance"
-          description="On enlève les décisions floues: vous expliquez la situation, on vous oriente, puis l'élève commence avec une méthode."
-          items={trustItems}
         />
 
         <PricingGrid
@@ -233,28 +184,12 @@ export default function Accueil() {
           plans={plans}
         />
 
-        <VerifiedReviewsSection locale="fr" className="pt-20" limit={3} showLink />
-
         <FaqGrid
           id="faq"
           eyebrow="FAQ"
-          title="Les questions qu'un parent se pose avant d'appeler"
-          description="On garde seulement les réponses qui aident vraiment à décider du prochain pas."
-          items={faqItems}
-        />
-
-        <ContactSection
-          locale="fr"
-          eyebrow="Contact"
-          title="Vous préférez parler à quelqu'un d'abord ?"
-          description="Le formulaire est le chemin le plus simple. Si la situation est urgente ou sensible, vous pouvez aussi appeler directement."
-          bullets={[
-            "Le formulaire en haut nous donne le contexte de base.",
-            "L'appel sert à cadrer vite quand un examen ou une inquiétude presse.",
-            "Dans les deux cas, le parent garde un prochain pas clair.",
-          ]}
-          pageName="home-fr"
-          showForm={false}
+          title="Questions rapides"
+          description="Juste ce qu'il faut pour décider du prochain pas."
+          items={faqItems.slice(0, 3)}
         />
       </main>
     </div>

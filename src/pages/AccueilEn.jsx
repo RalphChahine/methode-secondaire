@@ -1,70 +1,36 @@
 import {
   ArrowRight,
-  BrainCircuit,
   Phone,
-  ShieldCheck,
-  Target,
 } from "lucide-react"
 
-import { VerifiedReviewsSection } from "@/components/ConversionSections"
 import Seo from "@/components/Seo"
 import {
-  ContactSection,
   FaqGrid,
-  FeatureGrid,
   HeroShowcase,
   PricingGrid,
-  StepGrid,
 } from "@/components/SimpleMarketingSections"
 import { BOOKING_URL } from "@/config/booking"
 import { buildAlternates } from "@/lib/i18n"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
 
-const stats = [
-  { label: "For whom", value: "Secondary 1 to 5" },
-  { label: "Need", value: "Math, science or exams" },
-  { label: "Next step", value: "Callback within one business day" },
-]
-
-const trustItems = [
-  {
-    icon: BrainCircuit,
-    title: "We clarify before selling a session",
-    description:
-      "Grade, subject, exam pressure, stress or lost rhythm: we put simple words on the situation quickly.",
-  },
-  {
-    icon: ShieldCheck,
-    title: "Parents stay in control",
-    description:
-      "You know why a format is recommended, what happens next and when the student can start.",
-  },
-  {
-    icon: Target,
-    title: "Students start with a concrete framework",
-    description:
-      "The goal is less confusion, stronger method and progress that is easier for the family to read.",
-  },
-]
-
 const steps = [
   {
-    step: "1 minute",
-    title: "You describe the need",
+    title: "Describe the need",
+    mobileLabel: "Describe",
     description:
-      "Grade, subject, urgency and the main concern. The form stays short so you can take action right away.",
+      "Grade, subject and the main concern.",
   },
   {
-    step: "Callback",
-    title: "We clarify with you",
+    title: "We call you back",
+    mobileLabel: "Callback",
     description:
-      "We confirm the urgency, the right format and the most logical rhythm so you do not have to guess alone.",
+      "We clarify the format and urgency.",
   },
   {
-    step: "Start",
-    title: "We launch the right match",
+    title: "We start",
+    mobileLabel: "Start",
     description:
-      "We choose the tutor, schedule the first session and the student starts with a clear plan.",
+      "We match the tutor and first session.",
   },
 ]
 
@@ -179,8 +145,8 @@ export default function AccueilEn() {
       <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-4 sm:px-6 lg:px-8 lg:pb-28 lg:pt-8">
         <HeroShowcase
           badge="Quebec • Secondary 1 to 5"
-          title="Is your teen stuck in math or science? We guide you in 3 steps."
-          description="Fill out the form, we clarify the need with you, then we organize the right tutor. Simple, reassuring and guided."
+          title="1-2-3. We start simply."
+          description="Math, science or exams: fill out the form, we call you back, then we launch the right support."
           primaryAction={{
             label: "Start the form",
             href: "#demande",
@@ -192,32 +158,17 @@ export default function AccueilEn() {
             icon: Phone,
             hideOnMobile: true,
           }}
-          stats={stats}
           leadForm={{
             id: "demande",
             locale: "en",
             pageName: "home-en-hero",
             eyebrow: "Parent request",
-            title: "Tell us where it is stuck.",
-            description: "A few details are enough to understand the situation and reply with a clear next step.",
-            steps: [{ label: "Describe" }, { label: "Callback" }, { label: "Start" }],
+            title: "Start here.",
+            description: "Short form. We reply with a clear next step.",
+            processEyebrow: "How it works",
+            steps,
             trustItems: ["No commitment", "24 h callback", "Clear plan"],
           }}
-        />
-
-        <StepGrid
-          id="processus"
-          eyebrow="How it works"
-          title="The path is deliberately simple"
-          description="Parents do not have to compare random profiles or guess the right format. We understand first, then we act."
-          steps={steps}
-        />
-
-        <FeatureGrid
-          eyebrow="Why it feels safer"
-          title="A simple framework before the first session"
-          description="We remove the blurry decisions: you explain the situation, we guide the format, then the student starts with a method."
-          items={trustItems}
         />
 
         <PricingGrid
@@ -228,28 +179,12 @@ export default function AccueilEn() {
           plans={plans}
         />
 
-        <VerifiedReviewsSection locale="en" className="pt-20" limit={3} showLink />
-
         <FaqGrid
           id="faq"
           eyebrow="FAQ"
-          title="The questions a parent usually has before calling"
-          description="Only the answers that genuinely help with the next step stay on the page."
-          items={faqItems}
-        />
-
-        <ContactSection
-          locale="en"
-          eyebrow="Contact"
-          title="Prefer to talk to someone first?"
-          description="The form is the simplest path. If the situation is urgent or sensitive, you can also call directly."
-          bullets={[
-            "The form above gives us the basic context.",
-            "A call is useful when an exam or concern is pressing.",
-            "Either way, parents get a clear next step.",
-          ]}
-          pageName="home-en"
-          showForm={false}
+          title="Quick questions"
+          description="Only what helps with the next step."
+          items={faqItems.slice(0, 3)}
         />
       </main>
     </div>

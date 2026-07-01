@@ -40,6 +40,115 @@ export function HeroShowcase({
         { label: "Start" },
       ]
 
+  if (hasLeadForm) {
+    return (
+      <section id={leadForm.processId || "processus"} className="relative pt-0">
+        <div className="section-shell noise-overlay px-5 py-5 sm:px-7 sm:py-7 lg:px-9">
+          <div className="grid-fade absolute inset-0 opacity-60" />
+          <div className="pointer-events-none absolute -left-20 top-20 h-56 w-56 rounded-full bg-[#6d9fff]/18 blur-3xl" />
+          <div className="pointer-events-none absolute right-0 top-0 h-64 w-64 rounded-full bg-[#f5c977]/12 blur-3xl" />
+
+          <div className="relative grid gap-6 lg:grid-cols-[1.05fr,0.82fr] lg:items-start">
+            <div>
+              <div className="flex flex-wrap items-center gap-3">
+                {badge ? (
+                  <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
+                    {badge}
+                  </Badge>
+                ) : null}
+                <div className="rule-label text-[0.68rem]">
+                  {leadForm.processEyebrow || "Comment ça marche"}
+                </div>
+              </div>
+
+              <h1 className="balanced-copy mt-5 max-w-4xl font-display text-[2.45rem] font-semibold leading-[0.98] text-white sm:text-5xl lg:text-[3.45rem]">
+                {title}
+              </h1>
+
+              {description ? (
+                <p className="mt-4 hidden max-w-2xl text-base leading-7 text-white/72 sm:block sm:text-lg">
+                  {description}
+                </p>
+              ) : null}
+
+              <div className="mt-5 grid grid-cols-3 gap-2 md:hidden">
+                {onboardingSteps.map((step, index) => (
+                  <div
+                    key={step.label || step.title}
+                    className="rounded-[20px] border border-white/10 bg-white/[0.045] px-2 py-3 text-center"
+                  >
+                    <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#f5c977] text-2xl font-extrabold text-[#071631]">
+                      {index + 1}
+                    </div>
+                    <div className="mt-2 text-xs font-semibold leading-tight text-white/84">
+                      {step.mobileLabel || step.label || step.title}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-6 hidden gap-3 md:grid md:grid-cols-3">
+                {onboardingSteps.map((step, index) => (
+                  <div
+                    key={step.label || step.title}
+                    className={`rounded-[28px] p-5 text-white ${
+                      index === 1 ? "panel-gold" : "panel-ink"
+                    }`}
+                  >
+                    <div className="grid h-20 w-20 place-items-center rounded-full bg-[#f5c977] text-3xl font-extrabold text-[#071631] shadow-[0_18px_42px_rgba(245,201,119,0.25)]">
+                      {index + 1}
+                    </div>
+                    <h2 className="mt-5 font-display text-2xl font-semibold leading-tight">
+                      {step.title || step.label}
+                    </h2>
+                    {step.description ? (
+                      <p className="mt-3 text-sm leading-7 text-white/74">{step.description}</p>
+                    ) : null}
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-5 hidden flex-wrap gap-3 md:flex">
+                {primaryAction ? <ActionButton action={primaryAction} /> : null}
+                {secondaryAction ? <ActionButton action={secondaryAction} variant="outline" /> : null}
+              </div>
+            </div>
+
+            <MotionCard id={leadForm.id} className="panel-ink rounded-[32px] p-5 text-white sm:p-6">
+              <div className="flex items-center gap-2 text-sm font-semibold text-[#f5c977]">
+                <ShieldCheck className="h-4 w-4" />
+                {leadForm.eyebrow}
+              </div>
+
+              <h2 className="balanced-copy mt-3 font-display text-3xl font-semibold leading-tight">
+                {leadForm.title}
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-white/72">{leadForm.description}</p>
+
+              <div className="mt-5">
+                <LeadForm locale={leadForm.locale} pageName={leadForm.pageName} variant="hero" />
+              </div>
+
+              {leadForm.trustItems?.length ? (
+                <div className="mt-4 grid gap-2 sm:grid-cols-3">
+                  {leadForm.trustItems.map((item) => (
+                    <div
+                      key={item}
+                      className="flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.045] px-3 py-2 text-xs text-white/72"
+                    >
+                      <ClipboardCheck className="h-3.5 w-3.5 shrink-0 text-[#f5c977]" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </MotionCard>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="relative pt-0">
       <div className="section-shell noise-overlay px-6 py-6 sm:px-8 sm:py-8 lg:px-10 lg:py-8">
