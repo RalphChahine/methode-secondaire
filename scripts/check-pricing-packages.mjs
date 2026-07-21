@@ -210,7 +210,8 @@ assert.doesNotMatch(portalSource, /(?:\$300|300\s*\$)/, "Portal midpoint copy mu
 assert.doesNotMatch(portalSource, /PaymentLinkForm|upsertPortalPaymentLink|buy\.stripe\.com/,
   "Portal must not expose reusable Payment Link administration")
 
-const crmSource = await fs.readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
+const normalizeStaticSource = (source) => source.replace(/\r\n/g, "\n")
+const crmSource = normalizeStaticSource(await fs.readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8"))
 const extractStringArray = (source, constantName) => {
   const body = source.match(new RegExp(`const ${constantName} = \\[([\\s\\S]+?)\\];`))?.[1] || ""
   return [...body.matchAll(/"([^"]+)"/g)].map((match) => match[1])
@@ -221,10 +222,14 @@ assert.deepEqual(crmSessionOfferCodes, expectedCheckoutPaymentOfferCodes.slice(0
 assert.deepEqual(crmPackageOfferCodes, expectedCheckoutPaymentOfferCodes.slice(5))
 assert.match(crmSource, /const PUBLIC_OFFER_CODES = \["targeted_session", "momentum_block", "progression_block"\];/)
 assert.match(crmSource, /const DEFAULT_SESSION_PRICE_CAD = \{\s*first_session: "65",\s*weekly_follow_up: "65",\s*exam_sprint: "65",\s*catch_up: "65",\s*one_time: "65",\s*\};/)
-const sessionPricingSource = crmSource.match(/function resolveSessionPaymentDetails_\([\s\S]+?\n}\n/)?.[0] || ""
+const extractSessionPricingSource = (source) => source.match(/function resolveSessionPaymentDetails_\([\s\S]+?\n}\n/)?.[0] || ""
+const sessionPricingSource = extractSessionPricingSource(crmSource)
 assert.match(sessionPricingSource, /amount_cad: directAmount \|\| defaultAmount/)
 assert.doesNotMatch(sessionPricingSource, /payment_link|CRM_PAYMENT_LINK_SHEET_NAME/,
   "New session pricing must not read the historical Payment Links schema")
+const crlfSessionPricingSource = extractSessionPricingSource(normalizeStaticSource(crmSource.replace(/\n/g, "\r\n")))
+assert.match(crlfSessionPricingSource, /amount_cad: directAmount \|\| defaultAmount/,
+  "Session-pricing source extraction must be line-ending agnostic")
 assert.match(crmSource, /function issueCheckoutForPayment_\([\s\S]+?const amountCad = Number\(paymentRecord && paymentRecord\.amount_cad\);/)
 assert.match(crmSource, /payment_method: "stripe_checkout"/)
 assert.match(crmSource, /const CRM_PAYMENT_LINK_SHEET_NAME = "Payment Links";/,
