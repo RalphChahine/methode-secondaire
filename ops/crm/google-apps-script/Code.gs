@@ -827,7 +827,14 @@ function reconcilePendingMeetFailure_(spreadsheet, sessionId, failure) {
 function createPaymentRowsForScheduledSessions() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   ensureCrmReady_(spreadsheet);
+  const paymentCreationLock = LockService.getScriptLock();
+  if (!paymentCreationLock.tryLock(5000)) {
+    return { ok: false, code: "PAYMENT_CREATION_BUSY", created: 0 };
+  }
 
+  try {
+  // Read after the lock is held. This function may run from both the scheduled
+  // automation and a post-booking flow, so pre-lock snapshots are unsafe.
   const sessionSheet = getOrCreateSheet_(spreadsheet, CRM_SESSION_SHEET_NAME);
   const paymentSheet = getOrCreateSheet_(spreadsheet, CRM_PAYMENT_SHEET_NAME);
   const sessionValues = sessionSheet.getDataRange().getValues();
@@ -938,6 +945,9 @@ function createPaymentRowsForScheduledSessions() {
   }
 
   return { ok: true, created };
+  } finally {
+    paymentCreationLock.releaseLock();
+  }
 }
 
 function ensureCrmReady_(spreadsheet) {
@@ -4032,6 +4042,28 @@ function cancelCalendarEventForSession_(session) {
   }
 }
 
+function deleteCalendarEventForExpiredSession_(session) {
+  const eventId = normalizeValue_(session && session.google_calendar_event_id);
+  if (!eventId) {
+    return { ok: true, already_deleted: true };
+  }
+
+  try {
+    const calendar = resolveCalendarForTutor_(SpreadsheetApp.getActiveSpreadsheet(), session.tutor_id);
+    if (!calendar) {
+      return { ok: false, code: "CALENDAR_UNAVAILABLE" };
+    }
+    const event = calendar.getEventById(eventId);
+    if (!event) {
+      return { ok: true, already_deleted: true };
+    }
+    event.deleteEvent();
+    return { ok: true, deleted: true };
+  } catch (error) {
+    return { ok: false, code: "CALENDAR_DELETE_FAILED" };
+  }
+}
+
 function markPortalPaymentPaidFromWebhook_(spreadsheet, payload) {
   const expectedSecret = PropertiesService.getScriptProperties().getProperty(PAYMENT_WEBHOOK_SECRET_PROPERTY);
   if (!expectedSecret || normalizeValue_(payload.webhook_secret) !== expectedSecret) {
@@ -4249,8 +4281,20 @@ function expireLinkedSessionForPayment_(spreadsheet, payment, reason) {
     }
 
     // Preserve the calendar/session invariant: cancellation is durable only after
-    // the tutor-owned Calendar event has been removed.
-    cancelCalendarEventForSession_(currentSession.data);
+    // the tutor-owned Calendar event has been removed. A missing event is safe
+    // (it has already been deleted); a Calendar failure must be retried later.
+    const calendarDeletion = deleteCalendarEventForExpiredSession_(currentSession.data);
+    if (!calendarDeletion.ok) {
+      const failureNote = "Echec de suppression Calendar pendant l'expiration du paiement; nouvelle tentative automatique.";
+      writeRecord_(sessionSheet, SESSION_COLUMNS, currentSession.rowNumber, {
+        ...currentSession.data,
+        updated_at: new Date().toISOString(),
+        notes: normalizeValue_(currentSession.data.notes).includes(failureNote)
+          ? normalizeValue_(currentSession.data.notes)
+          : [normalizeValue_(currentSession.data.notes), failureNote].filter(Boolean).join(" | "),
+      });
+      return { ok: false, code: "PAYMENT_EXPIRY_CALENDAR_DELETE_FAILED" };
+    }
     releasePlanCreditReservationForSession_(spreadsheet, currentSession.data, reason || "Paiement non recu avant l'echeance.");
     cancelledSession = {
       ...currentSession.data,
@@ -4284,8 +4328,19 @@ function expireUnpaidCheckoutSessions() {
     const paymentSheet = getOrCreateSheet_(spreadsheet, CRM_PAYMENT_SHEET_NAME);
     const now = Date.now();
     getSheetRecordsFromSheet_(paymentSheet, PAYMENT_COLUMNS)
-      .filter((record) => normalizeValue_(record.data.payment_status) === "payment_requested")
       .forEach((record) => {
+        const paymentStatus = normalizeValue_(record.data.payment_status);
+        if (paymentStatus === "overdue") {
+          if (normalizeValue_(record.data.session_id)) {
+            // Retry a nonterminal linked session after a transient Calendar
+            // deletion failure without applying a second payment transition.
+            expiredPayments.push(record.data);
+          }
+          return;
+        }
+        if (paymentStatus !== "payment_requested") {
+          return;
+        }
         const dueDate = coerceDate_(record.data.due_date || record.data.checkout_expires_at);
         if (!dueDate || dueDate.getTime() > now) {
           return;
@@ -4362,6 +4417,9 @@ function reissuePortalPaymentCheckout_(spreadsheet, payload) {
     }
     if (normalizeValue_(paymentRecord.data.payment_status) !== "overdue") {
       return { ok: false, code: "PAYMENT_REISSUE_NOT_AVAILABLE" };
+    }
+    if (normalizeValue_(paymentRecord.data.session_id)) {
+      return { ok: false, code: "PAYMENT_REBOOKING_REQUIRED" };
     }
 
     const issued = issueCheckoutForPayment_(spreadsheet, paymentRecord.data, { authorizedReissue: true });
@@ -7499,12 +7557,16 @@ function sanitizeTutorAvailabilityForPortal_(record) {
 function sanitizePaymentForParent_(record) {
   const presentation = getParentPaymentDisplay_(record.offer);
   return {
+    // This is called only after buildParentDashboard_ filters payments by the
+    // authenticated parent's email. It is opaque and enables safe reissue.
+    payment_id: record.payment_id,
     session_id: record.session_id,
     display_name_fr: presentation.fr,
     display_name_en: presentation.en,
     credit_unlock_count: presentation.credit_unlock_count,
     amount_cad: record.amount_cad,
     payment_status: record.payment_status,
+    can_reissue: normalizeValue_(record.payment_status) === "overdue" && !normalizeValue_(record.session_id),
     payment_url: getCheckoutPaymentUrl_(record),
     due_date: record.due_date,
     paid_at: record.paid_at,

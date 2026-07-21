@@ -65,9 +65,30 @@ async function main() {
     crmCode.indexOf("function expireLinkedSessionForPayment_("),
     crmCode.indexOf("function expireUnpaidCheckoutSessions("),
   )
-  expect(expiryFunction.includes("cancelCalendarEventForSession_(currentSession.data);") &&
-    expiryFunction.indexOf("cancelCalendarEventForSession_(currentSession.data);") < expiryFunction.indexOf("session_status: \"cancelled\""),
+  const scheduledPaymentFunction = crmCode.slice(
+    crmCode.indexOf("function createPaymentRowsForScheduledSessions()"),
+    crmCode.indexOf("function ensureCrmReady_("),
+  )
+  const reissueFunction = crmCode.slice(
+    crmCode.indexOf("function reissuePortalPaymentCheckout_("),
+    crmCode.indexOf("function grantCreditsForPaidPlanPayment_("),
+  )
+  expect(expiryFunction.includes("deleteCalendarEventForExpiredSession_(currentSession.data)") &&
+    expiryFunction.indexOf("deleteCalendarEventForExpiredSession_(currentSession.data)") < expiryFunction.indexOf("session_status: \"cancelled\""),
   "CRM: expired session must delete its Calendar event before cancellation")
+  expect(expiryFunction.includes("deleteCalendarEventForExpiredSession_(currentSession.data)") &&
+    expiryFunction.includes("PAYMENT_EXPIRY_CALENDAR_DELETE_FAILED") &&
+    expiryFunction.indexOf("deleteCalendarEventForExpiredSession_(currentSession.data)") < expiryFunction.indexOf("releasePlanCreditReservationForSession_"),
+  "CRM: a Calendar deletion failure must block cancellation and credit release")
+  expect(scheduledPaymentFunction.includes("PAYMENT_CREATION_BUSY") &&
+    scheduledPaymentFunction.indexOf("paymentCreationLock.tryLock(5000)") < scheduledPaymentFunction.indexOf("getDataRange()"),
+  "CRM: scheduled payment creation is not serialized")
+  expect(reissueFunction.includes("PAYMENT_REBOOKING_REQUIRED") &&
+    reissueFunction.indexOf("PAYMENT_REBOOKING_REQUIRED") < reissueFunction.indexOf("issueCheckoutForPayment_"),
+  "CRM: expired session payments can be reissued instead of rebooked")
+  expect(crmCode.includes("PAYMENT_REBOOKING_REQUIRED") &&
+    crmCode.includes("can_reissue: normalizeValue_(record.payment_status) === \"overdue\" && !normalizeValue_(record.session_id)"),
+  "CRM: only package payments may be reissued by a parent")
   expect(portalEndpoint.includes("portal_reissue_payment_checkout"), "Portal API: Checkout reissue route is missing")
   expect(portalClient.includes("reissuePortalPaymentCheckout"), "Portal client: Checkout reissue helper is missing")
 

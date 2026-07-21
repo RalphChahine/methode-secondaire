@@ -238,7 +238,8 @@ async function verifyFinalReviewSafetyContracts() {
   expect(paymentRequestSource.indexOf("already_requested: true") < paymentRequestSource.indexOf("const enrollmentEligibility"), "Apps Script: idempotent payment retries must return existing requests before new-creation validation")
 
   expect(!/\boffer\s*:/.test(parentPaymentSanitizer), "parent payments: raw operational offer code is exposed")
-  expect(!/\bpayment_id\s*:|\binvoice_id\s*:|\bplan_enrollment_id\s*:/.test(parentPaymentSanitizer), "parent payments: raw payment identity fields are exposed")
+  expect(!/\binvoice_id\s*:|\bplan_enrollment_id\s*:/.test(parentPaymentSanitizer), "parent payments: raw billing identity fields are exposed")
+  expect(parentPaymentSanitizer.includes("payment_id: record.payment_id") && parentPaymentSanitizer.includes("can_reissue:"), "parent payments: owner-scoped reissue fields are missing")
   expect(parentPaymentSanitizer.includes("display_name_fr") && parentPaymentSanitizer.includes("display_name_en"), "parent payments: safe localized presentation fields are missing")
   expect(!parentLedgerSanitizer.includes("source_payment_id"), "parent credit ledger: source_payment_id is exposed")
   expect(operatorLedgerSanitizer.includes("source_payment_id"), "operator credit ledger: source_payment_id must remain available")
