@@ -365,11 +365,24 @@ async function verifyPlanPaymentLifecycleSources() {
   vm.runInContext(`${appsScriptSource}\n;globalThis.__planPayments = {
     getPlanPaymentStage_,
     grantCreditsForPaidPlanPayment_,
+    markPortalPaymentPaidFromWebhook_,
+    markPortalPaymentExpiredFromWebhook_,
     replaceDependencies(dependencies) {
       getOrCreateSheet_ = dependencies.getOrCreateSheet
       findSheetRecordById_ = dependencies.findSheetRecordById
       getSheetRecords_ = dependencies.getSheetRecords
       appendCreditLedgerEntry_ = dependencies.appendCreditLedgerEntry
+    },
+    replaceWebhookDependencies(dependencies) {
+      getOrCreateSheet_ = dependencies.getOrCreateSheet
+      setupPaymentSheet_ = dependencies.setupPaymentSheet
+      findSheetRecordById_ = dependencies.findSheetRecordById
+      writeRecord_ = dependencies.writeRecord
+      grantCreditsForPaidPlanPayment_ = dependencies.grantCreditsForPaidPlanPayment
+      sendPaymentReceiptEmail_ = dependencies.sendPaymentReceiptEmail
+      globalThis.PropertiesService = dependencies.PropertiesService
+      globalThis.LockService = dependencies.LockService
+      globalThis.expireLinkedSessionForPayment_ = dependencies.expireLinkedSessionForPayment
     },
   }`, sandbox)
 
@@ -411,6 +424,84 @@ async function verifyPlanPaymentLifecycleSources() {
   expect(
     terminalGrant.code === "PLAN_ENROLLMENT_NOT_ACTIONABLE" && ledgerEntries.length === 1,
     "Apps Script: direct credit recovery must not grant to a terminal enrollment",
+  )
+
+  const replayWrites = []
+  const replaySheets = []
+  let replayGrants = 0
+  lifecycle.replaceWebhookDependencies({
+    getOrCreateSheet: (_spreadsheet, name) => {
+      replaySheets.push(name)
+      return name
+    },
+    setupPaymentSheet() {},
+    findSheetRecordById: (sheet) => {
+      if (sheet === "Payments") {
+        return {
+          rowNumber: 2,
+          data: {
+            payment_id: "PAY-REPLAY",
+            session_id: "SESSION-REPLAY",
+            amount_cad: "65",
+            payment_status: "paid",
+            plan_enrollment_id: "",
+          },
+        }
+      }
+      return { rowNumber: 2, data: { session_id: "SESSION-REPLAY", payment_status: "payment_requested" } }
+    },
+    writeRecord: (...args) => replayWrites.push(args),
+    grantCreditsForPaidPlanPayment: () => {
+      replayGrants += 1
+      return { granted: false, skipped: true }
+    },
+    sendPaymentReceiptEmail: () => true,
+    PropertiesService: { getScriptProperties: () => ({ getProperty: () => "webhook-secret" }) },
+    LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock() {} }) },
+    expireLinkedSessionForPayment: null,
+  })
+  const paidReplay = lifecycle.markPortalPaymentPaidFromWebhook_(null, {
+    webhook_secret: "webhook-secret",
+    payment_id: "PAY-REPLAY",
+    stripe_session_id: "cs_replay",
+    amount_cad: 65,
+    currency: "cad",
+  })
+  expect(
+    paidReplay.ok === true && paidReplay.already_paid === true && replayWrites.length === 0 && replayGrants === 0 &&
+      replaySheets.length === 1 && replaySheets[0] === "Payments",
+    "Apps Script: replaying a paid webhook must not grant credits or rewrite linked records",
+  )
+
+  let expiryBridgeCalls = 0
+  lifecycle.replaceWebhookDependencies({
+    getOrCreateSheet: (_spreadsheet, name) => name,
+    setupPaymentSheet() {},
+    findSheetRecordById: () => ({
+      rowNumber: 2,
+      data: {
+        payment_id: "PAY-EXPIRED-REPLAY",
+        session_id: "SESSION-EXPIRED-REPLAY",
+        payment_status: "overdue",
+        stripe_checkout_session_id: "cs_expired_replay",
+      },
+    }),
+    writeRecord() {},
+    grantCreditsForPaidPlanPayment: () => ({ granted: false, skipped: true }),
+    sendPaymentReceiptEmail: () => false,
+    PropertiesService: { getScriptProperties: () => ({ getProperty: () => "webhook-secret" }) },
+    LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock() {} }) },
+    expireLinkedSessionForPayment: () => { expiryBridgeCalls += 1 },
+  })
+  const expiredReplay = lifecycle.markPortalPaymentExpiredFromWebhook_(null, {
+    webhook_secret: "webhook-secret",
+    payment_id: "PAY-EXPIRED-REPLAY",
+    stripe_session_id: "cs_expired_replay",
+    expired_at: "2026-07-21T13:00:00.000Z",
+  })
+  expect(
+    expiredReplay.ok === true && expiredReplay.already_expired === true && expiryBridgeCalls === 0,
+    "Apps Script: replaying an overdue expiration must not call the linked-session expiry bridge",
   )
 }
 

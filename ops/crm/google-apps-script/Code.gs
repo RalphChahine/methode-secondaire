@@ -3833,8 +3833,18 @@ function markPortalPaymentPaidFromWebhook_(spreadsheet, payload) {
     }
 
     const alreadyPaid = normalizeValue_(paymentRecord.data.payment_status) === "paid";
+    if (alreadyPaid) {
+      return {
+        ok: true,
+        payment_id: paymentId,
+        session_id: paymentRecord.data.session_id,
+        already_paid: true,
+        receipt_sent: false,
+        credit_grant: { granted: false, skipped: true },
+      };
+    }
     const paidAt = coerceDate_(payload.paid_at) || new Date();
-    const updatedPayment = alreadyPaid ? paymentRecord.data : {
+    const updatedPayment = {
       ...paymentRecord.data,
       payment_method: "stripe_payment_link",
       payment_status: "paid",
@@ -3844,9 +3854,7 @@ function markPortalPaymentPaidFromWebhook_(spreadsheet, payload) {
       notes: [normalizeValue_(paymentRecord.data.notes), `Stripe Checkout ${stripeSessionId}`].filter(Boolean).join(" | "),
       updated_at: new Date().toISOString(),
     };
-    if (!alreadyPaid) {
-      writeRecord_(paymentSheet, PAYMENT_COLUMNS, paymentRecord.rowNumber, updatedPayment);
-    }
+    writeRecord_(paymentSheet, PAYMENT_COLUMNS, paymentRecord.rowNumber, updatedPayment);
 
     if (normalizeValue_(updatedPayment.plan_enrollment_id)) {
       const linkedEnrollment = findSheetRecordById_(
@@ -3967,7 +3975,9 @@ function markPortalPaymentExpiredFromWebhook_(spreadsheet, payload) {
     paymentLock.releaseLock();
   }
 
-  expireLinkedSessionForPaymentIfAvailable_(spreadsheet, paymentToExpire, "stripe_checkout_expired");
+  if (!alreadyExpired && normalizeValue_(paymentToExpire.session_id)) {
+    expireLinkedSessionForPaymentIfAvailable_(spreadsheet, paymentToExpire, "stripe_checkout_expired");
+  }
   return { ok: true, payment_id: paymentId, already_expired: alreadyExpired };
 }
 
