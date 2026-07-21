@@ -19,16 +19,16 @@ Parents can:
 - update the learning profile: parent name, phone, level/subject, main concern, timeline and preferred format;
 - choose a currently open tutor time in the next 21 days, select the right session type and book it directly;
 - see the current offer attached to their path: a $65 60-minute Targeted session, a $250 Momentum block (4 × 60 minutes, one payment), or a $600 Progress block (10 × 60 minutes, two $300 payments);
-- pay an ordinary booked session by secure Stripe Payment Link (card data never reaches this site); a plan enrollment never creates an automatic off-session charge;
+- pay an ordinary booked session through secure hosted Stripe Checkout (card data never reaches this site); a plan enrollment never creates an automatic off-session charge;
 - see the cadence agreed after matching (weekly or biweekly), next change deadline and pause/resume state for an active Progress block; a pause does not silently cancel a session that is already confirmed;
 - see the activated balance and progress of a block; the verified payment workflow grants four Momentum-block credits after its $250 payment, or five Progress-block credits after each verified $300 instalment;
 - see their lead status;
 - see scheduled sessions;
 - request a guaranteed reschedule at least 72 hours before an upcoming session; later requests are kept for the team to review, without an automatic payment or credit forfeiture;
 - see session summaries released to parents;
-- see payment status and payment links;
+- see payment status and hosted Checkout URLs;
 - see the amount and one-hour deadline for a hosted Checkout payment, then open only the server-issued Stripe Checkout URL;
-- see an expired payment link clearly. If the expired payment belonged to a session, the booking is released and the parent chooses a new slot; only an eligible package payment without a released session can request a new Checkout link;
+- see an expired Checkout clearly. If the expired payment belonged to a session, the booking is released and the parent chooses a new slot; only an eligible package payment without a released session can request a new Checkout link;
 - see an online session's Google Meet link only after the conference is ready;
 - add a note tied to any of their sessions; it is routed to `Portal Requests` for the team;
 - prepare an upcoming session directly for the assigned tutor with a written note; it creates a session message with the normal response SLA instead of an untracked email;
@@ -69,7 +69,7 @@ The owner account `chahineralph@gmail.com` can choose `Equipe` on the portal log
 - choose an active tutor and create their portal access. The invite sends the tutor a one-time login code.
 - set the time, duration, subject, format and recurrence;
 - see confirmations and open schedule-change requests;
-- save a Stripe Payment Link and amount for each session type.
+- configure the amount for each session type so the system can issue its hosted Stripe Checkout.
 - manage the active plan catalogue and enroll a matched parent/student in a Momentum or Progress block, selecting a cadence only after the match is confirmed;
 - create the first linked session after activating a plan, so the session is explicitly attached to its block and credit ledger;
 - verify each external payment, then let the verified workflow grant four Momentum-block credits after $250 or five Progress-block credits after each $300 payment; this never triggers a card charge or an automatic renewal from the portal;
@@ -122,7 +122,7 @@ Stripe's signed webhook is handled separately by `/api/stripe-webhook`. It accep
 - The assigned tutor owns the Calendar event and is the Google Meet host. Before enabling online booking, share each tutor calendar with the Apps Script account that creates events and conferences.
 - The system creates the event without invitations while the conference is pending. It sends parent and tutor invitations only after Google returns the ready `meet.google.com` URL.
 - If conference creation fails or remains pending past the recovery window, the automation marks the session for operations review and retries safely; it must not announce an online session without a working Meet link.
-- When an unpaid session Checkout expires, the system deletes the Calendar event, releases the slot/credit reservation where applicable, and tells the parent to choose a new slot. A parent cannot revive that released session by reissuing a payment link.
+- When an unpaid session Checkout expires, the system deletes the Calendar event, releases the slot/credit reservation where applicable, and tells the parent to choose a new slot. A parent cannot revive that released session by reissuing a Checkout link.
 - Reissue is parent-only and only for the owner-filtered, overdue package payment whose enrollment is still eligible. Tutors never see payment or reissue controls.
 
 CRM tabs:
@@ -170,7 +170,7 @@ The active catalogue is deliberately simple:
 
 | Offer | Parent price | Portal/accounting behaviour |
 | --- | ---: | --- |
-| Targeted session | $65 CAD / 60 min | One concrete priority: a chapter, homework, catch-up, or exam preparation. Send the confirmed-session payment link. |
+| Targeted session | $65 CAD / 60 min | One concrete priority: a chapter, homework, catch-up, or exam preparation. Send the confirmed-session hosted Checkout URL. |
 | Momentum block | $250 CAD / 4 × 60 min | One $250 payment. The verified payment workflow grants four credits and records the trace in `Credit Ledger`. |
 | Progress block | $600 CAD / 10 × 60 min | Two $300 payments: at the start and halfway through. The verified payment workflow grants five credits after each payment and records the trace in `Credit Ledger`. |
 
@@ -187,13 +187,13 @@ Stripe remains the payment processor and the portal never stores card data. A si
 
 ## Session lifecycle
 
-1. A parent can self-book a slot that appears from an `open` or `limited` row in `Tutor Availability`; the backend recomputes and revalidates the selected slot before writing it. An ordinary selected session type resolves its matching payment link and amount. A linked, active block enrollment reserves a credit instead, so it does not create a second per-session payment request.
+1. A parent can self-book a slot that appears from an `open` or `limited` row in `Tutor Availability`; the backend recomputes and revalidates the selected slot before writing it. An ordinary selected session type resolves its matching amount and creates a hosted Stripe Checkout. A linked, active block enrollment reserves a credit instead, so it does not create a second per-session payment request.
    A tutor can maintain only their own weekly availability from their portal; they cannot alter another tutor's availability or a booked session. Overlapping active windows are refused and legacy duplicate slots are removed from the parent booking list.
 2. The parent booking is immediately confirmed for both people, then the automation creates the calendar invite and, for ordinary paid sessions, the payment row.
 3. In `Equipe`, assign an active tutor to a parent when the match is decided. This records the match but does not expose either person yet.
 4. Create a session by selecting that parent and tutor. The session stores both identifiers and both emails. This is the operational link that lets the two portals see one another's session and exchange messages.
 5. Parent and tutor each receive an operator-created proposal email and confirm in their portals.
-6. Once both confirmations are present, the session becomes `confirmed`; the automation creates the Google Calendar event, invites both people, creates a payment row, and sends the payment email if a Stripe link is configured.
+6. Once both confirmations are present, the session becomes `confirmed`; the automation creates the Google Calendar event, invites both people, creates a payment row, and sends the payment email when a hosted Stripe Checkout has been issued.
 7. When the tutor submits a post-session note, a green/watch parent summary is emailed and visible in the parent portal. High-risk notes stay as drafts for owner review.
 8. For either block, the team records a weekly or biweekly cadence only after matching and after confirming a realistic day and time. When the fit remains right, it uses the same preferred time, tutor and format. Each future session is still explicitly scheduled and confirmed. After the final included session, no new block, payment or renewal is created unless the parent chooses one.
 
