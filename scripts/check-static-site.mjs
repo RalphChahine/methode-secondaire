@@ -344,12 +344,12 @@ async function verifyPlanPaymentLifecycleSources() {
     "operator portal: an existing pending enrollment cannot retry its initial payment request",
   )
   expect(
-    paymentRequestFunction.indexOf("const existing =") < paymentRequestFunction.indexOf("PAYMENT_LINK_NOT_CONFIGURED"),
-    "Apps Script: existing package payment requests must be returned before requiring current link configuration",
+    paymentRequestFunction.indexOf("const existing =") < paymentRequestFunction.indexOf("issueCheckoutForPayment_"),
+    "Apps Script: existing package payment requests must be returned before issuing a new Checkout",
   )
   expect(
-    paymentRequestFunction.indexOf("PLAN_PAYMENT_STAGE_NOT_READY") < paymentRequestFunction.indexOf("PAYMENT_LINK_NOT_CONFIGURED"),
-    "Apps Script: midpoint readiness must be checked before payment-link configuration",
+    paymentRequestFunction.indexOf("PLAN_PAYMENT_STAGE_NOT_READY") < paymentRequestFunction.lastIndexOf("issueCheckoutForPayment_"),
+    "Apps Script: midpoint readiness must be checked before Checkout issuance",
   )
   expect(
     paymentRequestFunction.includes('["cancelled", "completed", "expired"].includes'),

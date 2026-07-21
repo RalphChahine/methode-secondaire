@@ -22,13 +22,15 @@ function expect(condition, message) {
 }
 
 async function main() {
-  const [checkoutEndpoint, checkoutBuilder, checkoutTest, packageJson, stripeWebhook, crmCode] = await Promise.all([
+  const [checkoutEndpoint, checkoutBuilder, checkoutTest, packageJson, stripeWebhook, crmCode, portalEndpoint, portalClient] = await Promise.all([
     readSource("api/create-checkout-session.js"),
     readSource("api/lib/stripe-checkout.mjs"),
     readSource("test/stripe-checkout.test.mjs"),
     readSource("package.json"),
     readSource("api/stripe-webhook.js"),
     readSource("ops/crm/google-apps-script/Code.gs"),
+    readSource("api/portal.js"),
+    readSource("src/lib/portalClient.js"),
   ])
 
   expect(checkoutEndpoint.includes("PAYMENT_SESSION_SECRET"), "Checkout endpoint: PAYMENT_SESSION_SECRET is missing")
@@ -55,6 +57,19 @@ async function main() {
   expect(crmCode.includes("meet_invitation_sent"), "CRM: calendar invitation marker is missing")
   expect(crmCode.includes("google_meet_url: record.google_meet_url"), "CRM: portal session Meet URL is not exposed")
   expect(crmCode.includes("calendar_conference_status: record.calendar_conference_status"), "CRM: portal session conference state is not exposed")
+  expect(crmCode.includes("portal_reissue_payment_checkout"), "CRM: authorised Checkout reissue action is missing")
+  expect(crmCode.includes("issueCheckoutForPayment_"), "CRM: protected Checkout issuance helper is missing")
+  expect(crmCode.includes("expireUnpaidCheckoutSessions"), "CRM: unpaid Checkout expiry task is missing")
+  expect(crmCode.includes("PAYMENT_SESSION_SECRET"), "CRM: Apps Script Checkout secret is missing")
+  const expiryFunction = crmCode.slice(
+    crmCode.indexOf("function expireLinkedSessionForPayment_("),
+    crmCode.indexOf("function expireUnpaidCheckoutSessions("),
+  )
+  expect(expiryFunction.includes("cancelCalendarEventForSession_(currentSession.data);") &&
+    expiryFunction.indexOf("cancelCalendarEventForSession_(currentSession.data);") < expiryFunction.indexOf("session_status: \"cancelled\""),
+  "CRM: expired session must delete its Calendar event before cancellation")
+  expect(portalEndpoint.includes("portal_reissue_payment_checkout"), "Portal API: Checkout reissue route is missing")
+  expect(portalClient.includes("reissuePortalPaymentCheckout"), "Portal client: Checkout reissue helper is missing")
 
   if (failures.length > 0) {
     console.error("Meet Checkout contract checks failed:\n")

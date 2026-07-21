@@ -292,6 +292,14 @@ export async function completePortalDemoPayment({ token, sessionId }) {
   })
 }
 
+export async function reissuePortalPaymentCheckout({ token, paymentId }) {
+  return portalRequest({
+    action: "portal_reissue_payment_checkout",
+    token,
+    payment_id: paymentId,
+  })
+}
+
 export async function updatePortalRequestStatus({ token, requestId, status }) {
   return portalRequest({
     action: "portal_update_request_status",

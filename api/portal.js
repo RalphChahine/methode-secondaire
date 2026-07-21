@@ -35,6 +35,7 @@ const ALLOWED_ACTIONS = new Set([
   "portal_reschedule_session",
   "portal_upsert_tutor_availability",
   "portal_complete_demo_payment",
+  "portal_reissue_payment_checkout",
   "portal_update_request_status",
   "portal_create_request",
   "portal_upsert_plan",
