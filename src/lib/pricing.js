@@ -54,6 +54,7 @@ export function resolveRequestedOffer(value) {
     progression: "progression_block",
     progression_block_10: "progression_block",
     weekly_follow_up_10: "progression_block",
+    "PLAN-PACK10-600": "progression_block",
   })
   const normalized = typeof value === "string" ? value.trim() : ""
   return publicOffers[normalized] ? normalized : (aliases[normalized] || "targeted_session")

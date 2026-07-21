@@ -36,7 +36,7 @@ expected.forEach(([code, sessionCount, totalPriceCad, perSessionPriceCad]) => {
   })
 })
 
-;["weekly", "progression", "progression_block_10", "weekly_follow_up_10"].forEach((legacyValue) => {
+;["weekly", "progression", "progression_block_10", "weekly_follow_up_10", "PLAN-PACK10-600"].forEach((legacyValue) => {
   assert.equal(resolveRequestedOffer(legacyValue), "progression_block")
 })
 assert.equal(resolveRequestedOffer("momentum"), "momentum_block")
