@@ -25,15 +25,14 @@ Ils vendent plutôt:
 
 ### Offres coeur de métier
 
-- `Appel diagnostic 15 min`
-- `Séance flexible`
-- `Suivi hebdomadaire`
-- `Sprint examen`
-- `Remise à niveau ciblée`
+- `Séance ciblée` : `65 $ / 60 min`, sans crédit ni renouvellement automatique.
+- `Bloc d’élan` : `4 séances de 60 min / 250 $` (`62,50 $ par séance`), en `1 paiement de 250 $`, sans renouvellement automatique.
+- `Bloc de progression` : `10 séances de 60 min / 600 $` (`60 $ par séance`), en `2 paiements de 300 $`, sans renouvellement automatique.
+
+La cadence est confirmée après le jumelage. Elle décrit le rythme choisi avec la famille; ce n'est pas un produit, un abonnement ou un forfait distinct.
 
 ### Offres à lancer ensuite
 
-- `Bloc intensif de 4 séances`
 - `Préparation ministérielle maths`
 - `Préparation ministérielle sciences`
 - `Petits groupes avant examens`

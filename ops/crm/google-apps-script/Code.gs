@@ -11,6 +11,7 @@ const CRM_TUTOR_AVAILABILITY_SHEET_NAME = "Tutor Availability";
 const CRM_SESSION_SHEET_NAME = "Sessions";
 const CRM_PAYMENT_SHEET_NAME = "Payments";
 const CRM_PAYMENT_LINK_SHEET_NAME = "Payment Links";
+const CRM_PLAN_SHEET_NAME = "Plans";
 const CRM_DASHBOARD_SHEET_NAME = "Ops Dashboard";
 
 const CRM_COLUMNS = [
@@ -173,14 +174,64 @@ const PAYMENT_LINK_COLUMNS = [
   "last_updated_at",
 ];
 
+const PLAN_COLUMNS = [
+  "plan_id",
+  "plan_type",
+  "name",
+  "description",
+  "status",
+  "session_count",
+  "price_cad",
+  "unit_price_cad",
+  "cadence",
+  "cancellation_notice_hours",
+  "validity_days",
+  "eligible_session_types",
+  "billing_mode",
+  "notes",
+  "created_at",
+  "updated_at",
+];
+
 const AVAILABILITY_STATUS_OPTIONS = ["open", "limited", "full", "paused"];
 const WEEKDAY_OPTIONS = ["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"];
 const SESSION_STATUS_OPTIONS = ["requested", "proposed", "confirmed", "calendar_created", "completed", "cancelled", "no_show"];
 const SESSION_TYPE_OPTIONS = ["first_session", "weekly_follow_up", "exam_sprint", "catch_up", "one_time"];
+const PUBLIC_OFFER_CODES = ["targeted_session", "momentum_block", "progression_block"];
+const LEGACY_PUBLIC_OFFER_CODES = {
+  first_session_declic: "targeted_session",
+  weekly: "progression_block",
+  progression: "progression_block",
+  progression_block_10: "progression_block",
+  weekly_follow_up_10: "progression_block",
+};
+const PACKAGE_PAYMENT_OFFER_CODES = [
+  "momentum_block_payment_1",
+  "progression_block_payment_1",
+  "progression_block_payment_2",
+];
+const LEGACY_PACKAGE_PAYMENT_OFFER_CODES = [
+  "progression_block_10_installment_1",
+  "progression_block_10_installment_2",
+  "weekly_follow_up_installment_1",
+  "weekly_follow_up_installment_2",
+];
+// Payment-link setup also accepts legacy installment codes. The stable
+// internal session types remain valid for ordinary per-session links.
+const PAYMENT_LINK_OFFER_OPTIONS = [
+  ...SESSION_TYPE_OPTIONS,
+  ...PACKAGE_PAYMENT_OFFER_CODES,
+  ...LEGACY_PACKAGE_PAYMENT_OFFER_CODES,
+];
 const PAYMENT_STATUS_OPTIONS = ["not_requested", "payment_requested", "paid", "overdue", "refunded", "waived"];
 const PAYMENT_METHOD_OPTIONS = ["stripe_payment_link", "interac", "cash", "other"];
 const PAYOUT_STATUS_OPTIONS = ["not_due", "pending", "paid", "held"];
 const PAYMENT_LINK_STATUS_OPTIONS = ["active", "draft", "paused"];
+const PLAN_TYPE_OPTIONS = ["one_time", "weekly", "pack"];
+const PLAN_STATUS_OPTIONS = ["draft", "active", "paused", "archived"];
+const PLAN_CADENCE_OPTIONS = ["one_time", "weekly", "biweekly"];
+const PLAN_BILLING_MODE_OPTIONS = ["manual_tracking", "future_stripe"];
+const PLAN_MODIFICATION_NOTICE_HOURS = 72;
 
 function setupCrm() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
@@ -191,6 +242,8 @@ function setupCrm() {
   setupSessionsSheet_(getOrCreateSheet_(spreadsheet, CRM_SESSION_SHEET_NAME));
   setupPaymentSheet_(getOrCreateSheet_(spreadsheet, CRM_PAYMENT_SHEET_NAME));
   setupPaymentLinksSheet_(getOrCreateSheet_(spreadsheet, CRM_PAYMENT_LINK_SHEET_NAME));
+  setupPlansSheet_(getOrCreateSheet_(spreadsheet, CRM_PLAN_SHEET_NAME));
+  seedDefaultPlans_(spreadsheet);
   setupViews_(spreadsheet);
   setupDashboard_(spreadsheet);
   setupConfigSheet_(spreadsheet);
@@ -407,13 +460,24 @@ function parsePayload_(event) {
     urgency_score: parsed.urgency_score || "needs_clarification",
     message: parsed.message || "",
     assigned_tutor: parsed.assigned_tutor || "",
-    offer_recommended: parsed.offer_recommended || "",
+    offer_recommended: normalizePublicOfferCode_(parsed.offer_recommended),
     callback_notes: parsed.callback_notes || "",
     first_session_date: parsed.first_session_date || "",
     first_session_summary: parsed.first_session_summary || "",
     last_contacted_at: parsed.last_contacted_at || "",
     close_reason: parsed.close_reason || "",
   };
+}
+
+function normalizePublicOfferCode_(value) {
+  const normalized = normalizeValue_(value);
+  if (PUBLIC_OFFER_CODES.includes(normalized)) {
+    return normalized;
+  }
+
+  return Object.prototype.hasOwnProperty.call(LEGACY_PUBLIC_OFFER_CODES, normalized)
+    ? LEGACY_PUBLIC_OFFER_CODES[normalized]
+    : "";
 }
 
 function setupLeadSheet_(sheet) {
@@ -491,6 +555,242 @@ function setupPaymentSheet_(sheet) {
 function setupPaymentLinksSheet_(sheet) {
   setupStructuredSheet_(sheet, PAYMENT_LINK_COLUMNS, "#26324f");
   applyStructuredValidation_(sheet, PAYMENT_LINK_COLUMNS, "status", PAYMENT_LINK_STATUS_OPTIONS);
+}
+
+function setupPlansSheet_(sheet) {
+  setupStructuredSheet_(sheet, PLAN_COLUMNS, "#3a315f");
+  applyStructuredValidation_(sheet, PLAN_COLUMNS, "plan_type", PLAN_TYPE_OPTIONS);
+  applyStructuredValidation_(sheet, PLAN_COLUMNS, "status", PLAN_STATUS_OPTIONS);
+  applyStructuredValidation_(sheet, PLAN_COLUMNS, "cadence", PLAN_CADENCE_OPTIONS);
+  applyStructuredValidation_(sheet, PLAN_COLUMNS, "billing_mode", PLAN_BILLING_MODE_OPTIONS);
+}
+
+function getSheetRecordsFromSheet_(sheet, columns) {
+  const values = sheet.getDataRange().getValues();
+  if (values.length <= 1) {
+    return [];
+  }
+
+  return values
+    .slice(1)
+    .map((row, index) => ({
+      rowNumber: index + 2,
+      data: columns.reduce((record, column, position) => {
+        record[column] = normalizeValue_(row[position]);
+        return record;
+      }, {}),
+    }))
+    .filter((record) => Object.values(record.data).some((value) => value !== ""));
+}
+
+function writeRecord_(sheet, columns, rowNumber, record) {
+  const row = columns.map((column) => record[column] || "");
+  if (rowNumber) {
+    sheet.getRange(rowNumber, 1, 1, columns.length).setValues([row]);
+    return;
+  }
+
+  sheet.appendRow(row);
+}
+
+function seedDefaultPlans_(spreadsheet) {
+  const sheet = getOrCreateSheet_(spreadsheet, CRM_PLAN_SHEET_NAME);
+  setupPlansSheet_(sheet);
+  const existingPlans = getSheetRecordsFromSheet_(sheet, PLAN_COLUMNS);
+  const existingIds = new Set(existingPlans
+    .map((record) => normalizeValue_(record.data.plan_id))
+    .filter(Boolean));
+  const now = new Date().toISOString();
+  const defaults = [
+    {
+      // Keep this stable legacy identifier so existing plan enrollments remain valid.
+      plan_id: "PLAN-FIRST-60",
+      plan_type: "one_time",
+      name: "Séance ciblée",
+      description: "Une séance de 60 minutes pour débloquer une priorité concrète.",
+      status: "active",
+      session_count: "1",
+      price_cad: "65",
+      unit_price_cad: "65",
+      cadence: "one_time",
+      cancellation_notice_hours: String(PLAN_MODIFICATION_NOTICE_HOURS),
+      validity_days: "",
+      eligible_session_types: "first_session,one_time,catch_up,exam_sprint",
+      billing_mode: "manual_tracking",
+      notes: "Séance unique à 65 $. Cette séance ne crée ni ne consomme aucun crédit. Aucun forfait ni renouvellement automatique.",
+    },
+    {
+      plan_id: "PLAN-TARGETED-65",
+      plan_type: "one_time",
+      name: "Séance ciblée (héritage)",
+      description: "Offre conservée seulement pour terminer les inscriptions existantes; utiliser la Séance ciblée pour une nouvelle demande ponctuelle.",
+      status: "archived",
+      session_count: "1",
+      price_cad: "65",
+      unit_price_cad: "65",
+      cadence: "one_time",
+      cancellation_notice_hours: String(PLAN_MODIFICATION_NOTICE_HOURS),
+      validity_days: "",
+      eligible_session_types: "one_time,catch_up,exam_sprint",
+      billing_mode: "manual_tracking",
+      notes: "Offre héritée. Ne pas créer de nouvelle inscription sous ce plan.",
+    },
+    {
+      plan_id: "PLAN-WEEKLY-65",
+      plan_type: "weekly",
+      name: "Rythme hebdomadaire (héritage)",
+      description: "Offre conservée seulement pour terminer les inscriptions existantes; ne pas utiliser pour un nouveau suivi.",
+      status: "archived",
+      session_count: "",
+      price_cad: "65",
+      unit_price_cad: "65",
+      cadence: "weekly",
+      cancellation_notice_hours: String(PLAN_MODIFICATION_NOTICE_HOURS),
+      validity_days: "",
+      eligible_session_types: "weekly_follow_up",
+      billing_mode: "manual_tracking",
+      notes: "Offre héritée. Les inscriptions existantes restent à traiter séparément; aucun nouveau suivi ne doit être créé sous ce plan.",
+    },
+    {
+      plan_id: "PLAN-PACK4-250",
+      plan_type: "pack",
+      name: "Bloc d’élan - 4 séances",
+      description: "Quatre séances de 60 minutes pour reprendre le fil pendant environ un mois; la cadence est choisie après le jumelage.",
+      status: "active",
+      session_count: "4",
+      price_cad: "250",
+      unit_price_cad: "62.5",
+      cadence: "one_time",
+      cancellation_notice_hours: String(PLAN_MODIFICATION_NOTICE_HOURS),
+      validity_days: "120",
+      eligible_session_types: "weekly_follow_up",
+      billing_mode: "future_stripe",
+      notes: "Un paiement de 250 $. Après paiement vérifié, quatre crédits sont accordés une seule fois. Aucun renouvellement automatique.",
+    },
+    {
+      plan_id: "PLAN-PACK10-600",
+      plan_type: "pack",
+      name: "Bloc de progression - 10 séances",
+      description: "Dix séances de 60 minutes à utiliser selon le rythme convenu après le jumelage. Un rythme hebdomadaire ou aux deux semaines peut être fixé lorsqu'il convient à la famille.",
+      status: "active",
+      session_count: "10",
+      price_cad: "600",
+      unit_price_cad: "60",
+      // Cadence is a post-matching choice, not a separate public product.
+      cadence: "one_time",
+      cancellation_notice_hours: String(PLAN_MODIFICATION_NOTICE_HOURS),
+      validity_days: "180",
+      eligible_session_types: "weekly_follow_up",
+      billing_mode: "future_stripe",
+      notes: "Deux versements manuels de 300 $ : au début puis à mi-parcours. Aucun renouvellement automatique. Après vérification de chaque versement, l'équipe accorde 5 crédits avec une raison écrite. Le rythme hebdomadaire ou aux deux semaines est choisi après le jumelage. À 72 h ou plus, le report est garanti et aucun crédit n'est perdu automatiquement.",
+    },
+  ];
+
+  // Upgrade only the fully known prior built-in shape. Older rows did not
+  // carry a safe marker or a complete recoverable signature, so they remain
+  // untouched rather than risking an operator's custom catalogue changes.
+  const legacyFirstSessionPlan = existingPlans.find((record) =>
+    normalizeValue_(record.data.plan_id) === "PLAN-FIRST-60");
+  const firstSessionDefault = defaults.find((plan) => plan.plan_id === "PLAN-FIRST-60");
+  const priorFirstSessionDefault = {
+    plan_id: "PLAN-FIRST-60",
+    plan_type: "one_time",
+    name: "Seance Declic / a la carte",
+    description: "Une seance de tutorat de 60 minutes pour debloquer une priorite concrete : chapitre, devoir, reprise ou preparation d'examen.",
+    status: "active",
+    session_count: "1",
+    price_cad: "65",
+    unit_price_cad: "65",
+    cadence: "one_time",
+    cancellation_notice_hours: String(PLAN_MODIFICATION_NOTICE_HOURS),
+    validity_days: "",
+    eligible_session_types: "first_session,one_time,catch_up,exam_sprint",
+    billing_mode: "manual_tracking",
+    notes: "Seance unique a 65 $. Aucun forfait ni renouvellement automatique.",
+  };
+  const isPriorFirstSessionDefault = legacyFirstSessionPlan &&
+    planRecordMatchesSeed_(legacyFirstSessionPlan.data, priorFirstSessionDefault);
+  if (legacyFirstSessionPlan && firstSessionDefault && isPriorFirstSessionDefault) {
+    const legacy = legacyFirstSessionPlan.data;
+    writeRecord_(sheet, PLAN_COLUMNS, legacyFirstSessionPlan.rowNumber, {
+      ...legacy,
+      name: firstSessionDefault.name,
+      description: firstSessionDefault.description,
+      price_cad: "65",
+      unit_price_cad: "65",
+      eligible_session_types: firstSessionDefault.eligible_session_types,
+      notes: firstSessionDefault.notes,
+      updated_at: now,
+    });
+  }
+
+  // The known prior 10-session built-in is likewise compared across every
+  // non-timestamp plan field before any migration is allowed.
+  const legacyProgressionPlan = existingPlans.find((record) =>
+    normalizeValue_(record.data.plan_id) === "PLAN-PACK10-600");
+  const progressionBlockDefault = defaults.find((plan) => plan.plan_id === "PLAN-PACK10-600");
+  const priorProgressionBlockDefault = {
+    plan_id: "PLAN-PACK10-600",
+    plan_type: "pack",
+    name: "Bloc de progression - 10 seances",
+    description: "Dix seances de 60 minutes a utiliser selon le rythme convenu apres le jumelage. Un rythme hebdomadaire ou aux deux semaines peut etre fixe lorsqu'il convient a la famille.",
+    status: "active",
+    session_count: "10",
+    price_cad: "600",
+    unit_price_cad: "60",
+    cadence: "one_time",
+    cancellation_notice_hours: String(PLAN_MODIFICATION_NOTICE_HOURS),
+    validity_days: "180",
+    eligible_session_types: "weekly_follow_up",
+    billing_mode: "manual_tracking",
+    notes: "Deux versements manuels de 300 $ : au debut puis a mi-parcours. Aucun renouvellement automatique. Apres verification de chaque versement, l'equipe accorde 5 credits avec une raison ecrite. Le rythme hebdomadaire ou aux deux semaines est choisi apres le jumelage. A 72 h ou plus, le report est garanti et aucun credit n'est perdu automatiquement.",
+  };
+  const isPriorProgressionBlockDefault = legacyProgressionPlan &&
+    planRecordMatchesSeed_(legacyProgressionPlan.data, priorProgressionBlockDefault);
+  if (legacyProgressionPlan && progressionBlockDefault && isPriorProgressionBlockDefault) {
+    const legacy = legacyProgressionPlan.data;
+    writeRecord_(sheet, PLAN_COLUMNS, legacyProgressionPlan.rowNumber, {
+      ...legacy,
+      plan_type: progressionBlockDefault.plan_type,
+      name: progressionBlockDefault.name,
+      description: progressionBlockDefault.description,
+      session_count: progressionBlockDefault.session_count,
+      price_cad: progressionBlockDefault.price_cad,
+      unit_price_cad: progressionBlockDefault.unit_price_cad,
+      cadence: progressionBlockDefault.cadence,
+      cancellation_notice_hours: progressionBlockDefault.cancellation_notice_hours,
+      validity_days: progressionBlockDefault.validity_days,
+      eligible_session_types: progressionBlockDefault.eligible_session_types,
+      billing_mode: progressionBlockDefault.billing_mode,
+      notes: progressionBlockDefault.notes,
+      updated_at: now,
+    });
+  }
+
+  defaults
+    .filter((plan) => !existingIds.has(plan.plan_id))
+    .forEach((plan) => sheet.appendRow(PLAN_COLUMNS.map((column) => plan[column] || (column === "created_at" || column === "updated_at" ? now : ""))));
+}
+
+function planRecordMatchesSeed_(record, seed) {
+  return PLAN_COLUMNS
+    .filter((column) => column !== "created_at" && column !== "updated_at")
+    .every((column) => normalizeValue_(record[column]) === normalizeValue_(seed[column]));
+}
+
+function normalizePaymentLinkOfferCode_(value) {
+  const normalized = normalizeValue_(value);
+  if (SESSION_TYPE_OPTIONS.includes(normalized) || PACKAGE_PAYMENT_OFFER_CODES.includes(normalized)) {
+    return normalized;
+  }
+  if (["progression_block_10_installment_1", "weekly_follow_up_installment_1"].includes(normalized)) {
+    return "progression_block_payment_1";
+  }
+  if (["progression_block_10_installment_2", "weekly_follow_up_installment_2"].includes(normalized)) {
+    return "progression_block_payment_2";
+  }
+
+  return "";
 }
 
 function setupViews_(spreadsheet) {

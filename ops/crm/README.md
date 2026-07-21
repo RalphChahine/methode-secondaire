@@ -19,8 +19,15 @@ Le script crée aussi:
 - `Tutor Roster`: capacité, matières, formats et statut des tuteurs.
 - `Sessions`: séances proposées, confirmées et synchronisées au calendrier.
 - `Payments`: paiements parents et paiements tuteurs.
+- `Plans`: catalogue 65/250/600 : Séance ciblée à 65 $ pour 60 min, Bloc d’élan de 4 séances à 250 $ (62,50 $ par séance), puis Bloc de progression de 10 séances à 600 $ (60 $ par séance), en deux versements de 300 $.
+- `Plan Enrollments`: bloc associé à un parent, un élève et un tuteur; le rythme hebdomadaire ou aux deux semaines est choisi après le jumelage. La cadence n'est pas un produit, un abonnement ni un débit automatique.
+- `Credit Ledger`: journal des crédits des blocs, accordés seulement après vérification du paiement : 4 crédits en une fois pour le Bloc d’élan; 5 crédits au début, puis 5 à mi-parcours pour le Bloc de progression. La Séance ciblée ne crée ni ne consomme de crédit.
 
-Le workflow horaire + paiement est détaillé dans `scheduling-and-payments.md`.
+Le workflow horaire, prix, paiement et crédits est détaillé dans `scheduling-and-payments.md`.
+
+Pour les nouvelles demandes, les codes d'offre CRM sont `targeted_session`, `momentum_block` et `progression_block`. Les codes historiques connus, dont `progression_block_10` et `weekly_follow_up_10`, restent acceptés et sont normalisés vers le code public correspondant; `weekly_follow_up` reste un type de séance interne et n'est pas un produit.
+
+Avant toute mise en production du catalogue, lancer `setupCrm` dans une copie du classeur et vérifier que `Plans` contient exactement trois plans actifs : `PLAN-FIRST-60`, `PLAN-PACK4-250` et `PLAN-PACK10-600`. Vérifier aussi qu'une nouvelle ligne `Payment Links` accepte les trois codes de paiement canoniques.
 
 ## Branchement site
 
