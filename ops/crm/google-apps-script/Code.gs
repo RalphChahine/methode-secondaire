@@ -2008,8 +2008,8 @@ function getPortalDashboard_(spreadsheet, payload) {
   };
 }
 
-// Plans track eligibility and cadence; package payment requests reuse configured
-// Stripe Payment Links and grant credits only after the webhook verifies payment.
+// Plans track eligibility and cadence; package payment requests receive a unique
+// hosted Stripe Checkout and grant credits only after the webhook verifies payment.
 function upsertPortalPlan_(spreadsheet, payload) {
   const portalSession = verifyPortalSession_(spreadsheet, payload.token, "operator");
   if (!portalSession.ok) {

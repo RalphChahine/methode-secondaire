@@ -41,7 +41,7 @@ In Stripe, create a webhook endpoint for:
 https://methode-secondaire.vercel.app/api/stripe-webhook
 ```
 
-Select `checkout.session.completed` and `checkout.session.async_payment_succeeded`.
+Select `checkout.session.completed`, `checkout.session.async_payment_succeeded`, and `checkout.session.expired`.
 
 The portal appends a non-sensitive payment ID as Stripe's `client_reference_id`. Stripe returns that reference in the completed Checkout Session, allowing the webhook to mark only the matching CRM payment and session as `paid`.
 

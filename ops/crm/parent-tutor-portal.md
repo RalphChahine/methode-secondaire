@@ -120,7 +120,7 @@ Stripe's signed webhook is handled separately by `/api/stripe-webhook`. It accep
 
 - The assigned tutor owns the Calendar event and is the Google Meet host. Before enabling online booking, share each tutor calendar with the Apps Script account that creates events and conferences.
 - The system creates the event without invitations while the conference is pending. It sends parent and tutor invitations only after Google returns the ready `meet.google.com` URL.
-- If conference creation fails or remains pending past the recovery window, the automation marks the session for operations review and retries safely; it must not announce an online session without a working Meet link.
+- If conference creation fails, the automation retries safely during the recovery window and never announces an online session without a working Meet link. At terminal failure it expires any open Checkout, holds a completed payment for reconciliation, completes Calendar cleanup, then cancels the unusable session and releases its reservation where applicable.
 - When an unpaid session Checkout expires, the system deletes the Calendar event, releases the slot/credit reservation where applicable, and tells the parent to choose a new slot. A parent cannot revive that released session by reissuing a Checkout link.
 - Reissue is parent-only and only for the owner-filtered, overdue package payment whose enrollment is still eligible. Tutors never see payment or reissue controls.
 
