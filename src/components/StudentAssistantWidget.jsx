@@ -79,10 +79,8 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
 
     function handleJumpContact(event) {
       setOpen(false)
-      const requestedOffer = event?.detail?.requestedOffer
-      const destination = ["progression_block_10", "weekly_follow_up_10"].includes(requestedOffer)
-        ? `${requestUrl}?offer=progression`
-        : requestUrl
+      const requestedOffer = event?.detail?.requestedOffer || "targeted_session"
+      const destination = `${requestUrl}?offer=${requestedOffer}`
 
       window.location.assign(destination)
     }

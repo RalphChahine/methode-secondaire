@@ -232,7 +232,7 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
       new CustomEvent("methode:jump-contact", {
         detail: {
           locale,
-          requestedOffer: result?.requestedOffer || "first_session_declic",
+          requestedOffer: result?.requestedOffer || "targeted_session",
         },
       }),
     )
@@ -244,8 +244,8 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
 
   if (result) {
     const primaryAction = result.recommendedAction
-    const isProgressionBlock = ["progression_block_10", "weekly_follow_up_10"].includes(result.requestedOffer)
-    const requestHref = isProgressionBlock ? `${requestUrl}?offer=progression` : requestUrl
+    const requestedOffer = result.requestedOffer || "targeted_session"
+    const requestHref = `${requestUrl}?offer=${requestedOffer}`
     const orderedActions = [
       primaryAction,
       primaryAction === "call_now" ? "book_session" : "call_now",

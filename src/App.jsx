@@ -24,6 +24,7 @@ const Secondary4MathTheory = lazy(() => import("@/pages/Secondary4MathTheory"))
 const Secondary4MathConcept = lazy(() => import("@/pages/Secondary4MathConcept"))
 const Sciences = lazy(() => import("@/pages/Sciences"))
 const Temoignages = lazy(() => import("@/pages/Temoignages"))
+const Tuteurs = lazy(() => import("@/pages/Tuteurs"))
 
 function PageLoader() {
   return (
@@ -66,8 +67,8 @@ export function AppRoutes() {
             <Route path="/en/testimonials" element={<Temoignages />} />
             <Route path="/reussites" element={<CaseStudies />} />
             <Route path="/en/success-stories" element={<CaseStudies />} />
-            <Route path="/tuteurs" element={<Navigate to="/devenir-tuteur" replace />} />
-            <Route path="/en/tutors" element={<Navigate to="/en/become-a-tutor" replace />} />
+            <Route path="/tuteurs" element={<Tuteurs />} />
+            <Route path="/en/tutors" element={<Tuteurs />} />
             <Route path="/tutorat-montreal" element={<LocalLanding forcedRouteKey="montreal" />} />
             <Route path="/en/montreal-tutoring" element={<LocalLanding forcedRouteKey="montreal" />} />
             <Route path="/tutorat-laval" element={<LocalLanding forcedRouteKey="laval" />} />

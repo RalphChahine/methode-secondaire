@@ -75,4 +75,25 @@ sources.forEach((source, index) => {
   assert.doesNotMatch(source, /S(?:é|\\u00e9)ance D(?:é|\\u00e9)clic|D(?:é|\\u00e9)clic \/ one-off session|weekly follow-up package/i, copyFiles[index])
 })
 
+const [diagnostic, diagnosticPanel, assistantWidget, offerPathways, growthProgram, resourcesHub] = await Promise.all([
+  fs.readFile(new URL("../src/lib/leadDiagnostic.js", import.meta.url), "utf8"),
+  fs.readFile(new URL("../src/components/LeadDiagnosticPanel.jsx", import.meta.url), "utf8"),
+  fs.readFile(new URL("../src/components/StudentAssistantWidget.jsx", import.meta.url), "utf8"),
+  fs.readFile(new URL("../src/components/OfferPathwaysSection.jsx", import.meta.url), "utf8"),
+  fs.readFile(new URL("../src/components/GrowthProgramSection.jsx", import.meta.url), "utf8"),
+  fs.readFile(new URL("../src/pages/ResourcesHub.jsx", import.meta.url), "utf8"),
+])
+assert.doesNotMatch(diagnostic, /progression_block_10|first_session_declic/)
+assert.match(diagnostic, /requestedOffer: isProgressionBlock \? "progression_block" : "targeted_session"/)
+;[diagnosticPanel, assistantWidget].forEach((source) => {
+  assert.doesNotMatch(source, /progression_block_10|weekly_follow_up_10|\?offer=progression/)
+  assert.match(source, /\?offer=\$\{requestedOffer\}/)
+})
+;[offerPathways, growthProgram, resourcesHub].forEach((source) => {
+  assert.match(source, /S(?:é|Ã©)ance ciblée|Targeted session/)
+  assert.match(source, /Bloc d['’](?:é|Ã©)lan|Momentum block/)
+  assert.match(source, /Bloc de progression|Progress block/)
+  assert.doesNotMatch(source, /Sprint examen|exam sprint/i)
+})
+
 console.log("Pricing package contract passed.")

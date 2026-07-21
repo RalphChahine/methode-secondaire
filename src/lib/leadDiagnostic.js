@@ -26,8 +26,10 @@ function getProgressionBlockDetails(locale = "fr") {
     : `Bloc de progression · ${block.sessionCount} séances · ${block.totalPriceCad} $ au total (${block.installmentCount} paiements de ${block.installmentPriceCad} $)`
 }
 
-const frenchPricingContext = `Offres publiques : ${getFirstSessionDetails("fr")} pour un besoin ponctuel, ou ${getProgressionBlockDetails("fr")} (60 $ par séance, 2 paiements de 300 $, cadence confirmée après le jumelage, sans renouvellement automatique). Avec un préavis d’au moins ${pricing.cancellation.noticeHours} h, le report est garanti. Plus tard, l’équipe cherche une solution selon les disponibilités; ne promettez jamais une pénalité, une perte de crédit ou un remboursement automatique.`
-const englishPricingContext = `Public offers: ${getFirstSessionDetails("en")} for a one-off need, or ${getProgressionBlockDetails("en")} ($60 per session, 2 payments of $300, cadence confirmed after matching, with no automatic renewal). With at least ${pricing.cancellation.noticeHours} hours’ notice, rescheduling is guaranteed. Later requests are handled by the team based on availability; never promise an automatic penalty, lost credit, or refund.`
+const momentum = getOffer("momentum_block")
+const progression = getOffer("progression_block")
+const frenchPricingContext = `Offres publiques : ${getFirstSessionDetails("fr")} pour une priorité concrète, Bloc d'élan : ${momentum.sessionCount} séances pour ${momentum.totalPriceCad} $ afin de reprendre l'élan pendant environ un mois, ou ${getProgressionBlockDetails("fr")} (${progression.perSessionPriceCad} $ par séance, ${progression.installmentCount} paiements de ${progression.installmentPriceCad} $, cadence confirmée après le jumelage, sans renouvellement automatique). Avec un préavis d’au moins ${pricing.cancellation.noticeHours} h, le report est garanti.`
+const englishPricingContext = `Public offers: ${getFirstSessionDetails("en")} for one concrete priority, a Momentum block of ${momentum.sessionCount} sessions for $${momentum.totalPriceCad} to regain momentum over roughly one month, or ${getProgressionBlockDetails("en")} ($${progression.perSessionPriceCad} per session, ${progression.installmentCount} payments of $${progression.installmentPriceCad}, cadence confirmed after matching, with no automatic renewal). With at least ${pricing.cancellation.noticeHours} hours’ notice, rescheduling is guaranteed.`
 
 export { diagnosticFieldOrder }
 
@@ -435,7 +437,7 @@ function buildParentFirstStepResult(locale = "fr", answers = {}) {
       ? [
           `Request ${progressionBlock}.`,
           "The team confirms the tutor and cadence after matching; weekly is one possible rhythm, not a separate package.",
-          "The 10-session block is paid in two $300 installments and does not renew automatically.",
+          `The ${progression.sessionCount}-session block is paid in ${progression.installmentCount} $${progression.installmentPriceCad} installments and does not renew automatically.`,
         ]
       : [
           `Request ${firstSession}.`,
@@ -455,7 +457,7 @@ function buildParentFirstStepResult(locale = "fr", answers = {}) {
       recommendedAction,
       recommendedActionLabel,
       recommendedService,
-      requestedOffer: isProgressionBlock ? "progression_block_10" : "first_session_declic",
+      requestedOffer: isProgressionBlock ? "progression_block" : "targeted_session",
       actionReason: recommendedAction === "call_now"
         ? "The situation is urgent or still unclear. A quick call lets the team confirm the most useful next step without making the mini-assessment mandatory."
         : isProgressionBlock
@@ -485,7 +487,7 @@ function buildParentFirstStepResult(locale = "fr", answers = {}) {
     ? [
         `Demandez ${progressionBlock.toLowerCase()}.`,
         "L'équipe confirme le tuteur et la cadence après le jumelage; l'hebdomadaire est un rythme possible, pas un forfait distinct.",
-        "Le bloc de 10 séances est en deux paiements de 300 $ et ne se renouvelle pas automatiquement.",
+        `Le bloc de ${progression.sessionCount} séances est en ${progression.installmentCount} paiements de ${progression.installmentPriceCad} $ et ne se renouvelle pas automatiquement.`,
       ]
     : [
         `Demandez la première ${firstSession.toLowerCase()}.`,
@@ -505,7 +507,7 @@ function buildParentFirstStepResult(locale = "fr", answers = {}) {
     recommendedAction,
     recommendedActionLabel,
     recommendedService,
-    requestedOffer: isProgressionBlock ? "progression_block_10" : "first_session_declic",
+    requestedOffer: isProgressionBlock ? "progression_block" : "targeted_session",
     actionReason: recommendedAction === "call_now"
       ? "La situation est urgente ou reste floue. Un appel rapide permet à l'équipe de confirmer le prochain pas utile sans rendre le mini-bilan obligatoire."
       : isProgressionBlock

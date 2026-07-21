@@ -34,10 +34,10 @@ const copyByLocale = {
       cards: [
         {
           icon: "sprint",
-          title: "Sprint examen",
-          subtitle: "Quand une date approche et qu'il faut remettre les priorit\u00E9s en ordre vite.",
-          routeKey: "examSprint",
-          cta: "Voir le Sprint examen",
+          title: "Séance ciblée",
+          subtitle: "Pour une priorité concrète à travailler.",
+          action: "book",
+          cta: "Demander une séance ciblée",
           bullets: [
             "Bon pour les examens proches",
             "Appel d'abord si la situation est encore floue",
@@ -46,10 +46,10 @@ const copyByLocale = {
         },
         {
           icon: "weekly",
-          title: "Bloc de progression — 10 séances",
-          subtitle: "Quand le vrai besoin est de stabiliser la m\u00E9thode et de donner une continuit\u00E9 au travail.",
-          routeKey: "weeklyFollowUp",
-          cta: "Voir le bloc de progression",
+          title: "Bloc d'élan",
+          subtitle: "Pour reprendre l'élan pendant environ un mois.",
+          action: "book",
+          cta: "Demander le bloc d'élan",
           bullets: [
             "10 séances de 60 minutes pour une progression durable",
             "Après le jumelage, un créneau hebdomadaire peut être proposé",
@@ -59,8 +59,8 @@ const copyByLocale = {
         },
         {
           icon: "reset",
-          title: "Remise \u00E0 niveau cibl\u00E9e",
-          subtitle: "Quand il faut reprendre une mati\u00E8re ou un chapitre avant que le retard se fige.",
+          title: "Bloc de progression",
+          subtitle: "Pour une difficulté récurrente ou une structure scolaire durable.",
           action: "book",
           cta: "Demander une s\u00E9ance cibl\u00E9e",
           bullets: [
@@ -118,10 +118,10 @@ const copyByLocale = {
       cards: [
         {
           icon: "sprint",
-          title: "Exam sprint",
-          subtitle: "For moments when a deadline is close and priorities need to be reordered fast.",
-          routeKey: "examSprint",
-          cta: "See the exam sprint",
+          title: "Targeted session",
+          subtitle: "For one concrete priority to work on.",
+          action: "book",
+          cta: "Request a Targeted session",
           bullets: [
             "Best for upcoming exams",
             "Call first if the situation is still unclear",
@@ -130,10 +130,10 @@ const copyByLocale = {
         },
         {
           icon: "weekly",
-          title: "Progress block",
-          subtitle: "For students who need a steadier method and more durable academic momentum.",
-          routeKey: "weeklyFollowUp",
-          cta: "See the progress block",
+          title: "Momentum block",
+          subtitle: "To regain momentum over roughly one month.",
+          action: "book",
+          cta: "Request the Momentum block",
           bullets: [
             "10 60-minute sessions for longer-term progress",
             "After matching, a weekly time can be suggested",
@@ -143,10 +143,10 @@ const copyByLocale = {
         },
         {
           icon: "reset",
-          title: "Targeted catch-up reset",
-          subtitle: "For families who need to rebuild one subject or chapter before the gap hardens.",
+          title: "Progress block",
+          subtitle: "For a recurring difficulty or lasting academic structure.",
           action: "book",
-          cta: "Request a focused session",
+          cta: "Request the Progress block",
           bullets: [
             "Good for clean catch-up work",
             "Helps recover a clearer direction",
@@ -334,7 +334,7 @@ export default function GrowthProgramSection({ locale = "fr", className = "pt-20
           variant="outline"
           className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
         >
-          <a href={`${requestUrl}?offer=progression`}>
+          <a href={`${requestUrl}?offer=progression_block`}>
             <CalendarDays className="h-4 w-4" />
             {locale === "en" ? "Request the progress block" : "Demander le bloc de progression"}
           </a>
