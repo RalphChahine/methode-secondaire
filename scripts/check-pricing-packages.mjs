@@ -58,6 +58,6 @@ assert.match(requestForm, /offer_recommended: offer/)
 assert.match(pricingSection, /methode:pricing-offers-view/)
 assert.match(pricingSection, /methode:pricing-offer-selected/)
 assert.match(requestForm, /methode:first-session-request-submit/)
-assert.doesNotMatch(pricingSection, /SÃ©ance DÃ©clic/)
+assert.doesNotMatch(pricingSection, /Séance Déclic/)
 
 console.log("Pricing package contract passed.")
