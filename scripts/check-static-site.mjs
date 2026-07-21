@@ -239,7 +239,10 @@ async function verifyFinalReviewSafetyContracts() {
 
   expect(!/\boffer\s*:/.test(parentPaymentSanitizer), "parent payments: raw operational offer code is exposed")
   expect(!/\binvoice_id\s*:|\bplan_enrollment_id\s*:/.test(parentPaymentSanitizer), "parent payments: raw billing identity fields are exposed")
-  expect(parentPaymentSanitizer.includes("payment_id: record.payment_id") && parentPaymentSanitizer.includes("can_reissue:"), "parent payments: owner-scoped reissue fields are missing")
+  expect(parentPaymentSanitizer.includes("payment_id: record.payment_id") &&
+    parentPaymentSanitizer.includes("can_reissue:") &&
+    parentPaymentSanitizer.includes("isPlanEnrollmentEligibleForPaymentReissue_(enrollment)"),
+  "parent payments: owner-scoped reissue eligibility is missing")
   expect(parentPaymentSanitizer.includes("display_name_fr") && parentPaymentSanitizer.includes("display_name_en"), "parent payments: safe localized presentation fields are missing")
   expect(!parentLedgerSanitizer.includes("source_payment_id"), "parent credit ledger: source_payment_id is exposed")
   expect(operatorLedgerSanitizer.includes("source_payment_id"), "operator credit ledger: source_payment_id must remain available")

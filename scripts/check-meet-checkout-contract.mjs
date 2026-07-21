@@ -87,8 +87,12 @@ async function main() {
     reissueFunction.indexOf("PAYMENT_REBOOKING_REQUIRED") < reissueFunction.indexOf("issueCheckoutForPayment_"),
   "CRM: expired session payments can be reissued instead of rebooked")
   expect(crmCode.includes("PAYMENT_REBOOKING_REQUIRED") &&
-    crmCode.includes("can_reissue: normalizeValue_(record.payment_status) === \"overdue\" && !normalizeValue_(record.session_id)"),
-  "CRM: only package payments may be reissued by a parent")
+    crmCode.includes("isPlanEnrollmentEligibleForPaymentReissue_") &&
+    reissueFunction.includes("PAYMENT_REISSUE_NOT_AVAILABLE"),
+  "CRM: only eligible package payments may be reissued by a parent")
+  expect(crmCode.includes("Paiement Stripe recu apres une inscription de forfait non admissible") &&
+    crmCode.includes("requires_reconciliation: true"),
+  "CRM: paid terminal package enrollments must create a reconciliation record")
   expect(portalEndpoint.includes("portal_reissue_payment_checkout"), "Portal API: Checkout reissue route is missing")
   expect(portalClient.includes("reissuePortalPaymentCheckout"), "Portal client: Checkout reissue helper is missing")
 

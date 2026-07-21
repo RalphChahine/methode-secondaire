@@ -4129,7 +4129,30 @@ function markPortalPaymentPaidFromWebhook_(spreadsheet, payload) {
         updatedPayment.plan_enrollment_id,
       );
       if (linkedEnrollment && ["cancelled", "completed", "expired"].includes(normalizeValue_(linkedEnrollment.data.status))) {
-        return { ok: false, code: "PLAN_ENROLLMENT_NOT_ACTIONABLE", payment_id: paymentId };
+        const reconciliationNote = "Paiement Stripe recu apres une inscription de forfait non admissible; reconciliation equipe requise.";
+        const paymentForReconciliation = {
+          ...updatedPayment,
+          payout_status: "held",
+          notes: [normalizeValue_(updatedPayment.notes), reconciliationNote].filter(Boolean).join(" | "),
+          updated_at: new Date().toISOString(),
+        };
+        writeRecord_(paymentSheet, PAYMENT_COLUMNS, paymentRecord.rowNumber, paymentForReconciliation);
+        appendPortalRequestRecord_(spreadsheet, {
+          role: "operator",
+          email: normalizeEmail_(updatedPayment.email),
+          related_id: paymentId,
+          request_type: "payment_question",
+          subject: "Reconciliation requise: paiement de forfait",
+          message: `${reconciliationNote} Paiement ${paymentId}, inscription ${linkedEnrollment.data.enrollment_id}.`,
+        });
+        return {
+          ok: true,
+          payment_id: paymentId,
+          session_id: "",
+          requires_reconciliation: true,
+          receipt_sent: false,
+          credit_grant: { granted: false, reconciliation_required: true },
+        };
       }
     }
 
@@ -4421,6 +4444,18 @@ function reissuePortalPaymentCheckout_(spreadsheet, payload) {
     if (normalizeValue_(paymentRecord.data.session_id)) {
       return { ok: false, code: "PAYMENT_REBOOKING_REQUIRED" };
     }
+    const enrollmentId = normalizeValue_(paymentRecord.data.plan_enrollment_id);
+    const enrollment = enrollmentId
+      ? findSheetRecordById_(
+        getOrCreateSheet_(spreadsheet, CRM_PLAN_ENROLLMENT_SHEET_NAME),
+        PLAN_ENROLLMENT_COLUMNS,
+        "enrollment_id",
+        enrollmentId,
+      )
+      : null;
+    if (!isPlanEnrollmentEligibleForPaymentReissue_(enrollment && enrollment.data)) {
+      return { ok: false, code: "PAYMENT_REISSUE_NOT_AVAILABLE" };
+    }
 
     const issued = issueCheckoutForPayment_(spreadsheet, paymentRecord.data, { authorizedReissue: true });
     if (!issued.ok) {
@@ -4435,6 +4470,14 @@ function reissuePortalPaymentCheckout_(spreadsheet, payload) {
   } finally {
     paymentLock.releaseLock();
   }
+}
+
+function isPlanEnrollmentEligibleForPaymentReissue_(enrollment) {
+  if (!enrollment || !["pending", "active"].includes(normalizeValue_(enrollment.status))) {
+    return false;
+  }
+  const expiresAt = coerceDate_(enrollment.expires_at);
+  return !expiresAt || expiresAt.getTime() > Date.now();
 }
 
 function grantCreditsForPaidPlanPayment_(spreadsheet, payment) {
@@ -5049,9 +5092,13 @@ function buildParentPortalDashboard_(spreadsheet, access) {
     .filter((record) => normalizeValue_(record.status) === "active")
     .sort((a, b) => String(a.student_name).localeCompare(String(b.student_name)))
     .map(sanitizeStudentForPortal_);
+  const enrollmentsById = new Map(
+    getSheetRecords_(spreadsheet, CRM_PLAN_ENROLLMENT_SHEET_NAME, PLAN_ENROLLMENT_COLUMNS)
+      .map((record) => [normalizeValue_(record.enrollment_id), record])
+  );
   const payments = getSheetRecords_(spreadsheet, CRM_PAYMENT_SHEET_NAME, PAYMENT_COLUMNS)
     .filter((record) => normalizeEmail_(record.email) === email)
-    .map(sanitizePaymentForParent_);
+    .map((record) => sanitizePaymentForParent_(record, enrollmentsById.get(normalizeValue_(record.plan_enrollment_id))));
   const notes = buildParentSessionNotes_(spreadsheet, email);
   const feedback = getSheetRecords_(spreadsheet, CRM_PARENT_FEEDBACK_SHEET_NAME, PARENT_FEEDBACK_COLUMNS)
     .filter((record) => normalizeEmail_(record.parent_email) === email);
@@ -7554,7 +7601,7 @@ function sanitizeTutorAvailabilityForPortal_(record) {
   };
 }
 
-function sanitizePaymentForParent_(record) {
+function sanitizePaymentForParent_(record, enrollment) {
   const presentation = getParentPaymentDisplay_(record.offer);
   return {
     // This is called only after buildParentDashboard_ filters payments by the
@@ -7566,7 +7613,9 @@ function sanitizePaymentForParent_(record) {
     credit_unlock_count: presentation.credit_unlock_count,
     amount_cad: record.amount_cad,
     payment_status: record.payment_status,
-    can_reissue: normalizeValue_(record.payment_status) === "overdue" && !normalizeValue_(record.session_id),
+    can_reissue: normalizeValue_(record.payment_status) === "overdue" &&
+      !normalizeValue_(record.session_id) &&
+      isPlanEnrollmentEligibleForPaymentReissue_(enrollment),
     payment_url: getCheckoutPaymentUrl_(record),
     due_date: record.due_date,
     paid_at: record.paid_at,
