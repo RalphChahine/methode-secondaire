@@ -8,6 +8,8 @@ import { BOOKING_URL } from "../src/config/booking.js"
 import { getPrerenderPageEntries } from "../src/lib/prerenderSeoData.js"
 import { absoluteUrl } from "../src/lib/seo.js"
 
+await import("./check-meet-checkout-contract.mjs")
+
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const projectRoot = path.resolve(__dirname, "..")
 const distDir = path.join(projectRoot, "dist")
