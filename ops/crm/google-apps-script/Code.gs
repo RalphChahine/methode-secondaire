@@ -4216,6 +4216,29 @@ function appendCalendarDeletionFailureRequest_(spreadsheet, session, action, cod
   });
 }
 
+function appendPaymentWebhookSessionMismatchRequest_(spreadsheet, payment, storedStripeSessionId, incomingStripeSessionId) {
+  const paymentId = normalizeValue_(payment && payment.payment_id);
+  const sessionId = normalizeValue_(payment && payment.session_id);
+  const subject = "Reconciliation requise: session Stripe inattendue";
+  const reconciliationNote = "Webhook Stripe refuse: la session Checkout recue ne correspond pas a la session enregistree.";
+  const message = `${reconciliationNote} Paiement ${paymentId}, seance ${sessionId}, session enregistree ${storedStripeSessionId}, session recue ${incomingStripeSessionId}.`;
+  const alreadyRequested = getSheetRecords_(spreadsheet, CRM_PORTAL_REQUEST_SHEET_NAME, PORTAL_REQUEST_COLUMNS)
+    .some((request) => normalizeValue_(request.related_id) === paymentId &&
+      normalizeValue_(request.subject) === subject &&
+      normalizeValue_(request.message) === message);
+  if (alreadyRequested) return { ok: true, already_requested: true };
+
+  appendPortalRequestRecord_(spreadsheet, {
+    role: "operator",
+    email: normalizeEmail_(payment && payment.email),
+    related_id: paymentId,
+    request_type: "payment_question",
+    subject,
+    message,
+  });
+  return { ok: true, appended: true };
+}
+
 function markPortalPaymentPaidFromWebhook_(spreadsheet, payload) {
   const expectedSecret = PropertiesService.getScriptProperties().getProperty(PAYMENT_WEBHOOK_SECRET_PROPERTY);
   if (!expectedSecret || normalizeValue_(payload.webhook_secret) !== expectedSecret) {
@@ -4251,15 +4274,7 @@ function markPortalPaymentPaidFromWebhook_(spreadsheet, payload) {
 
     const storedStripeSessionId = normalizeValue_(paymentRecord.data.stripe_checkout_session_id);
     if (storedStripeSessionId && storedStripeSessionId !== stripeSessionId) {
-      const reconciliationNote = "Webhook Stripe refuse: la session Checkout recue ne correspond pas a la session enregistree.";
-      appendPortalRequestRecord_(spreadsheet, {
-        role: "operator",
-        email: normalizeEmail_(paymentRecord.data.email),
-        related_id: paymentId,
-        request_type: "payment_question",
-        subject: "Reconciliation requise: session Stripe inattendue",
-        message: `${reconciliationNote} Paiement ${paymentId}, seance ${normalizeValue_(paymentRecord.data.session_id)}, session enregistree ${storedStripeSessionId}, session recue ${stripeSessionId}.`,
-      });
+      appendPaymentWebhookSessionMismatchRequest_(spreadsheet, paymentRecord.data, storedStripeSessionId, stripeSessionId);
       return { ok: false, code: "PAYMENT_WEBHOOK_SESSION_MISMATCH" };
     }
 

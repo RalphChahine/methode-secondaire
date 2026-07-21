@@ -382,6 +382,7 @@ async function verifyPlanPaymentLifecycleSources() {
       getOrCreateSheet_ = dependencies.getOrCreateSheet
       setupPaymentSheet_ = dependencies.setupPaymentSheet
       findSheetRecordById_ = dependencies.findSheetRecordById
+      getSheetRecords_ = dependencies.getSheetRecords
       writeRecord_ = dependencies.writeRecord
       grantCreditsForPaidPlanPayment_ = dependencies.grantCreditsForPaidPlanPayment
       sendPaymentReceiptEmail_ = dependencies.sendPaymentReceiptEmail
@@ -521,6 +522,7 @@ async function verifyPlanPaymentLifecycleSources() {
   lifecycle.replaceWebhookDependencies({
     getOrCreateSheet: (_spreadsheet, name) => name,
     setupPaymentSheet() {},
+    getSheetRecords: (_spreadsheet, sheetName) => sheetName === "Portal Requests" ? mismatchRequests : [],
     findSheetRecordById: (sheet) => sheet === "Payments"
       ? {
           rowNumber: 2,
@@ -548,8 +550,16 @@ async function verifyPlanPaymentLifecycleSources() {
     amount_cad: 65,
     currency: "cad",
   })
+  const paidSessionMismatchReplay = lifecycle.markPortalPaymentPaidFromWebhook_(null, {
+    webhook_secret: "webhook-secret",
+    payment_id: "PAY-SESSION-MISMATCH",
+    stripe_session_id: "cs_unexpected",
+    amount_cad: 65,
+    currency: "cad",
+  })
   expect(
     paidSessionMismatch.ok === false && paidSessionMismatch.code === "PAYMENT_WEBHOOK_SESSION_MISMATCH" &&
+      paidSessionMismatchReplay.ok === false && paidSessionMismatchReplay.code === "PAYMENT_WEBHOOK_SESSION_MISMATCH" &&
       mismatchWrites.length === 0 && mismatchRequests.length === 1,
     "Apps Script: a mismatched paid Checkout webhook must not mutate payment or session rows",
   )
