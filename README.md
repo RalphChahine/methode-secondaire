@@ -30,9 +30,9 @@ The repository can verify the code paths with `npm.cmd run test:payments` and `n
 
 1. Enable the **Google Calendar Advanced Service** in the Apps Script project and the linked Google Cloud project.
 2. Authorize Apps Script and share every assigned tutor calendar with the Apps Script account so it can create the tutor-owned event and Google Meet conference.
-3. Add Vercel variables: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `PAYMENT_WEBHOOK_SECRET`, and `PAYMENT_SESSION_SECRET`. Add the two `PAYMENT_*` values to Apps Script project properties too.
+3. Add Vercel variables: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `PAYMENT_WEBHOOK_SECRET`, and `PAYMENT_SESSION_SECRET`. Add the two `PAYMENT_*` values to Apps Script project properties too. The CRM uses the same server-to-server secret to expire an already-issued Checkout if a terminal Meet failure cancels the session; never expose that route or secret to a browser.
 4. Create the Stripe webhook endpoint `https://methode-secondaire.vercel.app/api/stripe-webhook` and subscribe it to `checkout.session.completed`, `checkout.session.async_payment_succeeded`, and `checkout.session.expired`.
-5. Make a Stripe **test-mode** booking: verify the Meet invitation arrives only after the link is ready, payment completes once, and an expired test Checkout releases its linked session.
+5. Make a Stripe **test-mode** booking: verify the Meet invitation arrives only after the link is ready, payment completes once, an expired test Checkout releases its linked session, and a terminal Meet failure expires its open Checkout before the session is released.
 6. Deploy the verified production branch. The owner then performs one restricted, authorized live verification before sharing public payment links.
 
 Do not put Stripe or Apps Script secrets in the frontend, a `VITE_*` variable, the repository, screenshots, or support messages.

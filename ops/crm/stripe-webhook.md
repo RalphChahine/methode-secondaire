@@ -24,7 +24,7 @@ The portal uses one hosted Stripe Checkout Session per payment request; it does 
    PAYMENT_SESSION_SECRET=<different long random value>
    ```
 
-4. Add the exact same `PAYMENT_WEBHOOK_SECRET` and `PAYMENT_SESSION_SECRET` to Apps Script project properties. `PAYMENT_SESSION_SECRET` authenticates Apps Script when it asks Vercel to create a Checkout Session; it is not a browser secret.
+4. Add the exact same `PAYMENT_WEBHOOK_SECRET` and `PAYMENT_SESSION_SECRET` to Apps Script project properties. `PAYMENT_SESSION_SECRET` authenticates Apps Script when it asks Vercel to create or expire a Checkout Session; it is not a browser secret. The default expiry route is `/api/expire-checkout-session`; set the private Apps Script property `PAYMENT_CHECKOUT_EXPIRE_ENDPOINT` only when using a different trusted deployment URL.
 
 Never commit any of these values or put them in a `VITE_*` variable, frontend code, browser payload, or documentation screenshot.
 
@@ -33,7 +33,8 @@ Never commit any of these values or put them in a `VITE_*` variable, frontend co
 1. Create the endpoint in Stripe **test mode** and use its test-mode `whsec_...` value in Vercel.
 2. Use a Stripe test card to complete one Checkout Session and confirm that the matching payment is marked `paid` exactly once.
 3. Let a separate test Checkout Session expire and confirm that it becomes `overdue`; a linked session must be released, while a package payment remains eligible for a parent-only reissue when its enrollment is still eligible.
-4. Inspect Stripe's webhook delivery log and Apps Script execution log before touching live mode.
+4. Trigger a terminal Meet failure after a Checkout is issued. Confirm the server expires an `open` Stripe Checkout before the CRM cancels/releases the session. If Stripe reports the Checkout is already complete, confirm the session stays cancelled and the payment is held for operator reconciliation instead of being treated as a usable booking.
+5. Inspect Stripe's webhook delivery log and Apps Script execution log before touching live mode.
 
 ## Restricted live verification
 

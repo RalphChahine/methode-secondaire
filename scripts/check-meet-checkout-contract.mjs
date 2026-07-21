@@ -22,8 +22,9 @@ function expect(condition, message) {
 }
 
 async function main() {
-  const [checkoutEndpoint, checkoutBuilder, checkoutTest, packageJson, stripeWebhook, crmCode, portalEndpoint, portalClient, portalSource, parentTutorRunbook] = await Promise.all([
+  const [checkoutEndpoint, checkoutExpiryEndpoint, checkoutBuilder, checkoutTest, packageJson, stripeWebhook, crmCode, portalEndpoint, portalClient, portalSource, parentTutorRunbook] = await Promise.all([
     readSource("api/create-checkout-session.js"),
+    readSource("api/expire-checkout-session.js"),
     readSource("api/lib/stripe-checkout.mjs"),
     readSource("test/stripe-checkout.test.mjs"),
     readSource("package.json"),
@@ -39,9 +40,15 @@ async function main() {
   expect(checkoutEndpoint.includes("crypto.timingSafeEqual"), "Checkout endpoint: internal secret comparison is not timing-safe")
   expect(checkoutEndpoint.includes('crypto.createHash("sha256")'), "Checkout endpoint: secret lengths are not normalized before comparison")
   expect(checkoutEndpoint.includes("application/x-www-form-urlencoded"), "Checkout endpoint: Stripe form encoding is missing")
+  expect(checkoutExpiryEndpoint.includes("PAYMENT_SESSION_SECRET"), "Checkout expiry endpoint: PAYMENT_SESSION_SECRET is missing")
+  expect(checkoutExpiryEndpoint.includes("crypto.timingSafeEqual"), "Checkout expiry endpoint: internal secret comparison is not timing-safe")
+  expect(checkoutExpiryEndpoint.includes("/expire"), "Checkout expiry endpoint: Stripe expire route is missing")
+  expect(checkoutExpiryEndpoint.includes("STRIPE_CHECKOUT_ALREADY_COMPLETED"), "Checkout expiry endpoint: completed Checkout reconciliation state is missing")
+  expect(checkoutExpiryEndpoint.includes("STRIPE_CHECKOUT_EXPIRY_UNCONFIRMED"), "Checkout expiry endpoint: uncertain Stripe expiry is not blocked")
   expect(checkoutBuilder.includes("CHECKOUT_EXPIRY_SECONDS = 60 * 60"), "Checkout builder: one-hour expiry is missing")
   expect(checkoutBuilder.includes('currency: "cad"'), "Checkout builder: CAD currency is missing")
   expect(checkoutTest.includes("createCheckoutRequest"), "Checkout test: request builder coverage is missing")
+  expect(checkoutTest.includes("expires an open Checkout Session only for an authenticated internal POST"), "Checkout test: hosted Checkout expiry coverage is missing")
   expect(packageJson.includes('"test:payments": "node --test test/stripe-checkout.test.mjs"'), "package.json: test:payments command is missing")
   expect(checkoutBuilder.includes("checkout.session.expired") && stripeWebhook.includes("classifyStripeCheckoutEvent"), "Stripe webhook: checkout.session.expired handling is missing")
   expect(crmCode.includes("portal_mark_payment_expired_webhook"), "CRM: payment expiration webhook action is missing")
@@ -55,6 +62,19 @@ async function main() {
   expect(crmCode.includes("withMeetConferenceState_"), "CRM: Meet creation is not protected by a session lock")
   expect(crmCode.includes("reconcileMeetCreationFailure_"), "CRM: Meet creation failure is not reconciled under lock")
   expect(crmCode.includes("reconcilePendingMeetFailure_"), "CRM: pending Meet failure is not reconciled under lock")
+  expect(crmCode.includes("deleteCalendarEventForSession_"), "CRM: Calendar deletion is not centralized")
+  expect(crmCode.includes("Calendar.Events.remove"), "CRM: Advanced Calendar events are not removed through Calendar API")
+  expect(crmCode.includes("isCalendarNotFoundError_"), "CRM: Calendar 404 removal handling is missing")
+  expect(crmCode.includes("errorCode === 404"), "CRM: only explicit Calendar API 404s may count as already deleted")
+  expect(crmCode.includes('code: "CALENDAR_EVENT_NOT_FOUND"'), "CRM: unknown legacy Calendar events must block lifecycle changes")
+  expect(crmCode.includes("cancelSessionForMeetFailure_"), "CRM: terminal Meet failures do not cancel unusable sessions")
+  expect(crmCode.includes("isSessionPaymentEligible_"), "CRM: failed Meet sessions are not blocked from Checkout issuance")
+  expect(crmCode.includes("failed_cleanup_pending"), "CRM: terminal Meet cleanup failures are not retryable while blocking payment")
+  expect(crmCode.includes("failed_payment_cleanup_pending"), "CRM: uncertain Checkout expiry is not queued for retry")
+  expect(crmCode.includes("PAYMENT_CHECKOUT_EXPIRE_ENDPOINT"), "CRM: Checkout expiry endpoint is not configured privately")
+  expect(crmCode.includes("expireSessionCheckoutBeforeMeetCancellation_"), "CRM: terminal Meet failures do not expire persisted Checkout Sessions")
+  expect(crmCode.includes("STRIPE_CHECKOUT_ALREADY_COMPLETED"), "CRM: completed Checkout reconciliation is not protected")
+  expect(crmCode.includes("STRIPE_CHECKOUT_EXPIRY_UNCONFIRMED"), "CRM: unknown Checkout expiry does not block cancellation")
   expect(crmCode.includes("extendedProperties"), "CRM: calendar invitation idempotency marker is missing")
   expect(crmCode.includes("meet_invitation_sent"), "CRM: calendar invitation marker is missing")
   expect(crmCode.includes("google_meet_url: record.google_meet_url"), "CRM: portal session Meet URL is not exposed")

@@ -242,7 +242,7 @@ Stripe remains the payment processor and the portal never stores card data. A si
 
 Use the canonical [Stripe Checkout webhook runbook](stripe-webhook.md) for the complete owner-controlled procedure; do not duplicate or improvise its secret setup here.
 
-Vercel needs `CRM_WEBHOOK_URL` and `CRM_PORTAL_SECRET` for the portal proxy, plus all Checkout variables: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `PAYMENT_WEBHOOK_SECRET`, and `PAYMENT_SESSION_SECRET`. Apps Script project properties need the same `CRM_PORTAL_SECRET`, `PAYMENT_WEBHOOK_SECRET`, and `PAYMENT_SESSION_SECRET` values.
+Vercel needs `CRM_WEBHOOK_URL` and `CRM_PORTAL_SECRET` for the portal proxy, plus all Checkout variables: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `PAYMENT_WEBHOOK_SECRET`, and `PAYMENT_SESSION_SECRET`. Apps Script project properties need the same `CRM_PORTAL_SECRET`, `PAYMENT_WEBHOOK_SECRET`, and `PAYMENT_SESSION_SECRET` values. A terminal Google Meet failure uses the private `/api/expire-checkout-session` route with that shared secret before it cancels a session; set `PAYMENT_CHECKOUT_EXPIRE_ENDPOINT` only for a custom trusted deployment URL.
 
 The owner must create `https://methode-secondaire.vercel.app/api/stripe-webhook` in Stripe and subscribe it to `checkout.session.completed`, `checkout.session.async_payment_succeeded`, and `checkout.session.expired`. Test mode must prove a payment is recorded once and that an expired Checkout releases its linked session; a package-payment reissue remains parent-only and subject to its enrollment eligibility. Never put any secret in the repository or frontend.
 

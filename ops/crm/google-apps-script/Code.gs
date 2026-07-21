@@ -502,6 +502,7 @@ const PORTAL_MESSAGE_REPLY_HOURS = 24;
 const PAYMENT_WEBHOOK_SECRET_PROPERTY = "PAYMENT_WEBHOOK_SECRET";
 const PAYMENT_SESSION_SECRET_PROPERTY = "PAYMENT_SESSION_SECRET";
 const PAYMENT_CHECKOUT_ENDPOINT_PROPERTY = "PAYMENT_CHECKOUT_ENDPOINT";
+const PAYMENT_CHECKOUT_EXPIRE_ENDPOINT_PROPERTY = "PAYMENT_CHECKOUT_EXPIRE_ENDPOINT";
 const PAYMENT_CHECKOUT_EXPIRY_MS = 60 * 60 * 1000;
 const CRM_PORTAL_SECRET_PROPERTY = "CRM_PORTAL_SECRET";
 const PORTAL_PUBLIC_URL = "https://methode-secondaire.vercel.app/portail";
@@ -709,7 +710,7 @@ function reconcileMeetCreationFailure_(spreadsheet, sessionId, failure) {
     const partialEventId = normalizeValue_(failure.eventId);
     if (currentEventId) {
       if (partialEventId && partialEventId !== currentEventId &&
-          !deleteMeetEventSafely_(spreadsheet, failure.session, partialEventId)) {
+          !deleteMeetEventSafely_(spreadsheet, failure.session, partialEventId).ok) {
         appendMeetCalendarFailureRequest_(spreadsheet, current, "un evenement Calendar partiel n'a pas pu etre supprime");
         return { error: "l'evenement Calendar partiel n'a pas pu etre supprime" };
       }
@@ -728,7 +729,8 @@ function processPendingSessionConferences() {
   const sheet = getOrCreateSheet_(spreadsheet, CRM_SESSION_SHEET_NAME);
   const pendingSessions = getSheetRecordsFromSheet_(sheet, SESSION_COLUMNS)
     .filter((record) => normalizeValue_(record.data.format) === "online")
-    .filter((record) => normalizeValue_(record.data.calendar_conference_status) === "pending")
+    .filter((record) => ["pending", "failed_cleanup_pending", "failed_payment_cleanup_pending"]
+      .includes(normalizeValue_(record.data.calendar_conference_status)))
     .filter((record) => normalizeValue_(record.data.google_calendar_event_id))
     .filter((record) => !["cancelled", "no_show"].includes(normalizeValue_(record.data.session_status)));
   const errors = [];
@@ -747,8 +749,9 @@ function processPendingSessionConference_(spreadsheet, sessionId) {
   const result = withMeetConferenceState_(spreadsheet, sessionId, ({ sheet, record }) => {
     if (!record) return { skipped: true };
     const session = record.data;
+    const conferenceStatus = normalizeValue_(session.calendar_conference_status);
     if (normalizeValue_(session.format) !== "online" ||
-        normalizeValue_(session.calendar_conference_status) !== "pending" ||
+        !["pending", "failed_cleanup_pending", "failed_payment_cleanup_pending"].includes(conferenceStatus) ||
         !normalizeValue_(session.google_calendar_event_id) ||
         ["cancelled", "no_show"].includes(normalizeValue_(session.session_status))) {
       return { skipped: true };
@@ -757,6 +760,9 @@ function processPendingSessionConference_(spreadsheet, sessionId) {
     const eventId = normalizeValue_(session.google_calendar_event_id);
     let invitationSent = false;
     try {
+      if (["failed_cleanup_pending", "failed_payment_cleanup_pending"].includes(conferenceStatus)) {
+        throw new Error("nettoyage requis apres echec terminal Google Meet");
+      }
       if (!calendarId) throw new Error("le calendrier du tuteur n'est pas configure");
       const event = Calendar.Events.get(calendarId, eventId, { conferenceDataVersion: 1 });
       const meetUrl = getGoogleMeetUrl_(event);
@@ -813,7 +819,8 @@ function reconcilePendingMeetFailure_(spreadsheet, sessionId, failure) {
       return { skipped: true };
     }
     const current = record.data;
-    if (normalizeValue_(current.calendar_conference_status) !== "pending" ||
+    if (!["pending", "failed_cleanup_pending", "failed_payment_cleanup_pending"]
+      .includes(normalizeValue_(current.calendar_conference_status)) ||
         normalizeValue_(current.google_calendar_event_id) !== normalizeValue_(failure.eventId)) {
       // A later pass has already made this event ready or moved the session to
       // another durable event. Never overwrite or delete that current state.
@@ -859,12 +866,19 @@ function createPaymentRowsForScheduledSessions() {
     const row = sessionValues[rowIndex];
     const sessionId = normalizeValue_(row[sessionColumns.session_id]);
     const sessionStatus = normalizeValue_(row[sessionColumns.session_status]);
+    const session = rowToRecord_(row, SESSION_COLUMNS);
 
     if (!sessionId) {
       continue;
     }
 
     const existingPayment = existingSessionPayments.get(sessionId);
+    if (!isSessionPaymentEligible_(session)) {
+      if (existingPayment) {
+        voidUnpaidSessionPayments_(spreadsheet, sessionId, "Session not eligible for payment.");
+      }
+      continue;
+    }
     if (existingPayment) {
       if (normalizeValue_(existingPayment.data.payment_status) === "payment_requested" &&
           normalizeValue_(existingPayment.data.payment_method) === "stripe_checkout" &&
@@ -3790,7 +3804,11 @@ function reschedulePortalSession_(spreadsheet, payload) {
       return { ok: false, code: "SESSION_TIME_CONFLICT" };
     }
 
-    cancelCalendarEventForSession_(sessionRecord.data);
+    const calendarDeletion = cancelCalendarEventForSession_(sessionRecord.data);
+    if (!calendarDeletion.ok) {
+      appendCalendarDeletionFailureRequest_(spreadsheet, sessionRecord.data, "replanification", calendarDeletion.code);
+      return { ok: false, code: "SESSION_CALENDAR_DELETE_FAILED" };
+    }
     next = {
       ...sessionRecord.data,
       start_at: startAt.toISOString(),
@@ -3862,6 +3880,12 @@ function cancelPortalSession_(spreadsheet, payload) {
     return { ok: true, session_id: sessionId, cancellation_status: "review_required" };
   }
 
+  const calendarDeletion = cancelCalendarEventForSession_(sessionData);
+  if (!calendarDeletion.ok) {
+    appendCalendarDeletionFailureRequest_(spreadsheet, sessionData, "annulation", calendarDeletion.code);
+    return { ok: false, code: "SESSION_CALENDAR_DELETE_FAILED" };
+  }
+
   const next = {
     ...sessionData,
     session_status: "cancelled",
@@ -3871,8 +3895,6 @@ function cancelPortalSession_(spreadsheet, payload) {
   writeRecord_(getOrCreateSheet_(spreadsheet, CRM_SESSION_SHEET_NAME), SESSION_COLUMNS, sessionRecord.rowNumber, next);
   voidUnpaidSessionPayments_(spreadsheet, sessionId, reason);
   releasePlanCreditReservationForSession_(spreadsheet, sessionData, reason);
-  cancelCalendarEventForSession_(sessionData);
-
   return {
     ok: true,
     session_id: sessionId,
@@ -3962,52 +3984,218 @@ function voidUnpaidSessionPayments_(spreadsheet, sessionId, reason) {
   getSheetRecordsFromSheet_(sheet, PAYMENT_COLUMNS)
     .filter((record) => normalizeValue_(record.data.session_id) === sessionId)
     .filter((record) => !["paid", "refunded", "waived"].includes(normalizeValue_(record.data.payment_status)))
+    .filter((record) => normalizeValue_(record.data.payout_status) !== "held")
     .forEach((record) => writeRecord_(sheet, PAYMENT_COLUMNS, record.rowNumber, {
       ...record.data,
       payment_status: "waived",
+      checkout_url: "",
+      checkout_expires_at: "",
+      due_date: "",
       notes: [normalizeValue_(record.data.notes), `Session cancelled: ${reason}`].filter(Boolean).join(" | "),
       updated_at: new Date().toISOString(),
     }));
 }
 
-function cancelCalendarEventForSession_(session) {
-  const eventId = normalizeValue_(session.google_calendar_event_id);
-  if (!eventId) {
-    return false;
+function isSessionPaymentEligible_(session) {
+  const status = normalizeValue_(session && session.session_status);
+  const conferenceStatus = normalizeValue_(session && session.calendar_conference_status);
+  return ["confirmed", "calendar_created", "completed"].includes(status) &&
+    !["failed", "failed_cleanup_pending", "failed_payment_cleanup_pending"].includes(conferenceStatus);
+}
+
+function expireSessionCheckoutBeforeMeetCancellation_(spreadsheet, session) {
+  const sessionId = normalizeValue_(session && session.session_id);
+  if (!sessionId) return { ok: true, skipped: true, has_paid_checkout: false };
+
+  const paymentSheet = getOrCreateSheet_(spreadsheet, CRM_PAYMENT_SHEET_NAME);
+  const activeCheckouts = getSheetRecordsFromSheet_(paymentSheet, PAYMENT_COLUMNS)
+    .filter((record) => normalizeValue_(record.data.session_id) === sessionId)
+    .filter((record) => normalizeValue_(record.data.stripe_checkout_session_id))
+    .filter((record) => !["paid", "refunded", "waived"].includes(normalizeValue_(record.data.payment_status)))
+    .filter((record) => normalizeValue_(record.data.payout_status) !== "held");
+
+  let hasPaidCheckout = false;
+  let requiresReconciliation = false;
+  for (const paymentRecord of activeCheckouts) {
+    const expiry = expirePersistedCheckoutSession_(paymentRecord.data);
+    if (expiry.checkout_completed) {
+      const held = holdCompletedCheckoutForMeetFailure_(spreadsheet, paymentSheet, paymentRecord, session, expiry);
+      hasPaidCheckout = hasPaidCheckout || held.paid;
+      requiresReconciliation = true;
+      continue;
+    }
+    if (!expiry.ok) {
+      return {
+        ok: false,
+        code: normalizeValue_(expiry.code) || "STRIPE_CHECKOUT_EXPIRY_UNCONFIRMED",
+        payment_id: paymentRecord.data.payment_id,
+      };
+    }
   }
 
-  try {
-    const calendar = resolveCalendarForTutor_(SpreadsheetApp.getActiveSpreadsheet(), session.tutor_id);
-    const event = calendar ? calendar.getEventById(eventId) : null;
-    if (event) {
-      event.deleteEvent();
-    }
-    return true;
-  } catch (error) {
-    return false;
+  return { ok: true, has_paid_checkout: hasPaidCheckout, requires_reconciliation: requiresReconciliation };
+}
+
+function expirePersistedCheckoutSession_(payment) {
+  const checkoutSessionId = normalizeValue_(payment && payment.stripe_checkout_session_id);
+  if (!checkoutSessionId) return { ok: true, skipped: true };
+
+  const properties = PropertiesService.getScriptProperties();
+  const paymentSessionSecret = normalizeValue_(properties.getProperty(PAYMENT_SESSION_SECRET_PROPERTY));
+  const expiryEndpoint = normalizeValue_(properties.getProperty(PAYMENT_CHECKOUT_EXPIRE_ENDPOINT_PROPERTY)) ||
+    "https://methode-secondaire.vercel.app/api/expire-checkout-session";
+  if (!paymentSessionSecret || !/^https:\/\//i.test(expiryEndpoint)) {
+    return { ok: false, code: "STRIPE_CHECKOUT_EXPIRY_UNCONFIRMED" };
   }
+
+  let response;
+  try {
+    response = UrlFetchApp.fetch(expiryEndpoint, {
+      method: "post",
+      contentType: "application/json",
+      payload: JSON.stringify({
+        payment_session_secret: paymentSessionSecret,
+        checkout_session_id: checkoutSessionId,
+      }),
+      muteHttpExceptions: true,
+    });
+  } catch (error) {
+    return { ok: false, code: "STRIPE_CHECKOUT_EXPIRY_UNCONFIRMED" };
+  }
+
+  let outcome = {};
+  try {
+    outcome = JSON.parse(response.getContentText());
+  } catch (error) {
+    return { ok: false, code: "STRIPE_CHECKOUT_EXPIRY_UNCONFIRMED" };
+  }
+
+  if (response.getResponseCode() >= 200 && response.getResponseCode() < 300 && outcome.ok &&
+      normalizeValue_(outcome.checkout_session_id) === checkoutSessionId &&
+      normalizeValue_(outcome.status) === "expired") {
+    return { ok: true, expired: true, already_expired: Boolean(outcome.already_expired) };
+  }
+  if (normalizeValue_(outcome.code) === "STRIPE_CHECKOUT_ALREADY_COMPLETED" &&
+      normalizeValue_(outcome.checkout_session_id) === checkoutSessionId) {
+    return {
+      ok: false,
+      checkout_completed: true,
+      code: "STRIPE_CHECKOUT_ALREADY_COMPLETED",
+      payment_status: normalizeValue_(outcome.payment_status),
+    };
+  }
+  return { ok: false, code: "STRIPE_CHECKOUT_EXPIRY_UNCONFIRMED" };
+}
+
+function holdCompletedCheckoutForMeetFailure_(spreadsheet, paymentSheet, paymentRecord, session, outcome) {
+  const payment = paymentRecord.data;
+  const confirmedPaid = normalizeValue_(outcome && outcome.payment_status) === "paid";
+  const reconciliationNote = "Stripe Checkout termine apres l'echec Google Meet; reconciliation equipe requise avant tout remboursement ou ajustement.";
+  const hasReconciliationNote = normalizeValue_(payment.notes).includes(reconciliationNote);
+  const nextPayment = {
+    ...payment,
+    payment_status: confirmedPaid ? "paid" : "overdue",
+    payout_status: "held",
+    checkout_url: "",
+    checkout_expires_at: "",
+    due_date: "",
+    notes: hasReconciliationNote
+      ? normalizeValue_(payment.notes)
+      : [normalizeValue_(payment.notes), reconciliationNote].filter(Boolean).join(" | "),
+    updated_at: new Date().toISOString(),
+  };
+  writeRecord_(paymentSheet, PAYMENT_COLUMNS, paymentRecord.rowNumber, nextPayment);
+  if (!hasReconciliationNote) {
+    appendPortalRequestRecord_(spreadsheet, {
+      role: "operator",
+      email: normalizeEmail_(payment.email),
+      related_id: normalizeValue_(payment.payment_id),
+      request_type: "payment_question",
+      subject: "Reconciliation requise: paiement apres echec Google Meet",
+      message: `${reconciliationNote} Paiement ${normalizeValue_(payment.payment_id)}, seance ${normalizeValue_(session && session.session_id)}.`,
+    });
+  }
+  return { ok: true, paid: confirmedPaid };
+}
+
+function cancelCalendarEventForSession_(session) {
+  return deleteCalendarEventForSession_(session);
 }
 
 function deleteCalendarEventForExpiredSession_(session) {
+  return deleteCalendarEventForSession_(session);
+}
+
+function deleteCalendarEventForSession_(session) {
   const eventId = normalizeValue_(session && session.google_calendar_event_id);
   if (!eventId) {
     return { ok: true, already_deleted: true };
   }
 
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  if (isAdvancedCalendarEvent_(session)) {
+    return deleteAdvancedCalendarEvent_(spreadsheet, session, eventId);
+  }
+
+  return deleteLegacyCalendarEvent_(spreadsheet, session, eventId);
+}
+
+function isAdvancedCalendarEvent_(session) {
+  return ["pending", "ready", "failed", "failed_cleanup_pending", "failed_payment_cleanup_pending"]
+    .includes(normalizeValue_(session && session.calendar_conference_status));
+}
+
+function deleteAdvancedCalendarEvent_(spreadsheet, session, eventId) {
+  const calendarId = resolveTutorCalendarId_(spreadsheet, session || {});
+  if (!calendarId) {
+    return { ok: false, code: "CALENDAR_UNAVAILABLE" };
+  }
+
   try {
-    const calendar = resolveCalendarForTutor_(SpreadsheetApp.getActiveSpreadsheet(), session.tutor_id);
+    Calendar.Events.remove(calendarId, eventId, {
+      sendUpdates: normalizeValue_(session && session.calendar_conference_status) === "ready" ? "all" : "none",
+    });
+    return { ok: true, deleted: true };
+  } catch (error) {
+    if (isCalendarNotFoundError_(error)) {
+      return { ok: true, already_deleted: true };
+    }
+    return { ok: false, code: "CALENDAR_DELETE_FAILED" };
+  }
+}
+
+function deleteLegacyCalendarEvent_(spreadsheet, session, eventId) {
+  try {
+    const calendar = resolveCalendarForTutor_(spreadsheet, session && session.tutor_id);
     if (!calendar) {
       return { ok: false, code: "CALENDAR_UNAVAILABLE" };
     }
     const event = calendar.getEventById(eventId);
     if (!event) {
-      return { ok: true, already_deleted: true };
+      return { ok: false, code: "CALENDAR_EVENT_NOT_FOUND" };
     }
     event.deleteEvent();
     return { ok: true, deleted: true };
   } catch (error) {
     return { ok: false, code: "CALENDAR_DELETE_FAILED" };
   }
+}
+
+function isCalendarNotFoundError_(error) {
+  const errorText = String(error && (error.message || error)).toLowerCase();
+  const errorCode = Number(error && (error.code || error.status || error.responseCode));
+  return errorCode === 404 || /\b404\b/.test(errorText) || /already (?:deleted|gone)/.test(errorText);
+}
+
+function appendCalendarDeletionFailureRequest_(spreadsheet, session, action, code) {
+  appendPortalRequestRecord_(spreadsheet, {
+    role: "operator",
+    email: "",
+    related_id: normalizeValue_(session && session.session_id),
+    request_type: "technical_help",
+    subject: `Calendar a verifier - ${normalizeValue_(session && session.tutor_name) || "tuteur"}`,
+    message: `La ${action} de la seance ${normalizeValue_(session && session.session_id)} est bloquee: suppression Calendar ${normalizeValue_(code) || "impossible"}. Nouvelle tentative requise avant de modifier le CRM.`,
+  });
 }
 
 function markPortalPaymentPaidFromWebhook_(spreadsheet, payload) {
@@ -4065,6 +4253,37 @@ function markPortalPaymentPaidFromWebhook_(spreadsheet, payload) {
       notes: [normalizeValue_(paymentRecord.data.notes), `Stripe Checkout ${stripeSessionId}`].filter(Boolean).join(" | "),
       updated_at: new Date().toISOString(),
     };
+    const sessionSheet = getOrCreateSheet_(spreadsheet, CRM_SESSION_SHEET_NAME);
+    const sessionRecord = findSheetRecordById_(sessionSheet, SESSION_COLUMNS, "session_id", paymentRecord.data.session_id);
+    if (normalizeValue_(updatedPayment.session_id) && (!sessionRecord || !isSessionPaymentEligible_(sessionRecord.data))) {
+      const reconciliationNote = "Paiement Stripe recu apres une seance annulee ou indisponible; reconciliation equipe requise.";
+      const paymentForReconciliation = {
+        ...updatedPayment,
+        payout_status: "held",
+        checkout_url: "",
+        checkout_expires_at: "",
+        due_date: "",
+        notes: [normalizeValue_(updatedPayment.notes), reconciliationNote].filter(Boolean).join(" | "),
+        updated_at: new Date().toISOString(),
+      };
+      writeRecord_(paymentSheet, PAYMENT_COLUMNS, paymentRecord.rowNumber, paymentForReconciliation);
+      appendPortalRequestRecord_(spreadsheet, {
+        role: "operator",
+        email: normalizeEmail_(updatedPayment.email),
+        related_id: paymentId,
+        request_type: "payment_question",
+        subject: "Reconciliation requise: paiement apres seance indisponible",
+        message: `${reconciliationNote} Paiement ${paymentId}, seance ${normalizeValue_(updatedPayment.session_id)}.`,
+      });
+      return {
+        ok: true,
+        payment_id: paymentId,
+        session_id: updatedPayment.session_id,
+        requires_reconciliation: true,
+        receipt_sent: false,
+        credit_grant: { granted: false, reconciliation_required: true },
+      };
+    }
     writeRecord_(paymentSheet, PAYMENT_COLUMNS, paymentRecord.rowNumber, updatedPayment);
 
     if (normalizeValue_(updatedPayment.plan_enrollment_id)) {
@@ -4128,8 +4347,6 @@ function markPortalPaymentPaidFromWebhook_(spreadsheet, payload) {
       }
     }
 
-    const sessionSheet = getOrCreateSheet_(spreadsheet, CRM_SESSION_SHEET_NAME);
-    const sessionRecord = findSheetRecordById_(sessionSheet, SESSION_COLUMNS, "session_id", paymentRecord.data.session_id);
     if (sessionRecord) {
       writeRecord_(sessionSheet, SESSION_COLUMNS, sessionRecord.rowNumber, {
         ...sessionRecord.data,
@@ -4255,10 +4472,14 @@ function expireLinkedSessionForPayment_(spreadsheet, payment, reason) {
     const calendarDeletion = deleteCalendarEventForExpiredSession_(currentSession.data);
     if (!calendarDeletion.ok) {
       const failureNote = "Echec de suppression Calendar pendant l'expiration du paiement; nouvelle tentative automatique.";
+      const hasFailureNote = normalizeValue_(currentSession.data.notes).includes(failureNote);
+      if (!hasFailureNote) {
+        appendCalendarDeletionFailureRequest_(spreadsheet, currentSession.data, "expiration du paiement", calendarDeletion.code);
+      }
       writeRecord_(sessionSheet, SESSION_COLUMNS, currentSession.rowNumber, {
         ...currentSession.data,
         updated_at: new Date().toISOString(),
-        notes: normalizeValue_(currentSession.data.notes).includes(failureNote)
+        notes: hasFailureNote
           ? normalizeValue_(currentSession.data.notes)
           : [normalizeValue_(currentSession.data.notes), failureNote].filter(Boolean).join(" | "),
       });
@@ -5613,7 +5834,9 @@ function deleteParentLeadCascade_(spreadsheet, lead) {
   const sessionRecords = getSheetRecords_(spreadsheet, CRM_SESSION_SHEET_NAME, SESSION_COLUMNS)
     .filter((record) => normalizeValue_(record.lead_id) === leadId || normalizeEmail_(record.parent_email) === email);
   const sessionIds = new Set(sessionRecords.map((record) => normalizeValue_(record.session_id)).filter(Boolean));
-  let deleted = deleteTestSessions_(spreadsheet, sessionIds).deleted;
+  const sessionDeletion = deleteTestSessions_(spreadsheet, sessionIds);
+  if (!sessionDeletion.ok) return sessionDeletion;
+  let deleted = sessionDeletion.deleted;
 
   deleted += deleteMatchingSheetRecords_(getOrCreateSheet_(spreadsheet, CRM_PAYMENT_SHEET_NAME), PAYMENT_COLUMNS, (record) =>
     normalizeValue_(record.lead_id) === leadId || normalizeEmail_(record.email) === email);
@@ -5643,7 +5866,9 @@ function deleteTutorCascade_(spreadsheet, tutor) {
   const sessionRecords = getSheetRecords_(spreadsheet, CRM_SESSION_SHEET_NAME, SESSION_COLUMNS)
     .filter((record) => normalizeValue_(record.tutor_id) === tutorId || normalizeEmail_(record.tutor_calendar_email) === email);
   const sessionIds = new Set(sessionRecords.map((record) => normalizeValue_(record.session_id)).filter(Boolean));
-  let deleted = deleteTestSessions_(spreadsheet, sessionIds).deleted;
+  const sessionDeletion = deleteTestSessions_(spreadsheet, sessionIds);
+  if (!sessionDeletion.ok) return sessionDeletion;
+  let deleted = sessionDeletion.deleted;
 
   deleted += deleteMatchingSheetRecords_(getOrCreateSheet_(spreadsheet, CRM_TUTOR_AVAILABILITY_SHEET_NAME), AVAILABILITY_COLUMNS, (record) =>
     normalizeValue_(record.tutor_id) === tutorId);
@@ -5684,7 +5909,12 @@ function deleteTestSessions_(spreadsheet, sessionIds) {
     getOrCreateSheet_(spreadsheet, CRM_SESSION_SHEET_NAME),
     SESSION_COLUMNS,
   ).filter((record) => sessionIds.has(normalizeValue_(record.data.session_id)));
-  sessionRecords.forEach((record) => cancelCalendarEventForSession_(record.data));
+  const calendarDeletion = sessionRecords
+    .map((record) => cancelCalendarEventForSession_(record.data))
+    .find((result) => !result.ok);
+  if (calendarDeletion) {
+    return { ok: false, code: calendarDeletion.code || "CALENDAR_DELETE_FAILED", deleted: 0 };
+  }
 
   let deleted = deleteMatchingSheetRecords_(getOrCreateSheet_(spreadsheet, CRM_PAYMENT_SHEET_NAME), PAYMENT_COLUMNS, (record) =>
     sessionIds.has(normalizeValue_(record.session_id)));
@@ -6390,11 +6620,15 @@ function sendPaymentReceiptEmail_(payment, session) {
 
 function getCheckoutPaymentUrl_(payment) {
   const checkoutUrl = normalizeValue_(payment && payment.checkout_url);
+  if (normalizeValue_(payment && payment.payment_status) !== "payment_requested") {
+    return "";
+  }
   return /^https:\/\/checkout\.stripe\.com\/c\//.test(checkoutUrl) ? checkoutUrl : "";
 }
 
 function issueCheckoutForPayment_(spreadsheet, paymentRecord, options) {
   const paymentId = normalizeValue_(paymentRecord && paymentRecord.payment_id);
+  const sessionId = normalizeValue_(paymentRecord && paymentRecord.session_id);
   const email = normalizeEmail_(paymentRecord && paymentRecord.email);
   const amountCad = Number(paymentRecord && paymentRecord.amount_cad);
   const paymentStatus = normalizeValue_(paymentRecord && paymentRecord.payment_status);
@@ -6414,6 +6648,17 @@ function issueCheckoutForPayment_(spreadsheet, paymentRecord, options) {
   }
   if (paymentStatus !== "payment_requested" && paymentStatus !== "overdue") {
     return { ok: false, code: "PAYMENT_CHECKOUT_NOT_ACTIONABLE" };
+  }
+  if (sessionId) {
+    const sessionRecord = findSheetRecordById_(
+      getOrCreateSheet_(spreadsheet, CRM_SESSION_SHEET_NAME),
+      SESSION_COLUMNS,
+      "session_id",
+      sessionId,
+    );
+    if (!sessionRecord || !isSessionPaymentEligible_(sessionRecord.data)) {
+      return { ok: false, code: "SESSION_PAYMENT_NOT_ACTIONABLE" };
+    }
   }
   if (!authorizedReissue && existingUrl && existingExpiry && existingExpiry.getTime() > now.getTime()) {
     return {
@@ -7861,29 +8106,78 @@ function appendMeetUrlToCalendarDescription_(description, meetUrl) {
 }
 
 function markSessionConferenceFailed_(spreadsheet, sheet, rowNumber, session, errorMessage, eventIdOverride) {
-  const alreadyFailed = normalizeValue_(session.calendar_conference_status) === "failed";
+  const alreadyFailed = ["failed", "failed_cleanup_pending", "failed_payment_cleanup_pending"]
+    .includes(normalizeValue_(session.calendar_conference_status));
   const eventId = normalizeValue_(eventIdOverride) || normalizeValue_(session.google_calendar_event_id);
-  deleteMeetEventSafely_(spreadsheet, session, eventId);
-  writeRecord_(sheet, SESSION_COLUMNS, rowNumber, {
-    ...session,
-    google_meet_url: "",
-    calendar_conference_status: "failed",
-    updated_at: new Date().toISOString(),
-  });
+  const calendarDeletion = deleteMeetEventSafely_(spreadsheet, session, eventId);
+  if (!calendarDeletion.ok) {
+    const cleanupNote = "Nettoyage Calendar requis avant annulation de la seance.";
+    const hasCleanupNote = normalizeValue_(session.notes).includes(cleanupNote);
+    writeRecord_(sheet, SESSION_COLUMNS, rowNumber, {
+      ...session,
+      google_meet_url: "",
+      calendar_conference_status: "failed_cleanup_pending",
+      updated_at: new Date().toISOString(),
+      notes: hasCleanupNote ? normalizeValue_(session.notes) : [normalizeValue_(session.notes), cleanupNote].filter(Boolean).join(" | "),
+    });
+    if (!hasCleanupNote) {
+      appendCalendarDeletionFailureRequest_(spreadsheet, session, "annulation apres echec Google Meet", calendarDeletion.code);
+    }
+    return calendarDeletion;
+  }
+  const checkoutExpiry = expireSessionCheckoutBeforeMeetCancellation_(spreadsheet, session);
+  if (!checkoutExpiry.ok) {
+    const cleanupNote = "Expiration Stripe requise avant annulation de la seance.";
+    const hasCleanupNote = normalizeValue_(session.notes).includes(cleanupNote);
+    writeRecord_(sheet, SESSION_COLUMNS, rowNumber, {
+      ...session,
+      google_meet_url: "",
+      calendar_conference_status: "failed_payment_cleanup_pending",
+      updated_at: new Date().toISOString(),
+      notes: hasCleanupNote ? normalizeValue_(session.notes) : [normalizeValue_(session.notes), cleanupNote].filter(Boolean).join(" | "),
+    });
+    if (!hasCleanupNote) {
+      appendPortalRequestRecord_(spreadsheet, {
+        role: "operator",
+        email: "",
+        related_id: normalizeValue_(session.session_id),
+        request_type: "technical_help",
+        subject: "Stripe a verifier avant annulation de seance",
+        message: `La seance ${normalizeValue_(session.session_id)} reste bloquee: le Checkout Stripe ${normalizeValue_(checkoutExpiry.payment_id) || "associe"} n'est pas confirme expire (${normalizeValue_(checkoutExpiry.code) || "STRIPE_CHECKOUT_EXPIRY_UNCONFIRMED"}).`,
+      });
+    }
+    return checkoutExpiry;
+  }
+  const cancelled = cancelSessionForMeetFailure_(spreadsheet, sheet, rowNumber, session, errorMessage, checkoutExpiry);
   if (!alreadyFailed) {
     appendMeetCalendarFailureRequest_(spreadsheet, session, errorMessage);
   }
+  return cancelled;
+}
+
+function cancelSessionForMeetFailure_(spreadsheet, sheet, rowNumber, session, errorMessage, checkoutExpiry) {
+  const reason = `Seance annulee: Google Meet indisponible. ${normalizeValue_(errorMessage)}`;
+  voidUnpaidSessionPayments_(spreadsheet, normalizeValue_(session.session_id), reason);
+  releasePlanCreditReservationForSession_(spreadsheet, session, reason);
+  writeRecord_(sheet, SESSION_COLUMNS, rowNumber, {
+    ...session,
+    session_status: "cancelled",
+    payment_status: normalizeValue_(session.payment_status) === "paid" || Boolean(checkoutExpiry && checkoutExpiry.has_paid_checkout)
+      ? "paid"
+      : "waived",
+    google_calendar_event_id: "",
+    google_meet_url: "",
+    calendar_conference_status: "failed",
+    calendar_invites_sent_at: "",
+    updated_at: new Date().toISOString(),
+    notes: [normalizeValue_(session.notes), reason].filter(Boolean).join(" | "),
+  });
+  return { ok: true, cancelled: true };
 }
 
 function deleteMeetEventSafely_(spreadsheet, session, eventId) {
-  const calendarId = resolveTutorCalendarId_(spreadsheet, session);
-  if (!calendarId || !normalizeValue_(eventId)) return true;
-  try {
-    Calendar.Events.remove(calendarId, eventId, { sendUpdates: "none" });
-    return true;
-  } catch (error) {
-    return false;
-  }
+  if (!normalizeValue_(eventId)) return { ok: true, already_deleted: true };
+  return deleteAdvancedCalendarEvent_(spreadsheet, session || {}, normalizeValue_(eventId));
 }
 
 function appendMeetCalendarFailureRequest_(spreadsheet, session, errorMessage) {

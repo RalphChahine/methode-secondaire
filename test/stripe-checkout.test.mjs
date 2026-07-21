@@ -6,6 +6,7 @@ import test from "node:test"
 
 import { classifyStripeCheckoutEvent, createCheckoutRequest } from "../api/lib/stripe-checkout.mjs"
 import createCheckoutSession from "../api/create-checkout-session.js"
+import expireCheckoutSession from "../api/expire-checkout-session.js"
 import stripeWebhook from "../api/stripe-webhook.js"
 
 test("classifies a paid Checkout completion for its payment", () => {
@@ -285,6 +286,228 @@ test("rejects Checkout requests when server configuration is missing", async () 
 
   assert.equal(response.statusCode, 503)
   assert.deepEqual(response.payload, { ok: false, code: "PAYMENT_CHECKOUT_NOT_CONFIGURED" })
+})
+
+test("expires an open Checkout Session only for an authenticated internal POST", async () => {
+  const originalFetch = globalThis.fetch
+  const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET
+  const originalStripeSecret = process.env.STRIPE_SECRET_KEY
+  const response = makeResponse()
+  const fetchCalls = []
+
+  process.env.PAYMENT_SESSION_SECRET = "internal-secret"
+  process.env.STRIPE_SECRET_KEY = "sk_test_secret"
+  globalThis.fetch = async (...args) => {
+    fetchCalls.push(args)
+    return {
+      ok: true,
+      json: async () => ({ id: "cs_test_123", status: "expired", payment_status: "unpaid" }),
+    }
+  }
+
+  try {
+    await expireCheckoutSession({
+      method: "POST",
+      body: {
+        payment_session_secret: "internal-secret",
+        checkout_session_id: "cs_test_123",
+      },
+    }, response)
+  } finally {
+    globalThis.fetch = originalFetch
+    restoreEnvironment("PAYMENT_SESSION_SECRET", originalPaymentSecret)
+    restoreEnvironment("STRIPE_SECRET_KEY", originalStripeSecret)
+  }
+
+  assert.equal(fetchCalls.length, 1)
+  const [stripeUrl, options] = fetchCalls[0]
+  assert.equal(stripeUrl, "https://api.stripe.com/v1/checkout/sessions/cs_test_123/expire")
+  assert.equal(options.method, "POST")
+  assert.equal(options.headers.Authorization, `Basic ${Buffer.from("sk_test_secret:").toString("base64")}`)
+  assert.equal(options.headers["Content-Type"], "application/x-www-form-urlencoded")
+  assert.equal(options.body, "")
+  assert.deepEqual(response.payload, {
+    ok: true,
+    checkout_session_id: "cs_test_123",
+    status: "expired",
+    already_expired: false,
+  })
+})
+
+test("rejects unauthenticated Checkout expiry requests without calling Stripe", async () => {
+  const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET
+  const originalStripeSecret = process.env.STRIPE_SECRET_KEY
+  const originalFetch = globalThis.fetch
+  const response = makeResponse()
+  let fetchCalled = false
+
+  process.env.PAYMENT_SESSION_SECRET = "internal-secret"
+  process.env.STRIPE_SECRET_KEY = "sk_test_secret"
+  globalThis.fetch = async () => {
+    fetchCalled = true
+    throw new Error("Stripe should not be called")
+  }
+
+  try {
+    await expireCheckoutSession({
+      method: "POST",
+      body: { payment_session_secret: "wrong", checkout_session_id: "cs_test_123" },
+    }, response)
+  } finally {
+    globalThis.fetch = originalFetch
+    restoreEnvironment("PAYMENT_SESSION_SECRET", originalPaymentSecret)
+    restoreEnvironment("STRIPE_SECRET_KEY", originalStripeSecret)
+  }
+
+  assert.equal(fetchCalled, false)
+  assert.equal(response.statusCode, 401)
+  assert.deepEqual(response.payload, { ok: false, code: "UNAUTHORIZED_PAYMENT_SESSION" })
+})
+
+test("rejects invalid Checkout expiry input before calling Stripe", async () => {
+  const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET
+  const originalStripeSecret = process.env.STRIPE_SECRET_KEY
+  const originalFetch = globalThis.fetch
+  const response = makeResponse()
+  let fetchCalled = false
+
+  process.env.PAYMENT_SESSION_SECRET = "internal-secret"
+  process.env.STRIPE_SECRET_KEY = "sk_test_secret"
+  globalThis.fetch = async () => {
+    fetchCalled = true
+    throw new Error("Stripe should not be called")
+  }
+
+  try {
+    await expireCheckoutSession({
+      method: "POST",
+      body: { payment_session_secret: "internal-secret", checkout_session_id: "not-a-stripe-session" },
+    }, response)
+  } finally {
+    globalThis.fetch = originalFetch
+    restoreEnvironment("PAYMENT_SESSION_SECRET", originalPaymentSecret)
+    restoreEnvironment("STRIPE_SECRET_KEY", originalStripeSecret)
+  }
+
+  assert.equal(fetchCalled, false)
+  assert.equal(response.statusCode, 400)
+  assert.deepEqual(response.payload, { ok: false, code: "PAYMENT_CHECKOUT_EXPIRY_DETAILS_REQUIRED" })
+})
+
+test("rejects non-POST Checkout expiry requests", async () => {
+  const response = makeResponse()
+
+  await expireCheckoutSession({ method: "GET" }, response)
+
+  assert.equal(response.statusCode, 405)
+  assert.equal(response.headers.Allow, "POST")
+  assert.deepEqual(response.payload, { ok: false, code: "METHOD_NOT_ALLOWED" })
+})
+
+test("reports a completed Checkout for reconciliation when Stripe cannot expire it", async () => {
+  const originalFetch = globalThis.fetch
+  const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET
+  const originalStripeSecret = process.env.STRIPE_SECRET_KEY
+  const response = makeResponse()
+  const fetchCalls = []
+
+  process.env.PAYMENT_SESSION_SECRET = "internal-secret"
+  process.env.STRIPE_SECRET_KEY = "sk_test_secret"
+  globalThis.fetch = async (...args) => {
+    fetchCalls.push(args)
+    if (fetchCalls.length === 1) {
+      return { ok: false, status: 400, json: async () => ({ error: { message: "Session is complete" } }) }
+    }
+    return { ok: true, json: async () => ({ id: "cs_test_123", status: "complete", payment_status: "paid" }) }
+  }
+
+  try {
+    await expireCheckoutSession({
+      method: "POST",
+      body: { payment_session_secret: "internal-secret", checkout_session_id: "cs_test_123" },
+    }, response)
+  } finally {
+    globalThis.fetch = originalFetch
+    restoreEnvironment("PAYMENT_SESSION_SECRET", originalPaymentSecret)
+    restoreEnvironment("STRIPE_SECRET_KEY", originalStripeSecret)
+  }
+
+  assert.equal(fetchCalls.length, 2)
+  assert.equal(fetchCalls[1][0], "https://api.stripe.com/v1/checkout/sessions/cs_test_123")
+  assert.deepEqual(response.payload, {
+    ok: false,
+    code: "STRIPE_CHECKOUT_ALREADY_COMPLETED",
+    checkout_session_id: "cs_test_123",
+    checkout_status: "complete",
+    payment_status: "paid",
+  })
+})
+
+test("accepts an already expired Checkout only after Stripe confirms its terminal status", async () => {
+  const originalFetch = globalThis.fetch
+  const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET
+  const originalStripeSecret = process.env.STRIPE_SECRET_KEY
+  const response = makeResponse()
+  const fetchCalls = []
+
+  process.env.PAYMENT_SESSION_SECRET = "internal-secret"
+  process.env.STRIPE_SECRET_KEY = "sk_test_secret"
+  globalThis.fetch = async (...args) => {
+    fetchCalls.push(args)
+    if (fetchCalls.length === 1) {
+      return { ok: false, status: 400, json: async () => ({ error: { message: "Session already expired" } }) }
+    }
+    return { ok: true, json: async () => ({ id: "cs_test_123", status: "expired", payment_status: "unpaid" }) }
+  }
+
+  try {
+    await expireCheckoutSession({
+      method: "POST",
+      body: { payment_session_secret: "internal-secret", checkout_session_id: "cs_test_123" },
+    }, response)
+  } finally {
+    globalThis.fetch = originalFetch
+    restoreEnvironment("PAYMENT_SESSION_SECRET", originalPaymentSecret)
+    restoreEnvironment("STRIPE_SECRET_KEY", originalStripeSecret)
+  }
+
+  assert.equal(fetchCalls.length, 2)
+  assert.deepEqual(response.payload, {
+    ok: true,
+    checkout_session_id: "cs_test_123",
+    status: "expired",
+    already_expired: true,
+  })
+})
+
+test("does not claim Checkout expiry when Stripe cannot confirm a terminal state", async () => {
+  const originalFetch = globalThis.fetch
+  const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET
+  const originalStripeSecret = process.env.STRIPE_SECRET_KEY
+  const response = makeResponse()
+  const fetchCalls = []
+
+  process.env.PAYMENT_SESSION_SECRET = "internal-secret"
+  process.env.STRIPE_SECRET_KEY = "sk_test_secret"
+  globalThis.fetch = async (...args) => {
+    fetchCalls.push(args)
+    return { ok: false, status: 503, json: async () => ({ error: { message: "Stripe unavailable" } }) }
+  }
+
+  try {
+    await expireCheckoutSession({
+      method: "POST",
+      body: { payment_session_secret: "internal-secret", checkout_session_id: "cs_test_123" },
+    }, response)
+  } finally {
+    globalThis.fetch = originalFetch
+    restoreEnvironment("PAYMENT_SESSION_SECRET", originalPaymentSecret)
+    restoreEnvironment("STRIPE_SECRET_KEY", originalStripeSecret)
+  }
+
+  assert.equal(fetchCalls.length, 2)
+  assert.equal(response.statusCode, 502)
+  assert.deepEqual(response.payload, { ok: false, code: "STRIPE_CHECKOUT_EXPIRY_UNCONFIRMED" })
 })
 
 test("keeps the Checkout boundary static contract green", () => {
