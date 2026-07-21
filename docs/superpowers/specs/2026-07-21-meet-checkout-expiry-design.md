@@ -97,4 +97,3 @@ Les valeurs existantes sont conservées. Les anciennes séances avec un lien de 
 6. Une expiration de forfait marque le paiement en retard sans annuler de séance non liée.
 7. Le portail parent et le portail tuteur n'exposent le lien Meet que pour la séance autorisée.
 8. Les tests couvrent le succès, l'expiration, l'idempotence, le refus de calendrier non prêt et les libellés français/anglais.
-
