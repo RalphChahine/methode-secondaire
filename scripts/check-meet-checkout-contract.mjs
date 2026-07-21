@@ -49,6 +49,7 @@ async function main() {
   expect(crmCode.includes("google_meet_url"), "CRM: Google Meet URL persistence is missing")
   expect(crmCode.includes("processPendingSessionConferences"), "CRM: pending Google Meet conference processing is missing")
   expect(crmCode.includes("withMeetConferenceState_"), "CRM: Meet creation is not protected by a session lock")
+  expect(crmCode.includes("reconcileMeetCreationFailure_"), "CRM: Meet creation failure is not reconciled under lock")
   expect(crmCode.includes("extendedProperties"), "CRM: calendar invitation idempotency marker is missing")
   expect(crmCode.includes("meet_invitation_sent"), "CRM: calendar invitation marker is missing")
   expect(crmCode.includes("google_meet_url: record.google_meet_url"), "CRM: portal session Meet URL is not exposed")

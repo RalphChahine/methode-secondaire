@@ -678,7 +678,7 @@ function createCalendarEventForConfirmedSession_(spreadsheet, sessionId) {
     }
   });
   if (result?.session && normalizeValue_(result.session.format) === "online") {
-    markSessionConferenceFailed_(spreadsheet, result.sheet, result.rowNumber, result.session, result.error, result.eventId);
+    return reconcileMeetCreationFailure_(spreadsheet, sessionId, result);
   }
   return result || { skipped: true };
 }
@@ -693,6 +693,30 @@ function withMeetConferenceState_(spreadsheet, sessionId, callback) {
   } finally {
     lock.releaseLock();
   }
+}
+
+function reconcileMeetCreationFailure_(spreadsheet, sessionId, failure) {
+  return withMeetConferenceState_(spreadsheet, sessionId, ({ sheet, record }) => {
+    if (!record) {
+      deleteMeetEventSafely_(spreadsheet, failure.session, failure.eventId);
+      return { skipped: true };
+    }
+    const current = record.data;
+    const currentEventId = normalizeValue_(current.google_calendar_event_id);
+    const partialEventId = normalizeValue_(failure.eventId);
+    if (currentEventId) {
+      if (partialEventId && partialEventId !== currentEventId &&
+          !deleteMeetEventSafely_(spreadsheet, failure.session, partialEventId)) {
+        appendMeetCalendarFailureRequest_(spreadsheet, current, "un evenement Calendar partiel n'a pas pu etre supprime");
+        return { error: "l'evenement Calendar partiel n'a pas pu etre supprime" };
+      }
+      // A concurrent execution already persisted an event (or the original
+      // write committed before throwing). Preserve that durable state.
+      return { skipped: true };
+    }
+    markSessionConferenceFailed_(spreadsheet, sheet, record.rowNumber, current, failure.error, partialEventId);
+    return { error: failure.error };
+  }) || { skipped: true };
 }
 
 function processPendingSessionConferences() {
@@ -7471,15 +7495,8 @@ function appendMeetUrlToCalendarDescription_(description, meetUrl) {
 
 function markSessionConferenceFailed_(spreadsheet, sheet, rowNumber, session, errorMessage, eventIdOverride) {
   const alreadyFailed = normalizeValue_(session.calendar_conference_status) === "failed";
-  const calendarId = resolveTutorCalendarId_(spreadsheet, session);
   const eventId = normalizeValue_(eventIdOverride) || normalizeValue_(session.google_calendar_event_id);
-  if (calendarId && eventId) {
-    try {
-      Calendar.Events.remove(calendarId, eventId, { sendUpdates: "none" });
-    } catch (error) {
-      // Keep the CRM failure visible even when a partially-created event cannot be removed.
-    }
-  }
+  deleteMeetEventSafely_(spreadsheet, session, eventId);
   writeRecord_(sheet, SESSION_COLUMNS, rowNumber, {
     ...session,
     google_meet_url: "",
@@ -7487,15 +7504,30 @@ function markSessionConferenceFailed_(spreadsheet, sheet, rowNumber, session, er
     updated_at: new Date().toISOString(),
   });
   if (!alreadyFailed) {
-    appendPortalRequestRecord_(spreadsheet, {
-      role: "operator",
-      email: "",
-      related_id: normalizeValue_(session.session_id),
-      request_type: "technical_help",
-      subject: `Google Meet a verifier - ${normalizeValue_(session.tutor_name) || "tuteur"}`,
-      message: `Le calendrier du tuteur ${normalizeValue_(session.tutor_name) || normalizeValue_(session.tutor_id) || "non assigne"} a empeche la creation du lien Google Meet pour la seance ${normalizeValue_(session.session_id)}. Probleme: ${normalizeValue_(errorMessage)}`,
-    });
+    appendMeetCalendarFailureRequest_(spreadsheet, session, errorMessage);
   }
+}
+
+function deleteMeetEventSafely_(spreadsheet, session, eventId) {
+  const calendarId = resolveTutorCalendarId_(spreadsheet, session);
+  if (!calendarId || !normalizeValue_(eventId)) return true;
+  try {
+    Calendar.Events.remove(calendarId, eventId, { sendUpdates: "none" });
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function appendMeetCalendarFailureRequest_(spreadsheet, session, errorMessage) {
+  appendPortalRequestRecord_(spreadsheet, {
+    role: "operator",
+    email: "",
+    related_id: normalizeValue_(session.session_id),
+    request_type: "technical_help",
+    subject: `Google Meet a verifier - ${normalizeValue_(session.tutor_name) || "tuteur"}`,
+    message: `Le calendrier du tuteur ${normalizeValue_(session.tutor_name) || normalizeValue_(session.tutor_id) || "non assigne"} a empeche la creation du lien Google Meet pour la seance ${normalizeValue_(session.session_id)}. Probleme: ${normalizeValue_(errorMessage)}`,
+  });
 }
 
 function resolveCalendarForTutor_(spreadsheet, tutorId) {
