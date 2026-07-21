@@ -1,24 +1,23 @@
-import { BOOKING_URL } from "@/config/booking"
+import { ArrowRight } from "lucide-react"
+
+import { DECLIC_REQUEST_URL } from "@/config/booking"
+import { Button } from "@/components/ui/button"
 
 export default function BookingEmbed({
-  title = "Réserver une séance ponctuelle avec Méthode Secondaire",
+  title = "Demander une séance ciblée avec Méthode Secondaire",
 }) {
   return (
-    <div className="glass-panel relative overflow-hidden rounded-[32px] p-3">
-      <div className="pointer-events-none absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white/60 to-transparent" />
-
-      <div className="overflow-hidden rounded-[24px] border border-slate-200/70 bg-white shadow-2xl">
-        <iframe
-          src={BOOKING_URL}
-          width="100%"
-          height="720"
-          frameBorder="0"
-          loading="lazy"
-          referrerPolicy="strict-origin-when-cross-origin"
-          scrolling="no"
-          title={title}
-        />
-      </div>
+    <div className="glass-panel rounded-[24px] p-6 text-center text-white">
+      <h2 className="font-display text-2xl font-semibold">{title}</h2>
+      <p className="mx-auto mt-3 max-w-xl text-sm leading-6 text-white/68">
+        Creez votre profil, puis notre equipe vous propose le bon tuteur avant de vous laisser choisir un creneau.
+      </p>
+      <Button asChild className="mt-5 rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
+        <a href={DECLIC_REQUEST_URL}>
+          Demander une séance ciblée
+          <ArrowRight className="h-4 w-4" />
+        </a>
+      </Button>
     </div>
   )
 }

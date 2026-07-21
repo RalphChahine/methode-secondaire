@@ -67,7 +67,7 @@ const contentByLocale = {
     ],
     ctaTitle: "Besoin d'être orienté vers le bon profil rapidement ?",
     ctaDescription:
-      "Remplissez la demande parent: on valide le besoin, la disponibilité et le meilleur premier départ avant de proposer un profil.",
+      "Remplissez le formulaire: on valide le besoin, la disponibilité et le meilleur premier départ avant de proposer un profil.",
     seoTitle: "Tuteurs en maths et sciences au secondaire | Méthode Secondaire",
     seoDescription:
       "Découvrez nos profils de tuteurs en mathématiques et en sciences pour le secondaire au Québec, avec une approche claire et rassurante pour les familles.",
@@ -121,7 +121,7 @@ const contentByLocale = {
     ],
     ctaTitle: "Need help finding the right profile quickly?",
     ctaDescription:
-      "Fill out the parent request: we confirm the need, availability and best starting point before suggesting a profile.",
+      "Fill out the form: we confirm the need, availability and best starting point before suggesting a profile.",
     seoTitle: "High school math and science tutors | Méthode Secondaire",
     seoDescription:
       "Explore our high school math and science tutor profiles in Quebec, with a clear and reassuring approach for families.",
@@ -173,7 +173,7 @@ export default function Tuteurs() {
             icon: Phone,
           }}
           secondaryAction={{
-            label: locale === "en" ? "Parent request" : "Demande parent",
+            label: locale === "en" ? "Fill out the form" : "Remplir le formulaire",
             to: `${getLocalizedPath("home", locale)}#demande`,
             icon: ClipboardList,
           }}

@@ -1,12 +1,12 @@
 import { Link, useLocation } from "react-router-dom"
-import { ArrowRight, BadgeCheck, PhoneCall } from "lucide-react"
+import { ArrowRight, BadgeCheck, BookOpenCheck, Lightbulb, PhoneCall, Target, TriangleAlert } from "lucide-react"
 
-import MotionCard from "@/components/MotionCard"
 import ParentJourneyNote from "@/components/ParentJourneyNote"
+import ProgressJourney from "@/components/ProgressJourney"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { BOOKING_URL } from "@/config/booking"
+import { BOOKING_URL, BOOKING_URL_EN } from "@/config/booking"
 import {
   buildAlternates,
   getAlternateOgLocale,
@@ -19,11 +19,27 @@ import {
 import { getSecondary4MathConceptPage } from "@/lib/secondary4MathTheoryContent"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
 
+function StudyList({ items, icon: Icon = BadgeCheck, tone = "gold" }) {
+  const iconClass = tone === "muted" ? "text-white/52" : "text-[#f5c977]"
+
+  return (
+    <ul className="space-y-3.5">
+      {items.map((item) => (
+        <li key={item} className="flex items-start gap-3">
+          <Icon className={"mt-0.5 h-4 w-4 shrink-0 " + iconClass} aria-hidden="true" />
+          <span className="text-sm leading-7 text-white/78 sm:text-[15px]">{item}</span>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
 export default function Secondary4MathConcept() {
   const location = useLocation()
   const locale = getLocaleFromPath(location.pathname)
   const routeKey = getRouteKeyFromPath(location.pathname)
   const copy = getSecondary4MathConceptPage(routeKey, locale)
+  const requestUrl = locale === "en" ? BOOKING_URL_EN : BOOKING_URL
 
   if (!copy) {
     return null
@@ -70,7 +86,7 @@ export default function Secondary4MathConcept() {
       </div>
 
       <main className="relative z-10 mx-auto w-full max-w-6xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
-        <section className="grid gap-8 lg:grid-cols-[1.02fr,0.98fr] lg:items-center">
+        <section className="grid gap-7 lg:grid-cols-[1.02fr,0.98fr] lg:items-center">
           <div className="max-w-3xl">
             <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
               {copy.heroEyebrow}
@@ -85,7 +101,7 @@ export default function Secondary4MathConcept() {
                 asChild
                 className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
               >
-                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                <a href={requestUrl}>
                   {copy.reserveButton}
                   <ArrowRight className="h-4 w-4" />
                 </a>
@@ -105,32 +121,44 @@ export default function Secondary4MathConcept() {
             <ParentJourneyNote locale={locale} className="mt-6 max-w-2xl" />
           </div>
 
-          <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">{copy.sequenceLabel}</div>
-            <h2 className="mt-3 font-display text-3xl font-semibold">{copy.sequenceTitle}</h2>
-            <p className="mt-4 text-sm leading-7 text-white/72">
-              {locale === "en"
-                ? "This page is meant to help students recognize the concept faster, avoid the usual confusion and know when a focused session becomes the smarter shortcut."
-                : "Cette page sert à reconnaître la notion plus vite, à éviter la confusion habituelle et à savoir quand une séance ciblée devient le meilleur raccourci."}
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-2">
-              <span className="rounded-full border border-white/12 bg-white/8 px-4 py-2 text-xs text-white/86">
-                {locale === "en" ? "Detailed theory" : "Théorie détaillée"}
-              </span>
-              <span className="rounded-full border border-white/12 bg-white/8 px-4 py-2 text-xs text-white/86">
-                {locale === "en" ? "Frequent traps" : "Pièges fréquents"}
-              </span>
-              <span className="rounded-full border border-white/12 bg-white/8 px-4 py-2 text-xs text-white/86">
-                {locale === "en" ? "Exam-oriented" : "Orienté examen"}
-              </span>
-            </div>
-          </MotionCard>
+          <ProgressJourney
+            title={copy.sequenceTitle}
+            eyebrow={copy.sequenceLabel}
+            intro={
+              locale === "en"
+                ? "A calm reading path: see the idea, spot it in a question, then choose the right move."
+                : "Un parcours de lecture calme : voir l'idée, la repérer dans une question, puis choisir le bon geste."
+            }
+            countLabel={locale === "en" ? "markers" : "repères"}
+            currentIndex={0}
+            columns="grid-cols-1 sm:grid-cols-2"
+            steps={[
+              {
+                label: locale === "en" ? "See the core idea" : "Voir l'idée centrale",
+                description: copy.definitionTitle,
+              },
+              {
+                label: locale === "en" ? "Keep the anchors close" : "Garder les repères près",
+                description: copy.formulaTitle,
+              },
+              {
+                label: locale === "en" ? "Recognize the signal" : "Reconnaître le signal",
+                description: copy.recognizeTitle,
+              },
+              {
+                label: locale === "en" ? "Check your approach" : "Vérifier sa démarche",
+                description: copy.selfCheckTitle,
+              },
+            ]}
+          />
         </section>
 
-        <section className="grid gap-6 pt-20 lg:grid-cols-[1.05fr,0.95fr]">
-          <MotionCard className="glass-panel rounded-[30px] border-white/10 bg-white/[0.05] p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.definitionTitle}</div>
+        <section id="essentiel" className="grid gap-4 pt-14 sm:gap-5 sm:pt-20 lg:grid-cols-[1.08fr,0.92fr]">
+          <article className="glass-panel rounded-[28px] border border-white/10 bg-white/[0.05] p-6 text-white sm:rounded-[32px] sm:p-8">
+            <div className="flex items-center gap-3 text-sm uppercase tracking-[0.2em] text-[#f5c977]">
+              <BookOpenCheck className="h-4 w-4" aria-hidden="true" />
+              {copy.definitionTitle}
+            </div>
             <div className="mt-5 space-y-4">
               {copy.definitionParagraphs.map((paragraph) => (
                 <p key={paragraph} className="text-sm leading-7 text-white/78 sm:text-[15px]">
@@ -138,155 +166,159 @@ export default function Secondary4MathConcept() {
                 </p>
               ))}
             </div>
-          </MotionCard>
+          </article>
 
-          <MotionCard className="rounded-[30px] border-white/10 bg-[#091a3a]/88 p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.22em] text-white/45">{copy.formulaTitle}</div>
-            <ul className="mt-5 space-y-4">
-              {copy.formulaBullets.map((item) => (
-                <li key={item} className="text-sm leading-7 text-white/76">
-                  • {item}
-                </li>
-              ))}
-            </ul>
-          </MotionCard>
+          <aside className="rounded-[28px] border border-[#f5c977]/20 bg-[#091a3a]/86 p-6 text-white sm:rounded-[32px] sm:p-8">
+            <div className="flex items-center gap-3 text-sm uppercase tracking-[0.2em] text-white/56">
+              <Lightbulb className="h-4 w-4 text-[#f5c977]" aria-hidden="true" />
+              {copy.formulaTitle}
+            </div>
+            <div className="mt-5">
+              <StudyList items={copy.formulaBullets} />
+            </div>
+          </aside>
         </section>
 
-        <section className="grid gap-6 pt-20 lg:grid-cols-2">
-          <MotionCard className="rounded-[30px] border-white/10 bg-[#091a3a]/88 p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.understandTitle}</div>
-            <ul className="mt-5 space-y-4">
-              {copy.essentials.map((item) => (
-                <li key={item} className="flex items-start gap-3">
-                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
-                  <span className="text-sm leading-7 text-white/78">{item}</span>
-                </li>
-              ))}
-            </ul>
-          </MotionCard>
+        <section className="pt-14 sm:pt-20">
+          <div className="max-w-3xl">
+            <div className="text-sm font-semibold uppercase tracking-[0.22em] text-[#f5c977]">
+              {locale === "en" ? "Before the calculation" : "Avant le calcul"}
+            </div>
+            <h2 className="balanced-copy mt-3 font-display text-3xl font-semibold text-white sm:text-4xl">
+              {locale === "en" ? "Get your bearings before choosing a formula." : "Trouver ses repères avant de choisir une formule."}
+            </h2>
+          </div>
 
-          <MotionCard className="rounded-[30px] border-white/10 bg-[#091a3a]/88 p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.22em] text-white/45">{copy.trapTitle}</div>
-            <ul className="mt-5 space-y-4">
-              {copy.pitfalls.map((item) => (
-                <li key={item} className="text-sm leading-7 text-white/72">
-                  • {item}
-                </li>
-              ))}
-            </ul>
-          </MotionCard>
-        </section>
-
-        <section className="grid gap-6 pt-20 lg:grid-cols-2">
-          <MotionCard className="glass-panel rounded-[30px] border-white/10 bg-white/[0.05] p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.recognizeTitle}</div>
-            <ul className="mt-5 space-y-4">
-              {copy.recognizeBullets.map((item) => (
-                <li key={item} className="text-sm leading-7 text-white/78">
-                  • {item}
-                </li>
-              ))}
-            </ul>
-          </MotionCard>
-
-          <MotionCard className="glass-panel rounded-[30px] border-white/10 bg-white/[0.05] p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.methodTitle}</div>
-            <ul className="mt-5 space-y-4">
-              {copy.methodBullets.map((item) => (
-                <li key={item} className="text-sm leading-7 text-white/78">
-                  • {item}
-                </li>
-              ))}
-            </ul>
-          </MotionCard>
-        </section>
-
-        <section className="pt-12">
-          <MotionCard className="rounded-[26px] border border-[#f5c977]/30 bg-[rgba(245,201,119,0.09)] p-6 text-white">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="max-w-3xl">
-                <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">
-                  {locale === "en" ? "Need help on this exact chapter?" : "Besoin d'aide sur ce chapitre précis?"}
-                </div>
-                <p className="mt-2 text-sm leading-7 text-white/78 sm:text-[15px]">
-                  {locale === "en"
-                    ? "If the theory feels familiar but the exercise still does not start, a targeted session is usually faster than rereading the same notes three times."
-                    : "Si la théorie semble familière mais que l'exercice ne part toujours pas, une séance ciblée fait souvent gagner plus de temps que relire les mêmes notes trois fois."}
-                </p>
+          <div className="mt-6 grid gap-4 sm:mt-8 sm:gap-5 lg:grid-cols-2">
+            <article className="action-surface rounded-[28px] p-6 text-white sm:rounded-[32px] sm:p-8">
+              <div className="flex items-center gap-3 text-sm uppercase tracking-[0.2em] text-[#f5c977]">
+                <Target className="h-4 w-4" aria-hidden="true" />
+                {copy.understandTitle}
               </div>
-              <Button
-                asChild
-                className="rounded-full bg-[#f5c977] px-5 py-5 text-sm text-[#071631] hover:bg-[#f7d38f]"
+              <div className="mt-5">
+                <StudyList items={copy.essentials} />
+              </div>
+            </article>
+
+            <article className="rounded-[28px] border border-white/10 bg-[#091a3a]/80 p-6 text-white sm:rounded-[32px] sm:p-8">
+              <div className="flex items-center gap-3 text-sm uppercase tracking-[0.2em] text-white/56">
+                <TriangleAlert className="h-4 w-4 text-[#f5c977]" aria-hidden="true" />
+                {copy.trapTitle}
+              </div>
+              <div className="mt-5">
+                <StudyList items={copy.pitfalls} icon={TriangleAlert} tone="muted" />
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section className="pt-14 sm:pt-20">
+          <div className="rounded-[30px] border border-white/10 bg-white/[0.045] p-6 text-white sm:rounded-[36px] sm:p-8 lg:p-10">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div className="max-w-2xl">
+                <div className="text-sm font-semibold uppercase tracking-[0.22em] text-[#f5c977]">
+                  {locale === "en" ? "The move to make" : "Le geste à faire"}
+                </div>
+                <h2 className="mt-3 font-display text-3xl font-semibold sm:text-4xl">
+                  {locale === "en" ? "Read the signal, then use a method that fits it." : "Lire le signal, puis choisir une méthode qui lui correspond."}
+                </h2>
+              </div>
+              <a
+                href="#verification"
+                className="inline-flex w-fit items-center gap-2 text-sm font-semibold text-[#f5c977] transition hover:text-[#f7d38f]"
               >
-                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                  {copy.reserveButton}
-                </a>
-              </Button>
+                {locale === "en" ? "Go to the check" : "Aller à la vérification"}
+                <ArrowRight className="h-4 w-4" />
+              </a>
             </div>
-          </MotionCard>
+
+            <div className="mt-7 grid gap-7 border-t border-white/10 pt-7 lg:grid-cols-2 lg:gap-10">
+              <div>
+                <h3 className="text-lg font-semibold text-white">{copy.recognizeTitle}</h3>
+                <ol className="mt-4 space-y-3.5">
+                  {copy.recognizeBullets.map((item, index) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#f5c977]/45 text-xs font-semibold text-[#f5c977]">
+                        {index + 1}
+                      </span>
+                      <span className="text-sm leading-7 text-white/78 sm:text-[15px]">{item}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+
+              <div className="border-t border-white/10 pt-7 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0">
+                <h3 className="text-lg font-semibold text-white">{copy.methodTitle}</h3>
+                <ol className="mt-4 space-y-3.5">
+                  {copy.methodBullets.map((item, index) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-white/20 text-xs font-semibold text-white/72">
+                        {index + 1}
+                      </span>
+                      <span className="text-sm leading-7 text-white/78 sm:text-[15px]">{item}</span>
+                    </li>
+                  ))}
+                </ol>
+              </div>
+            </div>
+          </div>
         </section>
 
-        <section className="grid gap-6 pt-20 lg:grid-cols-[1.05fr,0.95fr]">
-          <MotionCard className="rounded-[30px] border-white/10 bg-[#091a3a]/88 p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.masteryTitle}</div>
-            <ul className="mt-5 space-y-4">
-              {copy.masteryBullets.map((item) => (
-                <li key={item} className="text-sm leading-7 text-white/78">
-                  • {item}
-                </li>
-              ))}
-            </ul>
-          </MotionCard>
+        <section id="verification" className="grid gap-4 pt-14 sm:gap-5 sm:pt-20 lg:grid-cols-[1.05fr,0.95fr]">
+          <article className="rounded-[30px] border border-[#f5c977]/22 bg-[linear-gradient(135deg,rgba(245,201,119,0.12),rgba(9,26,58,0.86))] p-6 text-white sm:rounded-[36px] sm:p-8">
+            <div className="flex items-center gap-3 text-sm uppercase tracking-[0.2em] text-[#f5c977]">
+              <Target className="h-4 w-4" aria-hidden="true" />
+              {copy.masteryTitle}
+            </div>
+            <div className="mt-5">
+              <StudyList items={copy.masteryBullets} />
+            </div>
 
-          <MotionCard className="glass-panel rounded-[30px] border-white/10 bg-white/[0.05] p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.exampleTitle}</div>
-            <p className="mt-5 text-sm leading-7 text-white/78 sm:text-[15px]">{copy.exampleText}</p>
-          </MotionCard>
+            <div className="mt-7 border-t border-white/12 pt-6">
+              <h3 className="text-base font-semibold text-white">{copy.exampleTitle}</h3>
+              <p className="mt-3 text-sm leading-7 text-white/76 sm:text-[15px]">{copy.exampleText}</p>
+            </div>
+          </article>
+
+          <aside className="glass-panel rounded-[30px] border border-white/10 bg-white/[0.05] p-6 text-white sm:rounded-[36px] sm:p-8">
+            <div className="text-sm uppercase tracking-[0.2em] text-[#f5c977]">{copy.selfCheckTitle}</div>
+            <p className="mt-3 text-sm leading-7 text-white/64">
+              {locale === "en" ? "Use these prompts before you turn the page or hand in the exercise." : "Utilise ces questions avant de tourner la page ou de remettre l'exercice."}
+            </p>
+            <div className="mt-5">
+              <StudyList items={copy.selfCheck} icon={BookOpenCheck} />
+            </div>
+          </aside>
         </section>
 
-        <section className="grid gap-6 pt-20 lg:grid-cols-[1.1fr,0.9fr]">
-          <MotionCard className="glass-panel rounded-[30px] border-white/10 bg-white/[0.05] p-8 text-white">
-            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.vocabularyTitle}</div>
-            <div className="mt-5 grid gap-4 sm:grid-cols-3">
+        <section className="grid gap-4 pt-14 sm:gap-5 sm:pt-20 lg:grid-cols-[1.08fr,0.92fr]">
+          <article className="glass-panel rounded-[30px] border border-white/10 bg-white/[0.05] p-6 text-white sm:rounded-[36px] sm:p-8">
+            <div className="text-sm uppercase tracking-[0.2em] text-[#f5c977]">{copy.vocabularyTitle}</div>
+            <dl className="mt-5 divide-y divide-white/10">
               {copy.vocabulary.map((item) => (
-                <div key={item.term} className="rounded-[22px] border border-white/10 bg-white/5 p-4">
-                  <div className="text-sm font-semibold text-white">{item.term}</div>
-                  <p className="mt-2 text-sm leading-7 text-white/72">{item.text}</p>
+                <div key={item.term} className="py-4 first:pt-0 last:pb-0">
+                  <dt className="text-sm font-semibold text-white">{item.term}</dt>
+                  <dd className="mt-1.5 text-sm leading-7 text-white/70">{item.text}</dd>
                 </div>
               ))}
-            </div>
-          </MotionCard>
+            </dl>
+          </article>
 
-          <MotionCard className="rounded-[30px] border-white/10 bg-[#091a3a]/88 p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.22em] text-white/45">{copy.selfCheckTitle}</div>
-            <ul className="mt-5 space-y-4">
-              {copy.selfCheck.map((item) => (
-                <li key={item} className="text-sm leading-7 text-white/76">
-                  • {item}
+          <aside className="rounded-[30px] border border-white/10 bg-[#091a3a]/84 p-6 text-white sm:rounded-[36px] sm:p-8">
+            <div className="text-sm uppercase tracking-[0.2em] text-[#f5c977]">{copy.useItTitle}</div>
+            <ol className="mt-5 space-y-4">
+              {copy.useItPoints.map((item, index) => (
+                <li key={item} className="flex items-start gap-3">
+                  <span className="mt-0.5 text-sm font-semibold text-[#f5c977]">0{index + 1}</span>
+                  <span className="text-sm leading-7 text-white/76">{item}</span>
                 </li>
               ))}
-            </ul>
-          </MotionCard>
+            </ol>
+          </aside>
         </section>
 
-        <section className="pt-20">
-          <MotionCard className="glass-panel rounded-[30px] border-white/10 bg-white/[0.05] p-8 text-white">
-            <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{copy.useItTitle}</div>
-            <div className="mt-5 flex flex-wrap gap-3">
-              {copy.useItPoints.map((item) => (
-                <div
-                  key={item}
-                  className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-4 text-sm leading-7 text-white/78"
-                >
-                  {item}
-                </div>
-              ))}
-            </div>
-          </MotionCard>
-        </section>
-
-        <section className="pt-20">
-          <MotionCard className="rounded-[34px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-8 text-white sm:p-10">
+        <section className="pt-14 sm:pt-20">
+          <div className="rounded-[32px] border border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-6 text-white sm:rounded-[38px] sm:p-10">
             <div className="max-w-3xl">
               <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white/85">
                 {copy.reserveTitle}
@@ -297,27 +329,25 @@ export default function Secondary4MathConcept() {
                   asChild
                   className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
                 >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    {copy.reserveButton}
-                  </a>
+                  <a href={requestUrl}>{copy.reserveButton}</a>
                 </Button>
                 <Button
                   asChild
                   variant="outline"
                   className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
                 >
-                  <a href={`tel:${siteConfig.phone}`}>
+                  <a href={"tel:" + siteConfig.phone}>
                     <PhoneCall className="h-4 w-4" />
                     {locale === "en" ? "Call to discuss" : "Appeler pour en parler"}
                   </a>
                 </Button>
               </div>
             </div>
-          </MotionCard>
+          </div>
         </section>
 
         {copy.relatedRouteKeys.length > 0 && (
-          <section className="pt-20">
+          <section className="pt-14 sm:pt-20">
             <div className="max-w-3xl">
               <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
                 {locale === "en" ? "Related concepts" : "Concepts liés"}
@@ -329,7 +359,7 @@ export default function Secondary4MathConcept() {
               </h2>
             </div>
 
-            <div className="mt-8 grid gap-4 md:grid-cols-3">
+            <div className="mt-7 grid gap-3 sm:mt-8">
               {copy.relatedRouteKeys.map((relatedKey) => {
                 const related = getSecondary4MathConceptPage(relatedKey, locale)
 
@@ -338,23 +368,22 @@ export default function Secondary4MathConcept() {
                 }
 
                 return (
-                  <MotionCard
+                  <Link
                     key={relatedKey}
-                    className="rounded-[28px] border-white/10 bg-[#091a3a]/88 p-6 text-white"
+                    to={getLocalizedPath(relatedKey, locale)}
+                    className="group block rounded-[24px] border border-white/10 bg-[#091a3a]/78 p-5 text-white transition hover:border-[#f5c977]/35 hover:bg-[#10264d] sm:rounded-[28px] sm:p-6"
                   >
-                    <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{related.sequenceLabel}</div>
-                    <h3 className="mt-3 font-display text-2xl font-semibold">{related.title}</h3>
-                    <p className="mt-3 text-sm leading-7 text-white/72">{related.lead}</p>
-                    <div className="mt-6">
-                      <Link
-                        to={getLocalizedPath(relatedKey, locale)}
-                        className="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/6 px-4 py-2 text-sm text-white transition hover:bg-white/10"
-                      >
-                        {locale === "en" ? "Open the theory page" : "Ouvrir la page théorie"}
-                        <ArrowRight className="h-4 w-4" />
-                      </Link>
+                    <div className="flex min-w-0 items-start gap-4 sm:items-center sm:justify-between">
+                      <div className="min-w-0">
+                        <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#f5c977]">{related.sequenceLabel}</div>
+                        <h3 className="mt-2 font-display text-xl font-semibold sm:text-2xl">{related.title}</h3>
+                        <p className="mt-2 text-sm leading-7 text-white/68">{related.lead}</p>
+                      </div>
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/14 bg-white/5 text-[#f5c977] transition group-hover:translate-x-0.5 group-hover:bg-[#f5c977] group-hover:text-[#071631]">
+                        <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                      </span>
                     </div>
-                  </MotionCard>
+                  </Link>
                 )
               })}
             </div>

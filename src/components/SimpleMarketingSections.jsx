@@ -6,16 +6,17 @@ import {
   ChevronRight,
   ClipboardCheck,
   Mail,
-  MessageCircle,
   Phone,
   ShieldCheck,
 } from "lucide-react"
 
 import LeadForm from "@/components/LeadForm"
 import MotionCard from "@/components/MotionCard"
+import ProgressJourney from "@/components/ProgressJourney"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { BOOKING_URL } from "@/config/booking"
+import { DECLIC_REQUEST_URL, DECLIC_REQUEST_URL_EN } from "@/config/booking"
+import { rememberParentIntent } from "@/lib/parentIntent"
 import { siteConfig } from "@/lib/seo"
 
 export function HeroShowcase({
@@ -31,6 +32,7 @@ export function HeroShowcase({
   panelNote,
   leadForm,
   journey,
+  actionHint,
 }) {
   const hasLeadForm = Boolean(leadForm)
   const onboardingSteps = leadForm?.steps?.length
@@ -40,6 +42,15 @@ export function HeroShowcase({
         { label: "Callback" },
         { label: "Start" },
       ]
+  const journeyCopy = leadForm?.locale === "en"
+    ? {
+        eyebrow: "Your clear path",
+        intro: "One small decision at a time. We keep matching and follow-up simple.",
+      }
+    : {
+        eyebrow: "Votre parcours, en clair",
+        intro: "Une petite décision à la fois. On garde le jumelage et le suivi simples.",
+      }
 
   if (hasLeadForm) {
     return (
@@ -67,55 +78,38 @@ export function HeroShowcase({
               </h1>
 
               {description ? (
-                <p className="mt-4 hidden max-w-2xl text-base leading-7 text-white/72 sm:block sm:text-lg">
+                <p className="mt-4 max-w-2xl text-[0.95rem] leading-6 text-white/72 sm:text-lg sm:leading-7">
                   {description}
                 </p>
               ) : null}
 
-              <div className="mt-5 grid grid-cols-3 gap-2 md:hidden">
-                {onboardingSteps.map((step, index) => (
-                  <div
-                    key={step.label || step.title}
-                    className="rounded-[20px] border border-white/10 bg-white/[0.045] px-2 py-3 text-center"
-                  >
-                    <div className="mx-auto grid h-14 w-14 place-items-center rounded-full bg-[#f5c977] text-2xl font-extrabold text-[#071631]">
-                      {index + 1}
-                    </div>
-                    <div className="mt-2 text-xs font-semibold leading-tight text-white/84">
-                      {step.mobileLabel || step.label || step.title}
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <ProgressJourney
+                className="mt-6 max-w-3xl"
+                eyebrow={journeyCopy.eyebrow}
+                intro={journeyCopy.intro}
+                steps={onboardingSteps.map((step) => ({
+                  label: step.mobileLabel || step.title || step.label,
+                  description: step.description,
+                }))}
+                currentIndex={0}
+                columns="grid-cols-1 sm:grid-cols-3"
+                compact
+              />
 
-              <div className="mt-6 hidden gap-3 md:grid md:grid-cols-3">
-                {onboardingSteps.map((step, index) => (
-                  <div
-                    key={step.label || step.title}
-                    className={`rounded-[28px] p-5 text-white ${
-                      index === 1 ? "panel-gold" : "panel-ink"
-                    }`}
-                  >
-                    <div className="grid h-20 w-20 place-items-center rounded-full bg-[#f5c977] text-3xl font-extrabold text-[#071631] shadow-[0_18px_42px_rgba(245,201,119,0.25)]">
-                      {index + 1}
-                    </div>
-                    <h2 className="mt-5 font-display text-2xl font-semibold leading-tight">
-                      {step.title || step.label}
-                    </h2>
-                    {step.description ? (
-                      <p className="mt-3 text-sm leading-7 text-white/74">{step.description}</p>
-                    ) : null}
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-5 hidden flex-wrap gap-3 md:flex">
+              <div className="mt-5 flex flex-wrap gap-3">
                 {primaryAction ? <ActionButton action={primaryAction} /> : null}
                 {secondaryAction ? <ActionButton action={secondaryAction} variant="outline" /> : null}
               </div>
+
+              {actionHint ? (
+                <p className="mt-4 flex max-w-2xl items-start gap-2 text-sm leading-6 text-white/68">
+                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                  {actionHint}
+                </p>
+              ) : null}
             </div>
 
-            <MotionCard id={leadForm.id} className="panel-ink rounded-[32px] p-5 text-white sm:p-6">
+            <MotionCard id={leadForm.id} className="action-surface rounded-[32px] p-5 text-white sm:p-6">
               <div className="flex items-center gap-2 text-sm font-semibold text-[#f5c977]">
                 <ShieldCheck className="h-4 w-4" />
                 {leadForm.eyebrow}
@@ -127,7 +121,7 @@ export function HeroShowcase({
               <p className="mt-3 text-sm leading-7 text-white/72">{leadForm.description}</p>
 
               <div className="mt-5">
-                <LeadForm locale={leadForm.locale} pageName={leadForm.pageName} variant="hero" />
+                <LeadForm locale={leadForm.locale} pageName={leadForm.pageName} variant={leadForm.variant || "hero"} />
               </div>
 
               {leadForm.trustItems?.length ? (
@@ -242,7 +236,7 @@ export function HeroShowcase({
                 </div>
 
                 <div className="mt-5">
-                  <LeadForm locale={leadForm.locale} pageName={leadForm.pageName} variant="hero" />
+                  <LeadForm locale={leadForm.locale} pageName={leadForm.pageName} variant={leadForm.variant || "hero"} />
                 </div>
 
                 {leadForm.trustItems?.length ? (
@@ -296,6 +290,85 @@ export function HeroShowcase({
             )}
           </div>
         </div>
+      </div>
+    </section>
+  )
+}
+
+export function ParentStartingPointsSection({ eyebrow, title, description, items, action, note }) {
+  function openGuidedStart(intent) {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    rememberParentIntent(intent)
+    window.dispatchEvent(new CustomEvent("methode:open-diagnostic", { detail: { intent } }))
+  }
+
+  return (
+    <section className="pt-16 sm:pt-20">
+      <div className="max-w-3xl">
+        <div className="rule-label text-[0.68rem]">{eyebrow}</div>
+        <h2 className="balanced-copy mt-4 font-display text-4xl font-semibold leading-[1.02] text-white sm:text-5xl">
+          {title}
+        </h2>
+        <p className="mt-4 text-base leading-8 text-white/72 sm:text-lg">{description}</p>
+      </div>
+
+      <div className="mt-8 grid gap-3 lg:grid-cols-3">
+        {items.map((item, index) => (
+          <MotionCard
+            key={item.title}
+            interactive
+            className={`h-full overflow-hidden rounded-[26px] text-white ${index === 0 ? "action-surface" : "panel-soft"}`}
+          >
+            <article className="flex h-full min-w-0 flex-col p-5 sm:p-6">
+              <div className="flex items-start justify-between gap-3">
+                <div className="text-sm font-semibold text-[#f5c977]">{item.eyebrow}</div>
+                <span className="shrink-0 font-display text-xl text-white/34">{`0${index + 1}`}</span>
+              </div>
+              <h3 className="mt-4 font-display text-2xl font-semibold leading-tight text-white">{item.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-white/68">{item.description}</p>
+              <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2">
+                {item.actionHref && item.actionLabel ? (
+                  <a
+                    href={item.actionHref}
+                    onClick={() => rememberParentIntent(item.intent)}
+                    className="inline-flex min-h-11 items-center gap-2 rounded-full bg-white/8 px-4 text-sm font-semibold text-white transition hover:bg-[#f5c977] hover:text-[#071631]"
+                  >
+                    {item.actionLabel}
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                ) : item.intent && item.actionLabel ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    className="min-h-11 rounded-full bg-white/8 px-4 text-sm font-semibold text-white hover:bg-[#f5c977] hover:text-[#071631]"
+                    onClick={() => openGuidedStart(item.intent)}
+                  >
+                    {item.actionLabel}
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                ) : null}
+                {item.to && item.linkLabel ? (
+                  <Link
+                    to={item.to}
+                    onClick={() => rememberParentIntent(item.intent)}
+                    className="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-[#f5c977] transition hover:text-white"
+                  >
+                    {item.linkLabel}
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                ) : null}
+              </div>
+            </article>
+          </MotionCard>
+        ))}
+      </div>
+
+      <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-3">
+        {action ? <ActionButton action={action} /> : null}
+        {note ? <p className="text-sm leading-6 text-white/64">{note}</p> : null}
       </div>
     </section>
   )
@@ -371,33 +444,16 @@ export function StepGrid({ id, eyebrow, title, description, steps }) {
     <section id={id} className="pt-20">
       <SectionIntro eyebrow={eyebrow} title={title} description={description} />
 
-      <div className="mt-8 grid gap-4 lg:grid-cols-3">
-        {steps.map((step, index) => (
-          <MotionCard
-            key={step.title}
-            className={`relative overflow-hidden rounded-[30px] p-6 text-white sm:p-7 ${
-              index === 1 ? "panel-gold" : "panel-ink"
-            }`}
-          >
-            <div className="flex items-start gap-4">
-              <div className="grid h-20 w-20 shrink-0 place-items-center rounded-full bg-[#f5c977] text-[#071631] shadow-[0_18px_42px_rgba(245,201,119,0.24)]">
-                <span className="font-display text-4xl font-semibold">{index + 1}</span>
-              </div>
-
-              <div className="min-w-0 pt-1">
-                <div className="mb-3 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-3 py-1 text-xs font-semibold text-white/70">
-                  <MessageCircle className="h-3.5 w-3.5 text-[#f5c977]" />
-                  {step.step || `0${index + 1}`}
-                </div>
-                <h3 className="balanced-copy font-display text-2xl font-semibold leading-tight sm:text-3xl">
-                  {step.title}
-                </h3>
-                <p className="mt-4 text-sm leading-7 text-white/74">{step.description}</p>
-              </div>
-            </div>
-          </MotionCard>
-        ))}
-      </div>
+      <ProgressJourney
+        className="mt-8"
+        steps={steps.map((step) => ({
+          label: step.title,
+          description: step.description,
+          status: step.step,
+        }))}
+        currentIndex={0}
+        columns="grid-cols-1 md:grid-cols-3"
+      />
     </section>
   )
 }
@@ -484,11 +540,15 @@ export function QuoteGrid({ id, eyebrow, title, description, quotes, columns = "
 }
 
 export function PricingGrid({ id, eyebrow, title, description, plans }) {
+  const gridClass = plans.length === 1
+    ? "mt-8 max-w-3xl"
+    : "mt-8 grid gap-4 xl:grid-cols-3"
+
   return (
     <section id={id} className="pt-20">
       <SectionIntro eyebrow={eyebrow} title={title} description={description} />
 
-      <div className="mt-8 grid gap-4 xl:grid-cols-3">
+      <div className={gridClass}>
         {plans.map((plan) => (
           <MotionCard
             key={plan.title}
@@ -562,13 +622,15 @@ export function ContactSection({
   pageName = "website",
   showForm = true,
 }) {
+  const requestUrl = locale === "en" ? DECLIC_REQUEST_URL_EN : DECLIC_REQUEST_URL
   const copy =
     locale === "en"
       ? {
           cardEyebrow: "Direct contact",
-          bookLabel: "Book a session",
+          bookLabel: "Request a Targeted session",
+          emailAction: "Email the team",
           locationLabel: "Online across Quebec, in person depending on area",
-          callNote: "Weekly follow-up is usually easier to frame by phone first.",
+          callNote: "A 10-session progress block can start with this short request; after matching, the team can suggest a weekly time before any payment.",
           urgentTitle: "Need help choosing the next step?",
           urgentText:
             "Call if the situation is urgent, or jump back to the form and we will guide the first decision.",
@@ -576,9 +638,10 @@ export function ContactSection({
         }
       : {
           cardEyebrow: "Contact direct",
-          bookLabel: "Réserver une séance",
+          bookLabel: "Demander une séance ciblée",
+          emailAction: "Écrire à l'équipe",
           locationLabel: "En ligne partout au Québec, présentiel selon le secteur",
-          callNote: "Le suivi hebdomadaire se cadre souvent mieux par téléphone d'abord.",
+          callNote: "Un bloc de progression de 10 séances peut commencer par cette courte demande; après le jumelage, l'équipe peut proposer un créneau hebdomadaire avant tout paiement.",
           urgentTitle: "Besoin d'aide pour choisir le prochain pas ?",
           urgentText:
             "Appelez si la situation est urgente, ou revenez au formulaire: on vous aide à cadrer la première décision.",
@@ -595,8 +658,8 @@ export function ContactSection({
 
           <div className="relative z-10 mt-6 space-y-3">
             <ContactLine icon={Phone} href={`tel:${siteConfig.phone}`} label={siteConfig.phoneDisplay} />
-            <ContactLine icon={Mail} href={`mailto:${siteConfig.email}`} label={siteConfig.email} />
-            <ContactLine icon={CalendarDays} href={BOOKING_URL} label={copy.bookLabel} external />
+            <ContactLine icon={Mail} href={`mailto:${siteConfig.email}`} label={copy.emailAction} />
+            <ContactLine icon={CalendarDays} href={requestUrl} label={copy.bookLabel} />
           </div>
 
           <div className="panel-ink relative z-10 mt-6 rounded-[28px] px-5 py-5 text-sm leading-7 text-white/74">

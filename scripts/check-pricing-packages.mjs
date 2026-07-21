@@ -1,24 +1,80 @@
 import assert from "node:assert/strict"
 import fs from "node:fs/promises"
-import { getOffer, getPricingCopy, pricing, resolveRequestedOffer } from "../src/lib/pricing.js"
+import {
+  formatCadAmount,
+  getOffer,
+  getOfferByPlanId,
+  getParentPaymentPresentation,
+  getPaymentLinkDefaultAmountCad,
+  getPaymentLinkOfferLabel,
+  getPricingCopy,
+  normalizePaymentLinkOfferCode,
+  paymentLinkOfferCodes,
+  pricing,
+  resolveRequestedOffer,
+} from "../src/lib/pricing.js"
 
 const expected = [
-  ["targeted_session", 1, 65, 65],
-  ["momentum_block", 4, 250, 62.5],
-  ["progression_block", 10, 600, 60],
+  ["targeted_session", "PLAN-FIRST-60", 1, 65, 65, 1, 65],
+  ["momentum_block", "PLAN-PACK4-250", 4, 250, 62.5, 1, 250],
+  ["progression_block", "PLAN-PACK10-600", 10, 600, 60, 2, 300],
 ]
 
 assert.deepEqual(Object.keys(pricing.offers), expected.map(([code]) => code))
-expected.forEach(([code, sessionCount, totalPriceCad, perSessionPriceCad]) => {
+expected.forEach(([code, planId, sessionCount, totalPriceCad, perSessionPriceCad, installmentCount, installmentPriceCad]) => {
   assert.deepEqual(getOffer(code), {
     ...pricing.offers[code],
     code,
   })
+  assert.equal(pricing.offers[code].planId, planId)
+  assert.deepEqual(getOfferByPlanId(planId), getOffer(code))
   assert.equal(pricing.offers[code].sessionCount, sessionCount)
   assert.equal(pricing.offers[code].totalPriceCad, totalPriceCad)
   assert.equal(pricing.offers[code].perSessionPriceCad, perSessionPriceCad)
+  assert.equal(pricing.offers[code].installmentCount, installmentCount)
+  assert.equal(pricing.offers[code].installmentPriceCad, installmentPriceCad)
   assert.equal(pricing.offers[code].durationMinutes, 60)
   assert.equal(pricing.offers[code].autoRenewal, false)
+})
+assert.equal(getOfferByPlanId("PLAN-UNKNOWN"), null)
+
+const expectedPaymentLinkOfferCodes = [
+  "first_session",
+  "weekly_follow_up",
+  "exam_sprint",
+  "catch_up",
+  "one_time",
+  "momentum_block_payment_1",
+  "progression_block_payment_1",
+  "progression_block_payment_2",
+]
+assert.deepEqual(paymentLinkOfferCodes, expectedPaymentLinkOfferCodes)
+assert.equal(Object.isFrozen(paymentLinkOfferCodes), true)
+;["first_session", "weekly_follow_up", "exam_sprint", "catch_up", "one_time"].forEach((code) => {
+  assert.equal(getPaymentLinkDefaultAmountCad(code), 65)
+})
+assert.equal(getPaymentLinkDefaultAmountCad("momentum_block_payment_1"), 250)
+assert.equal(getPaymentLinkDefaultAmountCad("progression_block_payment_1"), 300)
+assert.equal(getPaymentLinkDefaultAmountCad("progression_block_payment_2"), 300)
+
+assert.equal(normalizePaymentLinkOfferCode("progression_block_10_installment_1"), "progression_block_payment_1")
+assert.equal(normalizePaymentLinkOfferCode("weekly_follow_up_installment_2"), "progression_block_payment_2")
+assert.equal(normalizePaymentLinkOfferCode("momentum_block_payment_1"), "momentum_block_payment_1")
+assert.equal(formatCadAmount(300, "fr"), "300 $")
+assert.equal(formatCadAmount(300, "en"), "$300")
+assert.equal(getPaymentLinkOfferLabel("momentum_block_payment_1", "fr"), "Bloc d'élan — paiement unique")
+assert.equal(getPaymentLinkOfferLabel("momentum_block_payment_1", "en"), "Momentum block — single payment")
+assert.deepEqual(getParentPaymentPresentation("momentum_block_payment_1", "fr"), {
+  label: "Bloc d'élan — paiement unique",
+  creditText: "Débloque les 4 crédits",
+})
+assert.deepEqual(getParentPaymentPresentation("progression_block_payment_1", "en"), {
+  label: "Progress block — first payment",
+  creditText: "Unlocks the first 5 credits",
+})
+assert.deepEqual(getParentPaymentPresentation("weekly_follow_up_installment_2", "fr"), {
+  label: "Bloc de progression — deuxième paiement",
+  creditText: "Débloque les 5 derniers crédits",
 })
 
 ;["fr", "en"].forEach((locale) => {
@@ -58,9 +114,16 @@ assert.match(requestForm, /offer_recommended: offer/)
 assert.match(pricingSection, /methode:pricing-offers-view/)
 assert.match(pricingSection, /methode:pricing-offer-selected/)
 assert.match(requestForm, /methode:first-session-request-submit/)
+assert.match(requestPage, /getOffer\(requestedOffer\)/)
+assert.match(requestPage, /formatCadAmount/)
+const duplicatedPriceLiteral = /(?:\$(?:65|250|300|600|62[.,]50)|(?:65|250|300|600|62[.,]50)\s*\$)/
+assert.doesNotMatch(requestPage, duplicatedPriceLiteral, "FirstSessionRequest must derive displayed catalogue prices")
+assert.doesNotMatch(pricingSection, duplicatedPriceLiteral, "PricingSection must derive displayed catalogue prices")
 assert.doesNotMatch(pricingSection, /Séance Déclic/)
 
 const copyFiles = [
+  "src/pages/Accueil.jsx",
+  "src/pages/AccueilEn.jsx",
   "src/lib/assistantConfig.js",
   "src/lib/leadDiagnostic.js",
   "src/components/GrowthProgramSection.jsx",
@@ -71,8 +134,37 @@ const copyFiles = [
   "src/pages/ResourcesHub.jsx",
 ]
 const sources = await Promise.all(copyFiles.map((file) => fs.readFile(new URL(`../${file}`, import.meta.url), "utf8")))
+const forbiddenPublicOfferName = /D(?:é|\\u00e9|\\u00E9|Ã©|ÃƒÂ©|ÃƒÆ’Ã‚Â©)clic|[Ww]eekly follow-up package/
 sources.forEach((source, index) => {
-  assert.doesNotMatch(source, /S(?:é|\\u00e9)ance D(?:é|\\u00e9)clic|D(?:é|\\u00e9)clic \/ one-off session|weekly follow-up package/i, copyFiles[index])
+  assert.doesNotMatch(
+    source,
+    forbiddenPublicOfferName,
+    copyFiles[index],
+  )
+})
+
+async function collectFrontendSources(directoryUrl) {
+  const entries = await fs.readdir(directoryUrl, { withFileTypes: true })
+  const nested = await Promise.all(entries.map(async (entry) => {
+    const entryUrl = new URL(`${entry.name}${entry.isDirectory() ? "/" : ""}`, directoryUrl)
+    if (entry.isDirectory()) return collectFrontendSources(entryUrl)
+    return /\.(?:js|jsx)$/.test(entry.name) ? [entryUrl] : []
+  }))
+  return nested.flat()
+}
+
+const frontendSourceUrls = await collectFrontendSources(new URL("../src/", import.meta.url))
+for (const sourceUrl of frontendSourceUrls) {
+  const source = await fs.readFile(sourceUrl, "utf8")
+  assert.doesNotMatch(source, forbiddenPublicOfferName, sourceUrl.pathname)
+}
+
+const publicPackagePriceLiteral = /(?:\$(?:65|250|300|600|62[.,]50)|(?:65|250|300|600|62[.,]50)\s*\$)/
+const homeSources = sources.slice(0, 2)
+homeSources.forEach((source, index) => {
+  assert.match(source, /getOffer\(/, `${copyFiles[index]} must read offer prices from pricing`)
+  assert.match(source, /formatCadAmount\(/, `${copyFiles[index]} must localize catalogue prices`)
+  assert.doesNotMatch(source, publicPackagePriceLiteral, `${copyFiles[index]} must not duplicate package price literals`)
 })
 
 const [diagnostic, diagnosticPanel, assistantWidget, offerPathways, growthProgram, resourcesHub] = await Promise.all([
@@ -106,5 +198,28 @@ assert.match(growthProgram, /\?offer=\$\{card.offerCode\}/)
 })
 assert.match(resourcesHub, /key=\{offerCode\}/)
 assert.match(resourcesHub, /\?offer=\$\{offerCode\}/)
+
+const portalSource = await fs.readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
+assert.doesNotMatch(portalSource, /SÃ©ance DÃ©clic|DÃ©clic \/ one-off session/)
+assert.doesNotMatch(portalSource, /Séance Déclic|Déclic \/ one-off session/)
+assert.doesNotMatch(portalSource, /pricing\.weeklyFollowUp/)
+assert.match(portalSource, /paymentLinkOfferCodes\.map/)
+assert.match(portalSource, /getPaymentLinkDefaultAmountCad/)
+assert.match(portalSource, /formatCadAmount\(payment\.amount_cad, locale\)/)
+assert.match(portalSource, /normalizePaymentLinkOfferCode\(link\.offer\) === offer/)
+assert.match(portalSource, /pricing\.offers\.progression_block\.installmentPriceCad/)
+assert.doesNotMatch(portalSource, /(?:\$300|300\s*\$)/, "Portal midpoint copy must derive the installment price")
+
+const crmSource = await fs.readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
+const extractStringArray = (source, constantName) => {
+  const body = source.match(new RegExp(`const ${constantName} = \\[([\\s\\S]+?)\\];`))?.[1] || ""
+  return [...body.matchAll(/"([^"]+)"/g)].map((match) => match[1])
+}
+const crmSessionOfferCodes = extractStringArray(crmSource, "SESSION_TYPE_OPTIONS")
+const crmPackageOfferCodes = extractStringArray(crmSource, "PACKAGE_PAYMENT_OFFER_CODES")
+assert.deepEqual([...crmSessionOfferCodes, ...crmPackageOfferCodes], expectedPaymentLinkOfferCodes)
+assert.match(crmSource, /const PAYMENT_LINK_OFFER_OPTIONS = \[\s*\.\.\.SESSION_TYPE_OPTIONS,\s*\.\.\.PACKAGE_PAYMENT_OFFER_CODES,\s*\];/)
+const parentActivitySource = crmSource.match(/function buildParentActivityTimeline_\([\s\S]+?\n}\n/)?.[0] || ""
+assert.doesNotMatch(parentActivitySource, /payment\.offer/)
 
 console.log("Pricing package contract passed.")

@@ -8,7 +8,7 @@ Le premier setup doit chercher:
 
 - des appels
 - des demandes via formulaire
-- des clics de reservation
+- des demandes de séance créées
 
 Le but du premier mois n'est pas de "faire du volume".
 Le but est d'identifier:
@@ -23,9 +23,13 @@ Le site peut deja envoyer:
 
 - `page_view`
 - `generate_lead`
-- `book_appointment`
+- `book_appointment` pour le clic vers le flux de demande de séance
 - `contact` pour les clics telephone
-- `qualify_lead` pour la completion du diagnostic
+- `qualify_lead` pour la complétion du mini-bilan
+- `first_session_request_created` lorsqu'une courte demande publique est réellement envoyée, sans compte portail
+- `session_request_created` lorsqu'une demande de séance est créée au portail par un client actif
+- `session_confirmed` lorsqu'une séance est confirmée au portail
+- `plan_enrollment_created` lorsqu'une inscription de Bloc d'élan ou de Bloc de progression est créée après le jumelage; une cadence hebdomadaire ou aux deux semaines reste une préférence d'horaire
 
 Variables prevues:
 
@@ -42,13 +46,13 @@ Variables prevues:
 
 - Appels
 - Formulaire envoye
-- Clic reservation
+- Courte demande de séance envoyée
 
 ### Conversion secondaire
 
-- Diagnostic complete
+- Mini-bilan complété
 
-Ne pas optimiser d'abord pour le diagnostic seul. Il sert surtout a comprendre l'intention du lead.
+Ne pas optimiser d'abord pour le mini-bilan seul ni pour le simple clic vers le portail. Ils servent surtout à comprendre l'intention du lead. Mesurer ensuite les courtes demandes envoyées, les séances confirmées/tenues et le passage éventuel au bloc de progression.
 
 ## 4. Campagnes a lancer
 
@@ -171,8 +175,9 @@ But:
 - Preparation examen maths
 - Preparation examen sciences
 - Aide secondaire 4 maths
-- Appel diagnostic rapide
-- Reservation simple en ligne
+- Demande de séance sans compte
+- Séance ciblée 65 $ / 60 min
+- Bloc de progression 10 séances
 - En ligne partout au Quebec
 - Montreal et Laval
 - Clarte avant l'examen
@@ -183,9 +188,9 @@ But:
 
 ### Descriptions
 
-- Clarifiez la situation vite avec un diagnostic, un appel ou une seance ciblee en maths et sciences.
+- Envoyez une courte demande sans créer de compte. On confirme le bon tuteur et le créneau avant tout paiement.
 - Tutorats en ligne partout au Quebec et selon le secteur a Montreal et Laval.
-- Preparation d'examen, rattrapage et suivi hebdomadaire pour secondaire 1 a 5.
+- Preparation d'examen, rattrapage et bloc de progression pour secondaire 1 a 5.
 - Le but n'est pas juste plus d'heures. Le but est une meilleure direction et une revision utile.
 
 ## 8. Sitelinks recommandes
@@ -194,7 +199,7 @@ But:
 - `Maths secondaire` -> `/maths`
 - `Sciences secondaire` -> `/sciences`
 - `Temoignages` -> `/temoignages`
-- `Diagnostic` -> `/`
+- `Demander une séance` -> `/demande`
 - `Tutorat Montreal` -> `/tutorat-montreal`
 
 ## 9. Assets recommandes
@@ -204,7 +209,7 @@ But:
 - sitelinks
 - structured snippets:
   - `Matieres: Maths, Sciences, Physique, Chimie`
-  - `Formats: En ligne, Presentiel, Suivi hebdomadaire, Sprint examen`
+  - `Formats: En ligne, Presentiel, Bloc de progression, Sprint examen`
 
 ## 10. Reglages de lancement
 
@@ -235,7 +240,8 @@ Le plus important est:
 
 - appels
 - formulaires
-- clics reservation
+- demandes de séance créées
+- séances confirmées
 - termes de recherche reels
 - mots-cles a exclure
 - pages qui convertissent le mieux
@@ -246,7 +252,7 @@ Si une campagne apporte des clics mais pas:
 
 - d'appels
 - de formulaires
-- de reservations
+- de demandes de séance créées
 
 alors il faut corriger:
 

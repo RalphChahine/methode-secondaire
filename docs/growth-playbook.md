@@ -2,24 +2,25 @@
 
 ## 1. Où est l'argent maintenant
 
-- À `25 h / semaine x 70 $`, le rythme actuel représente environ `1 750 $ / semaine` avant impôts et avant frais.
+- À `25 h / semaine x 65 $`, le rythme actuel représente environ `1 625 $ / semaine` avant impôts et avant frais.
 - Le plus gros plafond actuel n'est pas la demande: c'est le temps.
 - Les trois leviers les plus rentables à court terme sont:
   - augmenter le tarif des nouveaux clients
   - mieux emballer les offres
   - vendre plus de résultats et de structure, pas seulement des heures
 
-## 2. Les meilleurs modèles observés
+## 2. Principes à tester, pas recette universelle
 
-Les meilleurs sites de tutorat aux États-Unis ne vendent presque jamais "une heure de cours" en premier.
+Les parcours de tutorat observés varient : certains commencent par un formulaire et un appel, d'autres par une première séance ou une réservation directe. Il ne faut donc pas présenter un funnel unique comme une vérité scientifique.
 
-Ils vendent plutôt:
+Le principe retenu pour Méthode Secondaire est de réduire l'incertitude du parent avec un premier geste lisible :
 
-1. un diagnostic ou une évaluation
-2. un plan personnalisé
-3. un suivi récurrent ou un sprint intensif
-4. des preuves de résultats
-5. parfois des petits groupes ou des programmes plus scalables
+1. une courte demande sans compte;
+2. l'équipe confirme le tuteur et le créneau;
+3. le parent confirme le paiement; le portail est invité ensuite pour le suivi;
+4. le mini-bilan reste une aide facultative si le format est flou, et l'appel une voie pour l'urgence.
+
+La littérature soutient surtout la réduction du choix complexe et la transparence d'une offre d'essai; elle ne prouve pas qu'un appel ou un mini-bilan convertira mieux pour cette audience. Mesurer les séances réellement demandées, tenues puis poursuivies reste indispensable.
 
 ## 3. Ce qu'il faut vendre avant un cours en ligne complet
 
@@ -30,6 +31,8 @@ Ils vendent plutôt:
 - `Bloc de progression` : `10 séances de 60 min / 600 $` (`60 $ par séance`), en `2 paiements de 300 $`, sans renouvellement automatique.
 
 La cadence est confirmée après le jumelage. Elle décrit le rythme choisi avec la famille; ce n'est pas un produit, un abonnement ou un forfait distinct.
+
+Le mini-bilan est un outil d'orientation facultatif. Le Sprint examen, le rattrapage et l'aide aux devoirs sont des situations d'usage, pas des prix ou produits concurrents à afficher en première ligne.
 
 ### Offres à lancer ensuite
 
@@ -57,25 +60,31 @@ Le site doit faire sentir plus fortement:
 ### Cette semaine
 
 - Passer sur un vrai domaine custom
-- Ajouter plus de témoignages avec:
+- Ajouter uniquement des témoignages réels, consentis et vérifiables, avec:
   - niveau
   - matière
   - type de besoin
   - résultat ou changement observé
 - Ajouter une section fondateur / visage / approche humaine
 - Demander des avis Google à chaque famille satisfaite
-- Garder le diagnostic comme porte d'entrée principale
+- Garder la demande courte comme porte d'entrée principale; mini-bilan si le parent hésite, appel si l'urgence le justifie
 
 ### Ce mois-ci
 
 - Lancer une page dédiée `Sprint examen`
-- Lancer une page dédiée `Suivi hebdomadaire`
+- Maintenir les routes historiques comme compatibilité interne, mais présenter les trois offres canoniques : Séance ciblée, Bloc d'élan et Bloc de progression. L'hebdomadaire reste une cadence, pas une offre distincte.
 - Lancer une page dédiée `Remise à niveau`
 - Ajouter 1 ressource haute intention par semaine
-- Mettre en avant un vrai "premier pas" unique:
-  - appeler
-  - ou faire le diagnostic
-  - puis réserver
+- Mettre en avant un parcours sans double étape obligatoire:
+  - demande courte sans compte;
+  - confirmation du tuteur et du créneau;
+  - paiement, puis invitation au portail pour le suivi.
+
+### Références de travail
+
+- Chernev, Böckenholt et Goodman (2015), *Choice overload: A conceptual review and meta-analysis* : https://doi.org/10.1016/j.jcps.2014.08.002
+- Bednall et al. (2018), *A trial engagement? Innovative free and other service trials* : https://doi.org/10.1108/JSM-12-2016-0420
+- Habel et al. (2018), *How price fairness and fit affect customer tariff evaluations* : https://doi.org/10.1108/JOSM-10-2017-0270
 
 ## 6. Contenu à publier
 
@@ -86,7 +95,7 @@ Ne pas publier un blog générique. Publier des pages qui répondent à une inte
 - examen de maths secondaire 4
 - aide en chimie secondaire 5
 - physique secondaire: quoi reprendre avant l'examen
-- comment savoir si un élève a besoin d'un suivi hebdomadaire
+- comment savoir si un élève bénéficierait d'un bloc de progression avec une cadence régulière
 - rattrapage scolaire au secondaire: quand agir vite
 - préparation aux examens ministériels
 
@@ -105,10 +114,10 @@ Ne pas publier un blog générique. Publier des pages qui répondent à une inte
 
 ### Niveau 2
 
-- Vendre des blocs:
-  - 4 séances
-  - 6 séances
-  - sprint avant examen
+- Vendre le catalogue canonique:
+  - séance ciblée : 65 $ / 60 min
+  - Bloc d'élan : 4 séances de 60 min / 250 $
+  - Bloc de progression : 10 séances de 60 min / 600 $
 
 ### Niveau 3
 

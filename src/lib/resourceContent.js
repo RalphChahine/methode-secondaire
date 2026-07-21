@@ -1002,7 +1002,7 @@ export const resourcePageContent = {
         {
           title: "Choisir un rythme cohérent",
           description:
-            "Certaines situations demandent une aide ponctuelle avant un examen, d'autres un suivi hebdomadaire pour stabiliser tout le reste.",
+            "Certaines situations demandent une aide ponctuelle avant un examen, d'autres un bloc de progression de 10 séances pour stabiliser tout le reste; un rythme hebdomadaire peut ensuite être proposé après le jumelage.",
         },
       ],
       mistakesTitle: "Les faux bons reflexes les plus frequents",
@@ -1015,7 +1015,7 @@ export const resourcePageContent = {
       tutoringPoints: [
         "Quand vous êtes à Montréal et que le secondaire 4 devient un vrai point de friction.",
         "Quand l'élève a besoin d'explications nettes sur les fonctions et les problèmes.",
-        "Quand vous voulez un premier échange rapide avant de réserver.",
+        "Quand vous voulez un premier échange rapide avant de demander une séance.",
       ],
       faq: [
         {
@@ -1024,9 +1024,9 @@ export const resourcePageContent = {
             "Oui. L'en ligne reste disponible partout à Montréal, avec du présentiel selon le secteur et le bon profil retenu.",
         },
         {
-          question: "Le secondaire 4 justifie-t-il déjà un suivi hebdomadaire ?",
+          question: "Le secondaire 4 justifie-t-il déjà un bloc de progression ?",
           answer:
-            "Souvent oui, surtout si les fonctions ou la méthode commencent à glisser. Un suivi régulier évite que le retard se fixe avant le secondaire 5.",
+            "Souvent oui, surtout si les fonctions ou la méthode commencent à glisser. Un bloc de 10 séances peut éviter que le retard se fixe avant le secondaire 5; le rythme hebdomadaire se confirme ensuite seulement s'il convient.",
         },
       ],
       ctaTitle: "Vous cherchez un tuteur de maths à Montréal pour le secondaire 4 ?",
@@ -1068,7 +1068,7 @@ export const resourcePageContent = {
         {
           title: "Choose the right rhythm",
           description:
-            "Some cases need a short burst before an exam, while others need weekly follow-up to stabilize the whole course.",
+            "Some cases need a short burst before an exam, while others benefit from a 10-session progress block to stabilize the whole course; a weekly rhythm can then be suggested after matching.",
         },
       ],
       mistakesTitle: "The most common false good ideas",
@@ -1081,7 +1081,7 @@ export const resourcePageContent = {
       tutoringPoints: [
         "When you are in Montreal and Secondary 4 has become a real point of friction.",
         "When the student needs clearer explanations around functions and problem solving.",
-        "When you want a fast first conversation before booking.",
+        "When you want a fast first conversation before requesting a session.",
       ],
       faq: [
         {
@@ -1090,9 +1090,9 @@ export const resourcePageContent = {
             "Yes. Online sessions remain available across Montreal, with in-person options depending on area and the right tutor profile.",
         },
         {
-          question: "Does Secondary 4 already justify weekly follow-up?",
+          question: "Does Secondary 4 already justify a progress block?",
           answer:
-            "Often yes, especially if functions or method are starting to slide. Regular follow-up can keep the issue from hardening before the final years.",
+            "Often yes, especially if functions or method are starting to slide. A 10-session progress block can keep the issue from hardening before the final years; a weekly rhythm is only confirmed if it fits after matching.",
         },
       ],
       ctaTitle: "Looking for a Montreal math tutor for Secondary 4?",
@@ -1300,7 +1300,7 @@ export const resourcePageContent = {
       ],
       ctaTitle: "Vous reconnaissez votre ado dans ce tableau ?",
       ctaText:
-        "Methode Secondaire peut vous aider a poser un diagnostic plus clair, choisir la bonne forme d'accompagnement et remettre les maths ou les sciences dans un cadre plus respirable.",
+        "Methode Secondaire peut vous aider à clarifier la situation, choisir la bonne forme d'accompagnement et remettre les maths ou les sciences dans un cadre plus respirable.",
       relatedRouteKeys: ["parentSupportSignals", "catchUp", "scienceExamPrep"],
     },
     en: {

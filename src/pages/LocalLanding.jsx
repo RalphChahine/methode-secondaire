@@ -10,7 +10,7 @@ import {
   HeroShowcase,
 } from "@/components/SimpleMarketingSections"
 import { Button } from "@/components/ui/button"
-import { BOOKING_URL } from "@/config/booking"
+import { BOOKING_URL, BOOKING_URL_EN } from "@/config/booking"
 import { localPageConfigs } from "@/lib/conversionContent"
 import {
   buildAlternates,
@@ -31,6 +31,7 @@ export default function LocalLanding({ forcedRouteKey }) {
   const routeKey = forcedRouteKey || getRouteKeyFromPath(location.pathname)
   const page = localPageConfigs[routeKey]?.[locale]
   const path = getLocalizedPath(routeKey, locale)
+  const requestUrl = locale === "en" ? BOOKING_URL_EN : BOOKING_URL
 
   if (!page) {
     return (
@@ -119,15 +120,14 @@ export default function LocalLanding({ forcedRouteKey }) {
           title={page.heroTitle}
           description={page.heroText}
           primaryAction={{
-            label: locale === "en" ? "Call first" : "Appeler d'abord",
-            href: `tel:${siteConfig.phone}`,
-            icon: Phone,
+            label: locale === "en" ? "Request the right starting point" : "Demander le bon point de départ",
+            href: requestUrl,
+            icon: CalendarDays,
           }}
           secondaryAction={{
-            label: locale === "en" ? "Book a focused session" : "Réserver une séance ciblée",
-            href: BOOKING_URL,
-            external: true,
-            icon: CalendarDays,
+            label: locale === "en" ? "Call if urgent" : "Appeler si c'est urgent",
+            href: `tel:${siteConfig.phone}`,
+            icon: Phone,
           }}
           panelEyebrow={locale === "en" ? "Local reassurance" : "Repères locaux"}
           panelTitle={
@@ -169,13 +169,13 @@ export default function LocalLanding({ forcedRouteKey }) {
           }
           description={
             locale === "en"
-              ? "If the need is clear, booking works well. If the family still needs direction, calling first is often better."
-              : "Si le besoin est clair, la réservation fonctionne bien. Si la famille a encore besoin d'orientation, appeler d'abord aide souvent davantage."
+              ? "Send a short request whether the need is one-time or likely to need a 10-session progress block. The optional mini-assessment can help if the format is still unclear."
+              : "Envoyez une courte demande, que le besoin soit ponctuel ou qu'un bloc de progression de 10 séances semble utile. Le mini-bilan facultatif peut aider si le format reste flou."
           }
           bullets={[
             locale === "en"
-              ? "Mention the subject, grade level and whether the need is one-time or weekly."
-              : "Mentionnez la matière, le niveau et si le besoin est ponctuel ou hebdomadaire.",
+              ? "Mention the subject, grade level and whether the need is one-time or likely to continue; you can also say if a weekly time would help."
+              : "Mentionnez la matière, le niveau et si le besoin est ponctuel ou appelé à se poursuivre; vous pouvez aussi dire si un créneau hebdomadaire aiderait.",
             locale === "en"
               ? "If online support is acceptable, say it right away."
               : "Si le format en ligne vous convient, dites-le dès le départ.",
@@ -195,8 +195,8 @@ export default function LocalLanding({ forcedRouteKey }) {
           }
           description={
             locale === "en"
-              ? "Short practical answers before booking."
-              : "Des réponses pratiques et courtes avant de réserver."
+              ? "Short practical answers before requesting a session."
+              : "Des réponses pratiques et courtes avant de demander une séance."
           }
           items={page.faq}
           columns="lg:grid-cols-3"

@@ -7,8 +7,10 @@ import {
   FaqGrid,
   FeatureGrid,
   HeroShowcase,
+  StepGrid,
 } from "@/components/SimpleMarketingSections"
-import { BOOKING_URL } from "@/config/booking"
+import { Button } from "@/components/ui/button"
+import { BOOKING_URL, BOOKING_URL_EN } from "@/config/booking"
 import {
   buildAlternates,
   getAlternateOgLocale,
@@ -26,8 +28,8 @@ const contentByLocale = {
     title: "Des maths plus claires, plus calmes et plus structurées.",
     description:
       "Le but n'est pas d'empiler des exercices. Le but est que l'élève comprenne enfin quoi faire devant un problème, une équation ou un examen.",
-    primary: "Appeler pour un diagnostic maths",
-    secondary: "Réserver une séance de maths",
+    primary: "Appeler pour une orientation maths",
+    secondary: "Demander une séance de maths",
     panelEyebrow: "Bon fit",
     panelTitle: "Quand cette page aide le plus",
     panelItems: [
@@ -95,16 +97,16 @@ const contentByLocale = {
       {
         question: "Est-ce utile avant un examen seulement ?",
         answer:
-          "Oui avant un examen, mais aussi en suivi régulier quand il faut remettre de la stabilité dans la matière.",
+          "Oui avant un examen, mais aussi avec un bloc de progression de 10 séances quand il faut remettre de la stabilité dans la matière.",
       },
     ],
     contactTitle: "Parlez-nous du besoin en maths",
     contactDescription:
-      "Expliquez le niveau, le chapitre ou le type de difficulté. On pourra orienter vers la séance ou le suivi le plus utile.",
+      "Expliquez le niveau, le chapitre ou le type de difficulté. On pourra orienter vers une séance ciblée, un bloc d'élan ou un bloc de progression selon le besoin.",
     contactBullets: [
       "Mentionnez le niveau et les notions les plus floues.",
       "Si un examen approche, indiquez la date.",
-      "Le suivi hebdomadaire se discute mieux par téléphone d'abord.",
+      "Si un bloc de progression peut aider, dites si un créneau hebdomadaire vous conviendrait; l'équipe le confirme après le jumelage.",
     ],
     ctaBadge: "Maths • Québec",
     ctaTitle: "Quand les maths redeviennent lisibles, tout avance mieux.",
@@ -122,8 +124,8 @@ const contentByLocale = {
     title: "Clearer, calmer and more structured math support.",
     description:
       "The goal is not to pile up worksheets. The goal is for the student to finally know what to do in front of a problem, equation or exam.",
-    primary: "Call for a math diagnostic",
-    secondary: "Book a math session",
+    primary: "Call for math guidance",
+    secondary: "Request a math session",
     panelEyebrow: "Best fit",
     panelTitle: "When this page helps most",
     panelItems: [
@@ -191,7 +193,7 @@ const contentByLocale = {
       {
         question: "Is this only useful right before an exam?",
         answer:
-          "It helps before exams, but also works very well as weekly support when the goal is rebuilding stability.",
+          "It helps before exams, but a 10-session progress block can also rebuild stability when support needs to continue.",
       },
     ],
     contactTitle: "Tell us about the math need",
@@ -200,7 +202,7 @@ const contentByLocale = {
     contactBullets: [
       "Mention the grade level and the concepts that feel weakest.",
       "If an exam is close, include the date.",
-      "Weekly follow-up is usually best discussed by phone first.",
+      "If a progress block could help, say whether a weekly time would work; the team confirms it after matching.",
     ],
     ctaBadge: "Math • Quebec",
     ctaTitle: "When math becomes readable again, everything moves more smoothly.",
@@ -220,6 +222,7 @@ export default function Maths() {
   const locale = getLocaleFromPath(location.pathname)
   const copy = contentByLocale[locale]
   const path = getLocalizedPath("maths", locale)
+  const requestUrl = locale === "en" ? BOOKING_URL_EN : BOOKING_URL
 
   const schema = {
     "@context": "https://schema.org",
@@ -270,8 +273,7 @@ export default function Maths() {
           }}
           secondaryAction={{
             label: copy.secondary,
-            href: BOOKING_URL,
-            external: true,
+            href: requestUrl,
             icon: CalendarDays,
           }}
           panelEyebrow={copy.panelEyebrow}
@@ -281,17 +283,24 @@ export default function Maths() {
           journey={getParentJourney(locale)}
         />
 
+        <StepGrid
+          eyebrow={copy.stepsEyebrow}
+          title={copy.stepsTitle}
+          description={copy.stepsDescription}
+          steps={copy.steps}
+        />
+
         <FeatureGrid
           eyebrow={copy.skillsEyebrow}
           title={copy.skillsTitle}
           description={copy.skillsDescription}
           items={copy.skills}
-          columns="md:grid-cols-2"
+          columns="grid-cols-1 sm:grid-cols-2"
         />
 
         <FaqGrid
           eyebrow="FAQ"
-          title={locale === "en" ? "Quick answers before booking" : "Réponses rapides avant de réserver"}
+          title={locale === "en" ? "Quick answers before requesting a session" : "Réponses rapides avant de demander une séance"}
           description={
             locale === "en"
               ? "A few short points to help a parent move forward with more confidence."
@@ -299,6 +308,41 @@ export default function Maths() {
           }
           items={copy.faq}
         />
+
+        <section className="pt-12 sm:pt-16">
+          <div className="action-surface rounded-[34px] p-7 text-white sm:p-10">
+            <div className="max-w-3xl">
+              <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white/85">
+                {copy.ctaBadge}
+              </div>
+              <h2 className="balanced-copy mt-5 font-display text-4xl font-semibold leading-[0.98] sm:text-5xl">
+                {copy.ctaTitle}
+              </h2>
+              <p className="mt-4 text-base leading-8 text-white/75 sm:text-lg">{copy.ctaDescription}</p>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <Button
+                  asChild
+                  className="w-full rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
+                >
+                  <a href={`tel:${siteConfig.phone}`}>
+                    <Phone className="h-4 w-4" />
+                    {copy.primary}
+                  </a>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white sm:w-auto"
+                >
+                  <a href={requestUrl}>
+                    <CalendarDays className="h-4 w-4" />
+                    {copy.secondary}
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <ContactSection
           locale={locale}

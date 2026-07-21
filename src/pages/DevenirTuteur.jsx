@@ -196,17 +196,27 @@ const contentByLocale = {
     jobPostingDescription:
       "Méthode Secondaire recrute des tuteurs en mathématiques, sciences, physique et chimie pour accompagner des élèves du secondaire au Québec. Les candidatures sont ouvertes pour des profils pédagogues, fiables et capables d'expliquer clairement.",
     formSuccessTitle: "Candidature envoyée",
-    formSuccessText: "Le profil a bien été transmis. La prochaine étape pourra se faire par retour de message.",
+    formSuccessText:
+      "Le profil a bien été transmis. L'équipe examine les matières, les disponibilités et le secteur avant de proposer un échange. L'accès tuteur est créé seulement après cette validation.",
     formSuccessButton: "Envoyer une autre candidature",
     formEmail: "Email",
     formName: "Nom complet",
     formSubjects: "Matières et niveaux",
     formAvailability: "Disponibilités",
+    formFormat: "Format que vous pouvez offrir",
+    formSector: "Secteur ou zone de déplacement",
     formExperience: "Expérience et approche",
     formNamePlaceholder: "Nom complet",
     formEmailPlaceholder: "adresse@email.com",
     formSubjectsPlaceholder: "Ex. maths sec 1-5, sciences sec 3-5",
     formAvailabilityPlaceholder: "Ex. soirs de semaine, samedi matin",
+    formSectorPlaceholder: "Ex. en ligne partout au Québec, Montréal, Laval",
+    formFormatOptions: [
+      { value: "", label: "Choisir un format" },
+      { value: "online", label: "En ligne" },
+      { value: "in_person", label: "En personne" },
+      { value: "either", label: "Les deux" },
+    ],
     formExperiencePlaceholder:
       "Parlez de votre expérience, de votre façon d'expliquer et de ce qui ferait de vous un bon tuteur pour cette marque.",
     formSubmit: "Envoyer la candidature",
@@ -214,6 +224,8 @@ const contentByLocale = {
     formError:
       "Une erreur est survenue pendant l'envoi. Vous pouvez aussi candidater directement par email.",
     formCandidate: "Formulaire candidat",
+    formConsent:
+      "J'accepte que Méthode Secondaire me contacte au sujet de cette candidature. Cette demande ne crée pas encore un accès tuteur.",
   },
   en: {
     reasons: [
@@ -381,23 +393,35 @@ const contentByLocale = {
     jobPostingDescription:
       "Méthode Secondaire is hiring high school math, science, physics and chemistry tutors across Quebec. We are looking for reliable, highly pedagogical tutors who can explain clearly and support students with calm, structure and strong standards.",
     formSuccessTitle: "Application sent",
-    formSuccessText: "Your profile was submitted successfully. The next step can happen by message or email.",
+    formSuccessText:
+      "Your profile was submitted successfully. The team reviews subjects, availability and area before proposing a conversation. Tutor access is created only after that review.",
     formSuccessButton: "Send another application",
     formEmail: "Email",
     formName: "Full name",
     formSubjects: "Subjects and levels",
     formAvailability: "Availability",
+    formFormat: "Formats you can offer",
+    formSector: "Area or travel zone",
     formExperience: "Experience and approach",
     formNamePlaceholder: "Full name",
     formEmailPlaceholder: "name@email.com",
     formSubjectsPlaceholder: "Ex. math sec 1-5, science sec 3-5",
     formAvailabilityPlaceholder: "Ex. weekday evenings, Saturday mornings",
+    formSectorPlaceholder: "Ex. online across Quebec, Montreal, Laval",
+    formFormatOptions: [
+      { value: "", label: "Choose a format" },
+      { value: "online", label: "Online" },
+      { value: "in_person", label: "In person" },
+      { value: "either", label: "Both" },
+    ],
     formExperiencePlaceholder:
       "Tell us about your experience, your teaching style and what would make you a strong tutor for this brand.",
     formSubmit: "Submit application",
     formSending: "Sending...",
     formError: "An error occurred while sending. You can also apply directly by email.",
     formCandidate: "Candidate form",
+    formConsent:
+      "I agree that Methode Secondaire may contact me about this application. This request does not create a tutor login yet.",
   },
 }
 
@@ -536,14 +560,14 @@ export default function DevenirTuteur({ forcedRouteKey }) {
         <div className="absolute right-0 top-20 h-72 w-72 rounded-full bg-[#f5c977]/12 blur-3xl" />
       </div>
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
-        <section className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
+      <main className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-20 pt-7 sm:px-6 sm:pt-10 lg:px-8 lg:pb-28 lg:pt-16">
+        <section className="grid gap-6 lg:grid-cols-[0.9fr,1.1fr] lg:items-start lg:gap-10">
           <div className="max-w-3xl">
             <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
               {copy.badge}
             </Badge>
 
-            <h1 className="balanced-copy mt-7 font-display text-5xl font-semibold leading-[0.95] text-white sm:text-6xl">
+            <h1 className="balanced-copy mt-6 font-display text-4xl font-semibold leading-[0.98] text-white sm:text-6xl">
               {copy.heroTitle}
             </h1>
 
@@ -560,10 +584,10 @@ export default function DevenirTuteur({ forcedRouteKey }) {
               ))}
             </div>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button
                 asChild
-                className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
+                className="w-full justify-center rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
               >
                 <a href="#candidature">
                   {copy.ctaPrimary}
@@ -574,152 +598,127 @@ export default function DevenirTuteur({ forcedRouteKey }) {
               <Button
                 asChild
                 variant="outline"
-                className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                className="w-full justify-center rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white sm:w-auto"
               >
                 <Link to={getLocalizedPath("temoignages", locale)}>{copy.ctaSecondary}</Link>
               </Button>
             </div>
           </div>
 
-          <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
-            <div className="text-sm uppercase tracking-[0.24em] text-white/45">{copy.standardsEyebrow}</div>
-            <div className="mt-3 font-display text-3xl font-semibold">{copy.standardsTitle}</div>
-
-            <ul className="mt-6 space-y-4 text-sm text-white/80">
-              {copy.standards.map((standard) => (
-                <li key={standard} className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4">
-                  <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
-                  {standard}
-                </li>
-              ))}
-            </ul>
-          </MotionCard>
+          <div id="candidature" className="scroll-mt-28 lg:sticky lg:top-28">
+            <MotionCard className="glass-panel rounded-[28px] border-white/10 bg-white/[0.06] p-5 text-white shadow-[0_20px_70px_rgba(3,11,31,0.24)] sm:rounded-[32px] sm:p-7">
+              <div className="flex items-center justify-between gap-3 text-sm uppercase tracking-[0.2em] text-white/45">
+                <span>{copy.formCandidate}</span>
+                <span className="rounded-full border border-[#f5c977]/25 bg-[#f5c977]/10 px-3 py-1 text-[0.65rem] tracking-[0.16em] text-[#f5c977]">
+                  {locale === "en" ? "Step 1 of 4" : "\u00C9tape 1 sur 4"}
+                </span>
+              </div>
+              <h2 className="mt-3 font-display text-3xl font-semibold">{copy.formTitle}</h2>
+              <p className="mt-3 text-sm leading-7 text-white/72">{copy.applicationDescription}</p>
+              <div className="mt-6">
+                <TutorApplicationForm copy={copy} />
+              </div>
+            </MotionCard>
+          </div>
         </section>
 
-        <section className="pt-20">
-          <SectionHeader
-            eyebrow={copy.reasonsEyebrow}
+        <section className="pt-16 sm:pt-20">
+            <SectionHeader
+              eyebrow={copy.reasonsEyebrow}
             title={copy.reasonsTitle}
             description={copy.reasonsDescription}
           />
 
-          <div className="mt-8 grid gap-4 lg:grid-cols-3">
-            {copy.reasons.map((reason) => (
-              <MotionCard key={reason.title} className="rounded-[30px] border-white/10 bg-[#091a3a]/85 p-7 text-white">
-                <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
-                  <reason.icon className="h-5 w-5" />
+          <div className="mt-8 divide-y divide-white/10 border-y border-white/10 lg:grid lg:grid-cols-3 lg:divide-x lg:divide-y-0">
+            {copy.reasons.map((reason, index) => (
+              <article key={reason.title} className="min-w-0 px-0 py-6 first:pt-0 last:pb-0 lg:px-6 lg:py-0 lg:first:pl-0 lg:last:pr-0">
+                <div className="flex items-center gap-3">
+                  <div className="inline-flex rounded-2xl bg-[#f5c977] p-2.5 text-[#071631]">
+                    <reason.icon className="h-5 w-5" />
+                  </div>
+                  <span className="text-xs font-medium tracking-[0.2em] text-[#f5c977]">0{index + 1}</span>
                 </div>
-                <h2 className="mt-5 font-display text-2xl font-semibold">{reason.title}</h2>
+                <h2 className="mt-4 font-display text-2xl font-semibold text-white">{reason.title}</h2>
                 <p className="mt-3 text-sm leading-7 text-white/72">{reason.description}</p>
-              </MotionCard>
+              </article>
             ))}
           </div>
         </section>
 
-        <section className="pt-20">
-          <SectionHeader
-            eyebrow={copy.profilesEyebrow}
+        <section className="pt-16 sm:pt-20">
+            <SectionHeader
+              eyebrow={copy.profilesEyebrow}
             title={copy.profilesTitle}
             description={copy.profilesDescription}
           />
 
-          <div className="mt-8 grid gap-4 lg:grid-cols-[0.95fr,1.05fr]">
-            <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
+          <div className="mt-8 grid gap-8 border-y border-white/10 py-1 lg:grid-cols-[0.95fr,1.05fr]">
+            <div className="py-6 lg:pr-8">
               <div className="inline-flex rounded-2xl bg-white/10 p-3 text-[#f5c977]">
                 <GraduationCap className="h-5 w-5" />
               </div>
               <h2 className="mt-5 font-display text-3xl font-semibold">{copy.prioritiesTitle}</h2>
-              <ul className="mt-6 space-y-4 text-sm text-white/80">
+              <ul className="mt-5 divide-y divide-white/10 text-sm text-white/80">
                 {copy.profiles.map((profile) => (
-                  <li key={profile} className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4">
+                  <li key={profile} className="flex items-start gap-3 py-4 first:pt-0 last:pb-0">
                     <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
                     {profile}
                   </li>
                 ))}
               </ul>
-            </MotionCard>
+            </div>
 
-            <MotionCard className="rounded-[32px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-7 text-white">
+            <aside className="border-t border-white/10 py-6 lg:border-l lg:border-t-0 lg:pl-8">
               <div className="inline-flex rounded-2xl bg-white/10 p-3 text-[#f5c977]">
                 <Users className="h-5 w-5" />
               </div>
               <h2 className="mt-5 font-display text-3xl font-semibold">{copy.fitTitle}</h2>
               <p className="mt-3 text-sm leading-7 text-white/75">{copy.fitText}</p>
-              <div className="mt-6 rounded-[24px] border border-white/10 bg-white/5 p-5">
+              <div className="mt-6 border-l-2 border-[#f5c977]/70 pl-4">
                 <div className="text-sm uppercase tracking-[0.22em] text-white/45">{copy.fitBoxTitle}</div>
                 <p className="mt-3 text-sm leading-7 text-white/75">{copy.fitBoxText}</p>
               </div>
-            </MotionCard>
+            </aside>
           </div>
         </section>
 
-        <section className="pt-20">
-          <SectionHeader
-            eyebrow={copy.processEyebrow}
+        <section className="pt-16 sm:pt-20">
+            <SectionHeader
+              eyebrow={copy.processEyebrow}
             title={copy.processTitle}
             description={copy.processDescription}
           />
 
-          <div className="mt-8 grid gap-4 xl:grid-cols-4">
-            {copy.processSteps.map((step, index) => (
-              <MotionCard key={step.title} className="rounded-[28px] border-white/10 bg-[#0a1d43]/75 p-6 text-white">
-                <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
-                  {locale === "en" ? `Step 0${index + 1}` : `Étape 0${index + 1}`}
-                </div>
-                <h2 className="mt-4 font-display text-2xl font-semibold">{step.title}</h2>
-                <p className="mt-3 text-sm leading-7 text-white/72">{step.description}</p>
-              </MotionCard>
-            ))}
-          </div>
+          <ApplicationJourney steps={copy.processSteps} locale={locale} />
         </section>
 
-        <section className="pt-20">
-          <SectionHeader
-            eyebrow={copy.searchIntentEyebrow}
-            title={copy.searchIntentTitle}
-            description={copy.searchIntentDescription}
-          />
-
-          <div className="mt-8 grid gap-4 lg:grid-cols-2">
-            {copy.searchIntents.map((item) => (
-              <MotionCard key={item.title} className="rounded-[28px] border-white/10 bg-[#0a1d43]/75 p-6 text-white">
-                <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
-                  {locale === "en" ? "Search intent" : "Intention de recherche"}
-                </div>
-                <h2 className="mt-4 font-display text-2xl font-semibold">{item.title}</h2>
-                <p className="mt-3 text-sm leading-7 text-white/72">{item.description}</p>
-              </MotionCard>
-            ))}
-          </div>
-        </section>
-
-        <section id="candidature" className="scroll-mt-32 pt-20">
+        <section className="pt-16 sm:pt-20">
           <SectionHeader
             eyebrow={copy.applicationEyebrow}
             title={copy.applicationTitle}
             description={copy.applicationDescription}
           />
 
-          <div className="mt-8 grid gap-4 xl:grid-cols-[0.9fr,1.1fr]">
-            <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
+          <div className="mt-8 grid gap-8 border-y border-white/10 py-1 xl:grid-cols-[0.9fr,1.1fr]">
+            <div className="py-6 xl:pr-8">
               <div className="inline-flex rounded-2xl bg-white/10 p-3 text-[#f5c977]">
                 <Target className="h-5 w-5" />
               </div>
               <h2 className="mt-5 font-display text-3xl font-semibold">{copy.beforeTitle}</h2>
-              <ul className="mt-6 space-y-4 text-sm text-white/80">
+              <ul className="mt-5 divide-y divide-white/10 text-sm text-white/80">
                 {copy.beforeItems.map((item) => (
-                  <li key={item} className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4">
+                  <li key={item} className="flex items-start gap-3 py-4 first:pt-0 last:pb-0">
                     <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
                     {item}
                   </li>
                 ))}
               </ul>
 
-              <div className="mt-8 flex flex-wrap gap-3">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Button
                   asChild
                   variant="outline"
-                  className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                  className="w-full justify-center rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white sm:w-auto"
                 >
                   <a href={`mailto:${siteConfig.email}?subject=Candidature%20tuteur%20-%20Méthode%20Secondaire`}>
                     {copy.byEmail}
@@ -729,56 +728,61 @@ export default function DevenirTuteur({ forcedRouteKey }) {
                 <Button
                   asChild
                   variant="outline"
-                  className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                  className="w-full justify-center rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white sm:w-auto"
                 >
                   <Link to={getLocalizedPath("temoignages", locale)}>{copy.seeTestimonials}</Link>
                 </Button>
               </div>
-            </MotionCard>
+            </div>
 
-            <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
-              <div className="text-sm uppercase tracking-[0.24em] text-white/45">{copy.formCandidate}</div>
-              <h2 className="mt-3 font-display text-3xl font-semibold">{copy.formTitle}</h2>
-              <div className="mt-6">
-                <TutorApplicationForm copy={copy} />
-              </div>
-            </MotionCard>
+            <aside className="border-t border-white/10 py-6 xl:border-l xl:border-t-0 xl:pl-8">
+              <div className="text-sm uppercase tracking-[0.24em] text-white/45">{copy.standardsEyebrow}</div>
+              <h2 className="mt-3 font-display text-3xl font-semibold">{copy.standardsTitle}</h2>
+              <ul className="mt-5 divide-y divide-white/10 text-sm text-white/80">
+                {copy.standards.map((standard) => (
+                  <li key={standard} className="flex items-start gap-3 py-4 first:pt-0 last:pb-0">
+                    <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                    {standard}
+                  </li>
+                ))}
+              </ul>
+            </aside>
           </div>
         </section>
 
-        <section className="pt-20">
+        <section className="pt-16 sm:pt-20">
           <SectionHeader
             eyebrow={copy.faqEyebrow}
             title={copy.faqTitle}
             description={copy.faqDescription}
           />
 
-          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+          <div className="mt-8 border-y border-white/10">
             {copy.faqItems.map((item) => (
               <FaqItem key={item.question} question={item.question} answer={item.answer} />
             ))}
           </div>
         </section>
 
-        <section className="pt-20">
-          <MotionCard className="rounded-[34px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-8 text-white sm:p-10">
+        <section className="pt-16 sm:pt-20">
+          <MotionCard className="rounded-[28px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-6 text-white sm:rounded-[34px] sm:p-10">
             <div className="max-w-3xl">
               <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white/85">
                 {copy.finalBadge}
               </div>
               <h2 className="mt-5 font-display text-4xl font-semibold sm:text-5xl">{copy.finalTitle}</h2>
               <p className="mt-4 text-base leading-8 text-white/75 sm:text-lg">{copy.finalText}</p>
-              <div className="mt-7 flex flex-wrap gap-3">
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Button
                   asChild
-                  className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
+                  className="w-full justify-center rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
                 >
                   <a href="#candidature">{copy.finalPrimary}</a>
                 </Button>
                 <Button
                   asChild
                   variant="outline"
-                  className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                  className="w-full justify-center rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white sm:w-auto"
                 >
                   <Link to={getLocalizedPath("temoignages", locale)}>{copy.finalSecondary}</Link>
                 </Button>
@@ -803,12 +807,82 @@ function SectionHeader({ eyebrow, title, description }) {
   )
 }
 
+function ApplicationJourney({ steps, locale }) {
+  const stepLabel = locale === "en" ? "Step" : "\u00C9tape"
+  const journeyTitle = locale === "en" ? "Your application path" : "Votre parcours de candidature"
+  const startingLabel = locale === "en" ? "Start here" : "Commencez ici"
+  const nextLabel = locale === "en" ? "Then" : "Ensuite"
+  const totalLabel = locale === "en" ? `${steps.length} steps` : `${steps.length} \u00E9tapes`
+
+  return (
+    <div className="mt-8 rounded-[28px] border border-white/10 bg-[#071a3d]/70 p-5 text-white sm:p-7">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <div className="text-sm uppercase tracking-[0.2em] text-[#f5c977]">{journeyTitle}</div>
+          <p className="mt-2 text-sm leading-6 text-white/65">
+            {locale === "en"
+              ? "A clear four-step review, so you always know what happens next."
+              : "Quatre \u00E9tapes claires pour toujours savoir ce qui suit."}
+          </p>
+        </div>
+        <span className="rounded-full border border-white/12 bg-white/5 px-3 py-1.5 text-xs font-medium tracking-[0.12em] text-white/70">
+          {totalLabel}
+        </span>
+      </div>
+
+      <div className="mt-5 h-1 rounded-full bg-white/10" aria-hidden="true">
+        <span className="block h-full w-1/4 rounded-full bg-[#f5c977]" />
+      </div>
+
+      <ol className="mt-5 divide-y divide-white/10 border-y border-white/10 xl:grid xl:grid-cols-4 xl:divide-x xl:divide-y-0">
+        {steps.map((step, index) => {
+          const isStartingPoint = index === 0
+
+          return (
+            <li
+              key={step.title}
+              className="min-w-0 py-4 first:pt-0 last:pb-0 xl:px-5 xl:py-0 xl:first:pl-0 xl:last:pr-0"
+            >
+              <div className="flex items-start gap-3">
+                <span
+                  className={`inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-semibold ${
+                    isStartingPoint
+                      ? "border-[#f5c977] bg-[#f5c977] text-[#071631]"
+                      : "border-white/15 bg-white/[0.04] text-white/70"
+                  }`}
+                >
+                  {index + 1}
+                </span>
+                <div className="min-w-0">
+                  <div className="text-[0.68rem] font-medium uppercase tracking-[0.16em] text-[#f5c977]">
+                    {isStartingPoint ? startingLabel : `${nextLabel} · ${stepLabel} ${index + 1}`}
+                  </div>
+                  <h3 className="mt-1 font-display text-xl font-semibold text-white">{step.title}</h3>
+                  <p className="mt-2 text-sm leading-6 text-white/65">{step.description}</p>
+                </div>
+              </div>
+            </li>
+          )
+        })}
+      </ol>
+    </div>
+  )
+}
+
 function FaqItem({ question, answer }) {
   return (
-    <MotionCard className="glass-panel rounded-[28px] border-white/10 bg-white/[0.05] p-6 text-white">
-      <h2 className="font-display text-2xl font-semibold">{question}</h2>
-      <p className="mt-4 text-sm leading-7 text-white/72">{answer}</p>
-    </MotionCard>
+    <details className="group border-b border-white/10 py-5 last:border-b-0">
+      <summary className="flex cursor-pointer list-none items-start justify-between gap-4 font-display text-xl font-semibold text-white sm:text-2xl">
+        <span>{question}</span>
+        <span
+          aria-hidden="true"
+          className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/15 text-lg font-normal text-[#f5c977] transition-transform duration-200 group-open:rotate-45"
+        >
+          +
+        </span>
+      </summary>
+      <p className="max-w-3xl pt-4 text-sm leading-7 text-white/72">{answer}</p>
+    </details>
   )
 }
 
@@ -899,6 +973,30 @@ function TutorApplicationForm({ copy }) {
         />
       </Field>
 
+      <Field label={copy.formFormat}>
+        <select
+          name="format"
+          required
+          defaultValue=""
+          className="h-12 w-full rounded-2xl border border-white/10 bg-[#06132f]/85 px-4 text-white outline-none transition focus:border-[#f5c977]/60"
+        >
+          {copy.formFormatOptions.map((option) => (
+            <option key={option.value || "placeholder"} value={option.value} disabled={!option.value} className="bg-[#06132f] text-white">
+              {option.label}
+            </option>
+          ))}
+        </select>
+      </Field>
+
+      <Field label={copy.formSector}>
+        <Input
+          name="secteur"
+          required
+          className="h-12 rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35"
+          placeholder={copy.formSectorPlaceholder}
+        />
+      </Field>
+
       <Field label={copy.formExperience}>
         <Textarea
           name="message"
@@ -912,6 +1010,11 @@ function TutorApplicationForm({ copy }) {
       <input type="hidden" name="_template" value="table" />
       <input type="hidden" name="pipeline_type" value="tutor_application" />
       <input type="hidden" name="source_page" value="become-a-tutor" />
+
+      <label className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm leading-6 text-white/70">
+        <input name="consent" type="checkbox" required className="mt-1 h-4 w-4 accent-[#f5c977]" />
+        <span>{copy.formConsent}</span>
+      </label>
 
       <Button
         type="submit"

@@ -1,96 +1,81 @@
-import {
-  ArrowRight,
-  Phone,
-} from "lucide-react"
+import { ArrowRight, CalendarDays } from "lucide-react"
 
 import Seo from "@/components/Seo"
+import { OperationalPromisesSection } from "@/components/ConversionSections"
+import PricingSection from "@/components/PricingSection"
 import {
   FaqGrid,
   HeroShowcase,
-  PricingGrid,
+  ParentStartingPointsSection,
 } from "@/components/SimpleMarketingSections"
-import { BOOKING_URL } from "@/config/booking"
-import { buildAlternates } from "@/lib/i18n"
+import { DECLIC_REQUEST_URL_EN } from "@/config/booking"
+import { buildAlternates, getLocalizedPath } from "@/lib/i18n"
+import { formatCadAmount, getOffer } from "@/lib/pricing"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
 
-const steps = [
-  {
-    title: "Describe the need",
-    mobileLabel: "Describe",
-    description:
-      "Grade, subject and the main concern.",
-  },
-  {
-    title: "We call you back",
-    mobileLabel: "Callback",
-    description:
-      "We clarify the format and urgency.",
-  },
-  {
-    title: "We start",
-    mobileLabel: "Start",
-    description:
-      "We match the tutor and first session.",
-  },
-]
+const targetedSessionOffer = getOffer("targeted_session")
+const progressionBlockOffer = getOffer("progression_block")
+const targetedSessionPrice = formatCadAmount(targetedSessionOffer.totalPriceCad, "en")
+const progressionSessionPrice = formatCadAmount(progressionBlockOffer.perSessionPriceCad, "en")
 
-const plans = [
+const parentStartingPoints = [
   {
-    title: "One-time session",
-    price: "$75 / h",
-    description: "For one chapter, an urgent question or a review before a test.",
-    bullets: ["Simple and fast", "Math or science", "Best when the need is clear"],
-    action: {
-      label: "Book now",
-      href: BOOKING_URL,
-      external: true,
-    },
+    eyebrow: "An exam is coming up",
+    title: "We put revision back in order.",
+    description: "We identify priority chapters and give your teen a clear first study plan.",
+    intent: "exam",
+    actionLabel: "Request a first session",
+    actionHref: DECLIC_REQUEST_URL_EN,
+    to: getLocalizedPath("examSprint", "en"),
+    linkLabel: "See the exam sprint",
   },
   {
-    title: "Weekly follow-up",
-    price: "$70 / h",
-    description: "For rebuilding rhythm, method and confidence week after week.",
-    bullets: ["Recommended framing call", "Recurring time slot", "Most reassuring during the year"],
-    highlight: true,
-    highlightLabel: "Core offer",
-    action: {
-      label: "Call to frame it",
-      href: `tel:${siteConfig.phone}`,
-      icon: Phone,
-    },
+    eyebrow: "Homework stretches through the evening",
+    title: "We find where it is getting stuck, without doing it for them.",
+    description: "We work on the concept or method that blocks progress so your teen can use it again.",
+    intent: "homework",
+    actionLabel: "Request a first session",
+    actionHref: DECLIC_REQUEST_URL_EN,
+    to: getLocalizedPath("homeworkHelpSecondary", "en"),
+    linkLabel: "See homework help",
   },
   {
-    title: "Intensive block",
-    price: "On request",
-    description: "For catching up quickly before an exam, a heavy term or a reset period.",
-    bullets: ["Short plan", "Clear priorities", "Flexible format"],
-    action: {
-      label: "Book a first session",
-      href: BOOKING_URL,
-      external: true,
-    },
+    eyebrow: "The same difficulties keep returning",
+    title: "We build continuity so progress does not reset.",
+    description: "We first confirm the right tutor and priority, then suggest a progress block when the situation needs continuity. A weekly rhythm remains an option after matching.",
+    intent: "ongoing",
+    actionLabel: "Request the right starting point",
+    actionHref: `${DECLIC_REQUEST_URL_EN}?offer=progression`,
+    to: getLocalizedPath("academicSupportSecondary", "en"),
+    linkLabel: "See academic support",
   },
 ]
 
 const faqItems = [
   {
-    question: "Why choose Méthode Secondaire instead of a simple tutor directory?",
+    question: "Why choose Methode Secondaire instead of a tutor directory?",
     answer:
-      "The framework is more guided. Parents do not have to compare random profiles on their own: the need, the right format and the next move become clear much faster.",
+      "You do not compare random profiles alone. The team clarifies the need, confirms the right tutor, and keeps the next step readable for the parent.",
   },
   {
-    question: "Should I call first or book directly?",
+    question: "Do I need to create an account before requesting a session?",
     answer:
-      "Simple rule: a clear one-time need means booking can work well. A blurrier situation or weekly support usually means a short call first.",
+      "No. You first send a short request. The team confirms the tutor and time; the portal is then invited for active-client follow-up.",
+  },
+  {
+    question: "What if I do not know the right format yet?",
+    answer:
+      "Use the 2-minute mini-assessment. It is optional and suggests one first action; it does not trigger a call automatically.",
+  },
+  {
+    question: `Why is the progress block ${progressionSessionPrice} per session while the targeted session is ${targetedSessionPrice}?`,
+    answer:
+      `The ${progressionSessionPrice} rate applies to the ${progressionBlockOffer.sessionCount}-session block, not a required cadence. After matching, a weekly time can be suggested when it helps; the block never renews automatically.`,
   },
   {
     question: "Is this only for struggling students?",
     answer:
-      "No. It also works very well for exam prep, stronger performance, academic stability and growing independence.",
-  },
-  {
-    question: "Do you serve families across Quebec?",
-    answer: "Yes, online across Quebec. In-person support depends on location and availability.",
+      "No. It also works for exam preparation, consolidation, academic stability, and building independence.",
   },
 ]
 
@@ -121,13 +106,21 @@ const homeSchemas = [
 ]
 
 export default function AccueilEn() {
+  function openMiniAssessment() {
+    if (typeof window === "undefined") {
+      return
+    }
+
+    window.dispatchEvent(new CustomEvent("methode:open-diagnostic"))
+  }
+
   return (
     <div className="relative overflow-hidden">
       <Seo
-        title="Méthode Secondaire | Premium high school math and science tutoring"
-        description="Private high school math and science tutoring across Quebec. Clearer framing, simpler formats and real support for families."
+        title="Methode Secondaire | High school math and science tutoring"
+        description="Private high school math and science tutoring across Quebec. Request a first session without creating an account, then keep parent follow-up clear."
         path="/en"
-        keywords="high school math tutor quebec, high school science tutor quebec, premium tutoring quebec, exam prep tutoring"
+        keywords="high school math tutor quebec, high school science tutor quebec, tutoring quebec, exam prep tutoring"
         jsonLd={homeSchemas}
         lang="en-CA"
         locale="en_CA"
@@ -135,56 +128,57 @@ export default function AccueilEn() {
         alternates={buildAlternates("home")}
       />
 
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="mesh-background absolute inset-0 opacity-[0.08]" />
-        <div className="absolute -left-24 top-24 h-72 w-72 rounded-full bg-[#7ab4ff]/20 blur-3xl" />
-        <div className="absolute right-0 top-20 h-80 w-80 rounded-full bg-[#f5c977]/14 blur-3xl" />
-        <div className="absolute bottom-0 left-1/2 h-[34rem] w-[44rem] -translate-x-1/2 rounded-full bg-[#4a8bff]/10 blur-3xl" />
-      </div>
-
       <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-4 sm:px-6 lg:px-8 lg:pb-28 lg:pt-8">
         <HeroShowcase
-          badge="Quebec • Secondary 1 to 5"
-          title="1-2-3. We start simply."
-          description="Math, science or exams: fill out the form, we call you back, then we launch the right support."
+          badge="Math and science | Secondary 1 to 5"
+          title="When school starts feeling heavy at home, you do not have to solve it alone."
+          description={`An exam is coming, homework keeps stretching, or marks are worrying you: request a ${targetedSessionOffer.durationMinutes}-minute first session for ${targetedSessionPrice}. We confirm the right tutor and time before inviting you to the portal.`}
           primaryAction={{
-            label: "Start the form",
-            href: "#demande",
-            icon: ArrowRight,
+            label: `Request a first session · ${targetedSessionPrice} / ${targetedSessionOffer.durationMinutes} min`,
+            href: DECLIC_REQUEST_URL_EN,
+            icon: CalendarDays,
           }}
           secondaryAction={{
-            label: "Call if urgent",
-            href: `tel:${siteConfig.phone}`,
-            icon: Phone,
-            hideOnMobile: true,
+            label: "Not sure of the right format? Mini-assessment \u00b7 2 min",
+            onClick: openMiniAssessment,
+            icon: ArrowRight,
           }}
-          leadForm={{
-            id: "demande",
-            locale: "en",
-            pageName: "home-en-hero",
-            eyebrow: "Step 1 • Parent request",
-            title: "Fill out the form.",
-            description: "This is step 1: share the grade, subject and what is happening. We call back with a clear next step.",
-            processEyebrow: "How it works",
-            steps,
-            trustItems: ["No commitment", "24 h callback", "Clear plan"],
-          }}
+          actionHint={
+            <>
+              Urgent situation?{" "}
+              <a href={`tel:${siteConfig.phone}`} className="font-semibold text-[#f5c977] transition hover:text-white">
+                Call now
+              </a>
+              .
+            </>
+          }
+          panelEyebrow="Here is how it works"
+          panelTitle="A short request. No account to create before you begin."
+          panelItems={[
+            "You simply describe the grade, subject, and what is getting stuck.",
+            "The team confirms the tutor, format, and time before any payment.",
+            "The portal is then used for sessions, summaries, and payments by active clients.",
+          ]}
+          panelNote="The Targeted session is real tutoring, not a sales call or a disguised trial."
         />
 
-        <PricingGrid
-          id="offres"
-          eyebrow="Pricing"
-          title="Three formats that are easy to understand"
-          description="One-time need, weekly follow-up or intensive block: the form helps us recommend the right starting point."
-          plans={plans}
+        <ParentStartingPointsSection
+          eyebrow="This may sound familiar"
+          title="You do not need a perfect plan to begin."
+          description="Choose the situation that feels closest. The short request gives the team context without asking you to choose a package blindly."
+          items={parentStartingPoints}
         />
+
+        <OperationalPromisesSection locale="en" className="pt-20" />
+
+        <PricingSection id="offers" locale="en" />
 
         <FaqGrid
           id="faq"
           eyebrow="FAQ"
           title="Quick questions"
           description="Only what helps with the next step."
-          items={faqItems.slice(0, 3)}
+          items={faqItems.slice(0, 4)}
         />
       </main>
     </div>

@@ -1,5 +1,6 @@
 const publicOffers = Object.freeze({
   targeted_session: Object.freeze({
+    planId: "PLAN-FIRST-60",
     sessionCount: 1,
     totalPriceCad: 65,
     perSessionPriceCad: 65,
@@ -9,6 +10,7 @@ const publicOffers = Object.freeze({
     autoRenewal: false,
   }),
   momentum_block: Object.freeze({
+    planId: "PLAN-PACK4-250",
     sessionCount: 4,
     totalPriceCad: 250,
     perSessionPriceCad: 62.5,
@@ -18,6 +20,7 @@ const publicOffers = Object.freeze({
     autoRenewal: false,
   }),
   progression_block: Object.freeze({
+    planId: "PLAN-PACK10-600",
     sessionCount: 10,
     totalPriceCad: 600,
     perSessionPriceCad: 60,
@@ -45,7 +48,57 @@ export function getOffer(code) {
   return { ...offer, code: resolveRequestedOffer(code) }
 }
 
+export function getOfferByPlanId(planId) {
+  const matchedCode = Object.entries(publicOffers)
+    .find(([, offer]) => offer.planId === planId)?.[0]
+  return matchedCode ? getOffer(matchedCode) : null
+}
+
+export const paymentLinkOfferCodes = Object.freeze([
+  "first_session",
+  "weekly_follow_up",
+  "exam_sprint",
+  "catch_up",
+  "one_time",
+  "momentum_block_payment_1",
+  "progression_block_payment_1",
+  "progression_block_payment_2",
+])
+
+const legacyPaymentLinkOfferCodes = Object.freeze({
+  progression_block_10_installment_1: "progression_block_payment_1",
+  weekly_follow_up_installment_1: "progression_block_payment_1",
+  progression_block_10_installment_2: "progression_block_payment_2",
+  weekly_follow_up_installment_2: "progression_block_payment_2",
+})
+
+export function normalizePaymentLinkOfferCode(value) {
+  const normalized = typeof value === "string" ? value.trim() : ""
+  return legacyPaymentLinkOfferCodes[normalized] || normalized
+}
+
+export function getPaymentLinkDefaultAmountCad(offerCode) {
+  const normalizedOfferCode = normalizePaymentLinkOfferCode(offerCode)
+  const packagePlanId = {
+    momentum_block_payment_1: "PLAN-PACK4-250",
+    progression_block_payment_1: "PLAN-PACK10-600",
+    progression_block_payment_2: "PLAN-PACK10-600",
+  }[normalizedOfferCode]
+  const offer = packagePlanId
+    ? getOfferByPlanId(packagePlanId)
+    : getOfferByPlanId("PLAN-FIRST-60")
+  return offer?.installmentPriceCad || 65
+}
+
+export function formatCadAmount(value, locale = "fr") {
+  const amount = new Intl.NumberFormat(locale === "en" ? "en-CA" : "fr-CA", {
+    maximumFractionDigits: 2,
+  }).format(Number(value || 0))
+  return locale === "en" ? `$${amount}` : `${amount} $`
+}
+
 export function resolveRequestedOffer(value) {
+  // Legacy/internal request values are normalized before any public copy is selected.
   const aliases = Object.freeze({
     targeted: "targeted_session",
     first_session_declic: "targeted_session",
@@ -179,4 +232,57 @@ export function getPricingCopy(locale = "fr") {
   })
 
   return { ...copy, offers }
+}
+
+export function getPaymentLinkOfferLabel(offerCode, locale = "fr") {
+  const normalizedOfferCode = normalizePaymentLinkOfferCode(offerCode)
+  const targetedTitle = getPricingCopy(locale).offers.targeted_session.title
+  const sessionLabels = locale === "en"
+    ? {
+        first_session: targetedTitle,
+        weekly_follow_up: "Follow-up session",
+        exam_sprint: `${targetedTitle} — exam preparation`,
+        catch_up: `${targetedTitle} — catch-up`,
+        one_time: targetedTitle,
+      }
+    : {
+        first_session: targetedTitle,
+        weekly_follow_up: "Séance de suivi",
+        exam_sprint: `${targetedTitle} — préparation d'examen`,
+        catch_up: `${targetedTitle} — rattrapage`,
+        one_time: targetedTitle,
+      }
+  if (sessionLabels[normalizedOfferCode]) {
+    return sessionLabels[normalizedOfferCode]
+  }
+
+  const isMomentum = normalizedOfferCode === "momentum_block_payment_1"
+  const isProgression = ["progression_block_payment_1", "progression_block_payment_2"].includes(normalizedOfferCode)
+  if (!isMomentum && !isProgression) {
+    return locale === "en" ? "Session payment" : "Paiement de séance"
+  }
+
+  const offerCodeForLabel = isMomentum ? "momentum_block" : "progression_block"
+  const title = getPricingCopy(locale).offers[offerCodeForLabel].title
+  if (isMomentum) {
+    return locale === "en" ? `${title} — single payment` : `${title} — paiement unique`
+  }
+  return normalizedOfferCode === "progression_block_payment_2"
+    ? (locale === "en" ? `${title} — second payment` : `${title} — deuxième paiement`)
+    : (locale === "en" ? `${title} — first payment` : `${title} — premier paiement`)
+}
+
+export function getParentPaymentPresentation(offerCode, locale = "fr") {
+  const normalizedOfferCode = normalizePaymentLinkOfferCode(offerCode)
+  const label = getPaymentLinkOfferLabel(normalizedOfferCode, locale)
+  if (normalizedOfferCode === "momentum_block_payment_1") {
+    return { label, creditText: locale === "en" ? "Unlocks all 4 credits" : "Débloque les 4 crédits" }
+  }
+  if (normalizedOfferCode === "progression_block_payment_1") {
+    return { label, creditText: locale === "en" ? "Unlocks the first 5 credits" : "Débloque les 5 premiers crédits" }
+  }
+  if (normalizedOfferCode === "progression_block_payment_2") {
+    return { label, creditText: locale === "en" ? "Unlocks the final 5 credits" : "Débloque les 5 derniers crédits" }
+  }
+  return { label, creditText: "" }
 }

@@ -26,7 +26,7 @@ const basePageSeo = {
     fr: {
       title: "Méthode Secondaire | Tutorat en maths et sciences au secondaire",
       description:
-        "Tutorat privé en mathématiques et en sciences pour le secondaire 1 à 5 au Québec. Révision claire, méthode structurée et réservation simple.",
+        "Tutorat privé en mathématiques et en sciences pour le secondaire 1 à 5 au Québec. Une courte demande pour confirmer le bon tuteur et le bon créneau, puis un suivi parent simple.",
       keywords:
         "tutorat en mathématiques secondaire, tuteur sciences secondaire, aide aux devoirs secondaire, soutien scolaire secondaire, tutorat privé québec",
       name: "Tutorat secondaire en maths et sciences",
@@ -36,7 +36,7 @@ const basePageSeo = {
     en: {
       title: "Méthode Secondaire | High school math and science tutoring",
       description:
-        "Private high school math and science tutoring across Quebec. Clear teaching, structured follow-up and simple booking.",
+        "Private high school math and science tutoring across Quebec. A short request to confirm the right tutor and time, then simple parent follow-up.",
       keywords:
         "high school math tutoring, high school science tutor, high school homework help, high school academic support, private tutor quebec",
       name: "High school math and science tutoring",
@@ -44,11 +44,31 @@ const basePageSeo = {
       ogType: "website",
     },
   },
+  request: {
+    fr: {
+      title: "Demander une première séance | Méthode Secondaire",
+      description:
+        "Courte demande de tutorat en maths ou sciences au secondaire. Aucun compte ni paiement avant la confirmation du tuteur et du créneau.",
+      keywords: "demande tutorat secondaire, première séance tutorat, tuteur maths sciences québec",
+      name: "Demander une première séance",
+      schemaType: "ContactPage",
+      ogType: "website",
+    },
+    en: {
+      title: "Request a first session | Methode Secondaire",
+      description:
+        "Short request for high-school math or science tutoring. No account or payment before the tutor and time are confirmed.",
+      keywords: "tutoring request, first tutoring session, math science tutor quebec",
+      name: "Request a first session",
+      schemaType: "ContactPage",
+      ogType: "website",
+    },
+  },
   thankYou: {
     fr: {
       title: "Demande reçue | Méthode Secondaire",
       description:
-        "Votre demande parent a été reçue. Méthode Secondaire vous rappelle avec une suite claire pour le tutorat en maths ou sciences.",
+        "Votre demande a été reçue. Méthode Secondaire vous rappelle avec une suite claire pour le tutorat en maths ou sciences.",
       keywords:
         "demande tutorat reçue, rappel parent tutorat, tutorat maths sciences secondaire",
       name: "Demande reçue",
@@ -58,10 +78,72 @@ const basePageSeo = {
     en: {
       title: "Request received | Méthode Secondaire",
       description:
-        "Your parent request was received. Méthode Secondaire will call back with a clear next step for math or science tutoring.",
+        "Your request was received. Méthode Secondaire will call back with a clear next step for math or science tutoring.",
       keywords:
         "tutoring request received, parent tutoring callback, high school math science tutoring",
       name: "Request received",
+      schemaType: "WebPage",
+      ogType: "website",
+    },
+  },
+  portal: {
+    fr: {
+      title: "Portail parent et tuteur | Méthode Secondaire",
+      description:
+        "Connexion au portail Méthode Secondaire pour suivre les séances, paiements, résumés et notes de tutorat.",
+      keywords:
+        "portail parent tutorat, suivi tutorat, paiement tutorat, notes de séance tutorat",
+      name: "Portail parent et tuteur",
+      schemaType: "WebPage",
+      ogType: "website",
+    },
+    en: {
+      title: "Parent and tutor portal | Méthode Secondaire",
+      description:
+        "Sign in to the Méthode Secondaire portal for tutoring sessions, payments, summaries and tutor notes.",
+      keywords:
+        "parent tutoring portal, tutoring follow-up, tutoring payment, session notes",
+      name: "Parent and tutor portal",
+      schemaType: "WebPage",
+      ogType: "website",
+    },
+  },
+  approche: {
+    fr: {
+      title: "Notre approche parent | M\u00e9thode Secondaire",
+      description:
+        "D\u00e9couvrez comment M\u00e9thode Secondaire cadre le besoin, propose le bon tuteur et rend le suivi clair pour les parents.",
+      keywords:
+        "matching tuteur parent, suivi tutorat parent, portail parent tutorat, tutorat secondaire qu\u00e9bec",
+      name: "Notre approche parent",
+      schemaType: "AboutPage",
+      ogType: "website",
+    },
+    en: {
+      title: "Our parent approach | Methode Secondaire",
+      description:
+        "See how Methode Secondaire frames the need, proposes the right tutor and makes tutoring follow-up clear for parents.",
+      keywords:
+        "parent tutor matching, tutoring follow-up for parents, parent tutoring portal, quebec high school tutoring",
+      name: "Our parent approach",
+      schemaType: "AboutPage",
+      ogType: "website",
+    },
+  },
+  trust: {
+    fr: {
+      title: "Confiance, confidentialité et annulation | Méthode Secondaire",
+      description: "Comprenez le jumelage, le suivi, les rappels, la confidentialité et la politique d'annulation de Méthode Secondaire.",
+      keywords: "confidentialité tutorat, annulation séance tutorat, portail parent, jumelage tuteur québec",
+      name: "Confiance parents",
+      schemaType: "WebPage",
+      ogType: "website",
+    },
+    en: {
+      title: "Parent trust, privacy and cancellations | Methode Secondaire",
+      description: "Understand matching, follow-up, reminders, privacy and cancellation terms at Methode Secondaire.",
+      keywords: "tutoring privacy, tutoring cancellation, parent portal, tutor matching quebec",
+      name: "Parent trust",
       schemaType: "WebPage",
       ogType: "website",
     },
@@ -112,22 +194,22 @@ const basePageSeo = {
   },
   temoignages: {
     fr: {
-      title: "Témoignages | Méthode Secondaire",
+      title: "Parcours parent clair | Méthode Secondaire",
       description:
-        "Découvrez des témoignages anonymisés de parents et d'élèves en maths et sciences au secondaire : progression, confiance et résultats.",
+        "Découvrez les repères concrets du parcours parent : jumelage, séance, résumé, paiement et suivi de tutorat au secondaire.",
       keywords:
-        "avis vérifiés tutorat secondaire, avis tutorat maths, avis tutorat sciences, progression scolaire québec",
-      name: "Témoignages",
+        "parcours parent tutorat secondaire, suivi parent tutorat maths sciences, soutien scolaire québec",
+      name: "Parcours parent",
       schemaType: "CollectionPage",
       ogType: "website",
     },
     en: {
-      title: "Testimonials | Méthode Secondaire",
+      title: "Clear parent path | Methode Secondaire",
       description:
-        "Read anonymized parent and student testimonials about high school math and science tutoring: progress, confidence and results.",
+        "See the practical parent path: matching, session, summary, payment and high-school tutoring follow-up.",
       keywords:
-        "verified tutoring reviews, math tutor reviews, science tutor reviews, quebec academic progress",
-      name: "Testimonials",
+        "parent tutoring path, math science tutoring follow-up, quebec academic support",
+      name: "Parent path",
       schemaType: "CollectionPage",
       ogType: "website",
     },
@@ -136,9 +218,9 @@ const basePageSeo = {
     fr: {
       title: "Réussites et cas types | Méthode Secondaire",
       description:
-        "Découvrez des cas types inspirés de situations fréquentes en tutorat secondaire : maths, sciences, Sprint examen, suivi hebdomadaire et remise à niveau ciblée.",
+        "Découvrez des cas types inspirés de situations fréquentes en tutorat secondaire : maths, sciences, Sprint examen, bloc de progression de 10 séances et remise à niveau ciblée.",
       keywords:
-        "cas type tutorat secondaire, réussite maths secondaire, réussite sciences secondaire, sprint examen, suivi hebdomadaire, tutorat québec",
+        "cas type tutorat secondaire, réussite maths secondaire, réussite sciences secondaire, sprint examen, bloc de progression, tutorat québec",
       name: "Réussites et cas types",
       schemaType: "CollectionPage",
       ogType: "website",
@@ -146,32 +228,10 @@ const basePageSeo = {
     en: {
       title: "Success stories and case studies | Méthode Secondaire",
       description:
-        "Explore representative case studies inspired by common high school tutoring situations in math, science, exam sprint support, weekly follow-up and catch-up tutoring.",
+        "Explore representative case studies inspired by common high school tutoring situations in math, science, exam sprint support, a 10-session progress block and catch-up tutoring.",
       keywords:
-        "high school tutoring case studies, math tutoring success story, science tutoring success story, exam sprint tutoring, weekly follow-up tutoring",
+        "high school tutoring case studies, math tutoring success story, science tutoring success story, exam sprint tutoring, 10-session progress block",
       name: "Success stories and case studies",
-      schemaType: "CollectionPage",
-      ogType: "website",
-    },
-  },
-  tuteurs: {
-    fr: {
-      title: "Tuteurs en maths et sciences au secondaire | Méthode Secondaire",
-      description:
-        "Découvrez nos tuteurs en mathématiques et en sciences pour le secondaire au Québec, ainsi que notre approche en aide aux devoirs, rattrapage et préparation d'examens.",
-      keywords:
-        "tuteur maths secondaire, tuteur sciences secondaire, tutorat en mathématiques québec, aide aux devoirs secondaire, soutien scolaire secondaire, tuteur montréal",
-      name: "Tuteurs en maths et sciences au secondaire",
-      schemaType: "CollectionPage",
-      ogType: "website",
-    },
-    en: {
-      title: "High school math and science tutors in Quebec | Méthode Secondaire",
-      description:
-        "Explore our high school math and science tutors in Quebec, along with our approach to homework help, catch-up support and exam preparation.",
-      keywords:
-        "high school math tutor quebec, high school science tutor quebec, homework help high school, academic support quebec, montreal tutor",
-      name: "High school math and science tutors in Quebec",
       schemaType: "CollectionPage",
       ogType: "website",
     },

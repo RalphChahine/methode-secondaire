@@ -7,8 +7,10 @@ import {
   FaqGrid,
   FeatureGrid,
   HeroShowcase,
+  StepGrid,
 } from "@/components/SimpleMarketingSections"
-import { BOOKING_URL } from "@/config/booking"
+import { Button } from "@/components/ui/button"
+import { BOOKING_URL, BOOKING_URL_EN } from "@/config/booking"
 import {
   buildAlternates,
   getAlternateOgLocale,
@@ -26,8 +28,8 @@ const contentByLocale = {
     title: "Des sciences plus visuelles, plus logiques et moins lourdes.",
     description:
       "Le but n'est pas de mémoriser un bloc de notions stressantes. Le but est que l'élève voie enfin la logique derrière les phénomènes, les formules et les réponses attendues.",
-    primary: "Appeler pour un diagnostic sciences",
-    secondary: "Réserver une séance de sciences",
+    primary: "Appeler pour une orientation sciences",
+    secondary: "Demander une séance de sciences",
     panelEyebrow: "Bon fit",
     panelTitle: "Quand cette page aide le plus",
     panelItems: [
@@ -106,7 +108,7 @@ const contentByLocale = {
     contactBullets: [
       "Mentionnez si le besoin touche la physique, la chimie ou un labo.",
       "Si une évaluation approche, indiquez la date.",
-      "Pour un suivi régulier, un appel reste souvent le plus efficace.",
+      "Si un bloc de progression peut aider, dites si un créneau hebdomadaire vous conviendrait; l'équipe le confirme après le jumelage.",
     ],
     ctaBadge: "Sciences • Québec",
     ctaTitle: "Quand la logique apparaît, les sciences deviennent beaucoup moins intimidantes.",
@@ -124,8 +126,8 @@ const contentByLocale = {
     title: "Science support that feels more visual, logical and manageable.",
     description:
       "The goal is not to memorize a stressful block of content. The goal is for the student to finally see the logic behind the phenomena, formulas and expected answers.",
-    primary: "Call for a science diagnostic",
-    secondary: "Book a science session",
+    primary: "Call for science guidance",
+    secondary: "Request a science session",
     panelEyebrow: "Best fit",
     panelTitle: "When this page helps most",
     panelItems: [
@@ -204,7 +206,7 @@ const contentByLocale = {
     contactBullets: [
       "Mention whether the need is physics, chemistry or lab related.",
       "If an assessment is close, include the date.",
-      "For weekly follow-up, a call is often the smartest first move.",
+      "If a progress block could help, say whether a weekly time would work; the team confirms it after matching.",
     ],
     ctaBadge: "Science • Quebec",
     ctaTitle: "When the logic becomes visible, science feels far less intimidating.",
@@ -224,6 +226,7 @@ export default function Sciences() {
   const locale = getLocaleFromPath(location.pathname)
   const copy = contentByLocale[locale]
   const path = getLocalizedPath("sciences", locale)
+  const requestUrl = locale === "en" ? BOOKING_URL_EN : BOOKING_URL
 
   const schema = {
     "@context": "https://schema.org",
@@ -274,8 +277,7 @@ export default function Sciences() {
           }}
           secondaryAction={{
             label: copy.secondary,
-            href: BOOKING_URL,
-            external: true,
+            href: requestUrl,
             icon: CalendarDays,
           }}
           panelEyebrow={copy.panelEyebrow}
@@ -285,17 +287,24 @@ export default function Sciences() {
           journey={getParentJourney(locale)}
         />
 
+        <StepGrid
+          eyebrow={copy.stepsEyebrow}
+          title={copy.stepsTitle}
+          description={copy.stepsDescription}
+          steps={copy.steps}
+        />
+
         <FeatureGrid
           eyebrow={copy.modulesEyebrow}
           title={copy.modulesTitle}
           description={copy.modulesDescription}
           items={copy.modules}
-          columns="md:grid-cols-2"
+          columns="grid-cols-1 sm:grid-cols-2"
         />
 
         <FaqGrid
           eyebrow="FAQ"
-          title={locale === "en" ? "Quick answers before booking" : "Réponses rapides avant de réserver"}
+          title={locale === "en" ? "Quick answers before requesting a session" : "Réponses rapides avant de demander une séance"}
           description={
             locale === "en"
               ? "A few short answers to help a parent move forward faster."
@@ -303,6 +312,41 @@ export default function Sciences() {
           }
           items={copy.faq}
         />
+
+        <section className="pt-12 sm:pt-16">
+          <div className="action-surface rounded-[34px] p-7 text-white sm:p-10">
+            <div className="max-w-3xl">
+              <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white/85">
+                {copy.ctaBadge}
+              </div>
+              <h2 className="balanced-copy mt-5 font-display text-4xl font-semibold leading-[0.98] sm:text-5xl">
+                {copy.ctaTitle}
+              </h2>
+              <p className="mt-4 text-base leading-8 text-white/75 sm:text-lg">{copy.ctaDescription}</p>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <Button
+                  asChild
+                  className="w-full rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
+                >
+                  <a href={`tel:${siteConfig.phone}`}>
+                    <Phone className="h-4 w-4" />
+                    {copy.primary}
+                  </a>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white sm:w-auto"
+                >
+                  <a href={requestUrl}>
+                    <CalendarDays className="h-4 w-4" />
+                    {copy.secondary}
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <ContactSection
           locale={locale}

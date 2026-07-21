@@ -3,7 +3,7 @@ import { ArrowRight, CalendarDays, Phone } from "lucide-react"
 
 import MotionCard from "@/components/MotionCard"
 import { Button } from "@/components/ui/button"
-import { BOOKING_URL } from "@/config/booking"
+import { BOOKING_URL, BOOKING_URL_EN } from "@/config/booking"
 import { getLocalizedPath } from "@/lib/i18n"
 import { siteConfig } from "@/lib/seo"
 
@@ -18,7 +18,7 @@ const copyByLocale = {
         badge: "Besoin urgent",
         title: "Un examen approche ou la situation est pressante",
         description:
-          "Quand le temps compte, le plus simple est souvent d'appeler pour cadrer la mati\u00E8re, l'urgence et la meilleure suite. Si le besoin ponctuel est d\u00E9j\u00E0 tr\u00E8s clair, la r\u00E9servation directe reste possible juste apr\u00E8s.",
+          "Quand le temps compte, le plus simple est souvent d'appeler pour cadrer la mati\u00E8re, l'urgence et la meilleure suite. Si le besoin ponctuel est d\u00E9j\u00E0 tr\u00E8s clair, vous pouvez envoyer une demande de s\u00E9ance juste apr\u00E8s.",
         bullets: ["Priorit\u00E9s cibl\u00E9es rapidement", "Bloc intensif possible", "Premier cadrage imm\u00E9diat"],
         action: "phone",
         cta: "Appeler maintenant",
@@ -53,7 +53,7 @@ const copyByLocale = {
         badge: "Urgent need",
         title: "An exam is close or the situation feels time-sensitive",
         description:
-          "When timing matters, the simplest move is often a call to frame the subject, urgency and the best next step right away. If the one-time need is already very clear, direct booking can still happen right after.",
+          "When timing matters, the simplest move is often a call to frame the subject, urgency and the best next step right away. If the one-time need is already very clear, a session request can still be sent right after.",
         bullets: ["Fast priority setting", "Intensive support possible", "Immediate first framing"],
         action: "phone",
         cta: "Call now",
@@ -122,6 +122,8 @@ export default function DecisionPathwaysSection({ locale = "fr", className = "pt
 }
 
 function renderAction(card, locale) {
+  const requestUrl = locale === "en" ? BOOKING_URL_EN : BOOKING_URL
+
   if (card.action === "phone") {
     return (
       <Button asChild className="w-full rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
@@ -140,7 +142,7 @@ function renderAction(card, locale) {
         variant="outline"
         className="w-full rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
       >
-        <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+        <a href={requestUrl}>
           <CalendarDays className="h-4 w-4" />
           {card.cta}
         </a>
@@ -154,7 +156,7 @@ function renderAction(card, locale) {
       variant="outline"
       className="w-full rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
     >
-      <Link to={`${getLocalizedPath("home", locale)}#contact`}>
+      <Link to={`${getLocalizedPath("home", locale)}#${locale === "en" ? "callback" : "rappel"}`}>
         {card.cta}
         <ArrowRight className="h-4 w-4" />
       </Link>

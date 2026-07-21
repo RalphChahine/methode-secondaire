@@ -2,10 +2,11 @@ import { Link, useLocation } from "react-router-dom"
 import {
   ArrowRight,
   BadgeCheck,
+  ChevronDown,
+  CircleCheck,
   HeartHandshake,
   LineChart,
   Phone,
-  Quote,
   Sparkles,
   Target,
 } from "lucide-react"
@@ -77,14 +78,14 @@ const contentByLocale = {
           "Le vrai soulagement vient quand le parent se dit: « on sait enfin quoi travailler maintenant, et quoi laisser de côté ».",
       },
       {
-        tag: "Suivi hebdomadaire • Progression",
+        tag: "Bloc de progression — 10 séances • Continuité",
         title: "Les notions s'accumulent depuis des semaines et un simple rendez-vous ponctuel ne suffit plus.",
         profile:
           "Élève de secondaire 2 ou 3 qui n'est pas nécessairement en échec, mais qui voit les mêmes difficultés revenir dans les devoirs, d'une évaluation à l'autre.",
         before:
           "Le parent sent que le problème n'est plus un chapitre isolé. C'est le rythme global, l'organisation et la stabilité de la méthode qui commencent à manquer.",
         shift:
-          "Le Suivi hebdomadaire devient utile quand on veut arrêter de repartir à zéro chaque semaine: on cadre la matière prioritaire, on installe une continuité et on suit mieux ce qui revient.",
+          "Le bloc de progression devient utile quand on veut arrêter de repartir à zéro: on cadre la matière prioritaire, on installe une continuité et on suit mieux ce qui revient. Après le jumelage, un rythme hebdomadaire peut être proposé s'il aide vraiment.",
         outcome:
           "Le progrès ressenti est souvent plus durable: moins de stress le dimanche soir, moins d'improvisation, plus d'autonomie et des évaluations mieux abordées parce que le travail est moins morcelé.",
         parentLine:
@@ -121,15 +122,15 @@ const contentByLocale = {
     ],
     finalTitle: "Un parent n'achète pas juste une heure. Il achète une direction claire.",
     finalText:
-      "Ces cas types servent à montrer qu'il existe plusieurs bons points d'entrée: appel, diagnostic, séance ciblée ou suivi régulier. L'important est surtout de choisir le bon format selon la vraie situation.",
+      "Ces cas types servent à montrer qu'il existe plusieurs bons points d'entrée: appel, mini-bilan, séance ciblée ou suivi régulier. L'important est surtout de choisir le bon format selon la vraie situation.",
     primary: "Voir les témoignages",
     secondary: "Appeler pour en parler",
-    tertiary: "Remplir la demande parent",
+    tertiary: "Remplir le formulaire",
     seoTitle: "Réussites et cas types | Méthode Secondaire",
     seoDescription:
-      "Découvrez des cas types inspirés de situations fréquentes en tutorat secondaire: maths, sciences, Sprint examen, suivi hebdomadaire et remise à niveau ciblée.",
+      "Découvrez des cas types inspirés de situations fréquentes en tutorat secondaire: maths, sciences, Sprint examen, bloc de progression de 10 séances et remise à niveau ciblée.",
     seoKeywords:
-      "cas type tutorat secondaire, réussite maths secondaire, réussite sciences secondaire, sprint examen, suivi hebdomadaire, tutorat québec",
+      "cas type tutorat secondaire, réussite maths secondaire, réussite sciences secondaire, sprint examen, bloc de progression, tutorat québec",
   },
   en: {
     badge: "Case studies • Representative situations",
@@ -180,14 +181,14 @@ const contentByLocale = {
           "The real relief comes when the parent can say: “we finally know what to work on now, and what not to chase.”",
       },
       {
-        tag: "Weekly follow-up • Progress",
+        tag: "10-session progress block • Continuity",
         title: "The material has been piling up for weeks, and one isolated session is no longer enough.",
         profile:
           "A Secondary 2 or 3 student who is not necessarily failing, but keeps seeing the same difficulties return from homework to homework and from one test cycle to the next.",
         before:
           "The parent feels the issue is no longer one chapter. It is the overall rhythm, the organization and the steadiness of the learning method that are starting to slip.",
         shift:
-          "Weekly follow-up becomes useful when the goal is to stop starting from zero every week: frame the priority subject, build continuity and track what keeps recurring.",
+          "A 10-session progress block becomes useful when the goal is to stop starting from zero: frame the priority subject, build continuity and track what keeps recurring. After matching, a weekly rhythm can be suggested if it genuinely helps.",
         outcome:
           "The progress feels more durable: less Sunday-night stress, less improvisation, more autonomy and better-shaped evaluations because the work is no longer fragmented.",
         parentLine:
@@ -224,22 +225,60 @@ const contentByLocale = {
     ],
     finalTitle: "A parent is not buying one hour. A parent is buying clearer direction.",
     finalText:
-      "These case studies show that there are different strong entry points: a call, the diagnostic, a focused session or recurring support. What matters most is choosing the right format for the real situation.",
+      "These case studies show that there are different strong entry points: a call, the mini-assessment, a focused session or recurring support. What matters most is choosing the right format for the real situation.",
     primary: "See testimonials",
     secondary: "Call to discuss",
-    tertiary: "Fill out the parent request",
+    tertiary: "Fill out the form",
     seoTitle: "Success stories and case studies | Methode Secondaire",
     seoDescription:
-      "Explore representative case studies inspired by common high school tutoring situations in math, science, exam sprint support, weekly follow-up and catch-up tutoring.",
+      "Explore representative case studies inspired by common high school tutoring situations in math, science, exam sprint support, a 10-session progress block and catch-up tutoring.",
     seoKeywords:
-      "high school tutoring case studies, math tutoring success story, science tutoring success story, exam sprint tutoring, weekly follow-up tutoring",
+      "high school tutoring case studies, math tutoring success story, science tutoring success story, exam sprint tutoring, 10-session progress block",
   },
+}
+
+function getJourneyCopy(locale) {
+  const english = locale === "en"
+
+  return {
+    nextEyebrow: english ? "Your next move" : "Votre prochaine action",
+    nextTitle: english
+      ? "Start with the situation that feels most familiar."
+      : "Commence par la situation qui vous ressemble le plus.",
+    nextText: english
+      ? "You do not need to decide on a full plan before reaching out. Name the subject, the moment that feels urgent and what is happening at home; we can help clarify the useful format."
+      : "Vous n'avez pas \u00e0 d\u00e9cider d'un plan complet avant de nous parler. Nommez la mati\u00e8re, le moment qui presse et ce qui se passe \u00e0 la maison; nous aiderons \u00e0 clarifier le format utile.",
+    nextSteps: english
+      ? ["Choose the closest situation below.", "Tell us the subject and the moment that feels hardest.", "Start with a call or a focused request."]
+      : [
+          "Rep\u00e9rez le portrait le plus proche de votre situation.",
+          "Dites-nous la mati\u00e8re et le moment qui bloque le plus.",
+          "Commencez par un appel ou une demande cibl\u00e9e.",
+        ],
+    actionButton: english ? "Share the situation" : "Partager la situation",
+    storyLabel: english ? "Clear path markers" : "Rep\u00e8res de parcours",
+    situation: english ? "Situation" : "Situation",
+    whatItFeelsLike: english ? "What the family feels" : "Ce que la famille vit",
+    lever: english ? "What changes the approach" : "Le vrai levier",
+    progress: english ? "Progress the parent can feel" : "Le progr\u00e8s ressenti",
+    parentVoice: english ? "What resonates with the parent" : "La phrase qui parle au parent",
+    matches: english ? "Does this sound familiar?" : "Cette situation vous ressemble ?",
+    matchesAction: english ? "See the next simple action" : "Voir la prochaine action simple",
+    premiumEyebrow: english ? "Go further, only if useful" : "Aller plus loin, seulement si utile",
+    premiumTitle: english
+      ? "Explore the support formats and the value behind the follow-up."
+      : "Explorer les formats d'accompagnement et la valeur du suivi.",
+    premiumText: english
+      ? "This additional guide is there when a family wants more detail before choosing a format."
+      : "Ce guide compl\u00e9mentaire est l\u00e0 lorsqu'une famille veut plus de d\u00e9tails avant de choisir un format.",
+  }
 }
 
 export default function CaseStudies() {
   const location = useLocation()
   const locale = getLocaleFromPath(location.pathname)
   const copy = contentByLocale[locale]
+  const journey = getJourneyCopy(locale)
   const path = getLocalizedPath("reussites", locale)
 
   const schemas = [
@@ -310,17 +349,17 @@ export default function CaseStudies() {
               {copy.badge}
             </Badge>
 
-            <h1 className="balanced-copy mt-7 font-display text-5xl font-semibold leading-[0.95] text-white sm:text-6xl">
+            <h1 className="balanced-copy mt-6 font-display text-4xl font-semibold leading-[0.98] text-white sm:mt-7 sm:text-6xl">
               {copy.heroTitle}
             </h1>
 
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/72">{copy.heroText}</p>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-white/72 sm:mt-6 sm:text-lg sm:leading-8">{copy.heroText}</p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button
                 asChild
                 variant="outline"
-                className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                className="w-full rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white sm:w-auto"
               >
                 <Link to={getLocalizedPath("temoignages", locale)}>
                   {copy.primary}
@@ -329,7 +368,7 @@ export default function CaseStudies() {
               </Button>
               <Button
                 asChild
-                className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
+                className="w-full rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
               >
                 <a href={`tel:${siteConfig.phone}`}>
                   <Phone className="h-4 w-4" />
@@ -341,7 +380,7 @@ export default function CaseStudies() {
             <ParentJourneyNote locale={locale} className="mt-6 max-w-2xl" />
           </div>
 
-          <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
+          <MotionCard className="glass-panel rounded-[28px] border-white/10 bg-white/[0.05] p-5 text-white sm:rounded-[32px] sm:p-7">
             <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
               <HeartHandshake className="h-5 w-5" />
             </div>
@@ -354,11 +393,36 @@ export default function CaseStudies() {
                 : "Ce type de page rassure les parents parce qu'il répond à la question derrière la question: « à quoi ressemble un accompagnement quand il aide vraiment? »"}
             </div>
 
-            <div className="mt-6">
-              <div className="text-sm uppercase tracking-[0.24em] text-white/45">{copy.metricsTitle}</div>
-              <div className="mt-4 space-y-3 text-sm text-white/80">
+            <div className="mt-6 border-t border-white/10 pt-5">
+              <div className="text-xs uppercase tracking-[0.22em] text-[#f5c977]">{journey.nextEyebrow}</div>
+              <h3 className="mt-2 font-display text-2xl font-semibold">{journey.nextTitle}</h3>
+              <p className="mt-3 text-sm leading-7 text-white/72">{journey.nextText}</p>
+              <ol className="mt-4 space-y-2">
+                {journey.nextSteps.map((step, index) => (
+                  <li key={step} className="flex items-start gap-3 text-sm leading-6 text-white/80">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#f5c977]/35 text-xs font-semibold text-[#f5c977]">
+                      {index + 1}
+                    </span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <Button
+                asChild
+                className="mt-5 w-full rounded-full bg-[#f5c977] px-5 py-5 text-sm text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
+              >
+                <Link to={`${getLocalizedPath("home", locale)}#demande`}>
+                  {journey.actionButton}
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
+              </Button>
+            </div>
+
+            <div className="mt-6 border-t border-white/10 pt-5">
+              <div className="text-xs uppercase tracking-[0.22em] text-white/45">{copy.metricsTitle}</div>
+              <div className="mt-3 divide-y divide-white/10 text-sm text-white/80">
                 {copy.metrics.map((item) => (
-                  <div key={item} className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4">
+                  <div key={item} className="flex items-start gap-3 py-3 first:pt-0 last:pb-0">
                     <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
                     {item}
                   </div>
@@ -368,44 +432,67 @@ export default function CaseStudies() {
           </MotionCard>
         </section>
 
-        <CaseStudiesPremiumSection locale={locale} className="pt-20" />
+        <section className="pt-14 sm:pt-16">
+          <details className="group overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.035] text-white">
+            <summary className="flex cursor-pointer list-none items-start gap-4 px-5 py-5 transition hover:bg-white/[0.045] [&::-webkit-details-marker]:hidden sm:px-7 sm:py-6">
+              <span className="inline-flex shrink-0 rounded-2xl bg-white/10 p-3 text-[#f5c977]">
+                <HeartHandshake className="h-5 w-5" />
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block text-xs uppercase tracking-[0.22em] text-[#f5c977]">{journey.premiumEyebrow}</span>
+                <span className="mt-2 block font-display text-2xl font-semibold leading-tight sm:text-3xl">{journey.premiumTitle}</span>
+                <span className="mt-3 block max-w-3xl text-sm leading-7 text-white/68">{journey.premiumText}</span>
+              </span>
+              <ChevronDown className="mt-2 h-5 w-5 shrink-0 text-white/48 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="border-t border-white/10 px-5 pb-2 sm:px-7">
+              <CaseStudiesPremiumSection locale={locale} className="py-8 sm:py-10" />
+            </div>
+          </details>
+        </section>
 
         <section className="pt-20">
           <SectionHeader eyebrow={copy.sectionEyebrow} title={copy.sectionTitle} description={copy.sectionDescription} />
 
-          <div className="mt-8 grid gap-4 xl:grid-cols-2">
-            {copy.cases.map((entry) => (
-              <MotionCard key={entry.title} className="rounded-[32px] border-white/10 bg-[#091a3a]/85 p-7 text-white">
-                <div className="flex items-center justify-between gap-4">
+          <ol className="mt-8 max-w-5xl overflow-hidden rounded-[28px] border border-white/10 bg-[#091a3a]/64">
+            {copy.cases.map((entry, index) => (
+              <li key={entry.title} className="border-b border-white/10 last:border-b-0">
+                <details className="group" open={index === 0}>
+                  <summary className="flex cursor-pointer list-none items-start gap-3 px-5 py-5 transition hover:bg-white/[0.045] [&::-webkit-details-marker]:hidden sm:gap-5 sm:px-7 sm:py-6">
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-3">
                   <Badge className="rounded-full border border-white/15 bg-white/8 px-3 py-1 text-white/85 hover:bg-white/10">
                     {entry.tag}
                   </Badge>
-                  <div className="inline-flex rounded-2xl bg-white/10 p-3 text-[#f5c977]">
-                    <Quote className="h-5 w-5" />
-                  </div>
-                </div>
+                        <span className="text-xs font-semibold tracking-[0.18em] text-[#f5c977]">0{index + 1}</span>
+                      </div>
 
-                <h2 className="mt-5 font-display text-3xl font-semibold">{entry.title}</h2>
+                      <h2 className="mt-3 font-display text-2xl font-semibold leading-tight text-white sm:text-3xl">{entry.title}</h2>
+                      <span className="mt-3 block text-xs uppercase tracking-[0.2em] text-white/42">{journey.storyLabel}</span>
+                    </div>
+                    <ChevronDown className="mt-2 h-5 w-5 shrink-0 text-white/48 transition-transform group-open:rotate-180" />
+                  </summary>
 
-                <div className="mt-6 space-y-4 text-sm text-white/78">
+                  <div className="border-t border-white/10 bg-black/[0.08] px-5 py-5 sm:px-7 sm:py-7">
+                <div className="grid gap-0 divide-y divide-white/10 border-y border-white/10 text-sm text-white/78 md:grid-cols-2 md:divide-x md:divide-y-0 lg:grid-cols-4">
                   <StoryBlock
                     icon={Sparkles}
-                    label={locale === "en" ? "Starting profile" : "Point de départ"}
+                    label={journey.situation}
                     text={entry.profile}
                   />
                   <StoryBlock
                     icon={Target}
-                    label={locale === "en" ? "What the family feels before" : "Avant l'accompagnement"}
+                    label={journey.whatItFeelsLike}
                     text={entry.before}
                   />
                   <StoryBlock
                     icon={LineChart}
-                    label={locale === "en" ? "What actually helps" : "Le vrai levier"}
+                    label={journey.lever}
                     text={entry.shift}
                   />
                   <StoryBlock
                     icon={BadgeCheck}
-                    label={locale === "en" ? "What parents want to notice" : "Ce qu'un parent veut ressentir"}
+                    label={journey.progress}
                     text={entry.outcome}
                   />
                 </div>
@@ -416,23 +503,44 @@ export default function CaseStudies() {
                   </div>
                   <p className="mt-2">{entry.parentLine}</p>
                 </div>
-              </MotionCard>
+                <a
+                  href="#prochaine-action"
+                  className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-[#f5c977] transition hover:text-[#f7d38f]"
+                >
+                  <CircleCheck className="h-4 w-4" />
+                  {journey.matches}
+                  <span className="text-white/48">{journey.matchesAction}</span>
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+                  </div>
+                </details>
+              </li>
             ))}
-          </div>
+          </ol>
         </section>
 
-        <section className="pt-20">
-          <MotionCard className="rounded-[34px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-8 text-white sm:p-10">
+        <section id="prochaine-action" className="scroll-mt-28 pt-16 sm:pt-20">
+          <MotionCard className="rounded-[30px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-6 text-white sm:rounded-[34px] sm:p-10">
             <div className="max-w-3xl">
               <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white/85">
-                {locale === "en" ? "Best next move" : "Bonne suite"}
+                {journey.nextEyebrow}
               </div>
-              <h2 className="mt-5 font-display text-4xl font-semibold sm:text-5xl">{copy.finalTitle}</h2>
+              <h2 className="mt-5 font-display text-3xl font-semibold sm:text-5xl">{copy.finalTitle}</h2>
               <p className="mt-4 text-base leading-8 text-white/75 sm:text-lg">{copy.finalText}</p>
-              <div className="mt-7 flex flex-wrap gap-3">
+              <ol className="mt-6 grid gap-2 border-y border-white/10 py-4 text-sm text-white/82 sm:grid-cols-3 sm:gap-4">
+                {journey.nextSteps.map((step, index) => (
+                  <li key={step} className="flex items-start gap-3 leading-6">
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-[#f5c977]/35 text-xs font-semibold text-[#f5c977]">
+                      {index + 1}
+                    </span>
+                    <span>{step}</span>
+                  </li>
+                ))}
+              </ol>
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Button
                   asChild
-                  className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
+                  className="w-full rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
                 >
                   <a href={`tel:${siteConfig.phone}`}>
                     <Phone className="h-4 w-4" />
@@ -442,7 +550,7 @@ export default function CaseStudies() {
                 <Button
                   asChild
                   variant="outline"
-                  className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                  className="w-full rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white sm:w-auto"
                 >
                   <Link to={`${getLocalizedPath("home", locale)}#demande`}>
                     {copy.tertiary}
@@ -452,7 +560,7 @@ export default function CaseStudies() {
                 <Button
                   asChild
                   variant="outline"
-                  className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                  className="w-full rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white sm:w-auto"
                 >
                   <Link to={getLocalizedPath("temoignages", locale)}>{copy.primary}</Link>
                 </Button>
@@ -479,14 +587,14 @@ function SectionHeader({ eyebrow, title, description }) {
 
 function StoryBlock({ icon: Icon, label, text }) {
   return (
-    <div className="rounded-[24px] border border-white/10 bg-white/5 px-5 py-5">
+    <div className="min-w-0 px-0 py-5 first:pt-5 md:px-5 md:py-6">
       <div className="flex items-center gap-3">
-        <div className="rounded-2xl bg-white/10 p-2.5 text-[#f5c977]">
+        <div className="rounded-full border border-[#f5c977]/30 bg-[#f5c977]/10 p-2 text-[#f5c977]">
           <Icon className="h-4 w-4" />
         </div>
-        <div className="text-xs uppercase tracking-[0.22em] text-white/45">{label}</div>
+        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-white/52">{label}</div>
       </div>
-      <p className="mt-3 text-sm leading-7 text-white/78">{text}</p>
+      <p className="mt-3 text-sm leading-7 text-white/78 md:pr-2">{text}</p>
     </div>
   )
 }

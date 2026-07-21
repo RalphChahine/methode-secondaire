@@ -31,7 +31,7 @@ const copyByLocale = {
           "On recentre le travail sur la méthode: comment entrer dans la question, quoi isoler d'abord, quoi vérifier ensuite et comment éviter de repartir à zéro à chaque tentative.",
         result:
           "Le parent sent rapidement que l'élève hésite moins, recommence moins à l'aveugle et récupère une forme de contrôle qui manquait depuis des semaines.",
-        format: "Format recommandé: Suivi hebdomadaire si la confusion revient chaque semaine, sinon remise à niveau ciblée.",
+        format: "Format recommandé: Bloc de progression de 10 séances si la confusion revient; après le jumelage, un rythme hebdomadaire peut être proposé. Sinon, remise à niveau ciblée.",
       },
       {
         badge: "Urgence • Sciences",
@@ -57,7 +57,7 @@ const copyByLocale = {
           "On cadre un suivi régulier où la matière prioritaire, le rythme et les attentes sont clarifiés d'avance. Le parent ne paie plus pour improviser; il paie pour arrêter d'improviser.",
         result:
           "Le changement visible est une maison plus calme, une progression plus lisible et des décisions plus simples parce que le travail n'est plus morcelé.",
-        format: "Format recommandé: Suivi hebdomadaire avec appel de cadrage avant toute réservation.",
+        format: "Format recommandé: Bloc de progression de 10 séances; la courte demande permet de confirmer le tuteur, puis un rythme hebdomadaire peut être convenu si utile.",
       },
     ],
     whyEyebrow: "Pourquoi payer plus",
@@ -75,7 +75,7 @@ const copyByLocale = {
         icon: "method",
         title: "On vend une méthode claire avant de vendre des heures",
         description:
-          "Le diagnostic, la distinction appel vs réservation et les offres par besoin montrent une direction. Le parent sent plus vite quel format est logique pour son enfant.",
+          "Le mini-bilan, la distinction entre l'appel et la demande de séance, ainsi que les offres par besoin montrent une direction. Le parent sent plus vite quel format est logique pour son enfant.",
       },
       {
         icon: "parent",
@@ -94,7 +94,7 @@ const copyByLocale = {
     compareRows: [
       {
         left: "Ils veulent éviter de perdre 2 ou 3 semaines dans le mauvais format.",
-        right: "Méthode Secondaire rend le choix plus clair: appel d'abord pour un vrai suivi, réservation directe pour un besoin ciblé ou urgent.",
+        right: "Méthode Secondaire rend le choix plus clair: demande courte pour confirmer le bon départ, puis bloc de progression si une continuité est utile.",
       },
       {
         left: "Ils veulent une matière qui devient lisible, pas seulement de l'aide aux devoirs.",
@@ -127,7 +127,7 @@ const copyByLocale = {
           "We recenter the work on method: how to enter the question, what to isolate first, what to verify next and how to stop restarting from zero on every attempt.",
         result:
           "The parent quickly feels that hesitation drops, blind retries decrease and the student regains a form of control that had been missing for weeks.",
-        format: "Recommended format: Weekly follow-up if the confusion keeps returning, otherwise a targeted catch-up reset.",
+        format: "Recommended format: a 10-session progress block if the confusion keeps returning; after matching, a weekly rhythm can be suggested. Otherwise, a targeted catch-up reset.",
       },
       {
         badge: "Urgent • Science",
@@ -153,7 +153,7 @@ const copyByLocale = {
           "We frame recurring support where the priority subject, rhythm and expectations are clarified in advance. The family stops paying for improvisation and starts paying to end improvisation.",
         result:
           "The visible shift is a calmer home, progress that is easier to read and simpler decisions because the work is no longer fragmented.",
-        format: "Recommended format: Weekly follow-up, with a framing call before any booking.",
+        format: "Recommended format: a 10-session progress block; the short request confirms the tutor, then a weekly time can be arranged if useful.",
       },
     ],
     whyEyebrow: "Why pay more",
@@ -171,7 +171,7 @@ const copyByLocale = {
         icon: "method",
         title: "A clear method is sold before tutoring hours are sold",
         description:
-          "The diagnostic, the call-vs-booking distinction and the need-based offers create direction. Parents feel more quickly which format actually makes sense.",
+          "The mini-assessment, the call-versus-session-request distinction and the need-based offers create direction. Parents feel more quickly which format actually makes sense.",
       },
       {
         icon: "parent",
@@ -190,7 +190,7 @@ const copyByLocale = {
     compareRows: [
       {
         left: "They want to avoid losing two or three weeks in the wrong support format.",
-        right: "Méthode Secondaire clarifies the route faster: call first for true recurring support, direct booking for a targeted or urgent need.",
+        right: "Méthode Secondaire clarifies the route faster: call first for true recurring support, a session request for a targeted or urgent need.",
       },
       {
         left: "They want the subject to become readable, not just extra homework help.",

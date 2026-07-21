@@ -119,6 +119,7 @@ export function trackLeadSubmission(detail = {}) {
     lead_timeline: detail.timeline || "",
     lead_format: detail.format || "",
     lead_contact_preference: detail.contact_preference || "",
+    lead_parent_intent: detail.parent_intent || "",
     value: 1,
     currency: "CAD",
   })
@@ -129,11 +130,25 @@ export function trackLeadSubmission(detail = {}) {
   })
 }
 
+// This is the public-funnel completion event. It deliberately carries no
+// contact details or free-text message: those remain in the CRM only.
+export function trackFirstSessionRequestCreated(detail = {}) {
+  trackEvent("first_session_request_created", {
+    event_category: "lead",
+    request_source: detail.source || "public-request",
+    request_locale: detail.locale || "",
+    request_priority: detail.priority || "",
+    request_timeline: detail.timeline || "",
+    requested_offer: detail.offer || "targeted_session",
+  })
+}
+
 export function trackBookingClick(detail = {}) {
   trackEvent("book_appointment", {
     event_category: "booking",
     booking_source: detail.source || "site-link",
     booking_path: detail.path || "",
+    booking_offer: detail.offer || "",
     value: 1,
     currency: "CAD",
   })
@@ -141,6 +156,36 @@ export function trackBookingClick(detail = {}) {
   trackAdsConversion(trackingConfig.googleAdsBookingLabel, {
     value: 1,
     currency: "CAD",
+  })
+}
+
+export function trackSessionRequestCreated(detail = {}) {
+  trackEvent("session_request_created", {
+    event_category: "booking",
+    request_source: detail.source || "portal",
+    request_locale: detail.locale || "",
+    request_status: detail.status || "created",
+  })
+}
+
+export function trackSessionConfirmed(detail = {}) {
+  trackEvent("session_confirmed", {
+    event_category: "booking",
+    booking_source: detail.source || "portal",
+    booking_locale: detail.locale || "",
+    session_type: detail.session_type || "",
+    payment_mode: detail.payment_mode || "",
+  })
+}
+
+export function trackPlanEnrollmentCreated(detail = {}) {
+  trackEvent("plan_enrollment_created", {
+    event_category: "plan",
+    enrollment_source: detail.source || "portal",
+    enrollment_locale: detail.locale || "",
+    plan_type: detail.plan_type || "",
+    plan_cadence: detail.cadence || "",
+    enrollment_status: detail.status || "",
   })
 }
 
@@ -169,5 +214,30 @@ export function trackDiagnosticComplete(detail = {}) {
     diagnostic_recommendation: detail.recommended_action || "",
     diagnostic_service: detail.recommended_service || "",
     diagnostic_limited_mode: detail.limited_mode ? "true" : "false",
+  })
+}
+
+export function trackDiagnosticStarted(detail = {}) {
+  trackEvent("diagnostic_started", {
+    event_category: "diagnostic",
+    diagnostic_locale: detail.locale || "",
+  })
+}
+
+export function trackDiagnosticProgress(detail = {}) {
+  trackEvent("diagnostic_progress", {
+    event_category: "diagnostic",
+    diagnostic_locale: detail.locale || "",
+    diagnostic_step: detail.step || 0,
+    diagnostic_next_step: detail.next_step || 0,
+    diagnostic_field: detail.field || "",
+  })
+}
+
+export function trackDiagnosticResultCta(detail = {}) {
+  trackEvent("diagnostic_result_cta", {
+    event_category: "diagnostic",
+    diagnostic_locale: detail.locale || "",
+    diagnostic_result_action: detail.action || "",
   })
 }

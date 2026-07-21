@@ -8,7 +8,7 @@ export const leadCrmStages = [
   "closed",
 ]
 
-export function buildLeadCrmMetadata({ locale = "fr", pageName = "website", values = {} }) {
+export function buildLeadCrmMetadata({ locale = "fr", pageName = "website", values = {}, parentIntent = "" }) {
   const receivedAt = new Date().toISOString()
 
   return {
@@ -22,12 +22,13 @@ export function buildLeadCrmMetadata({ locale = "fr", pageName = "website", valu
     recommended_track: getRecommendedTrack(values.priorite),
     site_locale: locale,
     source_page: pageName,
+    parent_intent: parentIntent,
     received_at: receivedAt,
   }
 }
 
-export function buildLeadCrmPayload({ locale = "fr", pageName = "website", values = {}, metadata }) {
-  const crm = metadata || buildLeadCrmMetadata({ locale, pageName, values })
+export function buildLeadCrmPayload({ locale = "fr", pageName = "website", values = {}, parentIntent = "", metadata }) {
+  const crm = metadata || buildLeadCrmMetadata({ locale, pageName, values, parentIntent })
 
   return {
     ...crm,
@@ -50,47 +51,36 @@ export function buildLeadCrmPayload({ locale = "fr", pageName = "website", value
   }
 }
 
-export async function sendLeadToCrmWebhook(payload, webhookUrl, proxyUrl = "/api/lead-crm") {
-  const directBody = JSON.stringify(payload)
-
+export async function sendLeadToCrmWebhook(payload, proxyUrl = "/api/lead-crm") {
   try {
     const response = await fetch(proxyUrl, {
       method: "POST",
       keepalive: true,
-      body: JSON.stringify({
-        payload,
-        webhookUrl: webhookUrl || "",
-      }),
+      body: JSON.stringify({ payload }),
       headers: {
         "Content-Type": "application/json",
       },
     })
 
-    if (response.ok) {
+    const responseBody = await parseJsonResponse(response)
+    if (response.ok && responseBody?.ok === true) {
       return { sent: true, via: "proxy" }
     }
+
+    return {
+      error: true,
+      code: responseBody?.code || "CRM_WEBHOOK_FAILED",
+    }
   } catch {
-    // Fallback below keeps local/dev forms usable if the proxy is unavailable.
+    return { error: true, code: "CRM_WEBHOOK_UNREACHABLE" }
   }
+}
 
-  if (!webhookUrl) {
-    return { skipped: true }
-  }
-
+async function parseJsonResponse(response) {
   try {
-    await fetch(webhookUrl, {
-      method: "POST",
-      keepalive: true,
-      mode: "no-cors",
-      body: directBody,
-      headers: {
-        "Content-Type": "text/plain;charset=UTF-8",
-      },
-    })
-
-    return { sent: true, via: "direct" }
+    return await response.json()
   } catch {
-    return { error: true }
+    return null
   }
 }
 
@@ -128,7 +118,7 @@ function getRecommendedTrack(priority) {
     return "weekly_follow_up"
   }
 
-  if (priority === "catch-up") {
+  if (["catch-up", "independence"].includes(priority)) {
     return "catch_up"
   }
 

@@ -1,45 +1,53 @@
-import { BrainCircuit, Clock3, Phone, Sparkles } from "lucide-react"
+import { Compass, Clock3, MessageCircle, Phone, Sparkles } from "lucide-react"
 
 import MotionCard from "@/components/MotionCard"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { siteConfig } from "@/lib/seo"
 import { getDiagnosticUi } from "@/lib/leadDiagnostic"
+import { pricing } from "@/lib/pricing"
 
-const highlightsByLocale = {
-  fr: [
+function getHighlights(locale) {
+  const firstSession = locale === "en"
+    ? `$${pricing.firstSession.priceCad} CAD / ${pricing.firstSession.durationMinutes} min`
+    : `${pricing.firstSession.priceCad} $ CAD / ${pricing.firstSession.durationMinutes} min`
+
+  if (locale === "en") {
+    return [
+      {
+        icon: MessageCircle,
+        text: "Start with what you are seeing: an exam, heavy homework, or concepts that keep piling up.",
+      },
+      {
+        icon: Clock3,
+        text: "About two minutes, with no test for your teen and no offer to choose first.",
+      },
+      {
+        icon: Compass,
+        text: `You can call directly for a 15-minute orientation. When a session is the better first step, the Targeted session is real tutoring at ${firstSession}.`,
+      },
+    ]
+  }
+
+  return [
     {
-      icon: BrainCircuit,
-      text: "Trie le besoin entre examen, rattrapage ou suivi sans devoir tout expliquer au téléphone.",
+      icon: MessageCircle,
+      text: "Partez simplement de ce que vous observez : un examen, des devoirs lourds ou des notions qui s'accumulent.",
     },
     {
       icon: Clock3,
-      text: "Prend environ 2 minutes et donne une orientation claire tout de suite.",
+      text: "Environ 2 minutes, sans test pour votre jeune et sans formule à choisir.",
     },
     {
-      icon: Sparkles,
-      text: "Produit un résumé réutilisable pour la demande ou le premier appel.",
+      icon: Compass,
+      text: `Vous pouvez appeler directement pour un appel d’orientation de 15 min. Si une séance est le meilleur premier pas, la séance ciblée est une vraie séance de tutorat à ${firstSession}.`,
     },
-  ],
-  en: [
-    {
-      icon: BrainCircuit,
-      text: "Sorts the need between exam prep, catch-up work or weekly follow-up before the call even starts.",
-    },
-    {
-      icon: Clock3,
-      text: "Takes about 2 minutes and gives a clear direction right away.",
-    },
-    {
-      icon: Sparkles,
-      text: "Produces a clean summary you can reuse in the request or first call.",
-    },
-  ],
+  ]
 }
 
 export default function AiDiagnosticSection({ locale = "fr", className = "" }) {
   const ui = getDiagnosticUi(locale)
-  const highlights = highlightsByLocale[locale] || highlightsByLocale.fr
+  const highlights = getHighlights(locale)
 
   function openDiagnostic() {
     if (typeof window === "undefined") {
@@ -52,7 +60,7 @@ export default function AiDiagnosticSection({ locale = "fr", className = "" }) {
   return (
     <MotionCard
       className={cn(
-        "rounded-[34px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.05))] p-7 text-white lg:p-8",
+        "action-surface rounded-[34px] p-7 text-white lg:p-8",
         className,
       )}
     >

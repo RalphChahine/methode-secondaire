@@ -18,7 +18,7 @@ Petit résumé de la première séance:
 
 ## Recommandation
 
-[SEANCE CIBLEE / SUIVI HEBDO / BLOC INTENSIF / AUTRE]
+[SÉANCE CIBLÉE — 65 $ / BLOC D'ÉLAN — 4 SÉANCES À 250 $ (1 PAIEMENT; RYTHME À CONVENIR APRÈS JUMELAGE) / BLOC DE PROGRESSION — 10 SÉANCES À 600 $ (2 × 300 $; RYTHME À CONVENIR APRÈS JUMELAGE) / AUTRE]
 
 L'objectif pour la suite est de garder un plan simple et lisible, pour que l'élève sache quoi travailler en premier.
 

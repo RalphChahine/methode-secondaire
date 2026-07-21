@@ -5,11 +5,15 @@ import { CalendarDays, Check, Clock3, Phone, Sparkles } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { BOOKING_URL } from "@/config/booking"
-import { CRM_PROXY_URL, CRM_WEBHOOK_URL } from "@/config/crm"
+import { BOOKING_URL, BOOKING_URL_EN } from "@/config/booking"
+import { CRM_PROXY_URL } from "@/config/crm"
 import { getLocalizedPath } from "@/lib/i18n"
 import { buildLeadCrmMetadata, buildLeadCrmPayload, sendLeadToCrmWebhook } from "@/lib/leadCrm"
 import { getDiagnosticAnswerLabel } from "@/lib/leadDiagnostic"
+import {
+  clearRememberedParentIntent,
+  getRememberedParentIntent,
+} from "@/lib/parentIntent"
 import { siteConfig } from "@/lib/seo"
 
 const copyByLocale = {
@@ -18,7 +22,7 @@ const copyByLocale = {
     noteText:
       "D\u00E9crivez la situation en une minute. Vous n'avez pas \u00E0 choisir le plan parfait: on vous aide \u00E0 cadrer la suite.",
     quickReply: "R\u00E9ponse sous 24 h ouvrables.",
-    injectedSummary: "Le r\u00E9sum\u00E9 du diagnostic a \u00E9t\u00E9 ajout\u00E9 automatiquement.",
+    injectedSummary: "Le r\u00E9sum\u00E9 du mini-bilan a \u00E9t\u00E9 ajout\u00E9 automatiquement.",
     nameLabel: "Votre nom",
     namePlaceholder: "Nom du parent",
     emailLabel: "Email",
@@ -31,8 +35,9 @@ const copyByLocale = {
     priorityPlaceholder: "Choisir le besoin principal",
     priorityOptions: [
       { value: "exam-prep", label: "Pr\u00E9paration d'examens" },
-      { value: "weekly", label: "Suivi hebdomadaire" },
-      { value: "catch-up", label: "Rattrapage ou remise \u00E0 niveau" },
+      { value: "weekly", label: "Bloc de progression (10 séances)" },
+      { value: "catch-up", label: "Rattrapage ou remise à niveau" },
+      { value: "independence", label: "Comprend avec aide, mais bloque seul" },
       { value: "unsure", label: "Je ne suis pas encore certain" },
     ],
     timelineLabel: "Quand voulez-vous de l'aide ?",
@@ -60,12 +65,14 @@ const copyByLocale = {
     messagePlaceholder: "Ex. examen bient\u00F4t, notes qui baissent, devoirs difficiles, stress, chapitre bloquant...",
     submitIdle: "Envoyer et \u00EAtre rappel\u00E9",
     submitSending: "Envoi en cours...",
+    callbackSubmit: "Demander un rappel",
+    callbackPrivacy: "Votre num\u00E9ro sert uniquement \u00E0 vous rappeler au sujet du tutorat.",
     formNote: "Sans engagement. Le premier retour sert \u00E0 clarifier le besoin et le bon prochain pas.",
     successTitle: "Demande envoy\u00E9e",
     successText:
       "La demande a bien \u00E9t\u00E9 transmise. On vous revient avec une suite claire. Si le besoin est urgent, vous pouvez aussi appeler tout de suite.",
     successCall: "Appeler maintenant",
-    successBook: "R\u00E9server directement",
+    successBook: "Demander une s\u00E9ance",
     successReset: "Envoyer un autre message",
     errorText:
       "Une erreur est survenue pendant l'envoi. Vous pouvez r\u00E9essayer ou contacter directement par t\u00E9l\u00E9phone ou par email.",
@@ -76,7 +83,7 @@ const copyByLocale = {
     noteText:
       "Describe the situation in one minute. You do not need to choose the perfect plan: we help you frame the next step.",
     quickReply: "Target reply within one business day.",
-    injectedSummary: "The diagnostic summary was added automatically.",
+    injectedSummary: "The mini-assessment summary was added automatically.",
     nameLabel: "Your name",
     namePlaceholder: "Parent name",
     emailLabel: "Email",
@@ -89,8 +96,9 @@ const copyByLocale = {
     priorityPlaceholder: "Choose the main need",
     priorityOptions: [
       { value: "exam-prep", label: "Exam preparation" },
-      { value: "weekly", label: "Weekly follow-up" },
+      { value: "weekly", label: "10-session progress block" },
       { value: "catch-up", label: "Catch-up or academic reset" },
+      { value: "independence", label: "Understands with help, but freezes alone" },
       { value: "unsure", label: "I am not fully sure yet" },
     ],
     timelineLabel: "When do you want help?",
@@ -118,12 +126,14 @@ const copyByLocale = {
     messagePlaceholder: "Ex. exam soon, grades dropping, hard homework, stress, blocked chapter...",
     submitIdle: "Send and get a callback",
     submitSending: "Sending...",
+    callbackSubmit: "Request a callback",
+    callbackPrivacy: "Your phone number is used only to call you back about tutoring.",
     formNote: "No commitment. The first reply is there to clarify the need and the right next step.",
     successTitle: "Request sent",
     successText:
       "Your request was sent successfully. We will reply with a clear next step. If the need is urgent, you can also call right away.",
     successCall: "Call now",
-    successBook: "Book directly",
+    successBook: "Request a session",
     successReset: "Send another message",
     errorText:
       "An error occurred while sending. You can try again or contact directly by phone or email.",
@@ -147,7 +157,9 @@ function getInitialValues(copy) {
 
 export default function LeadForm({ locale = "fr", pageName = "website", variant = "default" }) {
   const copy = copyByLocale[locale] || copyByLocale.fr
-  const isHero = variant === "hero"
+  const requestUrl = locale === "en" ? BOOKING_URL_EN : BOOKING_URL
+  const isCallback = variant === "callback"
+  const isHero = variant === "hero" || isCallback
   const navigate = useNavigate()
   const [status, setStatus] = useState("idle")
   const [diagnosticInjected, setDiagnosticInjected] = useState(false)
@@ -199,39 +211,59 @@ export default function LeadForm({ locale = "fr", pageName = "website", variant 
     event.preventDefault()
     setStatus("sending")
 
+    const submissionValues = isCallback
+      ? {
+          ...values,
+          sujet: values.sujet || "Callback request",
+          priorite: values.priorite || "unsure",
+          timeline: values.timeline || "flexible",
+          format: values.format || "either",
+          contactPreference: "call",
+          message: values.message || "Callback requested from website.",
+        }
+      : values
+    const parentIntent = getRememberedParentIntent()
+
     const data = new FormData()
-    data.append("nom", values.nom)
-    data.append("email", values.email)
-    data.append("telephone", values.telephone)
-    data.append("sujet", values.sujet)
-    data.append("priorite", values.priorite)
-    data.append("timeline", values.timeline)
-    data.append("format", values.format)
-    data.append("contact_preference", values.contactPreference)
-    data.append("message", values.message)
+    data.append("nom", submissionValues.nom)
+    data.append("email", submissionValues.email)
+    data.append("telephone", submissionValues.telephone)
+    data.append("sujet", submissionValues.sujet)
+    data.append("priorite", submissionValues.priorite)
+    data.append("timeline", submissionValues.timeline)
+    data.append("format", submissionValues.format)
+    data.append("contact_preference", submissionValues.contactPreference)
+    data.append("message", submissionValues.message)
+    data.append("parent_intent", parentIntent)
     data.append("_subject", copy.emailSubject)
     data.append("_template", "table")
     data.append("_gotcha", "")
 
-    const crmMetadata = buildLeadCrmMetadata({ locale, pageName, values })
-    const crmPayload = buildLeadCrmPayload({ locale, pageName, values, metadata: crmMetadata })
+    const crmMetadata = buildLeadCrmMetadata({
+      locale,
+      pageName,
+      values: submissionValues,
+      parentIntent,
+    })
+    const crmPayload = buildLeadCrmPayload({ locale, pageName, values: submissionValues, metadata: crmMetadata })
 
     Object.entries(crmMetadata).forEach(([key, value]) => {
       data.append(key, value)
     })
 
     try {
-      const response = await fetch("https://formspree.io/f/mzddpkaz", {
+      const crmResult = await sendLeadToCrmWebhook(crmPayload, CRM_PROXY_URL)
+      if (!crmResult.sent) {
+        throw new Error(crmResult.code || "CRM submission failed")
+      }
+
+      // Formspree remains a secondary inbox copy. The CRM confirmation above is
+      // the source of truth for the parent-facing success state.
+      void fetch("https://formspree.io/f/mzddpkaz", {
         method: "POST",
         body: data,
         headers: { Accept: "application/json" },
-      })
-
-      if (!response.ok) {
-        throw new Error("Submission failed")
-      }
-
-      void sendLeadToCrmWebhook(crmPayload, CRM_WEBHOOK_URL, CRM_PROXY_URL)
+      }).catch(() => undefined)
 
       if (typeof window !== "undefined") {
         window.dispatchEvent(
@@ -239,16 +271,18 @@ export default function LeadForm({ locale = "fr", pageName = "website", variant 
             detail: {
               locale,
               source_page: pageName,
-              priority: values.priorite,
-              timeline: values.timeline,
-              format: values.format,
-              contact_preference: values.contactPreference,
+              priority: submissionValues.priorite,
+              timeline: submissionValues.timeline,
+              format: submissionValues.format,
+              contact_preference: submissionValues.contactPreference,
+              parent_intent: parentIntent,
             },
           }),
         )
       }
 
       setStatus("success")
+      clearRememberedParentIntent()
       setValues(getInitialValues(copy))
       setDiagnosticInjected(false)
       navigate(getLocalizedPath("thankYou", locale))
@@ -278,7 +312,7 @@ export default function LeadForm({ locale = "fr", pageName = "website", variant 
             variant="outline"
             className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
           >
-            <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+            <a href={requestUrl}>
               <CalendarDays className="h-4 w-4" />
               {copy.successBook}
             </a>
@@ -343,7 +377,7 @@ export default function LeadForm({ locale = "fr", pageName = "website", variant 
         </Field>
       </div>
 
-      {isHero ? (
+      {isCallback ? null : isHero ? (
         <div className="grid gap-3 sm:grid-cols-2">
           <Field label={copy.subjectLabel}>
             <Input
@@ -444,23 +478,27 @@ export default function LeadForm({ locale = "fr", pageName = "website", variant 
         </div>
       ) : null}
 
-      <Field label={copy.messageLabel}>
-        <Textarea
-          name="message"
-          required
-          value={values.message}
-          onChange={(event) => updateValue("message", event.target.value)}
-          className={`${isHero ? "min-h-[96px]" : "min-h-[140px]"} rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35`}
-          placeholder={copy.messagePlaceholder}
-        />
-      </Field>
+      {!isCallback ? (
+        <Field label={copy.messageLabel}>
+          <Textarea
+            name="message"
+            required
+            value={values.message}
+            onChange={(event) => updateValue("message", event.target.value)}
+            className={`${isHero ? "min-h-[96px]" : "min-h-[140px]"} rounded-2xl border-white/10 bg-[#06132f]/85 text-white placeholder:text-white/35`}
+            placeholder={copy.messagePlaceholder}
+          />
+        </Field>
+      ) : (
+        <p className="text-xs leading-5 text-white/58">{copy.callbackPrivacy}</p>
+      )}
 
       <Button
         type="submit"
         disabled={status === "sending"}
         className="w-full rounded-full bg-[#f5c977] py-6 text-[#071631] hover:bg-[#f7d38f]"
       >
-        {status === "sending" ? copy.submitSending : copy.submitIdle}
+        {status === "sending" ? copy.submitSending : (isCallback ? copy.callbackSubmit : copy.submitIdle)}
       </Button>
 
       <p className="text-center text-sm leading-7 text-white/60">{copy.formNote}</p>

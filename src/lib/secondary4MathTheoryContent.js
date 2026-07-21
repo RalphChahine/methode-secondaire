@@ -1237,8 +1237,8 @@ const contentByLocale = {
     badge: "Théorie guidée • Maths secondaire 4",
     heroTitle: "Maths de secondaire 4 : une vraie carte de la matière pour CST, TS et SN",
     heroText:
-      "Cette page regroupe une version beaucoup plus complète des grandes notions de secondaire 4 en maths. Le but n'est pas de copier un manuel, mais de rendre tout le programme plus lisible : quoi reconnaître, quoi retenir, où les élèves se trompent et quand réserver une séance pour débloquer vite.",
-    primaryCta: "Réserver une séance ciblée",
+      "Cette page regroupe une version beaucoup plus complète des grandes notions de secondaire 4 en maths. Le but n'est pas de copier un manuel, mais de rendre tout le programme plus lisible : quoi reconnaître, quoi retenir, où les élèves se trompent et quand demander une séance pour débloquer vite.",
+    primaryCta: "Demander une séance ciblée",
     secondaryCta: "Voir la préparation au ministère",
     tocEyebrow: "Structure claire",
     tocTitle: "Commencer par la bonne séquence",
@@ -1277,9 +1277,9 @@ const contentByLocale = {
     previewEyebrow: "Nouveau bloc de théorie",
     previewTitle: "Une base beaucoup plus complète pour les maths de secondaire 4",
     previewDescription:
-      "On a ajouté une vraie page structurée par séquence, avec une couverture large des notions, les pièges fréquents et des bulles de réservation pour transformer la théorie en aide concrète.",
+      "On a ajouté une vraie page structurée par séquence, avec une couverture large des notions, les pièges fréquents et des invitations à demander une séance pour transformer la théorie en aide concrète.",
     previewCta: "Voir la théorie de secondaire 4",
-    moduleReserveCta: "Réserver sur ce bloc",
+    moduleReserveCta: "Demander une séance sur ce bloc",
     moduleExamCta: "Voir le ministériel",
     sequenceReserveEyebrow: "Besoin d'aide ciblée",
     sequenceReserveTitle: "Quand une séance sur ce bloc fait gagner le plus de temps",
@@ -1290,11 +1290,11 @@ const contentByLocale = {
       "Quand les démarches commencent bien puis se perdent après quelques lignes.",
       "Quand un examen approche et qu'il faut trier vite ce qui compte vraiment.",
     ],
-    sequenceReserveButton: "Réserver une séance ciblée",
+    sequenceReserveButton: "Demander une séance ciblée",
     sequenceCallButton: "Appeler pour en parler",
     seoTitle: "Théorie maths secondaire 4 | CST, TS, SN | Méthode Secondaire",
     seoDescription:
-      "Page de théorie très complète pour les maths de secondaire 4 au Québec : CST, TS et SN. Fonctions, systèmes, trigonométrie, géométrie analytique, corrélation, pièges fréquents et réservation de séance.",
+      "Page de théorie très complète pour les maths de secondaire 4 au Québec : CST, TS et SN. Fonctions, systèmes, trigonométrie, géométrie analytique, corrélation, pièges fréquents et demande de séance.",
     seoKeywords:
       "théorie maths secondaire 4, maths secondaire 4 cst, maths secondaire 4 ts, maths secondaire 4 sn, trigonométrie secondaire 4, fonction quadratique secondaire 4, examen ministère maths secondaire 4",
     schemaName: "Théorie complète de maths secondaire 4",
@@ -1304,7 +1304,7 @@ const contentByLocale = {
     heroTitle: "Secondary 4 math: a real topic map for CST, TS and SN",
     heroText:
       "This page gives families a much fuller map of Secondary 4 math. The goal is not to copy a textbook, but to make the program easier to read: what to recognize, what to retain, where students get stuck and when a focused session can save real time.",
-    primaryCta: "Book a focused session",
+    primaryCta: "Request a focused session",
     secondaryCta: "See the ministerial exam guide",
     tocEyebrow: "Clear structure",
     tocTitle: "Start with the right sequence",
@@ -1340,9 +1340,9 @@ const contentByLocale = {
     previewEyebrow: "New theory block",
     previewTitle: "A much fuller base for Secondary 4 math",
     previewDescription:
-      "We added a structured sequence-based page with broader topic coverage, common traps and booking bubbles that turn theory into practical help.",
+      "We added a structured sequence-based page with broader topic coverage, common traps and session-request prompts that turn theory into practical help.",
     previewCta: "See Secondary 4 theory",
-    moduleReserveCta: "Book help on this block",
+    moduleReserveCta: "Request help on this block",
     moduleExamCta: "See ministerial prep",
     sequenceReserveEyebrow: "Targeted help",
     sequenceReserveTitle: "When one focused session saves the most time",
@@ -1353,11 +1353,11 @@ const contentByLocale = {
       "When the setup starts well but falls apart after a few lines.",
       "When an exam is close and the family needs a fast triage of what matters most.",
     ],
-    sequenceReserveButton: "Book a focused session",
+    sequenceReserveButton: "Request a focused session",
     sequenceCallButton: "Call to discuss",
     seoTitle: "Secondary 4 math theory | CST, TS, SN | Méthode Secondaire",
     seoDescription:
-      "A fuller theory page for Secondary 4 math in Quebec: CST, TS and SN. Functions, systems, trigonometry, analytic geometry, correlation, common mistakes and booking calls to action.",
+      "A fuller theory page for Secondary 4 math in Quebec: CST, TS and SN. Functions, systems, trigonometry, analytic geometry, correlation, common mistakes and session-request calls to action.",
     seoKeywords:
       "secondary 4 math theory, secondary 4 math cst, secondary 4 math ts, secondary 4 math sn, secondary 4 trigonometry, secondary 4 quadratic function, ministerial exam math secondary 4",
     schemaName: "Complete Secondary 4 math theory",

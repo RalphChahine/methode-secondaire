@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { CalendarDays, Phone } from "lucide-react"
 import { Link, useLocation } from "react-router-dom"
 
@@ -10,7 +11,7 @@ import {
   HeroShowcase,
 } from "@/components/SimpleMarketingSections"
 import { Button } from "@/components/ui/button"
-import { BOOKING_URL } from "@/config/booking"
+import { BOOKING_URL, BOOKING_URL_EN } from "@/config/booking"
 import {
   buildAlternates,
   getAlternateOgLocale,
@@ -22,6 +23,7 @@ import {
 } from "@/lib/i18n"
 import { getOfferPageConfig } from "@/lib/offerContent"
 import { getParentJourney } from "@/lib/parentJourney"
+import { rememberParentIntent } from "@/lib/parentIntent"
 import { getRobotsDirective } from "@/lib/searchIndexStrategy"
 import { absoluteUrl, siteConfig } from "@/lib/seo"
 
@@ -31,6 +33,16 @@ export default function OfferLanding({ forcedRouteKey }) {
   const routeKey = forcedRouteKey || getRouteKeyFromPath(location.pathname)
   const page = getOfferPageConfig(routeKey, locale)
   const path = getLocalizedPath(routeKey, locale)
+
+  useEffect(() => {
+    const intentByRoute = {
+      examSprint: "exam",
+      homeworkHelpSecondary: "homework",
+      academicSupportSecondary: "ongoing",
+    }
+
+    rememberParentIntent(intentByRoute[routeKey])
+  }, [routeKey])
 
   if (!page) {
     return (
@@ -58,10 +70,10 @@ export default function OfferLanding({ forcedRouteKey }) {
     )
   }
 
-  const showBookingButton = page.showBookingButton !== false
-  const primaryLabel = page.callLabel || (locale === "en" ? "Call first" : "Appeler d'abord")
-  const secondaryLabel =
-    page.bookingLabel || (locale === "en" ? "Book a focused session" : "Réserver une séance ciblée")
+  const requestUrl = locale === "en" ? BOOKING_URL_EN : BOOKING_URL
+  const requestHref = routeKey === "weeklyFollowUp" ? `${requestUrl}?offer=progression` : requestUrl
+  const primaryLabel = page.bookingLabel || (locale === "en" ? "Request the right starting point" : "Demander le bon point de départ")
+  const secondaryLabel = page.callLabel || (locale === "en" ? "Call if urgent" : "Appeler si c'est urgent")
 
   const schema = [
     {
@@ -123,19 +135,14 @@ export default function OfferLanding({ forcedRouteKey }) {
           description={page.heroText}
           primaryAction={{
             label: primaryLabel,
+            href: requestHref,
+            icon: CalendarDays,
+          }}
+          secondaryAction={{
+            label: secondaryLabel,
             href: `tel:${siteConfig.phone}`,
             icon: Phone,
           }}
-          secondaryAction={
-            showBookingButton
-              ? {
-                  label: secondaryLabel,
-                  href: BOOKING_URL,
-                  external: true,
-                  icon: CalendarDays,
-                }
-              : null
-          }
           panelEyebrow={locale === "en" ? "Best fit" : "Bon fit"}
           panelTitle={page.fitTitle}
           panelItems={page.highlights}
@@ -164,11 +171,11 @@ export default function OfferLanding({ forcedRouteKey }) {
               ? "Mention the chapter, exam date or main concern if you know them."
               : "Mentionnez le chapitre, la date d'examen ou le point le plus urgent si vous les connaissez.",
             locale === "en"
-              ? "If the need is still unclear, calling first usually saves time."
-              : "Si le besoin reste flou, appeler d'abord fait souvent gagner du temps.",
+              ? "If the need is still unclear, the optional two-minute mini-assessment can help."
+              : "Si le besoin reste flou, le mini-bilan facultatif de deux minutes peut aider.",
             locale === "en"
-              ? "If the need is urgent and already clear, booking can be the fastest route."
-              : "Si le besoin est urgent et déjà clair, la réservation peut être la voie la plus rapide.",
+              ? "If the situation is urgent, call the team directly."
+              : "Si la situation est urgente, appelez directement l'équipe.",
           ]}
           pageName={`${routeKey}-${locale}`}
         />

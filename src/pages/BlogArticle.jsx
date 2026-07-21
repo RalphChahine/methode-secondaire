@@ -4,10 +4,11 @@ import { ArrowRight, BadgeCheck, ExternalLink, Microscope, PhoneCall, Sparkles }
 import BlogGridSection from "@/components/BlogGridSection"
 import MotionCard from "@/components/MotionCard"
 import ParentJourneyNote from "@/components/ParentJourneyNote"
+import ProgressJourney from "@/components/ProgressJourney"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { BOOKING_URL } from "@/config/booking"
+import { BOOKING_URL, BOOKING_URL_EN } from "@/config/booking"
 import { getBlogPageContent } from "@/lib/blogContent"
 import {
   buildAlternates,
@@ -25,6 +26,7 @@ export default function BlogArticle() {
   const locale = getLocaleFromPath(location.pathname)
   const routeKey = getRouteKeyFromPath(location.pathname)
   const copy = getBlogPageContent(routeKey, locale)
+  const requestUrl = locale === "en" ? BOOKING_URL_EN : BOOKING_URL
 
   if (!copy) {
     return (
@@ -78,6 +80,26 @@ export default function BlogArticle() {
   }
 
   const relatedBlogKeys = (copy.relatedRouteKeys || []).filter((key) => key.startsWith("blog"))
+  const readingUi = locale === "en"
+    ? {
+        eyebrow: "Your reading path",
+        title: "A few calm landmarks",
+        intro: "Start with the idea that matters most, then use the practical steps when you are ready.",
+        chapterCount: "sections",
+        articleEyebrow: "The essentials, in order",
+        thisWeek: "This week",
+        support: "When support helps most",
+      }
+    : {
+        eyebrow: "Votre parcours de lecture",
+        title: "Quelques repères, sans surcharge",
+        intro: "Commencez par l'idée la plus utile, puis gardez les gestes concrets pour le bon moment.",
+        chapterCount: "repères",
+        articleEyebrow: "L'essentiel, dans l'ordre",
+        thisWeek: "Cette semaine",
+        support: "Quand l'accompagnement aide le plus",
+      }
+  const readingSteps = copy.sections.map((section) => ({ label: section.title }))
 
   return (
     <div className="relative overflow-hidden">
@@ -98,23 +120,23 @@ export default function BlogArticle() {
         <div className="absolute right-0 top-16 h-72 w-72 rounded-full bg-[#f5c977]/12 blur-3xl" />
       </div>
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
-        <section className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
+      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-8 sm:px-6 sm:pt-10 lg:px-8 lg:pb-28 lg:pt-16">
+        <section className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-center lg:gap-8">
           <div className="max-w-3xl">
             <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
               {copy.eyebrow}
             </Badge>
 
-            <h1 className="balanced-copy mt-7 font-display text-5xl font-semibold leading-[0.95] text-white sm:text-6xl">
+            <h1 className="balanced-copy mt-6 font-display text-4xl font-semibold leading-[0.98] text-white sm:mt-7 sm:text-6xl">
               {copy.heroTitle}
             </h1>
 
             <p className="mt-6 max-w-2xl text-lg leading-8 text-white/72">{copy.heroText}</p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-col gap-3 sm:mt-8 sm:flex-row sm:flex-wrap">
               <Button
                 asChild
-                className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
+                className="w-full rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
               >
                 <a href={`tel:${siteConfig.phone}`}>
                   <PhoneCall className="h-4 w-4" />
@@ -125,10 +147,10 @@ export default function BlogArticle() {
               <Button
                 asChild
                 variant="outline"
-                className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                className="w-full rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white sm:w-auto"
               >
-                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                  {locale === "en" ? "Book a focused session" : "Réserver une séance ciblée"}
+                <a href={requestUrl}>
+                  {locale === "en" ? "Request a focused session" : "Demander une séance ciblée"}
                   <ArrowRight className="h-4 w-4" />
                 </a>
               </Button>
@@ -137,99 +159,116 @@ export default function BlogArticle() {
             <ParentJourneyNote locale={locale} className="mt-6 max-w-2xl" />
           </div>
 
-          <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
+          <aside className="action-surface rounded-[32px] p-6 text-white sm:p-7">
             <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
               <Microscope className="h-5 w-5" />
             </div>
             <h2 className="mt-5 font-display text-3xl font-semibold">
               {locale === "en" ? "What the studies say at a glance" : "Ce que les études disent en bref"}
             </h2>
-            <div className="mt-6 space-y-4">
+            <div className="mt-5 divide-y divide-white/10">
               {copy.studyHighlights.map((item) => (
-                <div
-                  key={`${item.value}-${item.title}`}
-                  className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
-                >
-                  <div className="text-sm uppercase tracking-[0.22em] text-[#f5c977]">{item.value}</div>
-                  <div className="mt-2 font-display text-2xl font-semibold text-white">{item.title}</div>
+                <div key={`${item.value}-${item.title}`} className="py-4 first:pt-0 last:pb-0">
+                  <div className="flex items-baseline gap-3">
+                    <div className="shrink-0 text-xs font-semibold uppercase tracking-[0.18em] text-[#f5c977]">{item.value}</div>
+                    <div className="font-display text-xl font-semibold text-white sm:text-2xl">{item.title}</div>
+                  </div>
                   <p className="mt-2 text-sm leading-7 text-white/72">{item.description}</p>
                 </div>
               ))}
             </div>
-          </MotionCard>
+          </aside>
         </section>
 
-        <section className="pt-20">
-          <div className="grid gap-4 lg:grid-cols-2">
-            {copy.sections.map((section) => (
-              <MotionCard
+        <ProgressJourney
+          className="mt-12 sm:mt-16"
+          eyebrow={readingUi.eyebrow}
+          title={readingUi.title}
+          intro={readingUi.intro}
+          steps={readingSteps}
+          currentIndex={0}
+          countLabel={readingUi.chapterCount}
+          columns="grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"
+          compact
+        />
+
+        <section className="pt-12 sm:pt-16">
+          <div className="max-w-3xl">
+            <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">{readingUi.articleEyebrow}</div>
+          </div>
+          <div className="mt-6 overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.045]">
+            {copy.sections.map((section, index) => (
+              <article
                 key={section.title}
-                className="glass-panel rounded-[32px] border-white/10 bg-white/[0.04] p-7 text-white"
+                className="px-5 py-7 text-white sm:px-7 sm:py-8 [&+article]:border-t [&+article]:border-white/10"
               >
-                <h2 className="font-display text-3xl font-semibold">{section.title}</h2>
+                <div className="flex items-start gap-4">
+                  <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-[#f5c977]/35 bg-[#f5c977]/10 text-xs font-semibold text-[#f5c977]">
+                    {String(index + 1).padStart(2, "0")}
+                  </div>
+                  <h2 className="font-display text-2xl font-semibold leading-tight sm:text-3xl">{section.title}</h2>
+                </div>
                 <div className="mt-4 space-y-4 text-sm leading-7 text-white/76">
                   {section.paragraphs.map((paragraph) => (
                     <p key={paragraph}>{paragraph}</p>
                   ))}
                 </div>
                 {section.bullets?.length ? (
-                  <div className="mt-6 space-y-3 text-sm text-white/80">
+                  <ul className="mt-6 divide-y divide-white/10 border-y border-white/10 text-sm text-white/80">
                     {section.bullets.map((bullet) => (
-                      <div key={bullet} className="flex items-start gap-3">
+                      <li key={bullet} className="flex items-start gap-3 py-3">
                         <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
                         <span>{bullet}</span>
-                      </div>
+                      </li>
                     ))}
-                  </div>
+                  </ul>
                 ) : null}
-              </MotionCard>
+              </article>
             ))}
           </div>
         </section>
 
-        <section className="pt-20">
+        <section className="pt-12 sm:pt-16">
           <div className="grid gap-4 lg:grid-cols-2">
-            <MotionCard className="rounded-[32px] border-white/10 bg-[#091a3a]/85 p-7 text-white">
+            <aside className="action-surface rounded-[32px] p-6 text-white sm:p-7">
               <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
-                {locale === "en" ? "This week" : "Cette semaine"}
+                {readingUi.thisWeek}
               </div>
               <h2 className="mt-4 font-display text-3xl font-semibold">{copy.parentActionsTitle}</h2>
-              <div className="mt-6 space-y-4 text-sm text-white/80">
-                {copy.parentActions.map((action) => (
-                  <div
-                    key={action}
-                    className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
-                  >
-                    {action}
-                  </div>
+              <ol className="mt-5 divide-y divide-white/10 border-y border-white/10 text-sm text-white/80">
+                {copy.parentActions.map((action, index) => (
+                  <li key={action} className="flex gap-3 py-4">
+                    <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-[#f5c977]/40 text-[0.65rem] font-semibold text-[#f5c977]">
+                      {index + 1}
+                    </span>
+                    <span>{action}</span>
+                  </li>
                 ))}
-              </div>
-            </MotionCard>
+              </ol>
+            </aside>
 
-            <MotionCard className="rounded-[32px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-7 text-white">
+            <aside className="panel-soft rounded-[32px] p-6 text-white sm:p-7">
               <div className="inline-flex rounded-2xl bg-white/10 p-3 text-[#f5c977]">
                 <Sparkles className="h-5 w-5" />
               </div>
               <div className="mt-5 text-sm uppercase tracking-[0.24em] text-white/45">
-                {locale === "en" ? "When support helps most" : "Quand l'accompagnement aide le plus"}
+                {readingUi.support}
               </div>
               <h2 className="mt-3 font-display text-3xl font-semibold">{copy.tutoringTitle}</h2>
-              <div className="mt-6 space-y-4 text-sm text-white/80">
+              <ul className="mt-5 divide-y divide-white/10 border-y border-white/10 text-sm text-white/80">
                 {copy.tutoringPoints.map((point) => (
-                  <div
-                    key={point}
-                    className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
-                  >
-                    {point}
-                  </div>
+                  <li key={point} className="flex gap-3 py-4">
+                    <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                    <span>{point}</span>
+                  </li>
                 ))}
-              </div>
-            </MotionCard>
+              </ul>
+            </aside>
           </div>
         </section>
 
-        <section className="pt-20">
-          <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.04] p-7 text-white">
+        <section className="pt-12 sm:pt-16">
+          <div className="glass-panel rounded-[32px] border-white/10 bg-white/[0.04] p-6 text-white sm:p-7">
             <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
               {locale === "en" ? "Scientific sources" : "Sources scientifiques"}
             </div>
@@ -238,14 +277,14 @@ export default function BlogArticle() {
                 ? "The studies behind this article"
                 : "Les études derrière cet article"}
             </h2>
-            <div className="mt-6 space-y-4">
+            <div className="mt-6 divide-y divide-white/10 border-y border-white/10">
               {copy.sources.map((source) => (
                 <a
                   key={source.label}
                   href={source.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="block rounded-[24px] border border-white/10 bg-white/5 px-5 py-5 transition hover:bg-white/10"
+                  className="block py-5 transition hover:bg-white/[0.035] sm:px-2"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div>
@@ -257,7 +296,7 @@ export default function BlogArticle() {
                 </a>
               ))}
             </div>
-          </MotionCard>
+          </div>
         </section>
 
         {relatedBlogKeys.length ? (
@@ -280,8 +319,8 @@ export default function BlogArticle() {
           />
         ) : null}
 
-        <section className="pt-20">
-          <MotionCard className="rounded-[34px] border-white/10 bg-[linear-gradient(135deg,rgba(245,201,119,0.14),rgba(255,255,255,0.06))] p-8 text-white sm:p-10">
+        <section className="pt-12 sm:pt-16">
+          <div className="action-surface rounded-[34px] p-7 text-white sm:p-10">
             <div className="max-w-3xl">
               <div className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white/85">
                 <Sparkles className="mr-2 h-4 w-4" />
@@ -289,10 +328,10 @@ export default function BlogArticle() {
               </div>
               <h2 className="mt-5 font-display text-4xl font-semibold sm:text-5xl">{copy.ctaTitle}</h2>
               <p className="mt-4 text-base leading-8 text-white/75 sm:text-lg">{copy.ctaText}</p>
-              <div className="mt-7 flex flex-wrap gap-3">
+              <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <Button
                   asChild
-                  className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
+                  className="w-full rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
                 >
                   <a href={`tel:${siteConfig.phone}`}>
                     {locale === "en" ? "Call now" : "Appeler maintenant"}
@@ -301,15 +340,15 @@ export default function BlogArticle() {
                 <Button
                   asChild
                   variant="outline"
-                  className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                  className="w-full rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white sm:w-auto"
                 >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                    {locale === "en" ? "Book a focused session" : "Réserver une séance ciblée"}
+                  <a href={requestUrl}>
+                    {locale === "en" ? "Request a focused session" : "Demander une séance ciblée"}
                   </a>
                 </Button>
               </div>
             </div>
-          </MotionCard>
+          </div>
         </section>
       </main>
     </div>

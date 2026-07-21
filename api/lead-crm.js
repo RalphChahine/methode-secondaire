@@ -23,10 +23,7 @@ export default async function handler(req, res) {
   }
 
   const payload = normalizePayload(body)
-  const webhookUrl =
-    normalizeString(process.env.CRM_WEBHOOK_URL) ||
-    normalizeString(process.env.VITE_CRM_WEBHOOK_URL) ||
-    normalizeString(body?.webhookUrl)
+  const webhookUrl = normalizeString(process.env.CRM_WEBHOOK_URL)
 
   if (!payload || !Object.keys(payload).length) {
     return res.status(400).json({

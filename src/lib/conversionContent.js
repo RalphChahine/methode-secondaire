@@ -5,10 +5,10 @@ export const guaranteeByLocale = {
     description:
       "Tout est pensé pour comprendre rapidement le besoin de l'élève, rassurer la famille et orienter vers le bon accompagnement dès le départ.",
     recommended: "Premier réflexe recommandé",
-    recommendedText: "Un appel diagnostic de 15 minutes permet souvent de cadrer le besoin plus vite qu'une réservation à l'aveugle.",
+    recommendedText: "Un appel d'orientation de 15 minutes permet souvent de cadrer le besoin plus vite qu'une demande de séance à l'aveugle.",
     items: [
       {
-        title: "Appel diagnostic de 15 minutes",
+        title: "Appel d'orientation de 15 minutes",
         description:
           "Un premier échange rapide pour cadrer la matière, le niveau, l'urgence et le type d'accompagnement à privilégier.",
       },
@@ -23,8 +23,8 @@ export const guaranteeByLocale = {
           "Si le premier accompagnement ne convient pas vraiment, la famille peut être réorientée vers un profil plus adapté.",
       },
     ],
-    primary: "Appeler pour un diagnostic",
-    secondary: "Réserver une séance ciblée",
+    primary: "Appeler pour une orientation",
+    secondary: "Demander une séance ciblée",
     tertiary: "Rencontrer l'équipe",
   },
   en: {
@@ -33,10 +33,10 @@ export const guaranteeByLocale = {
     description:
       "Everything is designed to understand the student's needs quickly, reassure the family and guide them toward the right support from the start.",
     recommended: "Recommended first step",
-    recommendedText: "A 15-minute diagnostic call often frames the need faster than booking without first talking it through.",
+    recommendedText: "A 15-minute orientation call often frames the need faster than requesting a session without first talking it through.",
     items: [
       {
-        title: "15-minute diagnostic call",
+        title: "15-minute orientation call",
         description:
           "A quick first conversation to frame the subject, grade level, urgency and the kind of support that will help most.",
       },
@@ -51,18 +51,18 @@ export const guaranteeByLocale = {
           "If the first support dynamic is not the right one, the family can be redirected toward a tutor profile that fits better.",
       },
     ],
-    primary: "Call for a diagnostic",
-    secondary: "Book a focused session",
+    primary: "Call for guidance",
+    secondary: "Request a focused session",
     tertiary: "Meet the team",
   },
 }
 
 export const operationalPromisesByLocale = {
   fr: {
-    eyebrow: "Un service bien cadré",
-    title: "Un accompagnement simple, réactif et facile à suivre",
+    eyebrow: "Le suivi que le parent peut vraiment voir",
+    title: "Vous n'avez pas à demander pendant trois semaines : « Comment ça s'est passé ? »",
     description:
-      "Les familles doivent savoir à quoi s'attendre dès le départ: rapidité, clarté, suivi et continuité.",
+      "Après chaque séance, le portail remet les choses en ordre : ce qui a été travaillé, ce qui bloque encore et la prochaine petite action.",
     promises: [
       {
         title: "Réponse initiale sous 24 h ouvrables",
@@ -77,16 +77,16 @@ export const operationalPromisesByLocale = {
         description: "L'élève et le parent comprennent rapidement ce qu'on travaille d'abord et pourquoi.",
       },
       {
-        title: "Un retour clair après la séance",
-        description: "Le parent peut voir la notion travaillée, le blocage observé et la prochaine étape recommandée.",
+        title: "Trois repères après la séance",
+        description: "Le parent voit la notion travaillée, le blocage encore présent et la prochaine petite action recommandée.",
       },
     ],
   },
   en: {
-    eyebrow: "A well-structured service",
-    title: "Support that feels simple, responsive and easy to follow",
+    eyebrow: "Follow-up a parent can actually see",
+    title: "You should not have to ask for three weeks: “How did it go?”",
     description:
-      "Families should know what to expect from the start: quick replies, clear direction and follow-up that stays easy to understand.",
+      "After each session, the portal puts things in order: what was covered, what is still blocking progress, and the next small action.",
     promises: [
       {
         title: "Initial reply within one business day",
@@ -101,8 +101,8 @@ export const operationalPromisesByLocale = {
         description: "The student and parent understand quickly what needs attention first and why.",
       },
       {
-        title: "A clear family summary after the session",
-        description: "Families can see what was covered, where the block is and what the next step should be.",
+        title: "Three signals after the session",
+        description: "Parents can see what was covered, what is still blocking progress, and the next small action to prioritize.",
       },
     ],
   },
@@ -110,94 +110,86 @@ export const operationalPromisesByLocale = {
 
 export const verifiedReviewsByLocale = {
   fr: {
-    eyebrow: "Paroles de familles",
-    title: "Des retours qui parlent de progression, de calme et de confiance",
+    eyebrow: "Ce que le suivi rend visible",
+    title: "Des repères concrets, pas des promesses de notes",
     description:
-      "Quelques retours anonymisés avec contexte de suivi pour refléter le type d'expérience vécu par les familles accompagnées.",
-    note: "Retours anonymisés avec contexte de suivi.",
-    moreLabel: "Lire plus de témoignages",
+      "Les résultats scolaires varient. Voici plutôt ce qu'un parent peut attendre d'un suivi bien cadré, du premier échange jusqu'à la prochaine action.",
+    note: "Ces repères décrivent le parcours et le portail; ils ne sont ni des témoignages ni une garantie de résultat.",
+    moreLabel: "Voir comment le parcours fonctionne",
     reviews: [
       {
-        subject: "Mathématiques",
-        verified: "Famille accompagnée",
-        author: "Parent A.",
-        context: "Secondaire 4 • 8 séances",
-        outcome: "Échec à 92 %",
-        quote:
-          "On est passés d'un élève découragé à un élève qui savait enfin quoi faire, comment pratiquer et comment se corriger seul.",
+        subject: "Avant la première séance",
+        verified: "Repère de parcours",
+        author: "Une priorité claire",
+        context: "Niveau, matière, urgence et chapitre le plus important sont mis en ordre.",
+        outcome: "Décider sans deviner",
+        quote: "Vous n'avez pas à choisir un forfait ou un tuteur à l'aveugle : on commence par la situation réelle de votre jeune.",
       },
       {
-        subject: "Sciences",
-        verified: "Famille accompagnée",
-        author: "Parent B.",
-        context: "Secondaire 5 • suivi hebdomadaire",
-        outcome: "Année redressée",
-        quote:
-          "Le changement a été visible très vite: moins de panique, plus de structure, et des résultats qui ont fini par suivre naturellement.",
+        subject: "Après chaque séance",
+        verified: "Repère de parcours",
+        author: "Un retour lisible",
+        context: "Le parent voit la notion travaillée, le blocage observé et la prochaine petite action.",
+        outcome: "Un suivi concret",
+        quote: "Le suivi ne reste pas dans une conversation floue : il devient visible dans le portail parent.",
       },
       {
-        subject: "Préparation d'examen",
-        verified: "Famille accompagnée",
-        author: "Parent C.",
-        context: "Secondaire 3 • 5 séances",
-        outcome: "Confiance retrouvée",
-        quote:
-          "Pour la première fois, notre fille est sortie d'un examen en disant qu'elle avait compris ce qu'elle faisait du début à la fin.",
+        subject: "Quand le rythme devient régulier",
+        verified: "Repère de parcours",
+        author: "Une continuité choisie",
+        context: "Le même tuteur est privilégié quand le fit fonctionne; le rythme reste sans contrat ni débit automatique.",
+        outcome: "Moins de gestion pour le parent",
+        quote: "Vous pouvez ajuster le rythme avec l'équipe plutôt que de vous retrouver coincé dans une formule opaque.",
       },
       {
-        subject: "Rattrapage",
-        verified: "Famille accompagnée",
-        author: "Parent D.",
-        context: "Secondaire 2 • remise à niveau",
-        outcome: "Méthode stabilisée",
-        quote:
-          "Le plus fort n'a pas été seulement la note. C'est la logique retrouvée et le calme qui est revenu à la maison.",
+        subject: "Si le besoin évolue",
+        verified: "Repère de parcours",
+        author: "La suite reste ouverte",
+        context: "La première séance sert aussi à confirmer la priorité, le format et le bon niveau de suivi.",
+        outcome: "Pas de promesse magique",
+        quote: "On ne promet pas une note : on rend le prochain pas plus clair, plus ciblé et plus facile à suivre.",
       },
     ],
   },
   en: {
-    eyebrow: "From families",
-    title: "Feedback about progress, confidence and peace of mind",
+    eyebrow: "What follow-up makes visible",
+    title: "Concrete signals, not grade promises",
     description:
-      "A few anonymized reviews with tutoring context help families feel the kind of experience students and parents actually go through.",
-    note: "Anonymized family feedback with tutoring context.",
-    moreLabel: "Read more testimonials",
+      "School outcomes vary. Here is what a well-structured path gives a parent from the first conversation through the next action.",
+    note: "These are path and portal signals, not testimonials or a promise of outcomes.",
+    moreLabel: "See how the parent path works",
     reviews: [
       {
-        subject: "Mathematics",
-        verified: "Supported family",
-        author: "Parent A.",
-        context: "Secondary 4 • 8 sessions",
-        outcome: "From failing to 92%",
-        quote:
-          "We went from a discouraged student to one who finally knew what to do, how to practice and how to correct himself.",
+        subject: "Before the first session",
+        verified: "Path signal",
+        author: "One clear priority",
+        context: "Grade, subject, urgency, and the most important chapter are put in order.",
+        outcome: "Decide without guessing",
+        quote: "You do not have to choose a package or tutor blindly: we start with your teen's real situation.",
       },
       {
-        subject: "Science",
-        verified: "Supported family",
-        author: "Parent B.",
-        context: "Secondary 5 • weekly support",
-        outcome: "School year turned around",
-        quote:
-          "The change showed up quickly: less panic, more structure and results that started following naturally.",
+        subject: "After each session",
+        verified: "Path signal",
+        author: "A readable summary",
+        context: "Parents see what was covered, the blocker observed, and the next small action.",
+        outcome: "Follow-up made concrete",
+        quote: "Follow-up does not stay in a vague conversation: it becomes visible in the parent portal.",
       },
       {
-        subject: "Exam preparation",
-        verified: "Supported family",
-        author: "Parent C.",
-        context: "Secondary 3 • 5 sessions",
-        outcome: "Confidence restored",
-        quote:
-          "For the first time, our daughter came out of an exam saying she understood what she was doing from start to finish.",
+        subject: "When the rhythm becomes regular",
+        verified: "Path signal",
+        author: "Chosen continuity",
+        context: "The same tutor is prioritized when the fit works; the rhythm stays free of contracts and automatic debits.",
+        outcome: "Less management for parents",
+        quote: "You can adjust the rhythm with the team instead of being trapped in an opaque plan.",
       },
       {
-        subject: "Catch-up support",
-        verified: "Supported family",
-        author: "Parent D.",
-        context: "Secondary 2 • intensive reset",
-        outcome: "Method stabilized",
-        quote:
-          "The biggest change was not just the grade. It was the logic that came back and the calm we felt again at home.",
+        subject: "When the need changes",
+        verified: "Path signal",
+        author: "The next step stays open",
+        context: "The first session also confirms the priority, format, and right level of follow-up.",
+        outcome: "No magic promise",
+        quote: "We do not promise a grade: we make the next step clearer, more targeted, and easier to follow.",
       },
     ],
   },
@@ -229,9 +221,9 @@ export const tutorProfilesByLocale = {
       {
         name: "Profil Relance et Rattrapage",
         role: "Remise à niveau secondaire 2 à 5",
-        format: "Suivi hebdomadaire ou bloc intensif",
+        format: "Bloc de progression, avec rythme hebdomadaire possible après le jumelage",
         focus: "Chapitres accumulés, reprise de confiance et structure de travail",
-        style: "Diagnostic rapide, priorisation forte et accompagnement rassurant",
+        style: "Repérage rapide, priorisation forte et accompagnement rassurant",
         ideal: "Idéal pour les périodes où il faut reprendre beaucoup sans ajouter plus de stress.",
       },
     ],
@@ -262,7 +254,7 @@ export const tutorProfilesByLocale = {
       {
         name: "Catch-up Momentum Profile",
         role: "Academic reset, Secondary 2 to 5",
-        format: "Weekly follow-up or intensive block",
+        format: "10-session progress block, with a weekly rhythm possible after matching",
         focus: "Accumulated chapters, confidence rebuild and work structure",
         style: "Fast diagnosis, strong prioritization and reassuring support",
         ideal: "Best for heavier periods when a student needs to catch up without feeling overwhelmed.",
@@ -297,7 +289,7 @@ export const localPageConfigs = {
         "Pour les familles de Montréal qui veulent un accompagnement sérieux en maths et en sciences, avec une méthode claire et un suivi rassurant.",
       seoTitle: "Tutorat secondaire à Montréal | Méthode Secondaire",
       seoDescription:
-        "Tutorat de mathématiques et de sciences à Montréal pour le secondaire. Diagnostic clair, accompagnement choisi avec soin, suivi structuré et réservation simple.",
+        "Tutorat de mathématiques et de sciences à Montréal pour le secondaire. Mini-bilan clair, accompagnement choisi avec soin, suivi structuré et demande de séance simple.",
       keywords:
         "tutorat montréal, tuteur maths montréal, tuteur sciences montréal, soutien scolaire secondaire montréal",
       highlights: [
@@ -331,7 +323,7 @@ export const localPageConfigs = {
         "For Montreal families looking for serious math and science support with clear teaching and reassuring follow-up.",
       seoTitle: "Montreal tutoring | Méthode Secondaire",
       seoDescription:
-        "High school math and science tutoring in Montreal. Clear diagnosis, carefully selected support, structured follow-up and simple booking.",
+        "High school math and science tutoring in Montreal. A clear mini-assessment, carefully selected support, structured follow-up and a simple session request.",
       keywords:
         "montreal tutoring, math tutor montreal, science tutor montreal, high school tutoring montreal",
       highlights: [
@@ -367,7 +359,7 @@ export const localPageConfigs = {
         "Pour les familles de Laval qui veulent un accompagnement sérieux en maths ou en sciences, avec une méthode claire et un vrai suivi parent.",
       seoTitle: "Tutorat secondaire à Laval | Méthode Secondaire",
       seoDescription:
-        "Tutorat de mathématiques et de sciences à Laval pour le secondaire. Réponse rapide, diagnostic 15 min, suivi structuré et réservation simple.",
+        "Tutorat de mathématiques et de sciences à Laval pour le secondaire. Réponse rapide, mini-bilan de 2 min, suivi structuré et demande de séance simple.",
       keywords:
         "tutorat laval, tuteur maths laval, tuteur sciences laval, soutien scolaire secondaire laval",
       highlights: [
@@ -401,7 +393,7 @@ export const localPageConfigs = {
         "For Laval families looking for math or science support with a serious method and visible parent follow-up.",
       seoTitle: "Laval tutoring | Méthode Secondaire",
       seoDescription:
-        "High school math and science tutoring in Laval. Fast replies, 15-minute diagnosis, structured follow-up and simple booking.",
+        "High school math and science tutoring in Laval. Fast replies, a 2-minute mini-assessment, structured follow-up and a simple session request.",
       keywords:
         "laval tutoring, math tutor laval, science tutor laval, high school tutoring laval",
       highlights: [
@@ -437,7 +429,7 @@ export const localPageConfigs = {
         "Pour les familles qui veulent un accompagnement sérieux à distance partout au Québec, avec la même exigence de clarté et de progression.",
       seoTitle: "Tutorat en ligne au Québec | Méthode Secondaire",
       seoDescription:
-        "Tutorat en ligne en mathématiques et en sciences pour le secondaire partout au Québec. Diagnostic clair, accompagnement soigné et suivi structuré.",
+        "Tutorat en ligne en mathématiques et en sciences pour le secondaire partout au Québec. Mini-bilan clair, accompagnement soigné et suivi structuré.",
       keywords:
         "tutorat en ligne québec, tuteur en ligne maths québec, tuteur en ligne sciences québec, tutorat secondaire québec",
       highlights: [
@@ -471,7 +463,7 @@ export const localPageConfigs = {
         "For families who want serious remote support anywhere in Quebec, with the same level of clarity, structure and progress visibility.",
       seoTitle: "Online tutoring in Quebec | Méthode Secondaire",
       seoDescription:
-        "Online high school math and science tutoring across Quebec. Clear diagnosis, thoughtful support and structured follow-up.",
+        "Online high school math and science tutoring across Quebec. A clear mini-assessment, thoughtful support and structured follow-up.",
       keywords:
         "online tutoring quebec, online math tutor quebec, online science tutor quebec, high school tutoring quebec",
       highlights: [

@@ -66,8 +66,13 @@ export default function PricingSection({ locale = "fr", id }) {
                 <p className="mt-1 text-sm text-white/68">
                   {offer.sessionCount} × {copy.perHour} · {formatCad(offer.totalPriceCad, locale)} {copy.total}
                 </p>
-                {offer.code === "progression_block" ? <p className="mt-1 text-sm text-white/68">{locale === "en" ? "Two $300 payments" : "2 paiements de 300 $"}</p> : null}
-                {offer.code === "momentum_block" ? <p className="mt-1 text-sm text-white/68">{locale === "en" ? "One $250 payment" : "Un paiement de 250 $"}</p> : null}
+                {offer.sessionCount > 1 ? (
+                  <p className="mt-1 text-sm text-white/68">
+                    {locale === "en"
+                      ? `${offer.installmentCount === 1 ? "One" : offer.installmentCount} ${formatCad(offer.installmentPriceCad, locale)} payment${offer.installmentCount === 1 ? "" : "s"}`
+                      : `${offer.installmentCount === 1 ? "Un" : offer.installmentCount} paiement${offer.installmentCount === 1 ? "" : "s"} de ${formatCad(offer.installmentPriceCad, locale)}`}
+                  </p>
+                ) : null}
               </div>
 
               <p className="mt-4 text-sm leading-7 text-white/72">{offer.copy.description}</p>

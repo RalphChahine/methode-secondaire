@@ -1,7 +1,3 @@
-import { ArrowRight } from "lucide-react"
-
-import { getLocalizedPath } from "@/lib/i18n"
-
 export function getParentJourney(locale = "fr") {
   const isEnglish = locale === "en"
 
@@ -10,10 +6,6 @@ export function getParentJourney(locale = "fr") {
     text: isEnglish
       ? "Describe the need, we call back, then we launch the right match."
       : "Décrivez le besoin, on vous rappelle, puis on lance le bon jumelage.",
-    action: {
-      label: isEnglish ? "Fill out the parent request" : "Remplir la demande parent",
-      to: `${getLocalizedPath("home", locale)}#demande`,
-      icon: ArrowRight,
-    },
+    action: null,
   }
 }

@@ -1,6 +1,11 @@
 import fs from "node:fs/promises"
 import path from "node:path"
+import { PassThrough } from "node:stream"
 import { fileURLToPath } from "node:url"
+
+import { createElement } from "react"
+import { renderToPipeableStream } from "react-dom/server"
+import { createServer } from "vite"
 
 import { buildAlternates, getAlternateOgLocale, getHtmlLang, getOgLocale } from "../src/lib/i18n.js"
 import { getPrerenderPageEntries } from "../src/lib/prerenderSeoData.js"
@@ -11,7 +16,6 @@ const projectRoot = path.resolve(__dirname, "..")
 const distDir = path.join(projectRoot, "dist")
 const distIndexPath = path.join(distDir, "index.html")
 const publicSitemapPath = path.join(projectRoot, "public", "sitemap.xml")
-const buildDate = new Date().toISOString().slice(0, 10)
 
 function escapeHtml(value = "") {
   return String(value)
@@ -57,21 +61,89 @@ function setCanonicalAndAlternates(html, page) {
 }
 
 function buildJsonLd(page) {
-  const schema = {
-    "@context": "https://schema.org",
+  const organizationId = `${siteConfig.siteUrl}/#organization`
+  const websiteId = `${siteConfig.siteUrl}/#website`
+  const pageUrl = absoluteUrl(page.path)
+  const pageId = `${pageUrl}#webpage`
+  const isEnglish = page.locale === "en"
+  const homePath = isEnglish ? "/en" : "/"
+  const pageSchema = {
     "@type": page.schemaType || "WebPage",
+    "@id": pageId,
     name: page.name,
     description: page.description,
-    url: absoluteUrl(page.path),
+    url: pageUrl,
     inLanguage: getHtmlLang(page.locale),
-    isPartOf: {
-      "@type": "WebSite",
-      name: siteConfig.siteName,
-      url: siteConfig.siteUrl,
-    },
+    isPartOf: { "@id": websiteId },
+    about: { "@id": organizationId },
   }
 
-  return JSON.stringify(schema, null, 2).replace(/</g, "\\u003c")
+  if (page.schemaType === "Article") {
+    pageSchema.headline = page.name
+    pageSchema.mainEntityOfPage = { "@id": pageId }
+    pageSchema.publisher = { "@id": organizationId }
+  }
+
+  if (page.schemaType === "Service") {
+    pageSchema.provider = { "@id": organizationId }
+    pageSchema.areaServed = ["Quebec", "Montreal", "Laval"]
+  }
+
+  const graph = [
+    {
+      "@type": "EducationalOrganization",
+      "@id": organizationId,
+      name: siteConfig.siteName,
+      url: siteConfig.siteUrl,
+      logo: {
+        "@type": "ImageObject",
+        url: absoluteUrl("/Methode_Secondaire.png"),
+      },
+      image: absoluteUrl("/og-image.png"),
+      description: "Tutorat prive en mathematiques et en sciences pour les eleves du secondaire au Quebec.",
+      email: siteConfig.email,
+      telephone: siteConfig.phone,
+      areaServed: ["Quebec", "Montreal", "Laval"],
+      contactPoint: {
+        "@type": "ContactPoint",
+        contactType: "customer service",
+        telephone: siteConfig.phone,
+        email: siteConfig.email,
+        availableLanguage: ["French", "English"],
+      },
+    },
+    {
+      "@type": "WebSite",
+      "@id": websiteId,
+      url: siteConfig.siteUrl,
+      name: siteConfig.siteName,
+      inLanguage: ["fr-CA", "en-CA"],
+      publisher: { "@id": organizationId },
+    },
+    pageSchema,
+  ]
+
+  if (page.path !== homePath) {
+    graph.push({
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: isEnglish ? "Home" : "Accueil",
+          item: absoluteUrl(homePath),
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: page.name,
+          item: pageUrl,
+        },
+      ],
+    })
+  }
+
+  return JSON.stringify({ "@context": "https://schema.org", "@graph": graph }, null, 2).replace(/</g, "\\u003c")
 }
 
 function setJsonLd(html, page) {
@@ -96,6 +168,79 @@ function setNoscriptContent(html, page) {
   )
 
   return output
+}
+
+function setPrerenderedApp(html, renderedApp) {
+  if (!renderedApp) {
+    return html
+  }
+
+  return html.replace(
+    /<div id="root">\s*<\/div>/i,
+    `<div id="root" data-prerendered="true">${renderedApp}</div>`,
+  )
+}
+
+function renderAppToString(app) {
+  return new Promise((resolve, reject) => {
+    const output = new PassThrough()
+    const chunks = []
+    let renderError = null
+    let timeoutId = null
+
+    const { pipe, abort } = renderToPipeableStream(app, {
+      onAllReady() {
+        pipe(output)
+      },
+      onError(error) {
+        renderError = error
+      },
+      onShellError(error) {
+        reject(error)
+      },
+    })
+
+    timeoutId = setTimeout(() => {
+      abort()
+    }, 15000)
+
+    output.on("data", (chunk) => chunks.push(chunk))
+    output.on("error", (error) => {
+      clearTimeout(timeoutId)
+      reject(error)
+    })
+    output.on("end", () => {
+      clearTimeout(timeoutId)
+
+      if (renderError) {
+        reject(renderError)
+        return
+      }
+
+      resolve(Buffer.concat(chunks).toString("utf8"))
+    })
+  })
+}
+
+async function createPrerenderer() {
+  const vite = await createServer({
+    root: projectRoot,
+    appType: "custom",
+    logLevel: "error",
+    server: {
+      middlewareMode: true,
+    },
+  })
+  const { ServerApp } = await vite.ssrLoadModule("/src/entry-server.jsx")
+
+  return {
+    async render(location) {
+      return renderAppToString(createElement(ServerApp, { location }))
+    },
+    close() {
+      return vite.close()
+    },
+  }
 }
 
 function personalizeHtml(baseHtml, page) {
@@ -130,8 +275,10 @@ function personalizeHtml(baseHtml, page) {
   return html
 }
 
-async function writePageHtml(page, baseHtml) {
-  const personalizedHtml = personalizeHtml(baseHtml, page)
+async function writePageHtml(page, baseHtml, prerenderer) {
+  const shouldRenderApp = page.includeInSitemap !== false
+  const renderedApp = shouldRenderApp ? await prerenderer.render(page.path) : ""
+  const personalizedHtml = setPrerenderedApp(personalizeHtml(baseHtml, page), renderedApp)
   const targetPath =
     page.path === "/"
       ? path.join(distDir, "index.html")
@@ -147,7 +294,6 @@ function buildSitemap(pages) {
     .map(
       (page) => `  <url>
     <loc>${escapeHtml(absoluteUrl(page.path))}</loc>
-    <lastmod>${buildDate}</lastmod>
   </url>`,
     )
     .join("\n")
@@ -163,9 +309,14 @@ async function main() {
   const baseHtml = await fs.readFile(distIndexPath, "utf8")
   const pages = getPrerenderPageEntries()
   const sitemapXml = buildSitemap(pages)
+  const prerenderer = await createPrerenderer()
 
-  for (const page of pages) {
-    await writePageHtml(page, baseHtml)
+  try {
+    for (const page of pages) {
+      await writePageHtml(page, baseHtml, prerenderer)
+    }
+  } finally {
+    await prerenderer.close()
   }
 
   await fs.writeFile(path.join(distDir, "sitemap.xml"), sitemapXml, "utf8")

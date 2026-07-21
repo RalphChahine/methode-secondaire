@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom"
-import { ArrowRight, BadgeCheck, CalendarDays, Clock3, MapPin, Phone, ShieldCheck, Star, Users } from "lucide-react"
+import { ArrowRight, BadgeCheck, CalendarDays, Clock3, MapPin, Phone, ShieldCheck, Users } from "lucide-react"
 
 import MotionCard from "@/components/MotionCard"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { BOOKING_URL } from "@/config/booking"
+import { DECLIC_REQUEST_URL, DECLIC_REQUEST_URL_EN } from "@/config/booking"
 import {
   guaranteeByLocale,
   localLinkContentByLocale,
@@ -20,6 +20,8 @@ const localRouteKeys = ["montreal", "laval", "quebecOnline"]
 
 export function GuaranteeSection({ locale = "fr", className = "pt-20" }) {
   const copy = guaranteeByLocale[locale]
+  const requestUrl = locale === "en" ? DECLIC_REQUEST_URL_EN : DECLIC_REQUEST_URL
+  const requestLabel = locale === "en" ? "Request a Targeted session" : "Demander une séance ciblée"
 
   return (
     <section className={className}>
@@ -93,9 +95,9 @@ export function GuaranteeSection({ locale = "fr", className = "pt-20" }) {
                 variant="outline"
                 className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
               >
-                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                <a href={requestUrl}>
                   <CalendarDays className="h-4 w-4" />
-                  {copy.secondary}
+                  {requestLabel}
                 </a>
               </Button>
             </div>
@@ -147,6 +149,7 @@ export function VerifiedReviewsSection({
 }) {
   const copy = verifiedReviewsByLocale[locale]
   const reviews = typeof limit === "number" ? copy.reviews.slice(0, limit) : copy.reviews
+  const contextLabel = locale === "en" ? "Parent-path signal" : "Repère du parcours parent"
 
   return (
     <section className={className}>
@@ -156,7 +159,7 @@ export function VerifiedReviewsSection({
         {copy.note}
       </div>
 
-      <div className="mt-8 grid gap-4 xl:grid-cols-4">
+      <div className={`mt-8 grid gap-4 ${reviews.length <= 2 ? "lg:grid-cols-2" : "xl:grid-cols-4"}`}>
         {reviews.map((review) => (
           <MotionCard key={`${review.author}-${review.outcome}`} className="rounded-[30px] border-white/10 bg-[#091a3a]/85 p-6 text-white">
             <div className="flex items-center justify-between gap-3">
@@ -164,17 +167,11 @@ export function VerifiedReviewsSection({
                 {review.subject}
               </Badge>
               <div className="rounded-full border border-[#f5c977]/30 bg-[#f5c977]/12 px-3 py-1 text-xs text-[#f8deb0]">
-                {review.verified}
+                {contextLabel}
               </div>
             </div>
 
-            <div className="mt-5 flex gap-1 text-[#f5c977]">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Star key={`${review.author}-${index}`} className="h-4 w-4 fill-current" />
-              ))}
-            </div>
-
-            <blockquote className="mt-5 text-base leading-8 text-white/90">“{review.quote}”</blockquote>
+            <p className="mt-5 text-base leading-8 text-white/90">{review.quote}</p>
 
             <div className="mt-6 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4 text-sm text-white/72">
               <div className="font-semibold text-white">{review.author}</div>

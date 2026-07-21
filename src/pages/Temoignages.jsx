@@ -1,14 +1,11 @@
-import { CalendarDays, HeartHandshake, Phone, ShieldCheck, TrendingUp } from "lucide-react"
+import { CalendarDays, Phone, ShieldCheck } from "lucide-react"
 import { useLocation } from "react-router-dom"
 
 import { VerifiedReviewsSection } from "@/components/ConversionSections"
+import ProgressJourney from "@/components/ProgressJourney"
 import Seo from "@/components/Seo"
-import {
-  FinalCtaSection,
-  HeroShowcase,
-  QuoteGrid,
-} from "@/components/SimpleMarketingSections"
-import { BOOKING_URL } from "@/config/booking"
+import { Button } from "@/components/ui/button"
+import { BOOKING_URL, BOOKING_URL_EN } from "@/config/booking"
 import {
   buildAlternates,
   getAlternateOgLocale,
@@ -22,112 +19,50 @@ import { siteConfig } from "@/lib/seo"
 
 const contentByLocale = {
   fr: {
-    badge: "Avis vérifiés • Parents et élèves",
-    title: "Des témoignages qui donnent confiance avant même la première séance.",
+    title: "À quoi ressemble un suivi clair avant même de commencer.",
     description:
-      "Les familles veulent sentir si le service est sérieux, humain et réellement utile. Cette page va droit au but.",
-    panelEyebrow: "Ce qui revient le plus",
-    panelTitle: "Progression, calme et confiance",
+      "Plutôt que de promettre une note, voici les repères concrets qu'un parent peut attendre d'un accompagnement bien cadré.",
+    panelEyebrow: "Ce que vous pourrez suivre",
+    panelTitle: "Une priorité, une action, un fil",
     panelItems: [
-      "Des notes qui remontent après une période difficile.",
-      "Une méthode plus claire qui reste après la séance.",
-      "Moins de stress à la maison et avant les examens.",
+      "Une première priorité claire avant de multiplier les séances.",
+      "Un retour compréhensible après chaque séance.",
+      "Une prochaine petite action visible pour l'élève et le parent.",
     ],
-    signals: [
-      {
-        icon: TrendingUp,
-        title: "Progression visible",
-        description: "Les familles parlent de résultats qui remontent, mais surtout d'un cap beaucoup plus clair.",
-      },
-      {
-        icon: HeartHandshake,
-        title: "Année relancée",
-        description: "Quand ça allait mal depuis un moment, plusieurs retours parlent d'un vrai tournant.",
-      },
-      {
-        icon: ShieldCheck,
-        title: "Confiance retrouvée",
-        description: "Le changement le plus marquant reste souvent le calme qui revient chez l'élève et le parent.",
-      },
-    ],
-    quotes: [
-      {
-        text: "Mon fils est passé d'un échec à 92 % en maths. Le plus fort n'était pas juste la note, mais la méthode qui est restée.",
-        author: "Parent d'un élève de secondaire 4",
-        tag: "Maths",
-      },
-      {
-        text: "Vous avez sauvé son année. On a senti un vrai changement dans sa confiance et dans sa façon d'aborder l'école.",
-        author: "Parent d'un élève de secondaire 5",
-        tag: "Suivi régulier",
-      },
-      {
-        text: "Avant, les sciences étaient juste stressantes. Maintenant, il comprend ce qu'il fait et ça paraît.",
-        author: "Parent d'un élève du secondaire",
-        tag: "Sciences",
-      },
-    ],
-    ctaTitle: "Prêt à avancer avec plus de confiance ?",
+    ctaTitle: "Prêt à rendre le prochain pas plus simple ?",
     ctaDescription:
-      "Si ces retours vous ressemblent, on peut déjà cadrer la situation et choisir la meilleure suite.",
-    seoTitle: "Témoignages | Méthode Secondaire",
+      "Expliquez simplement ce qui se passe. L'équipe vous aide à choisir la suite la plus utile, sans vous pousser vers un forfait.",
+    seoTitle: "Suivi parent clair | Méthode Secondaire",
     seoDescription:
-      "Découvrez des témoignages de parents et d'élèves en tutorat maths et sciences au secondaire: progression, confiance et résultats.",
-    seoKeywords: "témoignages tutorat secondaire, avis tuteur maths, avis tuteur sciences, progression scolaire québec",
+      "Découvrez comment un suivi parent clair accompagne le tutorat de maths et sciences au secondaire au Québec.",
+    seoKeywords:
+      "suivi parent tutorat secondaire, portail parent tutorat, tutorat maths sciences québec, soutien scolaire québec",
+    trustTitle: "Des repères utiles, sans promesse magique",
+    callLabel: "Appeler si urgent",
+    bookingLabel: "Demander une séance",
   },
   en: {
-    badge: "Verified reviews • Parents and students",
-    title: "Feedback that builds trust before the first session even starts.",
+    title: "What clear follow-up looks like before you even begin.",
     description:
-      "Families want to feel whether the service is serious, human and genuinely useful. This page keeps it direct.",
-    panelEyebrow: "What comes back most",
-    panelTitle: "Progress, calm and confidence",
+      "Rather than promise a grade, here are the concrete signals a parent can expect from well-structured support.",
+    panelEyebrow: "What you will be able to follow",
+    panelTitle: "One priority, one action, one clear thread",
     panelItems: [
-      "Marks rising after a difficult stretch.",
-      "A clearer method that stays after the session.",
-      "Less stress at home and before exams.",
+      "One clear first priority before multiplying sessions.",
+      "A readable update after every session.",
+      "One next small action visible to both student and parent.",
     ],
-    signals: [
-      {
-        icon: TrendingUp,
-        title: "Visible progress",
-        description: "Families talk about marks improving, but even more about having a clearer direction.",
-      },
-      {
-        icon: HeartHandshake,
-        title: "A year turned around",
-        description: "When school had been going badly for a while, several reviews describe a real turning point.",
-      },
-      {
-        icon: ShieldCheck,
-        title: "Confidence restored",
-        description: "The most striking change is often the calm that comes back for both student and parent.",
-      },
-    ],
-    quotes: [
-      {
-        text: "My son went from failing to 92% in math. The biggest win was not only the grade, but the method that stayed.",
-        author: "Parent of a Secondary 4 student",
-        tag: "Math",
-      },
-      {
-        text: "You saved the year. We felt a real change in confidence and in how school was being approached.",
-        author: "Parent of a Secondary 5 student",
-        tag: "Weekly support",
-      },
-      {
-        text: "Science used to feel stressful. Now he understands what he is doing and it shows.",
-        author: "Parent of a high school student",
-        tag: "Science",
-      },
-    ],
-    ctaTitle: "Ready to move forward with more confidence?",
+    ctaTitle: "Ready to make the next step simpler?",
     ctaDescription:
-      "If these stories feel familiar, we can already frame the situation and choose the strongest next step.",
-    seoTitle: "Testimonials | Méthode Secondaire",
+      "Simply share what is happening. The team helps you choose the most useful next step without pushing you into a package.",
+    seoTitle: "Clear parent follow-up | Methode Secondaire",
     seoDescription:
-      "Read parent and student testimonials about high school math and science tutoring: progress, confidence and results.",
-    seoKeywords: "tutoring testimonials, math tutor reviews, science tutor reviews, quebec tutoring results",
+      "See how clear parent follow-up supports high-school math and science tutoring across Quebec.",
+    seoKeywords:
+      "parent tutoring follow-up, parent portal tutoring, math science tutoring quebec, quebec academic support",
+    trustTitle: "Useful signals, without magic promises",
+    callLabel: "Call if urgent",
+    bookingLabel: "Request a session",
   },
 }
 
@@ -136,12 +71,15 @@ export default function Temoignages() {
   const locale = getLocaleFromPath(location.pathname)
   const copy = contentByLocale[locale]
   const path = getLocalizedPath("temoignages", locale)
+  const requestUrl = locale === "en" ? BOOKING_URL_EN : BOOKING_URL
+  const journey = getParentJourney(locale)
+  const testimonialBadge = locale === "en" ? "The parent path" : "Le parcours parent"
 
   const schema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: copy.seoTitle,
-    url: `${siteConfig.siteUrl}${path}`,
+    url: siteConfig.siteUrl + path,
     description: copy.seoDescription,
   }
 
@@ -160,65 +98,99 @@ export default function Temoignages() {
       />
 
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-0 top-12 h-72 w-72 rounded-full bg-[#7ab4ff]/18 blur-3xl" />
-        <div className="absolute right-0 top-20 h-72 w-72 rounded-full bg-[#f5c977]/12 blur-3xl" />
+        <div className="absolute -left-16 top-24 h-72 w-72 rounded-full bg-[#7ab4ff]/18 blur-3xl" />
+        <div className="absolute right-0 top-36 h-72 w-72 rounded-full bg-[#f5c977]/12 blur-3xl" />
       </div>
 
       <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
-        <HeroShowcase
-          badge={copy.badge}
-          title={copy.title}
-          description={copy.description}
-          primaryAction={{
-            label: locale === "en" ? "Call now" : "Appeler maintenant",
-            href: `tel:${siteConfig.phone}`,
-            icon: Phone,
-          }}
-          secondaryAction={{
-            label: locale === "en" ? "Book a session" : "Réserver une séance",
-            href: BOOKING_URL,
-            external: true,
-            icon: CalendarDays,
-          }}
-          panelEyebrow={copy.panelEyebrow}
-          panelTitle={copy.panelTitle}
-          panelItems={copy.panelItems}
-          journey={getParentJourney(locale)}
-        />
+        <section className="grid gap-6 lg:grid-cols-[1.02fr,0.98fr] lg:items-center">
+          <div className="max-w-3xl">
+            <div className="inline-flex rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-sm text-white/85">
+              {testimonialBadge}
+            </div>
+            <h1 className="balanced-copy mt-6 font-display text-5xl font-semibold leading-[0.96] text-white sm:text-6xl">
+              {copy.title}
+            </h1>
+            <p className="mt-5 max-w-2xl text-base leading-8 text-white/72 sm:text-lg">{copy.description}</p>
 
-        <VerifiedReviewsSection locale={locale} className="pt-20" limit={4} showLink={false} />
+            <div className="mt-7 flex flex-wrap gap-3">
+              <Button asChild className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]">
+                <a href={requestUrl}>
+                  <CalendarDays className="h-4 w-4" />
+                  {copy.bookingLabel}
+                </a>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+              >
+                <a href={"tel:" + siteConfig.phone}>
+                  <Phone className="h-4 w-4" />
+                  {copy.callLabel}
+                </a>
+              </Button>
+            </div>
 
-        <QuoteGrid
-          eyebrow={locale === "en" ? "From families" : "Paroles de familles"}
-          title={
-            locale === "en"
-              ? "A few short stories parents immediately understand"
-              : "Quelques retours courts qu'un parent comprend tout de suite"
-          }
-          description={
-            locale === "en"
-              ? "No long detour. Just the kind of feedback that helps a family trust the next step."
-              : "Pas de long détour. Juste le type de retour qui aide une famille à faire confiance au prochain pas."
-          }
-          quotes={copy.quotes}
-        />
+            <p className="mt-6 max-w-2xl border-l-2 border-[#f5c977] pl-4 text-sm leading-7 text-[#f8deb0]">{journey.text}</p>
+          </div>
 
-        <FinalCtaSection
-          badge={copy.badge}
-          title={copy.ctaTitle}
-          description={copy.ctaDescription}
-          primaryAction={{
-            label: locale === "en" ? "Call now" : "Appeler maintenant",
-            href: `tel:${siteConfig.phone}`,
-            icon: Phone,
-          }}
-          secondaryAction={{
-            label: locale === "en" ? "Book a session" : "Réserver une séance",
-            href: BOOKING_URL,
-            external: true,
-            icon: CalendarDays,
-          }}
-        />
+          <ProgressJourney
+            title={copy.panelTitle}
+            eyebrow={copy.panelEyebrow}
+            intro={locale === "en" ? "The practical signals the parent portal keeps visible." : "Les repères concrets que le portail parent garde visibles."}
+            countLabel={locale === "en" ? "steps" : "repères"}
+            currentIndex={0}
+            columns="grid-cols-1"
+            steps={copy.panelItems.map((item) => ({ label: item }))}
+          />
+        </section>
+
+        <section className="mt-8 rounded-[28px] border border-[#f5c977]/22 bg-[#f5c977]/8 p-5 text-white sm:rounded-[32px] sm:p-6">
+          <div className="flex items-start gap-3">
+            <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-[#f5c977]" aria-hidden="true" />
+            <div>
+              <h2 className="font-display text-xl font-semibold sm:text-2xl">{copy.trustTitle}</h2>
+              <p className="mt-2 max-w-4xl text-sm leading-7 text-[#f8deb0]">
+                {locale === "en"
+                  ? "This page describes how the service and parent portal are designed to work. It does not use unnamed outcome claims or promise a particular grade."
+                  : "Cette page décrit le fonctionnement du service et du portail parent. Elle ne s'appuie pas sur des résultats anonymes non vérifiables et ne promet aucune note précise."}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <VerifiedReviewsSection locale={locale} className="pt-14 sm:pt-20" limit={4} showLink={false} />
+
+        <section className="pt-14 sm:pt-20">
+          <div className="action-surface rounded-[32px] p-6 text-white sm:rounded-[38px] sm:p-10">
+            <div className="grid gap-7 lg:grid-cols-[1.08fr,0.92fr] lg:items-end">
+              <div className="max-w-3xl">
+                <div className="text-sm font-semibold uppercase tracking-[0.22em] text-[#f5c977]">{testimonialBadge}</div>
+                <h2 className="balanced-copy mt-4 font-display text-4xl font-semibold leading-[0.96] sm:text-5xl">{copy.ctaTitle}</h2>
+                <p className="mt-4 text-base leading-8 text-white/75 sm:text-lg">{copy.ctaDescription}</p>
+              </div>
+              <div className="flex flex-col gap-3 sm:flex-row lg:flex-col">
+                <Button asChild className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]">
+                  <a href={requestUrl}>
+                    <CalendarDays className="h-4 w-4" />
+                    {copy.bookingLabel}
+                  </a>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                >
+                  <a href={"tel:" + siteConfig.phone}>
+                    <Phone className="h-4 w-4" />
+                    {copy.callLabel}
+                  </a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
       </main>
     </div>
   )
