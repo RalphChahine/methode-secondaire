@@ -24,6 +24,10 @@ expected.forEach(([code, sessionCount, totalPriceCad, perSessionPriceCad]) => {
 ;["fr", "en"].forEach((locale) => {
   const copy = getPricingCopy(locale)
   assert.equal(Object.keys(copy.offers).length, 3)
+  assert.strictEqual(copy.offers.aLaCarte, copy.offers.targeted_session)
+  assert.strictEqual(copy.offers.weekly, copy.offers.progression_block)
+  assert.equal(Object.prototype.propertyIsEnumerable.call(copy.offers, "aLaCarte"), false)
+  assert.equal(Object.prototype.propertyIsEnumerable.call(copy.offers, "weekly"), false)
   expected.forEach(([code]) => {
     assert.ok(copy.offers[code].title)
     assert.ok(copy.offers[code].description)

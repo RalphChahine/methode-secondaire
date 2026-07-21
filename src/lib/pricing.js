@@ -163,5 +163,19 @@ const pricingCopyByLocale = {
 }
 
 export function getPricingCopy(locale = "fr") {
-  return pricingCopyByLocale[locale] || pricingCopyByLocale.fr
+  const copy = pricingCopyByLocale[locale] || pricingCopyByLocale.fr
+  const offers = { ...copy.offers }
+
+  Object.defineProperties(offers, {
+    aLaCarte: {
+      value: offers.targeted_session,
+      enumerable: false,
+    },
+    weekly: {
+      value: offers.progression_block,
+      enumerable: false,
+    },
+  })
+
+  return { ...copy, offers }
 }
