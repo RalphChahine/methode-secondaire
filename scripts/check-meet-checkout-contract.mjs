@@ -22,7 +22,7 @@ function expect(condition, message) {
 }
 
 async function main() {
-  const [checkoutEndpoint, checkoutBuilder, checkoutTest, packageJson, stripeWebhook, crmCode, portalEndpoint, portalClient, portalSource] = await Promise.all([
+  const [checkoutEndpoint, checkoutBuilder, checkoutTest, packageJson, stripeWebhook, crmCode, portalEndpoint, portalClient, portalSource, parentTutorRunbook] = await Promise.all([
     readSource("api/create-checkout-session.js"),
     readSource("api/lib/stripe-checkout.mjs"),
     readSource("test/stripe-checkout.test.mjs"),
@@ -32,6 +32,7 @@ async function main() {
     readSource("api/portal.js"),
     readSource("src/lib/portalClient.js"),
     readSource("src/pages/Portal.jsx"),
+    readSource("ops/crm/parent-tutor-portal.md"),
   ])
 
   expect(checkoutEndpoint.includes("PAYMENT_SESSION_SECRET"), "Checkout endpoint: PAYMENT_SESSION_SECRET is missing")
@@ -120,6 +121,19 @@ async function main() {
   expect(portalSource.includes('session.format === "online"') && portalSource.includes("session.google_meet_url") &&
     portalSource.includes('session.calendar_conference_status === "pending"'),
   "Portal UI: Google Meet visibility conditions are missing")
+  expect(!portalSource.includes("completePortalDemoPayment") &&
+    !portalSource.includes('payment_mode === "demo"') &&
+    !portalSource.includes("setPaymentUrl(result.payment_link)"),
+  "Portal UI: demo or arbitrary booking payment-link flow remains enabled")
+  expect(portalSource.includes("getSafeHostedCheckoutUrl(result.checkout_url || result.payment_url)") &&
+    portalSource.includes('url.hostname === "checkout.stripe.com"') && portalSource.includes('url.pathname.startsWith("/c/")') &&
+    !portalSource.includes("paymentResult.payment?.payment_link") &&
+    !portalSource.includes("result.payment?.payment_link"),
+  "Portal UI: payment CTAs must use only a validated hosted Checkout URL")
+  expect(parentTutorRunbook.includes("[Stripe Checkout webhook runbook](stripe-webhook.md)") &&
+    ["STRIPE_SECRET_KEY", "STRIPE_WEBHOOK_SECRET", "PAYMENT_WEBHOOK_SECRET", "PAYMENT_SESSION_SECRET",
+      "checkout.session.completed", "checkout.session.async_payment_succeeded", "checkout.session.expired"].every((token) => parentTutorRunbook.includes(token)),
+  "Portal runbook: Checkout activation configuration is incomplete or not linked to the canonical Stripe runbook")
 
   if (failures.length > 0) {
     console.error("Meet Checkout contract checks failed:\n")

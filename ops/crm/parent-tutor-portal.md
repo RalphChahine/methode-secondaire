@@ -238,20 +238,13 @@ Stripe remains the payment processor and the portal never stores card data. A si
 - parent summaries marked `ready_to_send`.
 - one-time overdue-message escalation alerts for conversations without a reply after 24 hours.
 
-## Required environment
+## Stripe Checkout production activation
 
-Vercel must have:
+Use the canonical [Stripe Checkout webhook runbook](stripe-webhook.md) for the complete owner-controlled procedure; do not duplicate or improvise its secret setup here.
 
-```env
-CRM_WEBHOOK_URL=https://script.google.com/macros/s/AKfycbzx2pzUigC7eI4wgg9CgomGWZRA7tbUG-4pHLhjbO1YYS6FRQ4NpPrW7d05LwERGdQ4Ow/exec
-CRM_PORTAL_SECRET=
-STRIPE_WEBHOOK_SECRET=
-PAYMENT_WEBHOOK_SECRET=
-```
+Vercel needs `CRM_WEBHOOK_URL` and `CRM_PORTAL_SECRET` for the portal proxy, plus all Checkout variables: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `PAYMENT_WEBHOOK_SECRET`, and `PAYMENT_SESSION_SECRET`. Apps Script project properties need the same `CRM_PORTAL_SECRET`, `PAYMENT_WEBHOOK_SECRET`, and `PAYMENT_SESSION_SECRET` values.
 
-`CRM_PORTAL_SECRET` is required in both Vercel and Apps Script Project Settings > Script properties, with the exact same long random value. The server proxy adds it to every portal request and Apps Script validates it before CRM setup or action routing. Stripe reconciliation is deliberately separate and authenticates with `PAYMENT_WEBHOOK_SECRET`.
-
-To activate automatic Stripe reconciliation, add `STRIPE_WEBHOOK_SECRET` and a long random `PAYMENT_WEBHOOK_SECRET` in Vercel. Add the exact same `PAYMENT_WEBHOOK_SECRET` in Apps Script Project Settings > Script properties. Then create a Stripe endpoint for `https://methode-secondaire.vercel.app/api/stripe-webhook` and subscribe it to `checkout.session.completed` and `checkout.session.async_payment_succeeded`. Until this is configured, the endpoint returns a protective error instead of accepting payment updates.
+The owner must create `https://methode-secondaire.vercel.app/api/stripe-webhook` in Stripe and subscribe it to `checkout.session.completed`, `checkout.session.async_payment_succeeded`, and `checkout.session.expired`. Test mode must prove a payment is recorded once and that an expired Checkout releases its linked session; a package-payment reissue remains parent-only and subject to its enrollment eligibility. Never put any secret in the repository or frontend.
 
 For local development, `npm run dev` includes a Vite-only `/api/portal` relay so the portal can be tested on `http://127.0.0.1:5173/portail` without `vercel dev`. Production still uses the Vercel function in `api/portal.js`.
 
@@ -267,7 +260,7 @@ If login codes do not send, open Apps Script and run/authorize `setupCrm` or any
 - Do not promise a session until `Tutor Roster` and `Tutor Availability` are current.
 - Do not grant tutor access until the tutor is in `Tutor Roster` with `status=active`; use the owner invite rather than sharing a generic login.
 - Do not expose a parent summary until the tuteur note is clear.
-- Keep `payment_link` filled before asking a parent to pay through the portal.
+- Ask a parent to pay only through the server-issued, hosted Stripe Checkout URL; legacy Payment Links and portal demo payments are not a production payment path.
 - Do not grant block credits until an operator has verified the corresponding payment: four credits after the Momentum-block $250 payment, or five credits after each Progress-block $300 instalment. Do not use a credit adjustment as a substitute for payment confirmation.
 - Do not describe a block as an automatic subscription or debit. Each block is closed with no automatic renewal; cadence is selected after matching.
 - Treat a paid cancellation as a manual refund or credit decision; do not tell a parent it is automatically refunded.

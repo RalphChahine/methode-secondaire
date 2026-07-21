@@ -53,7 +53,6 @@ import {
   assignPortalStudentTutor,
   bookPortalSession,
   cancelPortalSession,
-  completePortalDemoPayment,
   createPortalAccount,
   createPortalPlanEnrollment,
   createPortalPlanPaymentRequest,
@@ -369,7 +368,8 @@ const copyByLocale = {
     paymentDemoSuccess: "Paiement simulé confirmé. Aucune carte n'a été débitée.",
     paymentDemoNotAvailable: "Cette séance utilise déjà le paiement par carte ou ne peut plus être simulée.",
     bookingTitle: "Réserver une séance",
-    bookingIntro: "Choisissez un créneau. Le paiement reste en simulation tant que Stripe n'est pas activé.",
+    bookingIntro: "Choisissez un créneau. Un lien de paiement Stripe sécurisé sera créé pour votre réservation.",
+    bookingPaymentNotice: "Le paiement par carte s’ouvre uniquement dans la page Stripe sécurisée.",
     bookingCreditIntro: "Choisissez un créneau : un crédit du programme sera réservé pour cette séance.",
     bookingNoSlots: "Aucun créneau n'est ouvert pour l'instant.",
     bookingPrice: "Prix de cette séance",
@@ -864,7 +864,8 @@ const copyByLocale = {
     paymentDemoSuccess: "Simulated payment confirmed. No card was charged.",
     paymentDemoNotAvailable: "This session already uses card payment or can no longer be simulated.",
     bookingTitle: "Book a session",
-    bookingIntro: "Choose a time. Payment stays in simulation until Stripe is enabled.",
+    bookingIntro: "Choose a time. A secure Stripe payment link will be created for your booking.",
+    bookingPaymentNotice: "Card payment opens only on Stripe’s secure page.",
     bookingCreditIntro: "Choose a time: one program credit will be reserved for this session.",
     bookingNoSlots: "No time is open right now.",
     bookingPrice: "Price for this session",
@@ -4561,7 +4562,7 @@ function PlanEnrollmentPanel({ copy, dashboard, locale, token, onSaved }) {
         }
         setPaymentRequest({
           ...paymentResult.payment,
-          payment_url: paymentResult.payment_url || paymentResult.payment?.payment_link || "",
+          payment_url: getSafeHostedCheckoutUrl(paymentResult.checkout_url || paymentResult.payment_url || paymentResult.payment?.checkout_url || paymentResult.payment?.payment_url),
         })
         setStatus(copy.planPaymentRequestCreated)
       } else {
@@ -4596,7 +4597,7 @@ function PlanEnrollmentPanel({ copy, dashboard, locale, token, onSaved }) {
     if (result.ok) {
       setPaymentRequest({
         ...result.payment,
-        payment_url: result.payment_url || result.payment?.payment_link || "",
+        payment_url: getSafeHostedCheckoutUrl(result.checkout_url || result.payment_url || result.payment?.checkout_url || result.payment?.payment_url),
       })
       setStatus(copy.planPaymentRequestCreated)
       onSaved?.()
@@ -4869,7 +4870,7 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved }) {
   const [slotId, setSlotId] = useState("")
   const [paymentUrl, setPaymentUrl] = useState("")
   const [paymentAmount, setPaymentAmount] = useState("")
-  const [demoSessionId, setDemoSessionId] = useState("")
+  const [paymentDeadline, setPaymentDeadline] = useState("")
   const [status, setStatus] = useState("")
   const [isSaving, setIsSaving] = useState(false)
 
@@ -4917,29 +4918,12 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved }) {
         session_type: sessionType,
         payment_mode: result.payment_mode || "",
       })
-      setPaymentUrl(result.payment_link || "")
+      const checkoutUrl = getSafeHostedCheckoutUrl(result.checkout_url || result.payment_url)
+      setPaymentUrl(checkoutUrl)
       setPaymentAmount(result.amount_cad || "")
-      setDemoSessionId(result.payment_mode === "demo" ? result.session_id : "")
+      setPaymentDeadline(result.checkout_expires_at || result.due_date || "")
       setStatus(result.payment_mode === "plan_credit" ? copy.bookingCreditSuccess : copy.bookingSuccess)
       setSlotId("")
-      onSaved?.()
-    } else {
-      setStatus(getPortalErrorMessage(copy, result.code))
-    }
-  }
-
-  async function completeDemoPayment() {
-    if (!demoSessionId) {
-      return
-    }
-
-    setIsSaving(true)
-    setStatus("")
-    const result = await completePortalDemoPayment({ token, sessionId: demoSessionId })
-    setIsSaving(false)
-    if (result.ok) {
-      setDemoSessionId("")
-      setStatus(copy.paymentDemoSuccess)
       onSaved?.()
     } else {
       setStatus(getPortalErrorMessage(copy, result.code))
@@ -5021,25 +5005,22 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved }) {
             {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
             {isSaving ? copy.bookingLoading : (usesProgramCredit ? copy.bookWithProgramCredit : copy.bookSession)}
           </Button>
-          <p className="mt-3 text-xs leading-5 text-white/58">{usesProgramCredit ? copy.bookingProgramCreditNotice : copy.paymentDemoNotice}</p>
+          <p className="mt-3 text-xs leading-5 text-white/58">{usesProgramCredit ? copy.bookingProgramCreditNotice : copy.bookingPaymentNotice}</p>
         </>
       ) : (
         <p className="mt-5 text-sm leading-7 text-white/68">{copy.bookingNoSlots}</p>
       )}
 
       {paymentUrl ? (
-        <Button asChild className="mt-3 w-full rounded-full bg-white text-[#071631] hover:bg-white/90">
-          <a href={paymentUrl} target="_blank" rel="noreferrer">
-            <CreditCard className="h-4 w-4" />
-            {paymentAmount ? `${copy.pay} ${paymentAmount} $` : copy.pay}
-          </a>
-        </Button>
-      ) : null}
-      {demoSessionId ? (
-        <Button type="button" disabled={isSaving} onClick={completeDemoPayment} className="mt-3 w-full rounded-full bg-white text-[#071631] hover:bg-white/90">
-          {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-          {paymentAmount ? `${copy.paymentDemoAction} ${paymentAmount} $` : copy.paymentDemoAction}
-        </Button>
+        <div className="mt-3">
+          {paymentDeadline ? <p className="mb-2 text-xs leading-5 text-white/62">{copy.paymentDueOneHour} · {copy.paymentDueUntil} {formatDateTime(paymentDeadline)}</p> : null}
+          <Button asChild className="w-full rounded-full bg-white text-[#071631] hover:bg-white/90">
+            <a href={paymentUrl} target="_blank" rel="noreferrer">
+              <CreditCard className="h-4 w-4" />
+              {paymentAmount ? `${copy.pay} ${paymentAmount} $` : copy.pay}
+            </a>
+          </Button>
+        </div>
       ) : null}
       {status ? <p className="mt-4 text-sm leading-6 text-white/76">{status}</p> : null}
     </form>
@@ -5669,7 +5650,7 @@ function SessionRow({ copy, session, role, token, onSaved }) {
           </Button>
         </div>
       ) : null}
-      {session.payment_link && session.payment_status === "payment_requested" ? (
+      {session.payment_status === "payment_requested" ? (
         <div className="mt-4 flex items-center gap-2 text-sm text-[#f5c977]">
           <CreditCard className="h-4 w-4" />
           {copy.paymentReady}
@@ -5684,7 +5665,6 @@ function PaymentRow({ copy, locale, payment, token, onSaved }) {
   const [currentPayment, setCurrentPayment] = useState(payment)
   const isPaid = ["paid", "demo_paid", "waived"].includes(currentPayment.payment_status)
   const paymentUrl = getSafeHostedCheckoutUrl(currentPayment.checkout_url || currentPayment.payment_url)
-  const isDemoPayment = !paymentUrl && currentPayment.payment_status === "payment_requested"
   const isOverdue = currentPayment.payment_status === "overdue"
   const canReissue = isOverdue && Boolean(currentPayment.can_reissue)
   const isReleasedBooking = isOverdue && Boolean(currentPayment.session_id)
@@ -5698,19 +5678,6 @@ function PaymentRow({ copy, locale, payment, token, onSaved }) {
   const [status, setStatus] = useState("")
   const paymentDeadline = currentPayment.checkout_expires_at || currentPayment.due_date
 
-  async function completeDemoPayment() {
-    setIsSaving(true)
-    setStatus("")
-    const result = await completePortalDemoPayment({ token, sessionId: currentPayment.session_id })
-    setIsSaving(false)
-    if (result.ok) {
-      setStatus(copy.paymentDemoSuccess)
-      onSaved?.()
-    } else {
-      setStatus(getPortalErrorMessage(copy, result.code))
-    }
-  }
-
   async function reissuePaymentCheckout() {
     if (!canReissue || !currentPayment.payment_id) {
       return
@@ -5720,13 +5687,14 @@ function PaymentRow({ copy, locale, payment, token, onSaved }) {
     setStatus("")
     const result = await reissuePortalPaymentCheckout({ token, paymentId: currentPayment.payment_id })
     setIsSaving(false)
-    if (result.ok && (result.checkout_url || result.payment_url)) {
+    const checkoutUrl = getSafeHostedCheckoutUrl(result.checkout_url || result.payment_url)
+    if (result.ok && checkoutUrl) {
       setCurrentPayment((current) => ({
         ...current,
         payment_status: "payment_requested",
         can_reissue: false,
-        checkout_url: result.checkout_url || result.payment_url,
-        payment_url: result.checkout_url || result.payment_url,
+        checkout_url: checkoutUrl,
+        payment_url: checkoutUrl,
         checkout_expires_at: result.checkout_expires_at || result.due_date,
         due_date: result.checkout_expires_at || result.due_date,
       }))
@@ -5778,13 +5746,6 @@ function PaymentRow({ copy, locale, payment, token, onSaved }) {
           ) : null}
         </div>
       ) : null}
-      {isDemoPayment && !isPaid ? (
-        <Button type="button" disabled={isSaving} onClick={completeDemoPayment} className="mt-4 rounded-full bg-[#f5c977] px-5 text-[#071631] hover:bg-[#f7d38f]">
-          {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-          {copy.paymentDemoAction}
-        </Button>
-      ) : null}
-      {isDemoPayment && !isPaid ? <p className="mt-3 text-xs leading-5 text-white/56">{copy.paymentDemoNotice}</p> : null}
       {status ? <p className="mt-3 text-sm leading-6 text-white/68">{status}</p> : null}
     </div>
   )
@@ -6491,7 +6452,9 @@ function buildStripePaymentUrl(paymentLink, paymentId) {
 function getSafeHostedCheckoutUrl(value) {
   try {
     const url = new URL(String(value || ""))
-    return url.protocol === "https:" && url.hostname === "checkout.stripe.com" ? url.toString() : ""
+    return url.protocol === "https:" && url.hostname === "checkout.stripe.com" && url.pathname.startsWith("/c/")
+      ? url.toString()
+      : ""
   } catch {
     return ""
   }
