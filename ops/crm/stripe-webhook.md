@@ -49,6 +49,10 @@ Only the owner may switch the four variables to live Stripe values, create the l
 
 The update is idempotent: a retry from Stripe will not create a second payment, credit grant, release, or Calendar deletion.
 
+## Legacy-payment safety
+
+Historical `payment_link` values remain in the CRM only for record continuity. They are never sent to a parent, returned as a payment CTA, or converted into a Checkout URL. If a payment row lacks a valid persisted `https://checkout.stripe.com/c/...` URL, the owner must issue or repair a hosted Checkout Session before requesting payment.
+
 ## Policy implemented in the portal
 
 - With at least 72 hours' notice, rescheduling is guaranteed. Inside that window, the request is routed to the team; no payment or plan credit is forfeited automatically.

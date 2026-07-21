@@ -75,6 +75,14 @@ async function main() {
     crmCode.indexOf("function reissuePortalPaymentCheckout_("),
     crmCode.indexOf("function grantCreditsForPaidPlanPayment_("),
   )
+  const checkoutUrlFunction = crmCode.slice(
+    crmCode.indexOf("function getCheckoutPaymentUrl_("),
+    crmCode.indexOf("function issueCheckoutForPayment_("),
+  )
+  const parentSessionSanitizer = crmCode.slice(
+    crmCode.indexOf("function sanitizeSessionForParent_("),
+    crmCode.indexOf("function sanitizeSessionForTutor_("),
+  )
   expect(expiryFunction.includes("deleteCalendarEventForExpiredSession_(currentSession.data)") &&
     expiryFunction.indexOf("deleteCalendarEventForExpiredSession_(currentSession.data)") < expiryFunction.indexOf("session_status: \"cancelled\""),
   "CRM: expired session must delete its Calendar event before cancellation")
@@ -97,6 +105,16 @@ async function main() {
   "CRM: paid terminal package enrollments must create a reconciliation record")
   expect(portalEndpoint.includes("portal_reissue_payment_checkout"), "Portal API: Checkout reissue route is missing")
   expect(portalClient.includes("reissuePortalPaymentCheckout"), "Portal client: Checkout reissue helper is missing")
+  expect(!portalEndpoint.includes("portal_complete_demo_payment") &&
+    !crmCode.includes('case "portal_complete_demo_payment":') &&
+    !crmCode.includes("function completePortalDemoPayment_("),
+  "Payment security: a public demo-payment mutation route remains enabled")
+  expect(checkoutUrlFunction.includes("const checkoutUrl = normalizeValue_(payment && payment.checkout_url);") &&
+    checkoutUrlFunction.includes("/^https:\\/\\/checkout\\.stripe\\.com\\/c\\//.test(checkoutUrl)") &&
+    !checkoutUrlFunction.includes("payment_link"),
+  "Payment security: Checkout URL lookup falls back to a legacy Payment Link")
+  expect(!parentSessionSanitizer.includes("payment_link"),
+  "Payment security: a legacy Payment Link is exposed in the parent session payload")
   expect(portalSource.includes('paymentDueOneHour: "Paiement à effectuer dans l’heure"') &&
     portalSource.includes('paymentDueOneHour: "Payment due within one hour"'),
   "Portal UI: one-hour payment status must have French and English copy")

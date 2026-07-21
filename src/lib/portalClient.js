@@ -284,14 +284,6 @@ export async function upsertPortalTutorAvailability({ token, values }) {
   })
 }
 
-export async function completePortalDemoPayment({ token, sessionId }) {
-  return portalRequest({
-    action: "portal_complete_demo_payment",
-    token,
-    session_id: sessionId,
-  })
-}
-
 export async function reissuePortalPaymentCheckout({ token, paymentId }) {
   return portalRequest({
     action: "portal_reissue_payment_checkout",
