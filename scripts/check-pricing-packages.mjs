@@ -43,4 +43,21 @@ assert.equal(resolveRequestedOffer("momentum"), "momentum_block")
 assert.equal(resolveRequestedOffer("targeted"), "targeted_session")
 assert.equal(resolveRequestedOffer("unknown"), "targeted_session")
 
+const [pricingSection, requestPage, requestForm] = await Promise.all([
+  fs.readFile(new URL("../src/components/PricingSection.jsx", import.meta.url), "utf8"),
+  fs.readFile(new URL("../src/pages/FirstSessionRequest.jsx", import.meta.url), "utf8"),
+  fs.readFile(new URL("../src/components/FirstSessionRequestForm.jsx", import.meta.url), "utf8"),
+])
+
+;["targeted_session", "momentum_block", "progression_block"].forEach((code) => {
+  assert.match(pricingSection, new RegExp(code))
+})
+assert.match(pricingSection, /\?offer=\$\{code\}/)
+assert.match(requestPage, /resolveRequestedOffer/)
+assert.match(requestForm, /offer_recommended: offer/)
+assert.match(pricingSection, /methode:pricing-offers-view/)
+assert.match(pricingSection, /methode:pricing-offer-selected/)
+assert.match(requestForm, /methode:first-session-request-submit/)
+assert.doesNotMatch(pricingSection, /SÃ©ance DÃ©clic/)
+
 console.log("Pricing package contract passed.")
