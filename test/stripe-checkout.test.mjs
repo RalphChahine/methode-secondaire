@@ -174,6 +174,38 @@ test("uses a distinct validated Checkout reference for a later reissue", async (
   assert.equal(fetchCalls[0][1].headers["Idempotency-Key"], "PAY-001-reissue-2")
 })
 
+test("rejects idempotency references that cannot be sent as HTTP headers", async () => {
+  const originalFetch = globalThis.fetch
+  const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET
+  const originalStripeSecret = process.env.STRIPE_SECRET_KEY
+  const fetchCalls = []
+
+  process.env.PAYMENT_SESSION_SECRET = "internal-secret"
+  process.env.STRIPE_SECRET_KEY = "sk_test_secret"
+  globalThis.fetch = async (...args) => {
+    fetchCalls.push(args)
+    return { ok: true, json: async () => ({}) }
+  }
+
+  try {
+    for (const body of [
+      makeCheckoutInput({ payment_id: "PAY-☃" }),
+      makeCheckoutInput({ checkout_reference: "PAY-001-☃" }),
+    ]) {
+      const response = makeResponse()
+      await createCheckoutSession({ method: "POST", body }, response)
+      assert.equal(response.statusCode, 400)
+      assert.deepEqual(response.payload, { ok: false, code: "PAYMENT_CHECKOUT_DETAILS_REQUIRED" })
+    }
+  } finally {
+    globalThis.fetch = originalFetch
+    restoreEnvironment("PAYMENT_SESSION_SECRET", originalPaymentSecret)
+    restoreEnvironment("STRIPE_SECRET_KEY", originalStripeSecret)
+  }
+
+  assert.equal(fetchCalls.length, 0)
+})
+
 test("rejects non-POST Checkout requests", async () => {
   const response = makeResponse()
 
@@ -237,4 +269,17 @@ function restoreEnvironment(name, value) {
   }
 
   process.env[name] = value
+}
+
+function makeCheckoutInput(overrides = {}) {
+  return {
+    payment_session_secret: "internal-secret",
+    payment_id: "PAY-001",
+    amount_cad: 65,
+    email: "parent@example.com",
+    offer: "Séance ciblée",
+    success_url: "https://example.com/success",
+    cancel_url: "https://example.com/cancel",
+    ...overrides,
+  }
 }

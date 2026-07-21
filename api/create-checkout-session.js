@@ -80,12 +80,18 @@ function safeEqual(value, expected) {
 }
 
 function getCheckoutReference(value, paymentId) {
+  const defaultReference = validateCheckoutReference(paymentId)
+
   if (value === undefined || value === null) {
-    return paymentId
+    return defaultReference
   }
 
+  return validateCheckoutReference(value)
+}
+
+function validateCheckoutReference(value) {
   const checkoutReference = normalizeString(value)
-  if (!checkoutReference || checkoutReference.length > 255 || /[\u0000-\u001F\u007F]/.test(checkoutReference)) {
+  if (!checkoutReference || checkoutReference.length > 255 || !/^[\x21-\x7E]+$/.test(checkoutReference)) {
     throw new Error("PAYMENT_CHECKOUT_DETAILS_REQUIRED")
   }
 
