@@ -70,6 +70,7 @@ import {
   loadPortalSession,
   pausePortalPlanEnrollment,
   requestPortalCode,
+  reissuePortalPaymentCheckout,
   reschedulePortalSession,
   resumePortalPlanEnrollment,
   savePortalSession,
@@ -490,6 +491,14 @@ const copyByLocale = {
     amount: "Montant",
     pay: "Payer",
     paid: "Payé",
+    paymentDueOneHour: "Paiement à effectuer dans l’heure",
+    paymentDueUntil: "À régler avant",
+    paymentLinkExpired: "Ce lien de paiement a expiré.",
+    requestNewPaymentLink: "Demander un nouveau lien de paiement",
+    paymentReissueSuccess: "Un nouveau lien de paiement sécurisé est prêt pendant une heure.",
+    bookingReleased: "La réservation a été libérée. Choisissez un nouveau créneau avant de payer.",
+    meetPreparing: "Lien Google Meet en préparation",
+    joinGoogleMeet: "Rejoindre Google Meet",
     requestTitle: "Demander un suivi",
     requestHistory: "Suivi des demandes",
     requestQueue: "Demandes à traiter",
@@ -977,6 +986,14 @@ const copyByLocale = {
     amount: "Amount",
     pay: "Pay",
     paid: "Paid",
+    paymentDueOneHour: "Payment due within one hour",
+    paymentDueUntil: "Pay by",
+    paymentLinkExpired: "This payment link has expired.",
+    requestNewPaymentLink: "Request a new payment link",
+    paymentReissueSuccess: "A new secure payment link is ready for one hour.",
+    bookingReleased: "This booking was released. Choose a new time before paying.",
+    meetPreparing: "Google Meet link is being prepared",
+    joinGoogleMeet: "Join Google Meet",
     requestTitle: "Ask for follow-up",
     requestHistory: "Request updates",
     requestQueue: "Requests to handle",
@@ -5423,6 +5440,9 @@ function SessionRow({ copy, session, role, token, onSaved }) {
   const sessionParticipant = role === "tutor"
     ? session.parent_name || session.student_name
     : session.tutor_name || ""
+  const isOnlineSession = session.format === "online"
+  const meetUrl = isOnlineSession ? getSafeGoogleMeetUrl(session.google_meet_url) : ""
+  const isMeetPending = isOnlineSession && session.calendar_conference_status === "pending" && !meetUrl
 
   async function respond(response) {
     setIsSaving(true)
@@ -5513,6 +5533,20 @@ function SessionRow({ copy, session, role, token, onSaved }) {
         <div className="mt-3 text-sm leading-6 text-white/62">
           {session.format ? humanize(session.format) : ""}{session.format && session.location ? " · " : ""}{session.location || ""}
         </div>
+      ) : null}
+      {isMeetPending ? (
+        <div className="mt-3 flex items-center gap-2 text-sm text-[#f5c977]">
+          <LoaderCircle className="h-4 w-4 animate-spin" />
+          {copy.meetPreparing}
+        </div>
+      ) : null}
+      {meetUrl ? (
+        <Button asChild variant="outline" className="mt-3 rounded-full border-[#f5c977]/35 bg-[#f5c977]/8 text-[#f5c977] hover:bg-[#f5c977]/15 hover:text-[#f5c977]">
+          <a href={meetUrl} target="_blank" rel="noreferrer">
+            <CalendarCheck className="h-4 w-4" />
+            {copy.joinGoogleMeet}
+          </a>
+        </Button>
       ) : null}
       {(session.parent_confirmed_at || session.tutor_confirmed_at) ? (
         <div className="mt-3 flex flex-wrap gap-2">
@@ -5647,21 +5681,27 @@ function SessionRow({ copy, session, role, token, onSaved }) {
 }
 
 function PaymentRow({ copy, locale, payment, token, onSaved }) {
-  const isPaid = ["paid", "demo_paid", "waived"].includes(payment.payment_status)
-  const paymentUrl = payment.payment_url || ""
-  const isDemoPayment = !paymentUrl && payment.payment_status === "payment_requested"
-  const paymentLabel = locale === "en" ? payment.display_name_en : payment.display_name_fr
-  const creditCount = Number(payment.credit_unlock_count || 0)
+  const [currentPayment, setCurrentPayment] = useState(payment)
+  const isPaid = ["paid", "demo_paid", "waived"].includes(currentPayment.payment_status)
+  const paymentUrl = getSafeHostedCheckoutUrl(currentPayment.checkout_url || currentPayment.payment_url)
+  const isDemoPayment = !paymentUrl && currentPayment.payment_status === "payment_requested"
+  const isOverdue = currentPayment.payment_status === "overdue"
+  const canReissue = isOverdue && Boolean(currentPayment.can_reissue)
+  const isReleasedBooking = isOverdue && Boolean(currentPayment.session_id)
+  const paymentLabel = locale === "en" ? currentPayment.display_name_en : currentPayment.display_name_fr
+  const paymentAmount = payment.amount_cad ? formatCadAmount(payment.amount_cad, locale) : "—"
+  const creditCount = Number(currentPayment.credit_unlock_count || 0)
   const creditText = creditCount > 0
     ? (locale === "en" ? `Unlocks ${creditCount} credits` : `Débloque ${creditCount} crédits`)
     : ""
   const [isSaving, setIsSaving] = useState(false)
   const [status, setStatus] = useState("")
+  const paymentDeadline = currentPayment.checkout_expires_at || currentPayment.due_date
 
   async function completeDemoPayment() {
     setIsSaving(true)
     setStatus("")
-    const result = await completePortalDemoPayment({ token, sessionId: payment.session_id })
+    const result = await completePortalDemoPayment({ token, sessionId: currentPayment.session_id })
     setIsSaving(false)
     if (result.ok) {
       setStatus(copy.paymentDemoSuccess)
@@ -5671,6 +5711,33 @@ function PaymentRow({ copy, locale, payment, token, onSaved }) {
     }
   }
 
+  async function reissuePaymentCheckout() {
+    if (!canReissue || !currentPayment.payment_id) {
+      return
+    }
+
+    setIsSaving(true)
+    setStatus("")
+    const result = await reissuePortalPaymentCheckout({ token, paymentId: currentPayment.payment_id })
+    setIsSaving(false)
+    if (result.ok && (result.checkout_url || result.payment_url)) {
+      setCurrentPayment((current) => ({
+        ...current,
+        payment_status: "payment_requested",
+        can_reissue: false,
+        checkout_url: result.checkout_url || result.payment_url,
+        payment_url: result.checkout_url || result.payment_url,
+        checkout_expires_at: result.checkout_expires_at || result.due_date,
+        due_date: result.checkout_expires_at || result.due_date,
+      }))
+      setStatus(copy.paymentReissueSuccess)
+      onSaved?.()
+      return
+    }
+
+    setStatus(getPortalErrorMessage(copy, result.code))
+  }
+
   return (
     <div className="rounded-[18px] border border-white/10 bg-white/5 p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -5678,11 +5745,16 @@ function PaymentRow({ copy, locale, payment, token, onSaved }) {
           <div className="font-semibold">{paymentLabel || (locale === "en" ? "Tutoring session" : "Séance de tutorat")}</div>
           {creditText ? <div className="mt-1 text-sm text-[#f5c977]">{creditText}</div> : null}
           <div className="mt-1 text-sm text-white/64">
-            {copy.amount}: {payment.amount_cad ? formatCadAmount(payment.amount_cad, locale) : "—"}
+            {copy.amount}: {paymentAmount}
           </div>
         </div>
-        <StatusPill value={payment.payment_status || "not_requested"} />
+        <StatusPill value={currentPayment.payment_status || "not_requested"} />
       </div>
+      {currentPayment.payment_status === "payment_requested" ? (
+        <p className="mt-3 text-sm leading-6 text-[#f5c977]">
+          {copy.paymentDueOneHour}{paymentDeadline ? ` · ${copy.paymentDueUntil} ${formatDateTime(paymentDeadline)}` : ""}
+        </p>
+      ) : null}
       {paymentUrl && !isPaid ? (
         <Button
           asChild
@@ -5693,6 +5765,18 @@ function PaymentRow({ copy, locale, payment, token, onSaved }) {
             {copy.pay}
           </a>
         </Button>
+      ) : null}
+      {isOverdue ? (
+        <div className="mt-4 rounded-2xl border border-[#f5c977]/20 bg-[#f5c977]/8 p-3 text-sm leading-6 text-white/76">
+          <p>{copy.paymentLinkExpired}</p>
+          {isReleasedBooking ? <p className="mt-2 text-white/62">{copy.bookingReleased}</p> : null}
+          {canReissue ? (
+            <Button type="button" disabled={isSaving} onClick={reissuePaymentCheckout} className="mt-3 rounded-full bg-[#f5c977] px-4 text-[#071631] hover:bg-[#f7d38f]">
+              {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
+              {copy.requestNewPaymentLink}
+            </Button>
+          ) : null}
+        </div>
       ) : null}
       {isDemoPayment && !isPaid ? (
         <Button type="button" disabled={isSaving} onClick={completeDemoPayment} className="mt-4 rounded-full bg-[#f5c977] px-5 text-[#071631] hover:bg-[#f7d38f]">
@@ -6401,6 +6485,24 @@ function buildStripePaymentUrl(paymentLink, paymentId) {
     return url.toString()
   } catch {
     return paymentLink
+  }
+}
+
+function getSafeHostedCheckoutUrl(value) {
+  try {
+    const url = new URL(String(value || ""))
+    return url.protocol === "https:" && url.hostname === "checkout.stripe.com" ? url.toString() : ""
+  } catch {
+    return ""
+  }
+}
+
+function getSafeGoogleMeetUrl(value) {
+  try {
+    const url = new URL(String(value || ""))
+    return url.protocol === "https:" && url.hostname === "meet.google.com" ? url.toString() : ""
+  } catch {
+    return ""
   }
 }
 

@@ -24,6 +24,19 @@ npm.cmd run dev:full
 npm.cmd run build
 ```
 
+## Production activation: Meet and Stripe Checkout
+
+The repository can verify the code paths with `npm.cmd run test:payments` and `npm.cmd run test:site`; this is not production configuration or a live payment test. The owner must complete this order before enabling public payments:
+
+1. Enable the **Google Calendar Advanced Service** in the Apps Script project and the linked Google Cloud project.
+2. Authorize Apps Script and share every assigned tutor calendar with the Apps Script account so it can create the tutor-owned event and Google Meet conference.
+3. Add Vercel variables: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `PAYMENT_WEBHOOK_SECRET`, and `PAYMENT_SESSION_SECRET`. Add the two `PAYMENT_*` values to Apps Script project properties too.
+4. Create the Stripe webhook endpoint `https://methode-secondaire.vercel.app/api/stripe-webhook` and subscribe it to `checkout.session.completed`, `checkout.session.async_payment_succeeded`, and `checkout.session.expired`.
+5. Make a Stripe **test-mode** booking: verify the Meet invitation arrives only after the link is ready, payment completes once, and an expired test Checkout releases its linked session.
+6. Deploy the verified production branch. The owner then performs one restricted, authorized live verification before sharing public payment links.
+
+Do not put Stripe or Apps Script secrets in the frontend, a `VITE_*` variable, the repository, screenshots, or support messages.
+
 ## AI assistant setup
 
 The site includes a floating AI assistant powered by the OpenAI Responses API and a Vercel serverless function.

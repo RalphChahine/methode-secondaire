@@ -27,6 +27,9 @@ Parents can:
 - request a guaranteed reschedule at least 72 hours before an upcoming session; later requests are kept for the team to review, without an automatic payment or credit forfeiture;
 - see session summaries released to parents;
 - see payment status and payment links;
+- see the amount and one-hour deadline for a hosted Checkout payment, then open only the server-issued Stripe Checkout URL;
+- see an expired payment link clearly. If the expired payment belonged to a session, the booking is released and the parent chooses a new slot; only an eligible package payment without a released session can request a new Checkout link;
+- see an online session's Google Meet link only after the conference is ready;
 - add a note tied to any of their sessions; it is routed to `Portal Requests` for the team;
 - prepare an upcoming session directly for the assigned tutor with a written note; it creates a session message with the normal response SLA instead of an untracked email;
 - see clearly that photos and PDFs are not uploaded or stored by the portal yet; selected files stay on the parent's device and only the written note is sent to the tutor;
@@ -44,6 +47,7 @@ Tutors can:
 - sign in only after the owner has added them as an active tutor and sent an access invite;
 - request a login code by email;
 - see assigned sessions;
+- see an online session's Google Meet link only after the conference is ready; a pending conference is labelled as preparing and never exposes a join link;
 - see the next upcoming session and messages that need a reply;
 - publish, edit or pause their own recurring weekly availability and set it as open, limited, full or paused; open and limited windows become bookable parent slots;
 - see which sessions need notes;
@@ -112,6 +116,14 @@ Apps Script actions:
 - `portal_get_plan_change_deadline`
 
 Stripe's signed webhook is handled separately by `/api/stripe-webhook`. It accepts only verified Stripe Checkout completion events and sends a second shared-secret request to Apps Script before a `Payments` row or session can become `paid`.
+
+## Tutor calendar and Meet ownership
+
+- The assigned tutor owns the Calendar event and is the Google Meet host. Before enabling online booking, share each tutor calendar with the Apps Script account that creates events and conferences.
+- The system creates the event without invitations while the conference is pending. It sends parent and tutor invitations only after Google returns the ready `meet.google.com` URL.
+- If conference creation fails or remains pending past the recovery window, the automation marks the session for operations review and retries safely; it must not announce an online session without a working Meet link.
+- When an unpaid session Checkout expires, the system deletes the Calendar event, releases the slot/credit reservation where applicable, and tells the parent to choose a new slot. A parent cannot revive that released session by reissuing a payment link.
+- Reissue is parent-only and only for the owner-filtered, overdue package payment whose enrollment is still eligible. Tutors never see payment or reissue controls.
 
 CRM tabs:
 

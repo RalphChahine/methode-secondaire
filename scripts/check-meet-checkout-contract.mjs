@@ -22,7 +22,7 @@ function expect(condition, message) {
 }
 
 async function main() {
-  const [checkoutEndpoint, checkoutBuilder, checkoutTest, packageJson, stripeWebhook, crmCode, portalEndpoint, portalClient] = await Promise.all([
+  const [checkoutEndpoint, checkoutBuilder, checkoutTest, packageJson, stripeWebhook, crmCode, portalEndpoint, portalClient, portalSource] = await Promise.all([
     readSource("api/create-checkout-session.js"),
     readSource("api/lib/stripe-checkout.mjs"),
     readSource("test/stripe-checkout.test.mjs"),
@@ -31,6 +31,7 @@ async function main() {
     readSource("ops/crm/google-apps-script/Code.gs"),
     readSource("api/portal.js"),
     readSource("src/lib/portalClient.js"),
+    readSource("src/pages/Portal.jsx"),
   ])
 
   expect(checkoutEndpoint.includes("PAYMENT_SESSION_SECRET"), "Checkout endpoint: PAYMENT_SESSION_SECRET is missing")
@@ -95,6 +96,30 @@ async function main() {
   "CRM: paid terminal package enrollments must create a reconciliation record")
   expect(portalEndpoint.includes("portal_reissue_payment_checkout"), "Portal API: Checkout reissue route is missing")
   expect(portalClient.includes("reissuePortalPaymentCheckout"), "Portal client: Checkout reissue helper is missing")
+  expect(portalSource.includes('paymentDueOneHour: "Paiement à effectuer dans l’heure"') &&
+    portalSource.includes('paymentDueOneHour: "Payment due within one hour"'),
+  "Portal UI: one-hour payment status must have French and English copy")
+  expect(portalSource.includes('paymentLinkExpired: "Ce lien de paiement a expiré."') &&
+    portalSource.includes('paymentLinkExpired: "This payment link has expired."'),
+  "Portal UI: expired payment status must have French and English copy")
+  expect(portalSource.includes('requestNewPaymentLink: "Demander un nouveau lien de paiement"') &&
+    portalSource.includes('requestNewPaymentLink: "Request a new payment link"'),
+  "Portal UI: payment reissue action must have French and English copy")
+  expect(portalSource.includes('meetPreparing: "Lien Google Meet en préparation"') &&
+    portalSource.includes('meetPreparing: "Google Meet link is being prepared"'),
+  "Portal UI: pending Meet status must have French and English copy")
+  expect(portalSource.includes('joinGoogleMeet: "Rejoindre Google Meet"') &&
+    portalSource.includes('joinGoogleMeet: "Join Google Meet"'),
+  "Portal UI: Meet action must have French and English copy")
+  expect(portalSource.includes('bookingReleased: "La réservation a été libérée. Choisissez un nouveau créneau avant de payer."') &&
+    portalSource.includes('bookingReleased: "This booking was released. Choose a new time before paying."'),
+  "Portal UI: released booking state must have French and English copy")
+  expect(portalSource.includes("currentPayment.checkout_url") && portalSource.includes("currentPayment.can_reissue") &&
+    portalSource.includes("reissuePortalPaymentCheckout"),
+  "Portal UI: parent Checkout reissue is not connected to owner-scoped payment data")
+  expect(portalSource.includes('session.format === "online"') && portalSource.includes("session.google_meet_url") &&
+    portalSource.includes('session.calendar_conference_status === "pending"'),
+  "Portal UI: Google Meet visibility conditions are missing")
 
   if (failures.length > 0) {
     console.error("Meet Checkout contract checks failed:\n")
