@@ -798,9 +798,27 @@ function processPendingSessionConference_(spreadsheet, sessionId) {
     }
   });
   if (result?.session && !result.invitationSent) {
-    markSessionConferenceFailed_(spreadsheet, result.sheet, result.rowNumber, result.session, result.error, result.eventId);
+    return reconcilePendingMeetFailure_(spreadsheet, sessionId, result);
   }
   return result || { skipped: true };
+}
+
+function reconcilePendingMeetFailure_(spreadsheet, sessionId, failure) {
+  return withMeetConferenceState_(spreadsheet, sessionId, ({ sheet, record }) => {
+    if (!record) {
+      deleteMeetEventSafely_(spreadsheet, failure.session, failure.eventId);
+      return { skipped: true };
+    }
+    const current = record.data;
+    if (normalizeValue_(current.calendar_conference_status) !== "pending" ||
+        normalizeValue_(current.google_calendar_event_id) !== normalizeValue_(failure.eventId)) {
+      // A later pass has already made this event ready or moved the session to
+      // another durable event. Never overwrite or delete that current state.
+      return { skipped: true };
+    }
+    markSessionConferenceFailed_(spreadsheet, sheet, record.rowNumber, current, failure.error, failure.eventId);
+    return { error: failure.error };
+  }) || { skipped: true };
 }
 
 function createPaymentRowsForScheduledSessions() {
