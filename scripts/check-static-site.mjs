@@ -194,12 +194,13 @@ function makeStructuredSheet(header) {
 }
 
 async function verifyFinalReviewSafetyContracts() {
-  const [appsScriptSource, portalSource, productionProxySource, devProxySource] = await Promise.all([
+  const normalizeSource = (source) => source.replace(/\r\n/g, "\n")
+  const [appsScriptSource, portalSource, productionProxySource, devProxySource] = (await Promise.all([
     fs.readFile(path.join(projectRoot, "ops", "crm", "google-apps-script", "Code.gs"), "utf8"),
     fs.readFile(path.join(projectRoot, "src", "pages", "Portal.jsx"), "utf8"),
     fs.readFile(path.join(projectRoot, "api", "portal.js"), "utf8"),
     fs.readFile(path.join(projectRoot, "vite.config.js"), "utf8"),
-  ])
+  ])).map(normalizeSource)
   const doPostSource = appsScriptSource.match(/function doPost\([\s\S]+?\n}\n/)?.[0] || ""
   const enrollmentEligibilitySource = appsScriptSource.match(/function validatePlanEnrollmentMatchAndSchedule_\([\s\S]+?\n}\n/)?.[0] || ""
   const enrollmentSource = appsScriptSource.match(/function createPortalPlanEnrollment_\([\s\S]+?\n}\n\nfunction getPlanPaymentStage_/)?.[0] || ""
@@ -284,11 +285,12 @@ async function verifyFinalReviewSafetyContracts() {
 }
 
 async function verifyPlanPaymentLifecycleSources() {
-  const [appsScriptSource, clientSource, portalSource] = await Promise.all([
+  const normalizeSource = (source) => source.replace(/\r\n/g, "\n")
+  const [appsScriptSource, clientSource, portalSource] = (await Promise.all([
     fs.readFile(path.join(projectRoot, "ops", "crm", "google-apps-script", "Code.gs"), "utf8"),
     fs.readFile(path.join(projectRoot, "src", "lib", "portalClient.js"), "utf8"),
     fs.readFile(path.join(projectRoot, "src", "pages", "Portal.jsx"), "utf8"),
-  ])
+  ])).map(normalizeSource)
 
   const paymentColumns = appsScriptSource.match(/const PAYMENT_COLUMNS = \[([\s\S]*?)\n\];/)?.[1] || ""
   const creditLedgerColumns = appsScriptSource.match(/const CREDIT_LEDGER_COLUMNS = \[([\s\S]*?)\n\];/)?.[1] || ""
