@@ -10,17 +10,20 @@ const BlogArticle = lazy(() => import("@/pages/BlogArticle"))
 const BlogHub = lazy(() => import("@/pages/BlogHub"))
 const CaseStudies = lazy(() => import("@/pages/CaseStudies"))
 const DevenirTuteur = lazy(() => import("@/pages/DevenirTuteur"))
+const FirstSessionRequest = lazy(() => import("@/pages/FirstSessionRequest"))
 const LeadThanks = lazy(() => import("@/pages/LeadThanks"))
 const LocalLanding = lazy(() => import("@/pages/LocalLanding"))
 const Maths = lazy(() => import("@/pages/Maths"))
+const NotreApproche = lazy(() => import("@/pages/NotreApproche"))
+const ParentTrust = lazy(() => import("@/pages/ParentTrust"))
 const OfferLanding = lazy(() => import("@/pages/OfferLanding"))
+const Portal = lazy(() => import("@/pages/Portal"))
 const ResourceArticle = lazy(() => import("@/pages/ResourceArticle"))
 const ResourcesHub = lazy(() => import("@/pages/ResourcesHub"))
 const Secondary4MathTheory = lazy(() => import("@/pages/Secondary4MathTheory"))
 const Secondary4MathConcept = lazy(() => import("@/pages/Secondary4MathConcept"))
 const Sciences = lazy(() => import("@/pages/Sciences"))
 const Temoignages = lazy(() => import("@/pages/Temoignages"))
-const Tuteurs = lazy(() => import("@/pages/Tuteurs"))
 
 function PageLoader() {
   return (
@@ -33,23 +36,38 @@ function PageLoader() {
 export default function App() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<PageLoader />}>
-        <Routes>
+      <AppRoutes />
+    </BrowserRouter>
+  )
+}
+
+export function AppRoutes() {
+  return (
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
           <Route element={<SiteLayout />}>
             <Route path="/" element={<Accueil />} />
             <Route path="/en" element={<AccueilEn />} />
+            <Route path="/demande" element={<FirstSessionRequest />} />
+            <Route path="/en/request" element={<FirstSessionRequest />} />
             <Route path="/demande-recue" element={<LeadThanks />} />
             <Route path="/en/request-received" element={<LeadThanks />} />
+            <Route path="/portail" element={<Portal />} />
+            <Route path="/en/portal" element={<Portal />} />
             <Route path="/maths" element={<Maths />} />
             <Route path="/en/math-tutoring" element={<Maths />} />
             <Route path="/sciences" element={<Sciences />} />
             <Route path="/en/science-tutoring" element={<Sciences />} />
+            <Route path="/notre-approche" element={<NotreApproche />} />
+            <Route path="/en/our-approach" element={<NotreApproche />} />
+            <Route path="/confiance-parents" element={<ParentTrust />} />
+            <Route path="/en/parent-trust" element={<ParentTrust />} />
             <Route path="/temoignages" element={<Temoignages />} />
             <Route path="/en/testimonials" element={<Temoignages />} />
             <Route path="/reussites" element={<CaseStudies />} />
             <Route path="/en/success-stories" element={<CaseStudies />} />
-            <Route path="/tuteurs" element={<Tuteurs />} />
-            <Route path="/en/tutors" element={<Tuteurs />} />
+            <Route path="/tuteurs" element={<Navigate to="/devenir-tuteur" replace />} />
+            <Route path="/en/tutors" element={<Navigate to="/en/become-a-tutor" replace />} />
             <Route path="/tutorat-montreal" element={<LocalLanding forcedRouteKey="montreal" />} />
             <Route path="/en/montreal-tutoring" element={<LocalLanding forcedRouteKey="montreal" />} />
             <Route path="/tutorat-laval" element={<LocalLanding forcedRouteKey="laval" />} />
@@ -208,8 +226,7 @@ export default function App() {
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Route>
-        </Routes>
-      </Suspense>
-    </BrowserRouter>
+      </Routes>
+    </Suspense>
   )
 }

@@ -1,3 +1,5 @@
+import { pricing } from "./pricing.js"
+
 export const offerRouteKeys = [
   "examSprint",
   "weeklyFollowUp",
@@ -82,7 +84,7 @@ export const offerPageConfigs = {
         "Une meilleure vision de ce qu'il faut réviser maintenant.",
         "Une méthode plus nette pour attaquer les questions d'examen.",
         "Un plan plus calme pour la semaine ou les jours qui restent.",
-        "Une meilleure décision entre appeler, réserver ou continuer en suivi.",
+        "Une meilleure décision entre appeler, demander une séance ou continuer en suivi.",
       ],
       faq: [
         {
@@ -96,13 +98,13 @@ export const offerPageConfigs = {
             "Non. Le format fonctionne aussi en sciences, physique et chimie, tant que le besoin principal est de clarifier vite, pratiquer utilement et arriver plus prêt à l'évaluation.",
         },
         {
-          question: "Faut-il appeler ou réserver directement ?",
+          question: "Faut-il appeler ou demander une séance ?",
           answer:
-            "Si la situation est encore floue ou très urgente, l'appel est souvent le meilleur premier pas. Si la matière et le chapitre sont déjà clairs, la réservation directe fonctionne très bien.",
+            "Si la situation est encore floue ou très urgente, l'appel est souvent le meilleur premier pas. Si la matière et le chapitre sont déjà clairs, une demande de séance convient très bien.",
         },
       ],
       relatedLinks: [
-        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+        { routeKey: "weeklyFollowUp", label: "Bloc de progression — 10 séances" },
         { routeKey: "mathExamPrep", label: "Guide examen maths" },
         { routeKey: "scienceExamPrep", label: "Guide examen sciences" },
         { routeKey: "maths", label: "Page maths" },
@@ -113,7 +115,7 @@ export const offerPageConfigs = {
         "Le plus utile est souvent de clarifier la situation rapidement, puis de choisir entre un appel, une séance ciblée ou un mini bloc intensif.",
       formTitle: "Préférer expliquer la situation d'abord ?",
       formText:
-        "Le formulaire peut partir plus vite si vous utilisez d'abord le diagnostic. Sinon, expliquez simplement la matière, l'examen et l'urgence.",
+        "Le formulaire peut partir plus vite si vous utilisez d'abord le mini-bilan. Sinon, expliquez simplement la matière, l'examen et l'urgence.",
     },
     en: {
       eyebrow: "Exam sprint",
@@ -179,7 +181,7 @@ export const offerPageConfigs = {
         "A sharper view of what needs to be reviewed now.",
         "A clearer method for handling exam questions.",
         "A calmer plan for the remaining days or week.",
-        "A better decision between calling, booking or continuing with follow-up support.",
+        "A better decision between calling, requesting a session or continuing with follow-up support.",
       ],
       faq: [
         {
@@ -193,13 +195,13 @@ export const offerPageConfigs = {
             "No. It also works well for science, physics and chemistry whenever the main need is to clarify quickly, practice usefully and arrive more prepared.",
         },
         {
-          question: "Should families call first or book directly?",
+          question: "Should families call first or request a session?",
           answer:
-            "If the situation is still fuzzy or highly urgent, calling first is often the best move. If the subject and chapter are already clear, direct booking works very well.",
+            "If the situation is still fuzzy or highly urgent, calling first is often the best move. If the subject and chapter are already clear, requesting a session works very well.",
         },
       ],
       relatedLinks: [
-        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+        { routeKey: "weeklyFollowUp", label: "10-session progress block" },
         { routeKey: "mathExamPrep", label: "Math exam prep guide" },
         { routeKey: "scienceExamPrep", label: "Science exam prep guide" },
         { routeKey: "maths", label: "Math tutoring page" },
@@ -210,32 +212,32 @@ export const offerPageConfigs = {
         "The most useful next step is often to clarify the situation quickly, then decide between a call, a focused session or a short intensive block.",
       formTitle: "Prefer to explain the situation first?",
       formText:
-        "The form becomes even faster after the diagnostic. Otherwise, simply describe the subject, the exam and the urgency level.",
+        "The form becomes even faster after the mini-assessment. Otherwise, simply describe the subject, the exam and the urgency level.",
     },
   },
   weeklyFollowUp: {
     fr: {
-      eyebrow: "Suivi hebdomadaire",
-      heroTitle: "Suivi hebdomadaire : installer une progression stable avant que tout recommence à zéro",
+      eyebrow: "Bloc de progression — 10 séances",
+      heroTitle: "Bloc de progression — 10 séances : installer une progression stable sans repartir de zéro",
       heroText:
-        "Quand le besoin n'est pas seulement un examen proche, le vrai levier est souvent un rythme clair, une méthode suivie et un espace régulier pour corriger les blocages avant qu'ils s'installent.",
-      seoTitle: "Suivi hebdomadaire secondaire | Méthode Secondaire",
+        "Quand le besoin dépasse un examen proche, un bloc de 10 séances donne un cadre pour corriger les blocages avant qu'ils s'installent. Le rythme hebdomadaire peut être choisi après le jumelage, s'il convient réellement à la famille.",
+      seoTitle: "Bloc de progression — 10 séances | Méthode Secondaire",
       seoDescription:
-        "Suivi hebdomadaire en maths et sciences au secondaire au Québec : appel d'abord, rythme clair, méthode durable et progression visible semaine après semaine.",
+        `Bloc de progression en maths et sciences au secondaire au Québec : ${pricing.weeklyFollowUp.sessionCount} séances de ${pricing.weeklyFollowUp.durationMinutes} min, ${pricing.weeklyFollowUp.totalPriceCad} $ au total en ${pricing.weeklyFollowUp.installmentCount} paiements de ${pricing.weeklyFollowUp.installmentPriceCad} $. Un rythme hebdomadaire peut être confirmé après le jumelage, sans renouvellement automatique.`,
       keywords:
-        "suivi hebdomadaire tutorat secondaire, tutorat régulier maths, tutorat régulier sciences, soutien scolaire semaine après semaine, tutorat secondaire québec",
-      serviceType: "Tutorat hebdomadaire au secondaire",
-      showBookingButton: false,
-      callLabel: "Appeler pour discuter",
+        "bloc de 10 séances tutorat secondaire, progression tutorat secondaire, tutorat régulier maths, tutorat régulier sciences, soutien scolaire semaine après semaine, tutorat secondaire québec",
+      serviceType: "Bloc de progression au secondaire",
+      bookingLabel: "Demander le bloc de 10 séances",
+      callLabel: "Appeler si c'est urgent",
       heroNote:
-        "Cette page est pensée pour les familles qui veulent un vrai suivi régulier. Ici, l'appel vient avant toute réservation.",
+        "Une courte demande suffit pour commencer. L'équipe confirme le tuteur, le créneau et le rythme avant le bloc; un rythme hebdomadaire est une option, pas un forfait distinct. Aucun compte ni paiement n'est demandé tout de suite.",
       highlights: [
         "Pensé pour les élèves qui ont besoin d'un cadre régulier, pas seulement d'un coup de pouce ponctuel.",
         "Très utile quand les notions s'accumulent ou que la méthode manque encore de stabilité.",
-        "L'appel de départ sert à choisir le bon rythme, la bonne matière prioritaire et le bon format.",
+        `${pricing.weeklyFollowUp.sessionCount} séances de ${pricing.weeklyFollowUp.durationMinutes} minutes · ${pricing.weeklyFollowUp.totalPriceCad} $ au total · ${pricing.weeklyFollowUp.installmentCount} paiements de ${pricing.weeklyFollowUp.installmentPriceCad} $.`,
       ],
       fitEyebrow: "Quand ce format aide le plus",
-      fitTitle: "Le Suivi hebdomadaire aide surtout quand il faut installer une vraie continuité.",
+      fitTitle: "Le Bloc de progression aide surtout quand il faut installer une vraie continuité.",
       fitDescription:
         "Le point fort ici n'est pas d'ajouter des heures au hasard. C'est de créer une logique de progression qui tient entre les séances, les devoirs et les évaluations.",
       fitCards: [
@@ -256,25 +258,25 @@ export const offerPageConfigs = {
         },
       ],
       processEyebrow: "Comment ça marche",
-      processTitle: "Un suivi hebdomadaire utile en 3 étapes",
+      processTitle: "Un Bloc de progression utile en 3 étapes",
       processSteps: [
         {
           step: "01",
-          title: "Appel de cadrage",
+          title: "Courte demande sans compte",
           description:
-            "On clarifie la matière prioritaire, le niveau actuel, le vrai point de blocage et le rythme réaliste avant de fixer la suite.",
+            "Vous décrivez la matière prioritaire, le niveau actuel, le vrai point de blocage et les disponibilités. L'équipe revient avec le bon tuteur et un rythme réaliste.",
         },
         {
           step: "02",
-          title: "Premières semaines structurées",
+          title: "Jumelage et rythme confirmés",
           description:
-            "On installe une continuité simple : quoi revoir, quoi pratiquer et comment éviter que les mêmes erreurs reviennent.",
+            "Après le jumelage, on confirme un créneau et une cadence réaliste. Le rythme hebdomadaire est possible lorsqu'il convient à l'élève, au tuteur et aux disponibilités.",
         },
         {
           step: "03",
-          title: "Ajuster sans repartir à zéro",
+          title: "Progresser sans repartir à zéro",
           description:
-            "Le suivi permet d'ajuster les priorités selon les chapitres, les devoirs et les examens sans perdre le fil du travail déjà fait.",
+            "Les 10 séances permettent d'ajuster les priorités selon les chapitres, les devoirs et les examens sans perdre le fil du travail déjà fait.",
         },
       ],
       includedEyebrow: "Ce que la famille gagne",
@@ -287,19 +289,19 @@ export const offerPageConfigs = {
       ],
       faq: [
         {
-          question: "Pourquoi appeler avant de réserver ?",
+          question: "Pourquoi faire une courte demande avant le bloc de 10 séances ?",
           answer:
-            "Parce qu'un vrai suivi régulier doit être cadré dès le départ : matière prioritaire, fréquence réaliste, urgence actuelle et format le plus utile. L'appel évite de réserver à l'aveugle.",
+            "Parce qu'un vrai suivi régulier doit être confirmé dès le départ : matière prioritaire, fréquence réaliste, urgence actuelle, tuteur et créneau. La demande donne ce contexte sans vous demander de créer un compte ni de payer avant le jumelage.",
         },
         {
-          question: "À partir de quand le suivi hebdomadaire devient-il utile ?",
+          question: "Le rythme est-il obligatoirement hebdomadaire ?",
           answer:
-            "Dès que le parent voit que les mêmes difficultés reviennent, que les chapitres commencent à s'empiler ou qu'un élève a besoin d'une méthode plus stable d'une semaine à l'autre.",
+            "Non. Le produit est un bloc de 10 séances, pas un forfait hebdomadaire distinct. Après le jumelage, l'équipe confirme avec vous une cadence régulière et peut proposer un créneau hebdomadaire lorsque c'est le plus utile.",
         },
         {
           question: "Peut-on commencer en maths puis élargir aux sciences ?",
           answer:
-            "Oui. L'appel sert justement à décider s'il faut commencer par une seule matière ou répartir l'énergie entre maths, sciences, physique ou chimie selon la période.",
+            "Oui. Dans votre demande, indiquez simplement la priorité du moment. L'équipe confirme ensuite s'il vaut mieux commencer par une seule matière ou répartir l'énergie selon la période.",
         },
       ],
       relatedLinks: [
@@ -307,37 +309,37 @@ export const offerPageConfigs = {
         { routeKey: "maths", label: "Page maths" },
         { routeKey: "sciences", label: "Page sciences" },
         { routeKey: "temoignages", label: "Témoignages" },
-        { routeKey: "tuteurs", label: "Profils tuteurs" },
+        { routeKey: "resourcesHub", label: "Ressources" },
       ],
       ctaTitle: "Vous sentez que le vrai besoin est de ne plus repartir à zéro chaque semaine ?",
       ctaText:
-        "Le plus utile est souvent de parler d'abord du rythme, de la matière prioritaire et du niveau d'urgence, puis de décider ensemble si le Suivi hebdomadaire est le bon format.",
+        "Décrivez le rythme souhaité, la matière prioritaire et l'urgence. L'équipe confirme le tuteur et le créneau; le rythme hebdomadaire peut ensuite être choisi dans le bloc de 10 séances.",
       formTitle: "Préférer expliquer la situation d'abord ?",
       formText:
         "Expliquez simplement la matière, le niveau, ce qui se répète d'une semaine à l'autre et ce que vous voulez stabiliser.",
     },
     en: {
-      eyebrow: "Weekly follow-up",
-      heroTitle: "Weekly follow-up: build stable progress before every week starts from zero again",
+      eyebrow: "10-session progress block",
+      heroTitle: "10-session progress block: build stable progress without starting from zero again",
       heroText:
-        "When the need is not just one nearby exam, the real lever is often a clear rhythm, a repeatable method and regular space to fix the academic blocks before they settle in.",
-      seoTitle: "Weekly follow-up tutoring | Methode Secondaire",
+        "When the need goes beyond one nearby exam, a 10-session block creates room to correct academic blocks before they settle in. A weekly rhythm can be chosen after matching when it is the right fit for the family.",
+      seoTitle: "10-session progress block | Methode Secondaire",
       seoDescription:
-        "Weekly high school tutoring in math and science across Quebec: call first, set the right rhythm, build a durable method and make progress easier to read week after week.",
+        `High-school math and science 10-session progress block across Quebec: ${pricing.weeklyFollowUp.sessionCount} ${pricing.weeklyFollowUp.durationMinutes}-minute sessions, $${pricing.weeklyFollowUp.totalPriceCad} total in ${pricing.weeklyFollowUp.installmentCount} $${pricing.weeklyFollowUp.installmentPriceCad} payments. A weekly rhythm can be confirmed after matching, with no automatic renewal.`,
       keywords:
-        "weekly tutoring high school, recurring math tutoring quebec, recurring science tutoring quebec, weekly academic support, long term tutoring quebec",
-      serviceType: "Weekly high school tutoring",
-      showBookingButton: false,
-      callLabel: "Call to discuss",
+        "10-session tutoring block, weekly tutoring high school, recurring math tutoring quebec, recurring science tutoring quebec, weekly academic support, long term tutoring quebec",
+      serviceType: "High-school progress block",
+      bookingLabel: "Request the 10-session block",
+      callLabel: "Call if urgent",
       heroNote:
-        "This page is built for families who want real recurring support. Here, the phone call comes before any booking.",
+        "A short request is enough to begin. The team confirms the tutor, time and rhythm before the block; a weekly rhythm is an option, not a separate package. No account or payment is requested yet.",
       highlights: [
         "Built for students who need a steady framework, not just one more isolated tutoring hour.",
         "Especially useful when chapters are piling up or the student's method still feels unstable.",
-        "The first call is there to choose the right rhythm, the right priority subject and the right format.",
+        `${pricing.weeklyFollowUp.sessionCount} sessions of ${pricing.weeklyFollowUp.durationMinutes} minutes · $${pricing.weeklyFollowUp.totalPriceCad} total · ${pricing.weeklyFollowUp.installmentCount} payments of $${pricing.weeklyFollowUp.installmentPriceCad}.`,
       ],
       fitEyebrow: "When this format helps most",
-      fitTitle: "Weekly follow-up helps most when the real need is continuity.",
+      fitTitle: "The 10-session progress block helps most when the real need is continuity.",
       fitDescription:
         "The strength here is not adding random hours. It is creating a progression logic that holds between sessions, homework and evaluations.",
       fitCards: [
@@ -358,25 +360,25 @@ export const offerPageConfigs = {
         },
       ],
       processEyebrow: "How it works",
-      processTitle: "Useful weekly follow-up in 3 steps",
+      processTitle: "A useful 10-session progress block in 3 steps",
       processSteps: [
         {
           step: "01",
-          title: "A framing call first",
+          title: "A short request with no account",
           description:
-            "We clarify the priority subject, the student's current level, the real academic block and the most realistic rhythm before anything is scheduled.",
+            "You describe the priority subject, current level, real academic block and availability. The team comes back with the right tutor and a realistic rhythm.",
         },
         {
           step: "02",
-          title: "Structured first weeks",
+          title: "Matching and rhythm confirmed",
           description:
-            "We create simple continuity: what to review, what to practice and how to stop the same mistakes from returning.",
+            "After matching, we confirm a realistic time and cadence. A weekly rhythm is possible when it suits the student, tutor and availability.",
         },
         {
           step: "03",
-          title: "Adjust without starting over",
+          title: "Progress without starting over",
           description:
-            "The follow-up lets us adjust priorities across chapters, homework and exams without losing the thread of what has already been built.",
+            "The 10 sessions let us adjust priorities across chapters, homework and exams without losing the thread of what has already been built.",
         },
       ],
       includedEyebrow: "What the family gains",
@@ -389,19 +391,19 @@ export const offerPageConfigs = {
       ],
       faq: [
         {
-          question: "Why should families call before booking?",
+          question: "Why make a short request before the 10-session block?",
           answer:
-            "Because recurring support needs to be framed properly from the start: priority subject, realistic frequency, current urgency and the format most likely to help. The call avoids blind booking.",
+            "Because recurring support needs to be confirmed from the start: priority subject, realistic frequency, urgency, tutor and time. The request gives the team that context without asking you to create an account or pay before matching.",
         },
         {
-          question: "When does weekly follow-up become worth it?",
+          question: "Is the rhythm required to be weekly?",
           answer:
-            "As soon as the same difficulties keep coming back, chapters start piling up or the student clearly needs a steadier method from one week to the next.",
+            "No. The product is a 10-session block, not a separate weekly package. After matching, the team confirms a consistent cadence with you and can propose a weekly time when that is most useful.",
         },
         {
           question: "Can we start with math and later expand into science?",
           answer:
-            "Yes. The call is there to decide whether one subject should lead first or whether effort should be shared across math, science, physics or chemistry for the current period.",
+            "Yes. Simply state the current priority in your request. The team then confirms whether it is best to start with one subject or split the effort for the current period.",
         },
       ],
       relatedLinks: [
@@ -409,11 +411,11 @@ export const offerPageConfigs = {
         { routeKey: "maths", label: "Math tutoring page" },
         { routeKey: "sciences", label: "Science tutoring page" },
         { routeKey: "temoignages", label: "Testimonials" },
-        { routeKey: "tuteurs", label: "Tutor profiles" },
+        { routeKey: "resourcesHub", label: "Resources" },
       ],
       ctaTitle: "Do you feel the real need is to stop starting from zero every week?",
       ctaText:
-        "The most useful next step is often to talk first about the rhythm, the priority subject and the urgency level, then decide together whether Weekly follow-up is the right format.",
+        "Describe the desired rhythm, priority subject and urgency. The team confirms the tutor and time; a weekly rhythm can then be chosen within the 10-session block.",
       formTitle: "Prefer to explain the situation first?",
       formText:
         "Simply describe the subject, the level, what keeps repeating from week to week and what you want to stabilize.",
@@ -434,7 +436,7 @@ export const offerPageConfigs = {
       highlights: [
         "Pensé pour les parents qui cherchent un vrai tuteur de maths au secondaire, pas seulement une aide ponctuelle floue.",
         "Utile en algèbre, fonctions, géométrie, trigonométrie, problèmes écrits et préparation d'examens.",
-        "Peut commencer par une réservation directe si le besoin est ciblé, ou par un appel si la situation est plus large.",
+        "Peut commencer par une demande de séance si le besoin est ciblé, ou par un appel si la situation est plus large.",
       ],
       fitEyebrow: "Quand cette page aide le plus",
       fitTitle: "Ce format aide quand il faut remettre de l'ordre dans la matière, la méthode et la confiance.",
@@ -499,9 +501,9 @@ export const offerPageConfigs = {
             "Parfois oui, mais l'objectif n'est pas juste de finir les devoirs. Le but est de comprendre la logique, mieux pratiquer et rendre les prochaines questions plus lisibles.",
         },
         {
-          question: "Faut-il appeler ou réserver directement ?",
+          question: "Faut-il appeler ou demander une séance ?",
           answer:
-            "Si le besoin est ponctuel et déjà bien identifié, la réservation directe peut très bien convenir. Si plusieurs chapitres se mélangent ou que le besoin semble plus large, un appel d'abord est souvent plus utile.",
+            "Si le besoin est ponctuel et déjà bien identifié, une demande de séance peut très bien convenir. Si plusieurs chapitres se mélangent ou que le besoin semble plus large, un appel d'abord est souvent plus utile.",
         },
       ],
       relatedLinks: [
@@ -513,7 +515,7 @@ export const offerPageConfigs = {
       ],
       ctaTitle: "Vous cherchez un tuteur de maths au secondaire, mais le besoin n'est pas encore parfaitement clair ?",
       ctaText:
-        "Le diagnostic ou un court appel permet souvent de voir plus vite s'il faut une séance ciblée, une aide aux devoirs mieux structurée ou un vrai suivi.",
+        "Le mini-bilan ou un court appel permet souvent de voir plus vite s'il faut une séance ciblée, une aide aux devoirs mieux structurée ou un vrai suivi.",
       formTitle: "Décrire rapidement la situation en maths",
       formText:
         "Indiquez le niveau, les chapitres qui coincent, la proximité des examens et si le besoin ressemble plus à une séance ciblée ou à un soutien plus large.",
@@ -532,7 +534,7 @@ export const offerPageConfigs = {
       highlights: [
         "Built for families looking for a real high school math tutor, not vague extra help.",
         "Useful for algebra, functions, geometry, trigonometry, word problems and exam preparation.",
-        "Can start with direct booking when the need is focused, or with a phone call when the situation is broader.",
+        "Can start with a session request when the need is focused, or with a phone call when the situation is broader.",
       ],
       fitEyebrow: "When this page helps most",
       fitTitle: "This format helps when the material, the method and the confidence all need clearer structure.",
@@ -597,9 +599,9 @@ export const offerPageConfigs = {
             "Sometimes, but the goal is not just to finish the homework. The goal is to understand the logic, practice better and make the next questions easier to read.",
         },
         {
-          question: "Should families call first or book directly?",
+          question: "Should families call first or request a session?",
           answer:
-            "If the need is one-time and already clear, direct booking can work well. If several chapters are mixing together or the situation feels broader, a call first is usually more useful.",
+            "If the need is one-time and already clear, requesting a session can work well. If several chapters are mixing together or the situation feels broader, a call first is usually more useful.",
         },
       ],
       relatedLinks: [
@@ -611,7 +613,7 @@ export const offerPageConfigs = {
       ],
       ctaTitle: "Looking for a high school math tutor, but the situation still feels fuzzy?",
       ctaText:
-        "The diagnostic or a short phone call often makes it easier to decide whether the next step should be a focused session, stronger homework help or broader follow-up.",
+        "The mini-assessment or a short phone call often makes it easier to decide whether the next step should be a focused session, stronger homework help or broader follow-up.",
       formTitle: "Describe the math situation quickly",
       formText:
         "Share the grade level, the chapters involved, how close the exams are and whether the need feels more one-time or more structural.",
@@ -697,9 +699,9 @@ export const offerPageConfigs = {
             "Non. Cette page sert aussi quand les devoirs prennent trop de temps, que les notions se fragmentent ou qu'un élève a besoin d'une logique plus claire en cours de chapitre.",
         },
         {
-          question: "Faut-il appeler ou réserver directement ?",
+          question: "Faut-il appeler ou demander une séance ?",
           answer:
-            "Si le besoin est très ciblé, une réservation directe peut suffire. Si la situation touche plusieurs chapitres ou plusieurs matières, un appel d'abord permet souvent de mieux cadrer la suite.",
+            "Si le besoin est très ciblé, une demande de séance peut suffire. Si la situation touche plusieurs chapitres ou plusieurs matières, un appel d'abord permet souvent de mieux cadrer la suite.",
         },
       ],
       relatedLinks: [
@@ -711,7 +713,7 @@ export const offerPageConfigs = {
       ],
       ctaTitle: "Vous cherchez un tuteur de sciences, mais la matière à prioriser n'est pas encore claire ?",
       ctaText:
-        "Le diagnostic ou un court appel permet souvent de décider plus vite s'il faut viser les sciences générales, la physique, la chimie ou un mélange.",
+        "Le mini-bilan ou un court appel permet souvent de décider plus vite s'il faut viser les sciences générales, la physique, la chimie ou un mélange.",
       formTitle: "Décrire rapidement le besoin en sciences",
       formText:
         "Indiquez le niveau, la matière exacte si elle est connue, les chapitres qui coincent et si le besoin ressemble plus à des devoirs, à un examen ou à un suivi plus large.",
@@ -795,9 +797,9 @@ export const offerPageConfigs = {
             "No. This page also helps when homework is taking too long, the material is fragmenting or the student needs clearer logic in the middle of a chapter.",
         },
         {
-          question: "Should families call first or book directly?",
+          question: "Should families call first or request a session?",
           answer:
-            "If the need is highly targeted, direct booking can be enough. If the situation involves several chapters or several science subjects, a phone call first usually frames things better.",
+            "If the need is highly targeted, requesting a session can be enough. If the situation involves several chapters or several science subjects, a phone call first usually frames things better.",
         },
       ],
       relatedLinks: [
@@ -809,7 +811,7 @@ export const offerPageConfigs = {
       ],
       ctaTitle: "Looking for a high school science tutor, but the priority subject still feels unclear?",
       ctaText:
-        "The diagnostic or a short phone call often helps families decide faster whether the main need is general science, physics, chemistry or a combination.",
+        "The mini-assessment or a short phone call often helps families decide faster whether the main need is general science, physics, chemistry or a combination.",
       formTitle: "Describe the science situation quickly",
       formText:
         "Share the grade, the exact subject if known, the chapters involved and whether the situation feels more like homework support, exam help or broader follow-up.",
@@ -885,7 +887,7 @@ export const offerPageConfigs = {
         "Une meilleure organisation des soirées et des priorités.",
         "Une aide utile en maths, sciences ou méthode de travail selon le vrai besoin.",
         "Moins de confusion répétée autour des consignes et des étapes.",
-        "Un meilleur pont entre aide aux devoirs, soutien scolaire et suivi hebdomadaire.",
+        "Un meilleur pont entre aide aux devoirs, soutien scolaire et bloc de progression de 10 séances.",
       ],
       faq: [
         {
@@ -896,17 +898,17 @@ export const offerPageConfigs = {
         {
           question: "Pourquoi appeler d'abord ?",
           answer:
-            "Parce que l'aide aux devoirs ressemble souvent à un besoin récurrent. L'appel permet de décider s'il faut viser une matière précise, un soutien scolaire plus large ou un vrai suivi hebdomadaire.",
+            "Parce que l'aide aux devoirs ressemble souvent à un besoin récurrent. L'appel permet de décider s'il faut viser une matière précise, un soutien scolaire plus large ou un bloc de progression de 10 séances.",
         },
         {
-          question: "Peut-on quand même réserver une séance ponctuelle ?",
+          question: "Peut-on quand même demander une séance ponctuelle ?",
           answer:
             "Oui, si la situation est très ciblée. Mais quand les devoirs posent problème plusieurs fois par semaine, parler d'abord permet souvent de mieux orienter le bon format.",
         },
       ],
       relatedLinks: [
         { routeKey: "academicSupportSecondary", label: "Soutien scolaire secondaire" },
-        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+        { routeKey: "weeklyFollowUp", label: "Bloc de progression — 10 séances" },
         { routeKey: "mathTutoringSecondary", label: "Tutorat en mathématiques" },
         { routeKey: "scienceTutorSecondary", label: "Tuteur de sciences" },
         { routeKey: "catchUp", label: "Rattrapage scolaire secondaire" },
@@ -987,7 +989,7 @@ export const offerPageConfigs = {
         "Better evening organization and better academic priorities.",
         "More useful help in math, science or work method depending on the real need.",
         "Less repeated confusion around instructions and steps.",
-        "A better bridge between homework help, academic support and weekly follow-up.",
+        "A better bridge between homework help, academic support and the 10-session progress block.",
       ],
       faq: [
         {
@@ -998,17 +1000,17 @@ export const offerPageConfigs = {
         {
           question: "Why should families call first?",
           answer:
-            "Because homework help often points to a recurring need. The call helps decide whether the right next step is a precise subject focus, broader academic support or true weekly follow-up.",
+            "Because homework help often points to a recurring need. The call helps decide whether the right next step is a precise subject focus, broader academic support or the 10-session progress block.",
         },
         {
-          question: "Can a family still book a one-time session?",
+          question: "Can a family still request a one-time session?",
           answer:
             "Yes, if the situation is highly focused. But when homework keeps causing trouble several times a week, talking first usually leads to a better format choice.",
         },
       ],
       relatedLinks: [
         { routeKey: "academicSupportSecondary", label: "Academic support" },
-        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+        { routeKey: "weeklyFollowUp", label: "10-session progress block" },
         { routeKey: "mathTutoringSecondary", label: "Math tutoring" },
         { routeKey: "scienceTutorSecondary", label: "Science tutor" },
         { routeKey: "catchUp", label: "Catch-up tutoring" },
@@ -1040,7 +1042,7 @@ export const offerPageConfigs = {
       highlights: [
         "Pensé pour les familles qui cherchent une vue plus large que du tutorat chapitre par chapitre.",
         "Très utile quand plusieurs matières ou plusieurs semaines de stress commencent à se répondre entre elles.",
-        "L'appel de départ sert à choisir le bon point d'entrée: maths, sciences, devoirs, rattrapage ou suivi hebdomadaire.",
+        "L'appel de départ sert à choisir le bon point d'entrée: maths, sciences, devoirs, rattrapage ou bloc de progression de 10 séances.",
       ],
       fitEyebrow: "Quand cette page aide le plus",
       fitTitle: "Le soutien scolaire aide surtout quand il faut remettre de la cohérence dans l'ensemble.",
@@ -1076,7 +1078,7 @@ export const offerPageConfigs = {
           step: "02",
           title: "Choisir le bon point d'entrée",
           description:
-            "On décide s'il faut commencer par une matière précise, une aide aux devoirs mieux structurée, un rattrapage ou un vrai suivi hebdomadaire.",
+            "On décide s'il faut commencer par une matière précise, une aide aux devoirs mieux structurée, un rattrapage ou un bloc de progression de 10 séances.",
         },
         {
           step: "03",
@@ -1089,7 +1091,7 @@ export const offerPageConfigs = {
       includedTitle: "Plus de cohérence et de visibilité",
       includedItems: [
         "Une vue plus claire des matières et des priorités qui demandent le plus d'énergie.",
-        "Un meilleur pont entre aide aux devoirs, rattrapage, suivi hebdomadaire et séances ciblées.",
+        "Un meilleur pont entre aide aux devoirs, rattrapage, bloc de progression de 10 séances et séances ciblées.",
         "Des décisions plus solides sur le rythme à installer.",
         "Une progression plus lisible pour le parent comme pour l'élève.",
       ],
@@ -1102,7 +1104,7 @@ export const offerPageConfigs = {
         {
           question: "Pourquoi appeler d'abord ?",
           answer:
-            "Parce qu'un besoin de soutien scolaire doit être cadré avant d'être réservé. L'appel aide à choisir la bonne priorité, le bon format et le bon rythme.",
+            "Parce qu'un besoin de soutien scolaire doit être cadré avant de faire une demande de séance. L'appel aide à choisir la bonne priorité, le bon format et le bon rythme.",
         },
         {
           question: "Peut-on commencer par une matière puis élargir ?",
@@ -1112,7 +1114,7 @@ export const offerPageConfigs = {
       ],
       relatedLinks: [
         { routeKey: "homeworkHelpSecondary", label: "Aide aux devoirs secondaire" },
-        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+        { routeKey: "weeklyFollowUp", label: "Bloc de progression — 10 séances" },
         { routeKey: "catchUp", label: "Rattrapage scolaire secondaire" },
         { routeKey: "mathTutoringSecondary", label: "Tutorat en mathématiques" },
         { routeKey: "scienceTutorSecondary", label: "Tuteur de sciences" },
@@ -1142,7 +1144,7 @@ export const offerPageConfigs = {
       highlights: [
         "Built for families who need a wider view than chapter-by-chapter tutoring.",
         "Especially useful when several subjects or several weeks of stress are starting to reinforce each other.",
-        "The first call helps choose the best entry point: math, science, homework help, catch-up work or weekly follow-up.",
+        "The first call helps choose the best entry point: math, science, homework help, catch-up work or the 10-session progress block.",
       ],
       fitEyebrow: "When this page helps most",
       fitTitle: "Academic support helps most when the family needs coherence across the whole situation.",
@@ -1178,7 +1180,7 @@ export const offerPageConfigs = {
           step: "02",
           title: "Choose the right entry point",
           description:
-            "We decide whether to begin with one subject, stronger homework help, catch-up work or true weekly follow-up.",
+            "We decide whether to begin with one subject, stronger homework help, catch-up work or the 10-session progress block.",
         },
         {
           step: "03",
@@ -1191,7 +1193,7 @@ export const offerPageConfigs = {
       includedTitle: "More coherence and more visibility",
       includedItems: [
         "A clearer view of the subjects and priorities demanding the most energy.",
-        "A better bridge between homework help, catch-up work, weekly follow-up and focused sessions.",
+        "A better bridge between homework help, catch-up work, the 10-session progress block and focused sessions.",
         "Stronger decisions around the rhythm that should be installed.",
         "Progress that becomes easier to read for both the parent and the student.",
       ],
@@ -1204,7 +1206,7 @@ export const offerPageConfigs = {
         {
           question: "Why should families call first?",
           answer:
-            "Because an academic support need should be framed before it is booked. The call helps choose the right priority, the right format and the right rhythm.",
+            "Because an academic support need should be framed before a session is requested. The call helps choose the right priority, the right format and the right rhythm.",
         },
         {
           question: "Can we start with one subject and widen later?",
@@ -1214,7 +1216,7 @@ export const offerPageConfigs = {
       ],
       relatedLinks: [
         { routeKey: "homeworkHelpSecondary", label: "Homework help" },
-        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+        { routeKey: "weeklyFollowUp", label: "10-session progress block" },
         { routeKey: "catchUp", label: "Catch-up tutoring" },
         { routeKey: "mathTutoringSecondary", label: "Math tutoring" },
         { routeKey: "scienceTutorSecondary", label: "Science tutor" },
@@ -1232,18 +1234,18 @@ export const offerPageConfigs = {
       eyebrow: "Tuteur maths Montréal",
       heroTitle: "Tuteur de maths à Montréal : une porte d'entrée claire pour le secondaire quand il faut avancer vite",
       heroText:
-        "Quand un parent cherche un tuteur de maths à Montréal, le vrai besoin est souvent plus précis qu'un simple cours privé. Il faut une explication claire, une logique plus nette et la bonne décision entre réserver directement ou installer un suivi plus stable.",
+        "Quand un parent cherche un tuteur de maths à Montréal, le vrai besoin est souvent plus précis qu'un simple cours privé. Il faut une explication claire, une logique plus nette et la bonne décision entre demander une séance ou installer un suivi plus stable.",
       seoTitle: "Tuteur maths Montréal au secondaire | Méthode Secondaire",
       seoDescription:
-        "Tuteur de maths à Montréal pour le secondaire 1 à 5 : algèbre, fonctions, trigonométrie, aide ciblée, préparation d'examens et réservation directe quand le besoin est clair.",
+        "Tuteur de maths à Montréal pour le secondaire 1 à 5 : algèbre, fonctions, trigonométrie, aide ciblée, préparation d'examens et demande de séance quand le besoin est clair.",
       keywords:
         "tuteur maths montréal, tutorat maths montréal secondaire, tutorat en mathématiques montréal, aide maths secondaire montréal, préparation examen maths montréal",
       serviceType: "Tutorat en mathématiques à Montréal",
-      bookingLabel: "Réserver un tuteur de maths",
+      bookingLabel: "Demander une séance de maths",
       highlights: [
         "Pensé pour les familles de Montréal qui cherchent un tuteur de maths au secondaire avec une approche claire.",
         "Très utile quand le chapitre, le type de question ou l'échéance sont déjà assez bien identifiés.",
-        "Compatible avec une réservation directe quand le besoin est ponctuel ou urgent.",
+        "Compatible avec une demande de séance quand le besoin est ponctuel ou urgent.",
       ],
       fitEyebrow: "Quand cette page aide le plus",
       fitTitle: "Cette page aide surtout quand la famille sait déjà que les maths sont la priorité.",
@@ -1285,7 +1287,7 @@ export const offerPageConfigs = {
           step: "03",
           title: "Décider de la suite la plus utile",
           description:
-            "Si le besoin est ponctuel, on peut réserver directement. Si les difficultés reviennent, on oriente plutôt vers un suivi plus régulier.",
+            "Si le besoin est ponctuel, on peut demander une séance. Si les difficultés reviennent, on oriente plutôt vers un suivi plus régulier.",
         },
       ],
       includedEyebrow: "Ce que la famille gagne",
@@ -1293,12 +1295,12 @@ export const offerPageConfigs = {
       includedItems: [
         "Une aide plus directe sur les maths du secondaire à Montréal.",
         "Une meilleure lecture de ce qui bloque vraiment.",
-        "Un bon pont entre séance ciblée, Sprint examen et suivi hebdomadaire.",
-        "Une décision plus simple entre appeler d'abord et réserver tout de suite.",
+        "Un bon pont entre séance ciblée, Sprint examen et bloc de progression de 10 séances.",
+        "Une décision plus simple entre appeler d'abord et demander une séance tout de suite.",
       ],
       faq: [
         {
-          question: "Peut-on réserver directement un tuteur de maths à Montréal ?",
+          question: "Peut-on demander une séance de maths à Montréal ?",
           answer:
             "Oui, surtout si la matière et le besoin sont déjà assez clairs. Si la situation reste floue ou se répète souvent, l'appel peut quand même être plus utile au départ.",
         },
@@ -1317,12 +1319,12 @@ export const offerPageConfigs = {
         { routeKey: "mathTutoringSecondary", label: "Tutorat en mathématiques secondaire" },
         { routeKey: "montreal", label: "Tutorat Montréal" },
         { routeKey: "examSprint", label: "Sprint examen" },
-        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+        { routeKey: "weeklyFollowUp", label: "Bloc de progression — 10 séances" },
         { routeKey: "sec4Math", label: "Aide maths secondaire 4" },
       ],
       ctaTitle: "Vous cherchez un tuteur de maths à Montréal avec un besoin déjà assez clair ?",
       ctaText:
-        "Si la situation est ponctuelle, ciblée ou urgente, la réservation directe peut suffire. Si le parent sent que les difficultés reviennent, l'appel devient souvent le meilleur premier pas.",
+            "Si la situation est ponctuelle, ciblée ou urgente, une demande de séance peut suffire. Si le parent sent que les difficultés reviennent, l'appel devient souvent le meilleur premier pas.",
       formTitle: "Décrire rapidement le besoin en maths",
       formText:
         "Indiquez le niveau, le chapitre ou le type de difficulté, ainsi que l'urgence ou la date de l'évaluation si elle est connue.",
@@ -1331,18 +1333,18 @@ export const offerPageConfigs = {
       eyebrow: "Montreal math tutor",
       heroTitle: "Montreal math tutor: a clearer high school entry point when the need is already real",
       heroText:
-        "When a parent searches for a Montreal math tutor, the need is often more precise than just private lessons. They usually need clearer explanation, better logic and the right decision between direct booking and steadier follow-up.",
+        "When a parent searches for a Montreal math tutor, the need is often more precise than just private lessons. They usually need clearer explanation, better logic and the right decision between requesting a session and steadier follow-up.",
       seoTitle: "Montreal math tutor for high school students | Méthode Secondaire",
       seoDescription:
-        "Montreal math tutor for high school students: algebra, functions, trigonometry, focused support, exam prep and direct booking when the need is already clear.",
+        "Montreal math tutor for high school students: algebra, functions, trigonometry, focused support, exam prep and a session request when the need is already clear.",
       keywords:
         "montreal math tutor, high school math tutor montreal, math tutoring montreal quebec, secondary math help montreal, montreal exam prep math",
       serviceType: "High school math tutoring in Montreal",
-      bookingLabel: "Book a math tutor",
+      bookingLabel: "Request a math session",
       highlights: [
         "Built for Montreal-area families looking for a high school math tutor with a clear teaching style.",
         "Most useful when the chapter, question type or deadline is already fairly easy to identify.",
-        "Works well with direct booking when the need is one-time or urgent.",
+        "Works well with a session request when the need is one-time or urgent.",
       ],
       fitEyebrow: "When this page helps most",
       fitTitle: "This page helps most when the family already knows math is the priority.",
@@ -1384,7 +1386,7 @@ export const offerPageConfigs = {
           step: "03",
           title: "Choose the right next move",
           description:
-            "If the need is focused, direct booking may be enough. If the difficulty keeps returning, a steadier follow-up usually makes more sense.",
+            "If the need is focused, requesting a session may be enough. If the difficulty keeps returning, a steadier follow-up usually makes more sense.",
         },
       ],
       includedEyebrow: "What the family gains",
@@ -1392,12 +1394,12 @@ export const offerPageConfigs = {
       includedItems: [
         "A more direct Montreal entry point for high school math help.",
         "A better reading of what is actually blocking progress.",
-        "A stronger bridge between focused sessions, exam sprint support and weekly follow-up.",
-        "A simpler decision between calling first and booking right away.",
+        "A stronger bridge between focused sessions, exam sprint support and the 10-session progress block.",
+        "A simpler decision between calling first and requesting a session right away.",
       ],
       faq: [
         {
-          question: "Can families book a Montreal math tutor directly?",
+          question: "Can families request a Montreal math session?",
           answer:
             "Yes, especially when the subject and need are already clear. If the situation is still fuzzy or repeats often, calling first can still be more useful.",
         },
@@ -1416,12 +1418,12 @@ export const offerPageConfigs = {
         { routeKey: "mathTutoringSecondary", label: "High school math tutoring" },
         { routeKey: "montreal", label: "Montreal tutoring" },
         { routeKey: "examSprint", label: "Exam sprint" },
-        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+        { routeKey: "weeklyFollowUp", label: "10-session progress block" },
         { routeKey: "sec4Math", label: "Secondary 4 math help" },
       ],
       ctaTitle: "Looking for a Montreal math tutor and the need is already fairly clear?",
       ctaText:
-        "If the situation is focused, one-time or urgent, direct booking may already be enough. If the family senses the same difficulty keeps returning, a phone call often becomes the better first move.",
+        "If the situation is focused, one-time or urgent, requesting a session may already be enough. If the family senses the same difficulty keeps returning, a phone call often becomes the better first move.",
       formTitle: "Describe the math need quickly",
       formText:
         "Share the grade, chapter or difficulty type, plus the urgency or test date if you already know it.",
@@ -1446,7 +1448,7 @@ export const offerPageConfigs = {
       highlights: [
         "Pensé pour les familles de Montréal qui cherchent une aide aux devoirs plus structurée au secondaire.",
         "Très utile quand les soirs sont lourds, que les consignes restent floues ou que l'autonomie n'est pas encore stable.",
-        "L'appel de départ aide à choisir entre aide aux devoirs, soutien scolaire plus large et suivi hebdomadaire.",
+        "L'appel de départ aide à choisir entre aide aux devoirs, soutien scolaire plus large et bloc de progression de 10 séances.",
       ],
       fitEyebrow: "Quand cette page aide le plus",
       fitTitle: "Cette page aide surtout quand les devoirs révèlent un problème qui se répète.",
@@ -1501,7 +1503,7 @@ export const offerPageConfigs = {
       ],
       faq: [
         {
-          question: "Pourquoi ne pas réserver directement ?",
+          question: "Pourquoi ne pas demander une séance tout de suite ?",
           answer:
             "Parce que l'aide aux devoirs ressemble souvent à un besoin récurrent. L'appel permet de voir s'il faut rester sur les devoirs du moment ou cadrer quelque chose de plus stable.",
         },
@@ -1519,7 +1521,7 @@ export const offerPageConfigs = {
       relatedLinks: [
         { routeKey: "homeworkHelpSecondary", label: "Aide aux devoirs secondaire" },
         { routeKey: "academicSupportSecondary", label: "Soutien scolaire secondaire" },
-        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+        { routeKey: "weeklyFollowUp", label: "Bloc de progression — 10 séances" },
         { routeKey: "montreal", label: "Tutorat Montréal" },
         { routeKey: "mathTutorMontreal", label: "Tuteur maths Montréal" },
       ],
@@ -1548,7 +1550,7 @@ export const offerPageConfigs = {
       highlights: [
         "Built for Montreal-area families looking for more structured homework help at the high school level.",
         "Especially useful when evenings feel heavy, instructions remain blurry or independent work is still fragile.",
-        "The first call helps decide between homework help, broader academic support and weekly follow-up.",
+        "The first call helps decide between homework help, broader academic support and the 10-session progress block.",
       ],
       fitEyebrow: "When this page helps most",
       fitTitle: "This page helps most when homework is revealing a problem that keeps repeating.",
@@ -1603,7 +1605,7 @@ export const offerPageConfigs = {
       ],
       faq: [
         {
-          question: "Why not book directly?",
+          question: "Why not request a session right away?",
           answer:
             "Because homework help often points to a recurring need. The phone call helps decide whether the family should stay focused on current homework or frame something more stable.",
         },
@@ -1621,7 +1623,7 @@ export const offerPageConfigs = {
       relatedLinks: [
         { routeKey: "homeworkHelpSecondary", label: "Homework help" },
         { routeKey: "academicSupportSecondary", label: "Academic support" },
-        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+        { routeKey: "weeklyFollowUp", label: "10-session progress block" },
         { routeKey: "montreal", label: "Montreal tutoring" },
         { routeKey: "mathTutorMontreal", label: "Montreal math tutor" },
       ],
@@ -1645,11 +1647,11 @@ export const offerPageConfigs = {
       keywords:
         "tuteur sciences laval, tutorat sciences laval secondaire, tuteur physique laval, aide chimie laval secondaire, préparation examen sciences laval",
       serviceType: "Tutorat en sciences à Laval",
-      bookingLabel: "Réserver un tuteur de sciences",
+      bookingLabel: "Demander une séance de sciences",
       highlights: [
         "Pensé pour les familles de Laval qui cherchent un tuteur de sciences au secondaire avec une approche claire.",
         "Très utile quand la priorité est déjà identifiée entre sciences, physique, chimie ou préparation d'examen.",
-        "Compatible avec une réservation directe si le besoin est ponctuel et bien cadré.",
+        "Compatible avec une demande de séance si le besoin est ponctuel et bien cadré.",
       ],
       fitEyebrow: "Quand cette page aide le plus",
       fitTitle: "Cette page aide surtout quand la famille sait déjà que les sciences sont le vrai point de friction.",
@@ -1700,11 +1702,11 @@ export const offerPageConfigs = {
         "Une porte d'entrée locale plus claire pour un tuteur de sciences à Laval.",
         "Une meilleure lecture de la matière réellement prioritaire.",
         "Un bon pont entre séance ciblée, Sprint examen et soutien plus large.",
-        "Une décision plus simple entre réserver directement et appeler d'abord.",
+        "Une décision plus simple entre demander une séance et appeler d'abord.",
       ],
       faq: [
         {
-          question: "Peut-on réserver directement un tuteur de sciences à Laval ?",
+          question: "Peut-on demander une séance de sciences à Laval ?",
           answer:
             "Oui, surtout si la matière et le chapitre sont déjà clairs. Si le parent hésite encore entre sciences, physique, chimie ou un besoin plus large, l'appel peut mieux orienter la suite.",
         },
@@ -1723,12 +1725,12 @@ export const offerPageConfigs = {
         { routeKey: "scienceTutorSecondary", label: "Tuteur de sciences secondaire" },
         { routeKey: "laval", label: "Tutorat Laval" },
         { routeKey: "examSprint", label: "Sprint examen" },
-        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+        { routeKey: "weeklyFollowUp", label: "Bloc de progression — 10 séances" },
         { routeKey: "chemistrySec5", label: "Aide chimie secondaire 5" },
       ],
       ctaTitle: "Vous cherchez un tuteur de sciences à Laval avec une matière déjà assez claire ?",
       ctaText:
-        "Si le besoin est ponctuel ou urgent, la réservation directe peut aller très vite. Si la famille hésite encore sur la matière ou le bon rythme, l'appel reste plus stratégique.",
+        "Si le besoin est ponctuel ou urgent, une demande de séance peut aller très vite. Si la famille hésite encore sur la matière ou le bon rythme, l'appel reste plus stratégique.",
       formTitle: "Décrire rapidement le besoin en sciences",
       formText:
         "Indiquez le niveau, la matière prioritaire, le type de difficulté et la date d'évaluation si elle est déjà connue.",
@@ -1744,11 +1746,11 @@ export const offerPageConfigs = {
       keywords:
         "laval science tutor, high school science tutor laval, physics tutor laval, chemistry help laval high school, science exam prep laval",
       serviceType: "High school science tutoring in Laval",
-      bookingLabel: "Book a science tutor",
+      bookingLabel: "Request a science session",
       highlights: [
         "Built for Laval-area families looking for a high school science tutor with clearer explanations.",
         "Most useful when the priority is already visible across science, physics, chemistry or exam prep.",
-        "Fits direct booking well when the need is focused and readable.",
+        "Fits a session request well when the need is focused and readable.",
       ],
       fitEyebrow: "When this page helps most",
       fitTitle: "This page helps most when the family already knows science is the real friction point.",
@@ -1799,11 +1801,11 @@ export const offerPageConfigs = {
         "A clearer local entry point for a Laval science tutor.",
         "A better reading of which subject is actually the priority.",
         "A strong bridge between focused sessions, exam sprint support and wider tutoring.",
-        "A simpler decision between direct booking and calling first.",
+        "A simpler decision between requesting a session and calling first.",
       ],
       faq: [
         {
-          question: "Can families book a Laval science tutor directly?",
+          question: "Can families request a Laval science session?",
           answer:
             "Yes, especially when the subject and chapter are already clear. If the family is still hesitating between science, physics, chemistry or a wider need, a call can orient things better.",
         },
@@ -1822,12 +1824,12 @@ export const offerPageConfigs = {
         { routeKey: "scienceTutorSecondary", label: "High school science tutor" },
         { routeKey: "laval", label: "Laval tutoring" },
         { routeKey: "examSprint", label: "Exam sprint" },
-        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+        { routeKey: "weeklyFollowUp", label: "10-session progress block" },
         { routeKey: "chemistrySec5", label: "Secondary 5 chemistry help" },
       ],
       ctaTitle: "Looking for a Laval science tutor and the subject is already fairly clear?",
       ctaText:
-        "If the need is one-time or urgent, direct booking can move fast. If the family still hesitates about the subject or the right rhythm, calling first stays more strategic.",
+        "If the need is one-time or urgent, requesting a session can move fast. If the family still hesitates about the subject or the right rhythm, calling first stays more strategic.",
       formTitle: "Describe the science need quickly",
       formText:
         "Share the grade, the priority subject, the kind of difficulty and the evaluation date if you already know it.",
@@ -1852,7 +1854,7 @@ export const offerPageConfigs = {
       highlights: [
         "Pensé pour les familles de Montréal qui veulent une vue plus large que du simple tutorat chapitre par chapitre.",
         "Très utile quand plusieurs matières, plusieurs semaines de stress ou plusieurs retards commencent à se répondre entre eux.",
-        "L'appel sert à choisir le bon point d'entrée: maths, sciences, devoirs, rattrapage ou suivi hebdomadaire.",
+        "L'appel sert à choisir le bon point d'entrée: maths, sciences, devoirs, rattrapage ou bloc de progression de 10 séances.",
       ],
       fitEyebrow: "Quand cette page aide le plus",
       fitTitle: "Cette page aide surtout quand la situation demande plus de cohérence que de dépannage.",
@@ -1914,7 +1916,7 @@ export const offerPageConfigs = {
         {
           question: "Pourquoi appeler d'abord ?",
           answer:
-            "Parce qu'un besoin de soutien scolaire doit être cadré avant d'être réservé. L'appel aide à choisir la vraie priorité et le format le plus utile.",
+            "Parce qu'un besoin de soutien scolaire doit être cadré avant de faire une demande de séance. L'appel aide à choisir la vraie priorité et le format le plus utile.",
         },
         {
           question: "Cette page est-elle seulement pour Montréal ?",
@@ -1926,7 +1928,7 @@ export const offerPageConfigs = {
         { routeKey: "academicSupportSecondary", label: "Soutien scolaire secondaire" },
         { routeKey: "homeworkHelpMontreal", label: "Aide aux devoirs Montréal" },
         { routeKey: "mathTutorMontreal", label: "Tuteur maths Montréal" },
-        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+        { routeKey: "weeklyFollowUp", label: "Bloc de progression — 10 séances" },
         { routeKey: "montreal", label: "Tutorat Montréal" },
       ],
       ctaTitle: "Vous sentez que la situation à Montréal demande une vraie vue d'ensemble ?",
@@ -1954,7 +1956,7 @@ export const offerPageConfigs = {
       highlights: [
         "Built for Montreal-area families who need a wider view than simple chapter-by-chapter tutoring.",
         "Especially useful when several subjects, several weeks of stress or several delays are feeding each other.",
-        "The call helps choose the best entry point: math, science, homework, catch-up work or weekly follow-up.",
+        "The call helps choose the best entry point: math, science, homework, catch-up work or the 10-session progress block.",
       ],
       fitEyebrow: "When this page helps most",
       fitTitle: "This page helps most when the situation needs coherence more than quick repair.",
@@ -2016,7 +2018,7 @@ export const offerPageConfigs = {
         {
           question: "Why call first?",
           answer:
-            "Because an academic support need should be framed before it is booked. The call helps choose the true priority and the most useful format.",
+            "Because an academic support need should be framed before a session is requested. The call helps choose the true priority and the most useful format.",
         },
         {
           question: "Is this page only for Montreal families?",
@@ -2028,7 +2030,7 @@ export const offerPageConfigs = {
         { routeKey: "academicSupportSecondary", label: "Academic support" },
         { routeKey: "homeworkHelpMontreal", label: "Montreal homework help" },
         { routeKey: "mathTutorMontreal", label: "Montreal math tutor" },
-        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+        { routeKey: "weeklyFollowUp", label: "10-session progress block" },
         { routeKey: "montreal", label: "Montreal tutoring" },
       ],
       ctaTitle: "Does the situation in Montreal need a true wider view?",
@@ -2051,11 +2053,11 @@ export const offerPageConfigs = {
       keywords:
         "tuteur physique montréal, aide physique montréal secondaire, tutorat physique montréal, physique secondaire montréal, préparation examen physique montréal",
       serviceType: "Tutorat de physique à Montréal",
-      bookingLabel: "Réserver un tuteur de physique",
+      bookingLabel: "Demander une séance de physique",
       highlights: [
         "Pensé pour les familles de Montréal qui cherchent de l'aide en physique au secondaire.",
         "Très utile quand les formules, les unités ou les problèmes restent trop abstraits.",
-        "Compatible avec une réservation directe quand la matière et l'urgence sont déjà bien identifiées.",
+        "Compatible avec une demande de séance quand la matière et l'urgence sont déjà bien identifiées.",
       ],
       fitEyebrow: "Quand cette page aide le plus",
       fitTitle: "Cette page aide surtout quand la physique est clairement la matière qui bloque.",
@@ -2106,7 +2108,7 @@ export const offerPageConfigs = {
         "Une page locale plus forte sur l'intention tuteur physique Montréal.",
         "Une meilleure clarté autour des formules, des unités et des problèmes.",
         "Un bon pont entre séance ciblée, sciences générales et Sprint examen.",
-        "Une décision plus simple entre réserver maintenant et élargir ensuite si nécessaire.",
+        "Une décision plus simple entre demander une séance maintenant et élargir ensuite si nécessaire.",
       ],
       faq: [
         {
@@ -2115,7 +2117,7 @@ export const offerPageConfigs = {
             "Oui. La page sciences reste plus large. Ici, l'intention est plus précise: aider un élève en physique à Montréal sur des notions, des problèmes ou une préparation d'examen.",
         },
         {
-          question: "Peut-on réserver directement ?",
+          question: "Peut-on demander une séance ?",
           answer:
             "Oui, si la matière et le besoin sont déjà clairs. Si la famille hésite encore entre sciences générales, physique ou chimie, l'appel peut aider à mieux cadrer.",
         },
@@ -2134,7 +2136,7 @@ export const offerPageConfigs = {
       ],
       ctaTitle: "Vous cherchez un tuteur de physique à Montréal avec un besoin déjà bien ciblé ?",
       ctaText:
-        "Si la matière, le chapitre ou l'examen sont déjà clairs, la réservation directe peut être très efficace. Si le parent hésite encore sur le vrai blocage, l'appel reste utile.",
+        "Si la matière, le chapitre ou l'examen sont déjà clairs, une demande de séance peut être très efficace. Si le parent hésite encore sur le vrai blocage, l'appel reste utile.",
       formTitle: "Décrire rapidement le besoin en physique",
       formText:
         "Indiquez le niveau, le chapitre, le type de problème ou la date d'évaluation si elle est connue.",
@@ -2150,11 +2152,11 @@ export const offerPageConfigs = {
       keywords:
         "montreal physics tutor, physics help montreal high school, physics tutoring montreal, high school physics montreal, physics exam prep montreal",
       serviceType: "High school physics tutoring in Montreal",
-      bookingLabel: "Book a physics tutor",
+      bookingLabel: "Request a physics session",
       highlights: [
         "Built for Montreal-area families looking for focused physics help at the high school level.",
         "Especially useful when formulas, units or problem solving still feel too abstract.",
-        "Works well with direct booking when the subject and urgency are already clear.",
+        "Works well with a session request when the subject and urgency are already clear.",
       ],
       fitEyebrow: "When this page helps most",
       fitTitle: "This page helps most when physics is clearly the subject that is blocking progress.",
@@ -2205,7 +2207,7 @@ export const offerPageConfigs = {
         "A stronger local page for the Montreal physics tutor intent.",
         "Better clarity around formulas, units and problem solving.",
         "A strong bridge between focused sessions, broader science support and exam sprint help.",
-        "A simpler decision between booking now and widening later if needed.",
+        "A simpler decision between requesting a session now and widening later if needed.",
       ],
       faq: [
         {
@@ -2214,7 +2216,7 @@ export const offerPageConfigs = {
             "Yes. The science page stays broader. This page is for a more precise intent: helping a student in physics in Montreal with concepts, problems or exam preparation.",
         },
         {
-          question: "Can families book directly?",
+          question: "Can families request a session directly?",
           answer:
             "Yes, when the subject and need are already clear. If the family is still hesitating between general science, physics or chemistry, calling first can help frame the right move.",
         },
@@ -2233,7 +2235,7 @@ export const offerPageConfigs = {
       ],
       ctaTitle: "Looking for a Montreal physics tutor with a highly targeted need?",
       ctaText:
-        "If the subject, chapter or exam are already clear, direct booking can be very efficient. If the family still hesitates about the real block, calling first remains useful.",
+        "If the subject, chapter or exam are already clear, requesting a session can be very efficient. If the family still hesitates about the real block, calling first remains useful.",
       formTitle: "Describe the physics need quickly",
       formText:
         "Share the grade, chapter, problem type or test date if you already know it.",
@@ -2251,11 +2253,11 @@ export const offerPageConfigs = {
       keywords:
         "aide chimie laval secondaire, tuteur chimie laval, chimie secondaire 5 laval, tutorat chimie laval, préparation examen chimie laval",
       serviceType: "Tutorat de chimie à Laval",
-      bookingLabel: "Réserver une aide en chimie",
+      bookingLabel: "Demander une séance de chimie",
       highlights: [
         "Pensé pour les familles de Laval qui cherchent une aide en chimie plus ciblée au secondaire.",
         "Très utile quand les calculs, les équations ou les laboratoires restent trop flous.",
-        "Compatible avec une réservation directe quand le besoin est déjà bien identifié.",
+        "Compatible avec une demande de séance quand le besoin est déjà bien identifié.",
       ],
       fitEyebrow: "Quand cette page aide le plus",
       fitTitle: "Cette page aide surtout quand la chimie devient clairement la matière à débloquer.",
@@ -2306,7 +2308,7 @@ export const offerPageConfigs = {
         "Une vraie page locale pour la recherche aide chimie Laval.",
         "Plus de clarté sur les calculs, les équations et la logique scientifique.",
         "Un bon pont entre aide ciblée, sciences générales et préparation d'examens.",
-        "Une décision plus simple entre réserver directement et parler d'un besoin plus large.",
+        "Une décision plus simple entre demander une séance et parler d'un besoin plus large.",
       ],
       faq: [
         {
@@ -2315,7 +2317,7 @@ export const offerPageConfigs = {
             "Elle est particulièrement pertinente pour secondaire 5, mais elle peut servir dès que la chimie devient la vraie matière prioritaire et demande une aide ciblée.",
         },
         {
-          question: "Peut-on réserver directement ?",
+          question: "Peut-on demander une séance ?",
           answer:
             "Oui, si la matière et le besoin sont déjà assez clairs. Si le parent hésite encore entre sciences générales, chimie ou un besoin plus large, l'appel aide à mieux orienter.",
         },
@@ -2334,7 +2336,7 @@ export const offerPageConfigs = {
       ],
       ctaTitle: "Vous cherchez une aide en chimie à Laval avec un besoin déjà bien identifié ?",
       ctaText:
-        "Si la matière, le chapitre ou l'examen sont déjà clairs, la réservation directe peut très bien fonctionner. Si le parent hésite encore sur la vraie priorité, l'appel reste utile.",
+        "Si la matière, le chapitre ou l'examen sont déjà clairs, une demande de séance peut très bien fonctionner. Si le parent hésite encore sur la vraie priorité, l'appel reste utile.",
       formTitle: "Décrire rapidement le besoin en chimie",
       formText:
         "Indiquez le niveau, le chapitre, le type de calcul ou de difficulté, ainsi que la date d'évaluation si elle est connue.",
@@ -2350,11 +2352,11 @@ export const offerPageConfigs = {
       keywords:
         "laval chemistry help high school, chemistry tutor laval, secondary 5 chemistry laval, chemistry tutoring laval, chemistry exam prep laval",
       serviceType: "High school chemistry tutoring in Laval",
-      bookingLabel: "Book chemistry help",
+      bookingLabel: "Request a chemistry session",
       highlights: [
         "Built for Laval-area families looking for more targeted chemistry help at the high school level.",
         "Especially useful when calculations, equations or labs still feel too blurry.",
-        "Works well with direct booking when the need is already clearly identified.",
+        "Works well with a session request when the need is already clearly identified.",
       ],
       fitEyebrow: "When this page helps most",
       fitTitle: "This page helps most when chemistry is clearly the subject that needs to be unlocked.",
@@ -2405,7 +2407,7 @@ export const offerPageConfigs = {
         "A real local page for the Laval chemistry help intent.",
         "More clarity around calculations, equations and scientific logic.",
         "A strong bridge between focused chemistry help, broader science support and exam preparation.",
-        "A simpler decision between booking directly and discussing a wider need first.",
+        "A simpler decision between requesting a session and discussing a wider need first.",
       ],
       faq: [
         {
@@ -2414,7 +2416,7 @@ export const offerPageConfigs = {
             "It is especially relevant for Secondary 5, but it can help as soon as chemistry becomes the true priority subject and needs more focused support.",
         },
         {
-          question: "Can families book directly?",
+          question: "Can families request a session directly?",
           answer:
             "Yes, if the subject and need are already fairly clear. If the family is still hesitating between general science, chemistry or a wider need, a call helps orient things better.",
         },
@@ -2433,7 +2435,7 @@ export const offerPageConfigs = {
       ],
       ctaTitle: "Looking for chemistry help in Laval with a need that is already well identified?",
       ctaText:
-        "If the subject, chapter or exam are already clear, direct booking can work very well. If the family still hesitates about the true priority, calling first remains useful.",
+        "If the subject, chapter or exam are already clear, requesting a session can work very well. If the family still hesitates about the true priority, calling first remains useful.",
       formTitle: "Describe the chemistry need quickly",
       formText:
         "Share the grade, chapter, calculation type or difficulty, along with the evaluation date if you already know it.",
@@ -2533,7 +2535,7 @@ export const offerPageConfigs = {
         { routeKey: "academicSupportSecondary", label: "Soutien scolaire secondaire" },
         { routeKey: "mathTutoringSecondary", label: "Tutorat en mathématiques" },
         { routeKey: "scienceTutorSecondary", label: "Tuteur de sciences" },
-        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+        { routeKey: "weeklyFollowUp", label: "Bloc de progression — 10 séances" },
       ],
       ctaTitle: "Vous voulez que l'été serve vraiment à quelque chose au secondaire ?",
       ctaText:
@@ -2635,7 +2637,7 @@ export const offerPageConfigs = {
         { routeKey: "academicSupportSecondary", label: "Academic support" },
         { routeKey: "mathTutoringSecondary", label: "Math tutoring" },
         { routeKey: "scienceTutorSecondary", label: "Science tutor" },
-        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+        { routeKey: "weeklyFollowUp", label: "10-session progress block" },
       ],
       ctaTitle: "Do you want the summer to create a real academic advantage?",
       ctaText:
@@ -2657,9 +2659,9 @@ export const offerPageConfigs = {
       keywords:
         "préparation examen ministère secondaire 4, examen ministère maths secondaire 4, révision secondaire 4, préparation examen maths ministère, tutorat secondaire 4 québec",
       serviceType: "Préparation examen du ministère secondaire 4",
-      bookingLabel: "Réserver une séance examen ministère",
+      bookingLabel: "Demander une séance pour l'examen du ministère",
       heroNote:
-        "Quand la matière, l'épreuve et le niveau d'urgence sont déjà clairs, la réservation directe fonctionne très bien. Si la famille hésite encore entre sprint, suivi ou remise à niveau, l'appel aide à cadrer la meilleure suite.",
+        "Quand la matière, l'épreuve et le niveau d'urgence sont déjà clairs, demander une séance convient très bien. Si la famille hésite encore entre sprint, suivi ou remise à niveau, l'appel aide à cadrer la meilleure suite.",
       heroPanelTitle: "Une préparation plus nette quand l'épreuve du ministère approche vraiment",
       heroPanelText:
         "Le but n'est pas de refaire tout le cours dans la panique. Le but est de remettre les chapitres prioritaires, les types de questions et la méthode dans un ordre utile avant l'épreuve.",
@@ -2719,7 +2721,7 @@ export const offerPageConfigs = {
         "Une page d'entrée commerciale plus précise pour les recherches autour de l'examen du ministère en secondaire 4.",
         "De meilleures priorités de révision avant l'épreuve au lieu d'une reprise trop large du cours.",
         "Un lien naturel entre préparation d'examen, aide en maths de secondaire 4 et Sprint examen.",
-        "Une décision plus simple entre réserver directement ou appeler pour cadrer l'urgence.",
+        "Une décision plus simple entre demander une séance ou appeler pour cadrer l'urgence.",
       ],
       faq: [
         {
@@ -2728,9 +2730,9 @@ export const offerPageConfigs = {
             "Oui, très souvent. C'est là que l'intention de recherche est la plus claire, mais la logique de préparation reste utile dès qu'une épreuve ministérielle ou finale de secondaire 4 devient le besoin principal.",
         },
         {
-          question: "Faut-il réserver directement ou appeler d'abord ?",
+          question: "Faut-il demander une séance ou appeler d'abord ?",
           answer:
-            "Si la matière et l'échéance sont déjà bien identifiées, la réservation directe fonctionne bien. Si la famille hésite encore entre plusieurs formats ou plusieurs niveaux d'urgence, l'appel reste le meilleur premier tri.",
+            "Si la matière et l'échéance sont déjà bien identifiées, demander une séance fonctionne bien. Si la famille hésite encore entre plusieurs formats ou plusieurs niveaux d'urgence, l'appel reste le meilleur premier tri.",
         },
         {
           question: "Est-ce seulement pour les élèves en grande difficulté ?",
@@ -2743,7 +2745,7 @@ export const offerPageConfigs = {
         { routeKey: "sec4Math", label: "Aide maths secondaire 4" },
         { routeKey: "mathMinisterial", label: "Guide examen ministériel maths" },
         { routeKey: "mathTutoringSecondary", label: "Tutorat en mathématiques" },
-        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+        { routeKey: "weeklyFollowUp", label: "Bloc de progression — 10 séances" },
       ],
       ctaTitle: "L'examen du ministère en secondaire 4 commence à devenir le vrai sujet ?",
       ctaText:
@@ -2763,9 +2765,9 @@ export const offerPageConfigs = {
       keywords:
         "secondary 4 ministerial exam prep, math ministerial exam secondary 4, secondary 4 math review, quebec ministerial exam tutoring, high school exam prep quebec",
       serviceType: "Secondary 4 ministerial exam preparation",
-      bookingLabel: "Book a ministerial exam session",
+      bookingLabel: "Request a ministerial exam session",
       heroNote:
-        "When the subject, exam and urgency level are already well identified, direct booking works very well. If the family is still weighing a sprint, longer follow-up or broader catch-up work, calling first helps frame the best move.",
+        "When the subject, exam and urgency level are already well identified, requesting a session works very well. If the family is still weighing a sprint, longer follow-up or broader catch-up work, calling first helps frame the best move.",
       heroPanelTitle: "A clearer prep format when the ministerial exam is no longer abstract",
       heroPanelText:
         "The goal is not to reteach the entire course in panic mode. The goal is to put the priority chapters, question formats and problem-solving method back into a useful order before the exam.",
@@ -2825,7 +2827,7 @@ export const offerPageConfigs = {
         "A more precise commercial entry page for Secondary 4 ministerial exam search intent.",
         "Better review priorities before the exam instead of replaying the whole course too broadly.",
         "A natural bridge between exam prep, Secondary 4 math help and the Exam sprint format.",
-        "A clearer decision between booking directly and calling first to frame the urgency.",
+        "A clearer decision between requesting a session and calling first to frame the urgency.",
       ],
       faq: [
         {
@@ -2834,9 +2836,9 @@ export const offerPageConfigs = {
             "Yes, very often. That is where the search intent is usually strongest, but the preparation logic stays useful whenever a Secondary 4 official or final exam becomes the main need.",
         },
         {
-          question: "Should families book directly or call first?",
+          question: "Should families request a session or call first?",
           answer:
-            "If the subject and deadline are already clear, direct booking works well. If the family is still comparing several formats or urgency levels, calling first remains the best first filter.",
+            "If the subject and deadline are already clear, requesting a session works well. If the family is still comparing several formats or urgency levels, calling first remains the best first filter.",
         },
         {
           question: "Is this only for students in serious difficulty?",
@@ -2849,7 +2851,7 @@ export const offerPageConfigs = {
         { routeKey: "sec4Math", label: "Secondary 4 math help" },
         { routeKey: "mathMinisterial", label: "Math ministerial exam guide" },
         { routeKey: "mathTutoringSecondary", label: "Math tutoring" },
-        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+        { routeKey: "weeklyFollowUp", label: "10-session progress block" },
       ],
       ctaTitle: "Is the Secondary 4 ministerial exam becoming the main issue now?",
       ctaText:
@@ -2933,7 +2935,7 @@ export const offerPageConfigs = {
       includedItems: [
         "Une vraie page commerciale pour la recherche entrée au secondaire.",
         "Une meilleure lecture du besoin entre maths, méthode, organisation et accompagnement d'été.",
-        "Un bon pont entre rentrée, cours d'été, soutien scolaire et suivi hebdomadaire.",
+        "Un bon pont entre rentrée, cours d'été, soutien scolaire et bloc de progression de 10 séances.",
         "Une transition qui repose sur un plan plus clair au lieu de simples bonnes intentions.",
       ],
       faq: [
@@ -2957,7 +2959,7 @@ export const offerPageConfigs = {
         { routeKey: "summerSupportSecondary", label: "Cours d'été secondaire" },
         { routeKey: "homeworkHelpSecondary", label: "Aide aux devoirs secondaire" },
         { routeKey: "academicSupportSecondary", label: "Soutien scolaire secondaire" },
-        { routeKey: "weeklyFollowUp", label: "Suivi hebdomadaire" },
+        { routeKey: "weeklyFollowUp", label: "Bloc de progression — 10 séances" },
         { routeKey: "reussites", label: "Réussites et cas types" },
       ],
       ctaTitle: "Vous voulez préparer l'entrée au secondaire avec plus de calme et de méthode ?",
@@ -3040,7 +3042,7 @@ export const offerPageConfigs = {
       includedItems: [
         "A real commercial page for the high school transition search intent.",
         "A better reading of the need across math, work method, organization and summer preparation.",
-        "A strong bridge between summer support, academic support and weekly follow-up.",
+        "A strong bridge between summer support, academic support and the 10-session progress block.",
         "A transition built on a clearer plan instead of good intentions alone.",
       ],
       faq: [
@@ -3064,7 +3066,7 @@ export const offerPageConfigs = {
         { routeKey: "summerSupportSecondary", label: "High school summer support" },
         { routeKey: "homeworkHelpSecondary", label: "High school homework help" },
         { routeKey: "academicSupportSecondary", label: "Academic support" },
-        { routeKey: "weeklyFollowUp", label: "Weekly follow-up" },
+        { routeKey: "weeklyFollowUp", label: "10-session progress block" },
         { routeKey: "reussites", label: "Success stories and case studies" },
       ],
       ctaTitle: "Do you want the start of high school to feel calmer and more structured?",

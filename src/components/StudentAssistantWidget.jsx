@@ -17,6 +17,7 @@ import {
   assistantUiByLocale,
   buildFallbackAssistantReply,
 } from "@/lib/assistantConfig"
+import { DECLIC_REQUEST_URL, DECLIC_REQUEST_URL_EN } from "@/config/booking"
 import { getDiagnosticUi } from "@/lib/leadDiagnostic"
 import { cn } from "@/lib/utils"
 
@@ -36,6 +37,8 @@ const initialMessageByLocale = {
 export default function StudentAssistantWidget({ locale = "fr" }) {
   const copy = assistantUiByLocale[locale] || assistantUiByLocale.fr
   const diagnosticCopy = getDiagnosticUi(locale)
+  const requestUrl = locale === "en" ? DECLIC_REQUEST_URL_EN : DECLIC_REQUEST_URL
+  const requestLabel = locale === "en" ? "Request a Targeted session" : "Demander une Séance ciblée"
   const [open, setOpen] = useState(false)
   const [mode, setMode] = useState("chat")
   const [messages, setMessages] = useState([initialMessageByLocale[locale] || initialMessageByLocale.fr])
@@ -74,14 +77,14 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
       setMode("diagnostic")
     }
 
-    function handleJumpContact() {
+    function handleJumpContact(event) {
       setOpen(false)
-      const contactSection = document.getElementById("contact")
-      if (contactSection) {
-        window.requestAnimationFrame(() => {
-          contactSection.scrollIntoView({ behavior: "smooth", block: "start" })
-        })
-      }
+      const requestedOffer = event?.detail?.requestedOffer
+      const destination = ["progression_block_10", "weekly_follow_up_10"].includes(requestedOffer)
+        ? `${requestUrl}?offer=progression`
+        : requestUrl
+
+      window.location.assign(destination)
     }
 
     window.addEventListener("methode:open-diagnostic", handleOpenDiagnostic)
@@ -91,7 +94,7 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
       window.removeEventListener("methode:open-diagnostic", handleOpenDiagnostic)
       window.removeEventListener("methode:jump-contact", handleJumpContact)
     }
-  }, [])
+  }, [locale, requestUrl])
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -161,14 +164,14 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
   }
 
   return (
-    <div className="fixed bottom-6 right-6 z-50 hidden lg:block lg:max-w-none">
+    <div className="fixed bottom-6 right-6 z-50 max-w-none">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <Button
             aria-label={copy.buttonLabel}
             title={copy.buttonLabel}
             className={cn(
-              "h-12 w-12 rounded-full bg-[#f5c977] p-0 text-[#071631] shadow-[0_18px_45px_rgba(245,201,119,0.3)] transition-all duration-300 hover:bg-[#f7d38f]",
+              "hidden h-12 w-12 rounded-full bg-[#f5c977] p-0 text-[#071631] shadow-[0_18px_45px_rgba(245,201,119,0.3)] transition-all duration-300 hover:bg-[#f7d38f] lg:inline-flex",
               showTrigger || open ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0",
             )}
           >
@@ -246,13 +249,13 @@ export default function StudentAssistantWidget({ locale = "fr" }) {
                       {copy.quickCall}
                     </a>
                     <a
-                      href={assistantBusinessInfo.bookingUrl}
+                      href={requestUrl}
                       target="_blank"
                       rel="noreferrer"
                       className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-white transition hover:bg-white/10"
                     >
                       <CalendarDays className="h-4 w-4" />
-                      {copy.quickBook}
+                      {requestLabel}
                     </a>
                   </div>
                 </div>

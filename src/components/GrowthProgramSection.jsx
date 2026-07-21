@@ -11,7 +11,7 @@ import {
 
 import MotionCard from "@/components/MotionCard"
 import { Button } from "@/components/ui/button"
-import { BOOKING_URL } from "@/config/booking"
+import { BOOKING_URL, BOOKING_URL_EN } from "@/config/booking"
 import { getLocalizedPath } from "@/lib/i18n"
 import { siteConfig } from "@/lib/seo"
 
@@ -46,13 +46,13 @@ const copyByLocale = {
         },
         {
           icon: "weekly",
-          title: "Suivi hebdomadaire",
-          subtitle: "Quand le vrai besoin est de stabiliser la m\u00E9thode et d'\u00E9viter les rechutes.",
+          title: "Bloc de progression — 10 séances",
+          subtitle: "Quand le vrai besoin est de stabiliser la m\u00E9thode et de donner une continuit\u00E9 au travail.",
           routeKey: "weeklyFollowUp",
-          cta: "Voir le Suivi hebdomadaire",
+          cta: "Voir le bloc de progression",
           bullets: [
-            "Le meilleur format pour la progression durable",
-            "Appel d'abord pour cadrer un vrai suivi r\u00E9gulier",
+            "10 séances de 60 minutes pour une progression durable",
+            "Après le jumelage, un créneau hebdomadaire peut être proposé",
             "Id\u00E9al si les notions s'accumulent",
             "Tr\u00E8s bon choix pour secondaire 4 et 5",
           ],
@@ -62,7 +62,7 @@ const copyByLocale = {
           title: "Remise \u00E0 niveau cibl\u00E9e",
           subtitle: "Quand il faut reprendre une mati\u00E8re ou un chapitre avant que le retard se fige.",
           action: "book",
-          cta: "R\u00E9server une s\u00E9ance cibl\u00E9e",
+          cta: "Demander une s\u00E9ance cibl\u00E9e",
           bullets: [
             "Bon pour un rattrapage propre",
             "Permet de retrouver un cap clair",
@@ -83,7 +83,7 @@ const copyByLocale = {
           items: [
             "Le besoin est enfin nomm\u00E9 clairement",
             "Le bon prochain pas devient plus simple",
-            "Le parent sait s'il faut appeler, r\u00E9server ou suivre de plus pr\u00E8s",
+            "Le parent sait s'il faut appeler, demander une s\u00E9ance ou suivre de plus pr\u00E8s",
           ],
         },
         {
@@ -105,7 +105,7 @@ const copyByLocale = {
           ],
         },
       ],
-      primary: "Lancer le diagnostic",
+      primary: "Faire le mini-bilan",
       secondary: "Voir les t\u00E9moignages",
     },
   },
@@ -130,13 +130,13 @@ const copyByLocale = {
         },
         {
           icon: "weekly",
-          title: "Weekly follow-up",
+          title: "Progress block",
           subtitle: "For students who need a steadier method and more durable academic momentum.",
           routeKey: "weeklyFollowUp",
-          cta: "See weekly follow-up",
+          cta: "See the progress block",
           bullets: [
-            "Best fit for long-term progress",
-            "Call first to frame a real recurring follow-up",
+            "10 60-minute sessions for longer-term progress",
+            "After matching, a weekly time can be suggested",
             "Ideal when the material is starting to pile up",
             "Especially strong for Secondary 4 and 5",
           ],
@@ -146,11 +146,11 @@ const copyByLocale = {
           title: "Targeted catch-up reset",
           subtitle: "For families who need to rebuild one subject or chapter before the gap hardens.",
           action: "book",
-          cta: "Book a focused session",
+          cta: "Request a focused session",
           bullets: [
             "Good for clean catch-up work",
             "Helps recover a clearer direction",
-            "Can later transition into lighter weekly support",
+            "Can later transition into a lighter recurring rhythm",
           ],
         },
       ],
@@ -167,7 +167,7 @@ const copyByLocale = {
           items: [
             "The real need is finally named clearly",
             "The next step becomes easier to choose",
-            "The parent knows whether to call, book, or monitor more closely",
+            "The parent knows whether to call, request a session, or monitor more closely",
           ],
         },
         {
@@ -189,7 +189,7 @@ const copyByLocale = {
           ],
         },
       ],
-      primary: "Start the diagnostic",
+      primary: "Take the mini-assessment",
       secondary: "See testimonials",
     },
   },
@@ -197,6 +197,7 @@ const copyByLocale = {
 
 export default function GrowthProgramSection({ locale = "fr", className = "pt-20" }) {
   const copy = copyByLocale[locale] || copyByLocale.fr
+  const requestUrl = locale === "en" ? BOOKING_URL_EN : BOOKING_URL
 
   function openDiagnostic() {
     if (typeof window === "undefined") {
@@ -268,7 +269,7 @@ export default function GrowthProgramSection({ locale = "fr", className = "pt-20
                   variant="outline"
                   className="mt-6 rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
                 >
-                  <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+                  <a href={requestUrl}>
                     {card.cta}
                     <CalendarDays className="h-4 w-4" />
                   </a>
@@ -333,9 +334,9 @@ export default function GrowthProgramSection({ locale = "fr", className = "pt-20
           variant="outline"
           className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
         >
-          <a href={`tel:${siteConfig.phone}`}>
-            <Phone className="h-4 w-4" />
-            {locale === "en" ? "Call for weekly follow-up" : "Appeler pour un suivi"}
+          <a href={`${requestUrl}?offer=progression`}>
+            <CalendarDays className="h-4 w-4" />
+            {locale === "en" ? "Request the progress block" : "Demander le bloc de progression"}
           </a>
         </Button>
         <Button
@@ -343,9 +344,9 @@ export default function GrowthProgramSection({ locale = "fr", className = "pt-20
           variant="outline"
           className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
         >
-          <a href={BOOKING_URL} target="_blank" rel="noreferrer">
+          <a href={requestUrl}>
             <CalendarDays className="h-4 w-4" />
-            {locale === "en" ? "Book a one-time session" : "R\u00E9server une s\u00E9ance ponctuelle"}
+            {locale === "en" ? "Request a one-time session" : "Demander une s\u00E9ance ponctuelle"}
           </a>
         </Button>
       </div>

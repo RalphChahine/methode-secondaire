@@ -1,228 +1,93 @@
-import { BOOKING_URL } from "../config/booking.js"
+import { BOOKING_URL, BOOKING_URL_EN } from "../config/booking.js"
+import { getOffer, pricing } from "./pricing.js"
 
-export const assistantBusinessInfo = {
-  phone: "+15149520709",
-  bookingUrl: BOOKING_URL,
-}
+const targeted = getOffer("targeted_session")
+const momentum = getOffer("momentum_block")
+const progression = getOffer("progression_block")
+
+export const assistantBusinessInfo = { phone: "+15149520709", bookingUrl: BOOKING_URL }
 
 export const assistantServiceInfo = {
-  flexibleRateCad: 75,
-  weeklyRateCad: 70,
-  subjects: [
-    "math\u00E9matiques",
-    "sciences",
-    "physique",
-    "chimie",
-    "pr\u00E9paration aux examens",
-  ],
-  serviceAreas: ["Montr\u00E9al", "Laval", "en ligne partout au Qu\u00E9bec"],
+  firstSessionRateCad: targeted.totalPriceCad,
+  weeklyRateCad: progression.perSessionPriceCad,
+  weeklyFollowUpTotalCad: progression.totalPriceCad,
+  weeklyFollowUpSessions: progression.sessionCount,
+  weeklyInstallmentCad: progression.installmentPriceCad,
+  cancellationNoticeHours: pricing.cancellation.noticeHours,
+  subjects: ["math\u00e9matiques", "sciences", "physique", "chimie", "pr\u00e9paration aux examens"],
+  serviceAreas: ["Montr\u00e9al", "Laval", "en ligne partout au Qu\u00e9bec"],
 }
 
 export const assistantUiByLocale = {
   fr: {
-    buttonLabel: "Assistant rapide",
-    sheetTitle: "Assistant M\u00E9thode Secondaire",
-    sheetDescription:
-      "Rep\u00E8res rapides, questions fr\u00E9quentes et meilleure prochaine \u00E9tape pour avancer plus vite.",
-    welcome:
-      "Bonjour. Je peux aider avec les tarifs, les mati\u00E8res couvertes, le bon format de tutorat et la meilleure prochaine \u00E9tape.",
-    starterQuestions: [
-      "Combien co\u00FBte le tutorat ?",
-      "Faites-vous secondaire 4 en maths ?",
-      "Quelle est la diff\u00E9rence entre appeler et r\u00E9server ?",
-      "Faites-vous de la pr\u00E9paration d'examens ?",
-    ],
-    inputPlaceholder: "\u00C9crivez votre question ici...",
-    send: "Voir la r\u00E9ponse",
-    sending: "R\u00E9ponse...",
-    retry: "R\u00E9essayer",
-    assistantLabel: "Assistant",
-    youLabel: "Vous",
-    error:
-      "Une r\u00E9ponse rapide n'a pas pu \u00EAtre g\u00E9n\u00E9r\u00E9e. Essayez une autre formulation ou utilisez le diagnostic.",
-    emptyStateTitle: "Rep\u00E8res rapides avant d'appeler ou de r\u00E9server",
-    emptyStateText:
-      "L'assistant r\u00E9pond aux questions les plus utiles pour passer plus vite au bon appel, au bon tuteur ou au bon format.",
-    quickCall: "Appeler",
-    quickBook: "R\u00E9server",
-    note:
-      "Les r\u00E9ponses servent de rep\u00E8re rapide. Pour un vrai accompagnement p\u00E9dagogique, le diagnostic ou l'appel restent les meilleurs raccourcis.",
+    buttonLabel: "Assistant rapide", sheetTitle: "Assistant M\u00e9thode Secondaire",
+    sheetDescription: "Rep\u00e8res rapides et meilleur prochain pas pour avancer plus simplement.",
+    welcome: "Bonjour. Je peux aider avec les tarifs, les mati\u00e8res couvertes et la bonne premi\u00e8re \u00e9tape.",
+    starterQuestions: ["Combien co\u00fbte le tutorat ?", "Faites-vous secondaire 4 en maths ?", "Comment fonctionne une demande de premi\u00e8re s\u00e9ance ?", "Faites-vous de la pr\u00e9paration d'examens ?"],
+    inputPlaceholder: "\u00c9crivez votre question ici...", send: "Voir la r\u00e9ponse", sending: "R\u00e9ponse...", retry: "R\u00e9essayer", assistantLabel: "Assistant", youLabel: "Vous",
+    error: "Une r\u00e9ponse rapide n'a pas pu \u00eatre g\u00e9n\u00e9r\u00e9e. Essayez une autre formulation ou utilisez le mini-bilan.",
+    emptyStateTitle: "Rep\u00e8res rapides avant de demander une s\u00e9ance", emptyStateText: "L'assistant aide \u00e0 comprendre le bon format avant une courte demande, sans compte portail \u00e0 cr\u00e9er.",
+    quickCall: "Appeler maintenant", quickBook: "Demander une s\u00e9ance", note: "Le mini-bilan est utile si le besoin reste flou. Si le besoin est clair, demandez directement une premi\u00e8re s\u00e9ance.",
   },
   en: {
-    buttonLabel: "Quick help",
-    sheetTitle: "M\u00E9thode Secondaire Assistant",
-    sheetDescription:
-      "Quick answers, common questions, and the best next step so families can move forward faster.",
-    welcome:
-      "Hi. I can help with pricing, covered subjects, tutoring format, and the best next step for the situation.",
-    starterQuestions: [
-      "How much does tutoring cost?",
-      "Do you cover Secondary 4 math?",
-      "Should I call first or book directly?",
-      "Do you offer exam preparation?",
-    ],
-    inputPlaceholder: "Type your question here...",
-    send: "Show answer",
-    sending: "Answering...",
-    retry: "Try again",
-    assistantLabel: "Assistant",
-    youLabel: "You",
-    error:
-      "A quick answer could not be generated. Try another wording or use the diagnostic.",
-    emptyStateTitle: "Quick answers before you call or book",
-    emptyStateText:
-      "The assistant handles the most useful tutoring questions so families can move toward the right tutor or format faster.",
-    quickCall: "Call",
-    quickBook: "Book",
-    note:
-      "These answers are a fast guide. For real personalized support, the diagnostic or a phone call remains the best next step.",
+    buttonLabel: "Quick help", sheetTitle: "M\u00e9thode Secondaire Assistant", sheetDescription: "Quick answers and the best next step so families can move forward more simply.",
+    welcome: "Hi. I can help with pricing, covered subjects, and the right first step.",
+    starterQuestions: ["How much does tutoring cost?", "Do you cover Secondary 4 math?", "How does a first-session request work?", "Do you offer exam preparation?"],
+    inputPlaceholder: "Type your question here...", send: "Show answer", sending: "Answering...", retry: "Try again", assistantLabel: "Assistant", youLabel: "You",
+    error: "A quick answer could not be generated. Try another wording or use the mini-assessment.",
+    emptyStateTitle: "Quick answers before requesting a session", emptyStateText: "The assistant helps you understand the right format before a short request, without creating a portal account.",
+    quickCall: "Call now", quickBook: "Request a session", note: "Use the mini-assessment when the need is still unclear. When it is clear, request a first session directly.",
   },
 }
 
 export function buildFallbackAssistantReply(message, locale = "fr") {
   const normalized = String(message || "").toLowerCase()
   const isEnglish = locale === "en"
-
-  const mentionsPricing = matchesAny(normalized, [
-    /prix/,
-    /tarif/,
-    /cout/,
-    /co\u00FBt/,
-    /price/,
-    /cost/,
-    /rate/,
-  ])
-  const mentionsBooking = matchesAny(normalized, [
-    /appel/,
-    /appeler/,
-    /telephone/,
-    /t\u00E9l\u00E9phone/,
-    /contact/,
-    /reserver/,
-    /r\u00E9server/,
-    /booking/,
-    /book/,
-    /call/,
-  ])
-  const mentionsSubjects = matchesAny(normalized, [
-    /math/,
-    /science/,
-    /physique/,
-    /physics/,
-    /chimie/,
-    /chemistry/,
-    /examen/,
-    /exam/,
-    /matiere/,
-    /mati\u00E8re/,
-    /subject/,
-  ])
-  const looksLikeAcademicQuestion = matchesAny(normalized, [
-    /fonction/,
-    /equation/,
-    /\u00E9quation/,
-    /fraction/,
-    /algebre/,
-    /alg\u00E8bre/,
-    /geometry/,
-    /g\u00E9om\u00E9trie/,
-    /derivee/,
-    /d\u00E9riv\u00E9e/,
-    /force/,
-    /molecule/,
-    /mol\u00E9cule/,
-    /[0-9]\s*[\+\-\*\/=]/,
-  ])
-
+  const mentionsPricing = matchesAny(normalized, [/prix/, /tarif/, /cout/, /co\u00fbt/, /price/, /cost/, /rate/])
+  const mentionsBooking = matchesAny(normalized, [/appel/, /appeler/, /telephone/, /t\u00e9l\u00e9phone/, /contact/, /reserver/, /r\u00e9server/, /booking/, /book/, /call/])
+  const mentionsSubjects = matchesAny(normalized, [/math/, /science/, /physique/, /physics/, /chimie/, /chemistry/, /examen/, /exam/, /matiere/, /mati\u00e8re/, /subject/])
+  const looksLikeAcademicQuestion = matchesAny(normalized, [/fonction/, /equation/, /\u00e9quation/, /fraction/, /algebre/, /alg\u00e8bre/, /geometry/, /g\u00e9om\u00e9trie/, /derivee/, /d\u00e9riv\u00e9e/, /force/, /molecule/, /mol\u00e9cule/, /[0-9]\s*[\+\-\*\/=]/])
   const asksAboutFunctions = matchesAny(normalized, [/fonction/, /\bfunction\b/, /\bfunctions\b/])
-  const asksAboutExamPrep = matchesAny(normalized, [/examen/, /exam/, /ministeriel/, /minist\u00E9riel/])
+  const asksAboutExamPrep = matchesAny(normalized, [/examen/, /exam/, /ministeriel/, /minist\u00e9riel/])
   const asksAboutSec4 = matchesAny(normalized, [/secondaire 4/, /sec 4/, /secondary 4/, /\bsec4\b/])
 
-  if (asksAboutFunctions) {
-    return isEnglish
-      ? `A function is a rule that takes an input and gives exactly one output.\n\nExample: if f(x) = 2x + 3, then f(4) = 11 because you replace x with 4.\n\nThe two first things students usually need are:\n- identify the input\n- apply the rule in the right order\n\nIf the real issue is functions in Secondary 4, the fastest next step is usually the diagnostic or a booking here: ${BOOKING_URL}`
-      : `Une fonction est une r\u00E8gle qui prend une entr\u00E9e et donne exactement une sortie.\n\nExemple : si f(x) = 2x + 3, alors f(4) = 11 parce qu'on remplace x par 4.\n\nLes deux premi\u00E8res choses \u00E0 ma\u00EEtriser sont :\n- rep\u00E9rer l'entr\u00E9e\n- appliquer la r\u00E8gle dans le bon ordre\n\nSi le vrai blocage concerne les fonctions au secondaire 4, le plus utile est souvent le diagnostic ou une r\u00E9servation ici : ${BOOKING_URL}`
-  }
-
-  if (mentionsPricing) {
-    return isEnglish
-      ? `Weekly follow-up is ${assistantServiceInfo.weeklyRateCad} CAD/hour and should usually start with a call. Flexible sessions are ${assistantServiceInfo.flexibleRateCad} CAD/hour, and the booking link is mainly there for one-time or urgent targeted needs. Intensive exam-prep blocks are available on request.\n\nCall first: ${formatPhoneForReply(locale)}\nFocused booking: ${BOOKING_URL}`
-      : `Le suivi hebdomadaire est \u00E0 ${assistantServiceInfo.weeklyRateCad} $ CAD / heure et devrait g\u00E9n\u00E9ralement commencer par un appel. Les s\u00E9ances flexibles sont \u00E0 ${assistantServiceInfo.flexibleRateCad} $ CAD / heure, et le lien de r\u00E9servation sert surtout pour une s\u00E9ance ponctuelle ou urgente. Les blocs intensifs de pr\u00E9paration aux examens sont offerts sur demande.\n\nAppeler d'abord : ${formatPhoneForReply(locale)}\nR\u00E9servation cibl\u00E9e : ${BOOKING_URL}`
-  }
-
-  if (mentionsBooking) {
-    return isEnglish
-      ? `Call first for weekly follow-up, fuzzy situations, or anything that needs discussion. Book directly when the need is already clear and feels like a one-time or urgent targeted session.\n\nFastest paths:\n- Call first: ${formatPhoneForReply(locale)}\n- Focused booking: ${BOOKING_URL}`
-      : `Il vaut mieux appeler d'abord pour un suivi hebdomadaire, une situation encore floue ou un besoin qui m\u00E9rite une discussion. Il vaut mieux r\u00E9server directement quand le besoin est d\u00E9j\u00E0 clair et ressemble \u00E0 une s\u00E9ance ponctuelle ou urgente.\n\nRaccourcis les plus utiles :\n- Appeler d'abord : ${formatPhoneForReply(locale)}\n- R\u00E9servation cibl\u00E9e : ${BOOKING_URL}`
-  }
-
-  if (asksAboutExamPrep) {
-    return isEnglish
-      ? `Yes. Exam preparation is a strong fit for the service in math, science, physics, and chemistry from Secondary 1 to 5.\n\nThe usual goal is to:\n- identify the priority chapters\n- focus on exam-style exercises\n- reduce panic before the test window\n\nIf the exam is soon, call ${formatPhoneForReply(locale)}. Otherwise, you can book here: ${BOOKING_URL}`
-      : `Oui. La pr\u00E9paration d'examens fait partie des besoins les plus naturels du service en maths, sciences, physique et chimie du secondaire 1 \u00E0 5.\n\nL'objectif est g\u00E9n\u00E9ralement de :\n- cibler les chapitres prioritaires\n- travailler des exercices type examen\n- r\u00E9duire la panique avant l'\u00E9ch\u00E9ance\n\nSi l'examen approche, appelez au ${formatPhoneForReply(locale)}. Sinon, vous pouvez r\u00E9server ici : ${BOOKING_URL}`
-  }
-
-  if (asksAboutSec4) {
-    return isEnglish
-      ? `Yes. Secondary 4 is covered, especially in math, science, physics, and chemistry.\n\nThat level often needs either:\n- weekly follow-up to stabilize the method\n- targeted catch-up before marks slip further\n- focused exam preparation later in the year\n\nIf the goal is weekly follow-up, call first: ${formatPhoneForReply(locale)}\nIf the chapter is already clear and the need is one-time, focused booking is fine: ${BOOKING_URL}`
-      : `Oui. Le secondaire 4 est bien couvert, surtout en maths, sciences, physique et chimie.\n\nC'est souvent un niveau o\u00F9 il faut soit :\n- un suivi hebdomadaire pour stabiliser la m\u00E9thode\n- un rattrapage cibl\u00E9 avant que les notes glissent davantage\n- une pr\u00E9paration d'examen plus tard dans l'ann\u00E9e\n\nSi l'id\u00E9e est un vrai suivi semaine apr\u00E8s semaine, appelez d'abord au ${formatPhoneForReply(locale)}\nSi le chapitre est d\u00E9j\u00E0 clair et que le besoin est ponctuel, la r\u00E9servation cibl\u00E9e convient : ${BOOKING_URL}`
-  }
-
-  if (looksLikeAcademicQuestion) {
-    return isEnglish
-      ? `This widget is better for fast orientation than full lesson support.\n\nWhat I can confirm is that tutoring covers math, science, physics, chemistry, catch-up support, and exam preparation for Secondary 1 to 5 in Quebec.\n\nFor detailed guided help on the actual problem, call first if you want real follow-up: ${formatPhoneForReply(locale)}.\nIf the need is one-time and already clear, you can book a focused session here: ${BOOKING_URL}.`
-      : `Ce widget sert surtout \u00E0 orienter rapidement, pas \u00E0 remplacer une vraie s\u00E9ance de cours.\n\nJe peux confirmer que le tutorat couvre les maths, les sciences, la physique, la chimie, la mise \u00E0 niveau et la pr\u00E9paration aux examens du secondaire 1 \u00E0 5 au Qu\u00E9bec.\n\nPour une aide vraiment guid\u00E9e sur le probl\u00E8me, appelez d'abord si vous voulez un vrai suivi : ${formatPhoneForReply(locale)}.\nSi le besoin est ponctuel et d\u00E9j\u00E0 clair, vous pouvez r\u00E9server une s\u00E9ance cibl\u00E9e ici : ${BOOKING_URL}.`
-  }
-
-  if (mentionsSubjects) {
-    return isEnglish
-      ? `Tutoring covers math, science, physics, chemistry, catch-up support, and exam preparation for Quebec secondary students. Sessions are available online across Quebec and in person depending on area and availability.\n\nCall first if you want ongoing weekly follow-up: ${formatPhoneForReply(locale)}\nBook directly only if the need already feels clear and one-time: ${BOOKING_URL}`
-      : `Le tutorat couvre les maths, les sciences, la physique, la chimie, la mise \u00E0 niveau et la pr\u00E9paration aux examens pour les \u00E9l\u00E8ves du secondaire au Qu\u00E9bec. Les s\u00E9ances sont offertes en ligne partout au Qu\u00E9bec et en personne selon le secteur et les disponibilit\u00E9s.\n\nAppelez d'abord si vous cherchez un suivi semaine apr\u00E8s semaine : ${formatPhoneForReply(locale)}\nR\u00E9servez directement seulement si le besoin est d\u00E9j\u00E0 clair et ponctuel : ${BOOKING_URL}`
-  }
-
-  return isEnglish
-    ? `M\u00E9thode Secondaire offers tutoring for Secondary 1 to 5 students in Quebec in math, science, physics, chemistry, catch-up support, and exam preparation. Weekly follow-up is ${assistantServiceInfo.weeklyRateCad} CAD/hour and flexible sessions are ${assistantServiceInfo.flexibleRateCad} CAD/hour.\n\nBest next steps:\n- use the diagnostic if the situation is still fuzzy\n- call ${formatPhoneForReply(locale)} for weekly follow-up or anything that needs discussion\n- book here only for a focused one-time session: ${BOOKING_URL}`
-    : `M\u00E9thode Secondaire offre du tutorat pour les \u00E9l\u00E8ves du secondaire 1 \u00E0 5 au Qu\u00E9bec en maths, sciences, physique, chimie, mise \u00E0 niveau et pr\u00E9paration aux examens. Le suivi hebdomadaire est \u00E0 ${assistantServiceInfo.weeklyRateCad} $ CAD / heure et les s\u00E9ances flexibles sont \u00E0 ${assistantServiceInfo.flexibleRateCad} $ CAD / heure.\n\nMeilleurs raccourcis selon la situation :\n- utilisez le diagnostic si le besoin est encore flou\n- appelez au ${formatPhoneForReply(locale)} pour un suivi hebdomadaire ou une situation \u00E0 discuter\n- r\u00E9servez ici seulement pour une s\u00E9ance ponctuelle cibl\u00E9e : ${BOOKING_URL}`
+  if (asksAboutFunctions) return isEnglish
+    ? `A function is a rule that takes an input and gives exactly one output. For example, f(x) = 2x + 3 gives f(4) = 11.\n\nIf functions in Secondary 4 are the real blocker, use the mini-assessment when the need is unclear, or request a Targeted session here: ${getBookingUrl(locale)}`
+    : `Une fonction est une r\u00e8gle qui prend une entr\u00e9e et donne exactement une sortie. Par exemple, f(x) = 2x + 3 donne f(4) = 11.\n\nSi le vrai blocage concerne les fonctions au secondaire 4, utilisez le mini-bilan si le besoin est flou, ou demandez une S\u00e9ance cibl\u00e9e ici : ${getBookingUrl(locale)}`
+  if (mentionsPricing) return buildPricingReply(locale)
+  if (mentionsBooking) return isEnglish
+    ? `You never need to create a portal account before asking for help. Request the right format when the need is clear; the team confirms the tutor, time and cadence after matching.\n\nNot sure which format is right? Use the 2-minute mini-assessment.\nUrgent? Call now: ${formatPhoneForReply()}\nRequest a session: ${getBookingUrl(locale)}`
+    : `Vous n'avez jamais \u00e0 cr\u00e9er un compte portail avant de demander de l'aide. Demandez le bon format si le besoin est clair; l'\u00e9quipe confirme d'abord le tuteur, le cr\u00e9neau et la cadence apr\u00e8s le jumelage.\n\nVous h\u00e9sitez sur le bon format ? Utilisez le mini-bilan de 2 minutes.\nSituation urgente ? Appelez maintenant : ${formatPhoneForReply()}\nDemander une s\u00e9ance : ${getBookingUrl(locale)}`
+  if (asksAboutExamPrep) return isEnglish
+    ? `Yes. Exam preparation is a strong fit for math, science, physics, and chemistry from Secondary 1 to 5. If the exam is urgent, call ${formatPhoneForReply()}. Otherwise, request a session here: ${getBookingUrl(locale)}`
+    : `Oui. La pr\u00e9paration d'examens fait partie des besoins les plus naturels du service en maths, sciences, physique et chimie du secondaire 1 \u00e0 5. Si l'examen approche, appelez au ${formatPhoneForReply()}. Sinon, demandez une s\u00e9ance ici : ${getBookingUrl(locale)}`
+  if (asksAboutSec4) return isEnglish
+    ? `Yes. Secondary 4 is covered, especially in math, science, physics, and chemistry. A Progress block can stabilize a recurring difficulty; the team chooses its cadence after matching and it never renews automatically.\n\nUse the short request and the team will confirm the right starting point: ${getBookingUrl(locale)}`
+    : `Oui. Le secondaire 4 est bien couvert, surtout en maths, sciences, physique et chimie. Un Bloc de progression peut stabiliser une difficult\u00e9 r\u00e9currente; l'\u00e9quipe choisit sa cadence apr\u00e8s le jumelage et il ne se renouvelle jamais automatiquement.\n\nUtilisez la courte demande ici; l'\u00e9quipe confirmera le bon point de d\u00e9part : ${getBookingUrl(locale)}`
+  if (looksLikeAcademicQuestion || mentionsSubjects) return isEnglish
+    ? `Tutoring covers math, science, physics, chemistry, catch-up support, and exam preparation for Quebec secondary students. Use the mini-assessment if the need is unclear. If it is clear, request a Targeted session here: ${getBookingUrl(locale)}\nUrgent? Call ${formatPhoneForReply()}.`
+    : `Le tutorat couvre les maths, les sciences, la physique, la chimie, la mise \u00e0 niveau et la pr\u00e9paration aux examens pour les \u00e9l\u00e8ves du secondaire au Qu\u00e9bec. Utilisez le mini-bilan si le besoin est flou. S'il est clair, demandez une S\u00e9ance cibl\u00e9e ici : ${getBookingUrl(locale)}\nSituation urgente ? Appelez au ${formatPhoneForReply()}.`
+  return buildGeneralAssistantReply(locale)
 }
 
 export function buildAssistantInstructions(locale = "fr") {
   const isEnglish = locale === "en"
-
-  return `
-You are the website assistant for M\u00E9thode Secondaire, a tutoring business for Quebec secondary-school students.
-
-Your role:
-- Answer questions about the tutoring service, subjects, pricing, service areas, and booking flow.
-- Give short, clear, supportive explanations for secondary-level math and science questions.
-- Help parents or students choose the best next step.
-
-Business facts:
-- Business name: M\u00E9thode Secondaire.
-- Audience: parents and secondary 1 to 5 students in Quebec.
-- Subjects: mathematics, science, physics, chemistry, exam preparation, catch-up support.
-- Formats: online across Quebec; in-person depending on area and availability.
-- Local pages emphasize Montreal, Laval, and online across Quebec.
-- Pricing currently shown on the website: flexible session 75 CAD/hour, weekly follow-up 70 CAD/hour, intensive block on request.
-- Best first step for many families: a 15-minute diagnostic call.
-- Weekly follow-up should usually be discussed by phone first.
-- The booking link is mainly for one-time or urgent targeted sessions: ${BOOKING_URL}
-- Phone: +1 (514) 952-0709
-
-Behavior rules:
-- Reply in ${isEnglish ? "English" : "French"} unless the user clearly uses the other language.
-- Be concise, warm, and practical.
-- If asked a math or science question, explain briefly at a secondary-school level.
-- If the user appears to want answers for graded homework or an exam, do not simply give the final answer with no guidance.
-- Do not invent tutor availability, credentials, guarantees, or policies not listed above.
-- If the question is about fit, urgency, or what to do next, recommend calling first for weekly follow-up and using direct booking mainly for one-time or urgent targeted sessions.
-- If you do not know something specific, say so plainly and suggest calling or using the website contact form.
-`.trim()
+  return `You are the website assistant for M\u00e9thode Secondaire, a tutoring business for Quebec secondary-school students.\n\nBusiness facts:\n- Audience: parents of Secondary 1 to 5 students in Quebec.\n- Subjects: mathematics, science, physics, chemistry, exam preparation, and catch-up support.\n- Public offers: Targeted session (${targeted.sessionCount} session, $${targeted.totalPriceCad}), Momentum block (${momentum.sessionCount} sessions, $${momentum.totalPriceCad}), and Progress block (${progression.sessionCount} sessions, $${progression.totalPriceCad}).\n- Choose cadence only after matching. No format renews automatically.\n- A ${pricing.cancellation.noticeHours}-hour notice guarantees rescheduling; within that window, the team looks for a solution based on availability.\n- A parent requests a first session through the short public request form; the mini-assessment is optional when the need is unclear.\n\nBehavior rules:\n- Reply in ${isEnglish ? "English" : "French"} unless the user clearly uses the other language.\n- Be concise, warm, and practical.\n- Do not invent tutor availability, credentials, guarantees, legal terms, or policies.`
 }
 
-function matchesAny(message, patterns) {
-  return patterns.some((pattern) => pattern.test(message))
+function buildGeneralAssistantReply(locale) {
+  return locale === "en"
+    ? `Methode Secondaire offers Targeted session for one concrete priority, a Momentum block to regain momentum over roughly one month, and a Progress block for a recurring difficulty or lasting academic structure. The team chooses cadence after matching, and no format renews automatically.\n\nIf the need is clear, request a first session: ${getBookingUrl(locale)}\nIf it is unclear, use the 2-minute mini-assessment.\nUrgent? Call ${formatPhoneForReply()}.`
+    : `M\u00e9thode Secondaire propose une S\u00e9ance cibl\u00e9e pour une priorit\u00e9 concr\u00e8te, un Bloc d'\u00e9lan pour reprendre l'\u00e9lan pendant environ un mois et un Bloc de progression pour une difficult\u00e9 r\u00e9currente ou une structure scolaire durable. L'\u00e9quipe choisit la cadence apr\u00e8s le jumelage et aucun format ne se renouvelle automatiquement.\n\nSi le besoin est clair, demandez une premi\u00e8re s\u00e9ance : ${getBookingUrl(locale)}\nS'il reste flou, utilisez le mini-bilan de 2 minutes.\nSituation urgente ? Appelez au ${formatPhoneForReply()}.`
 }
 
-function formatPhoneForReply() {
-  return "+1 (514) 952-0709"
+function buildPricingReply(locale) {
+  const notice = pricing.cancellation.noticeHours
+  return locale === "en"
+    ? `Targeted session: $${targeted.totalPriceCad} for one concrete priority.\nMomentum block: $${momentum.totalPriceCad} for ${momentum.sessionCount} sessions to regain momentum over roughly one month.\nProgress block: $${progression.totalPriceCad} for ${progression.sessionCount} sessions for a recurring difficulty or lasting academic structure.\n\nThe team chooses cadence after matching and no format renews automatically. Let us know ${notice} hours ahead for a guaranteed reschedule.\n\nRequest the right starting point here: ${getBookingUrl(locale)}`
+    : `S\u00e9ance cibl\u00e9e : ${targeted.totalPriceCad} $ pour une priorit\u00e9 concr\u00e8te.\nBloc d'\u00e9lan : ${momentum.totalPriceCad} $ pour ${momentum.sessionCount} s\u00e9ances afin de reprendre l'\u00e9lan pendant environ un mois.\nBloc de progression : ${progression.totalPriceCad} $ pour ${progression.sessionCount} s\u00e9ances, pour une difficult\u00e9 r\u00e9currente ou une structure scolaire durable.\n\nL'\u00e9quipe choisit la cadence apr\u00e8s le jumelage et aucun format ne se renouvelle automatiquement. Pr\u00e9venez-nous ${notice} h \u00e0 l'avance pour un report garanti.\n\nDemandez le bon point de d\u00e9part ici : ${getBookingUrl(locale)}`
 }
+
+function matchesAny(message, patterns) { return patterns.some((pattern) => pattern.test(message)) }
+function formatPhoneForReply() { return "+1 (514) 952-0709" }
+function getBookingUrl(locale) { return locale === "en" ? BOOKING_URL_EN : BOOKING_URL }

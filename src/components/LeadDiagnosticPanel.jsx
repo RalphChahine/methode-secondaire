@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import {
   CalendarDays,
   Check,
@@ -12,6 +12,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { DECLIC_REQUEST_URL, DECLIC_REQUEST_URL_EN } from "@/config/booking"
 import { assistantBusinessInfo } from "@/lib/assistantConfig"
 import {
   buildFallbackLeadDiagnosticResult,
@@ -21,17 +22,43 @@ import {
   getDiagnosticUi,
   normalizeLeadDiagnosticAnswers,
 } from "@/lib/leadDiagnostic"
+import { getRememberedParentIntent } from "@/lib/parentIntent"
 import { cn } from "@/lib/utils"
+
+function createAnswersFromParentIntent() {
+  const answers = createEmptyDiagnosticAnswers()
+  const intent = getRememberedParentIntent()
+  const goalByIntent = {
+    exam: "exam-prep",
+    homework: "independence",
+    ongoing: "weekly",
+  }
+
+  return {
+    ...answers,
+    goal: goalByIntent[intent] || "",
+  }
+}
+
+function emitDiagnosticEvent(name, detail = {}) {
+  if (typeof window === "undefined") {
+    return
+  }
+
+  window.dispatchEvent(new CustomEvent(name, { detail }))
+}
 
 export default function LeadDiagnosticPanel({ locale = "fr" }) {
   const ui = getDiagnosticUi(locale)
+  const requestUrl = locale === "en" ? DECLIC_REQUEST_URL_EN : DECLIC_REQUEST_URL
   const questions = useMemo(() => getDiagnosticQuestions(locale), [locale])
   const [stepIndex, setStepIndex] = useState(0)
-  const [answers, setAnswers] = useState(createEmptyDiagnosticAnswers())
+  const [answers, setAnswers] = useState(createAnswersFromParentIntent)
   const [result, setResult] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState("")
   const [copied, setCopied] = useState(false)
+  const hasTrackedStart = useRef(false)
 
   const currentQuestion = questions[stepIndex]
   const progress = questions.length ? ((stepIndex + 1) / questions.length) * 100 : 0
@@ -39,11 +66,20 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
 
   useEffect(() => {
     setStepIndex(0)
-    setAnswers(createEmptyDiagnosticAnswers())
+    setAnswers(createAnswersFromParentIntent())
     setResult(null)
     setIsSubmitting(false)
     setError("")
     setCopied(false)
+  }, [locale])
+
+  useEffect(() => {
+    if (hasTrackedStart.current) {
+      return
+    }
+
+    hasTrackedStart.current = true
+    emitDiagnosticEvent("methode:diagnostic-start", { locale })
   }, [locale])
 
   useEffect(() => {
@@ -74,12 +110,21 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
   }
 
   function goNext() {
-    setStepIndex((current) => Math.min(questions.length - 1, current + 1))
+    setStepIndex((current) => {
+      const nextStep = Math.min(questions.length - 1, current + 1)
+      emitDiagnosticEvent("methode:diagnostic-progress", {
+        locale,
+        step: current + 1,
+        next_step: nextStep + 1,
+        field: questions[current]?.key || "",
+      })
+      return nextStep
+    })
   }
 
   function restart() {
     setStepIndex(0)
-    setAnswers(createEmptyDiagnosticAnswers())
+    setAnswers(createAnswersFromParentIntent())
     setResult(null)
     setError("")
     setCopied(false)
@@ -88,6 +133,10 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
   function canAdvance() {
     if (!currentQuestion) {
       return false
+    }
+
+    if (currentQuestion.required === false) {
+      return true
     }
 
     if (currentQuestion.type === "textarea") {
@@ -114,6 +163,20 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
       setResult(localResult)
 
       if (typeof window !== "undefined") {
+        try {
+          window.sessionStorage.setItem(
+            "methode:first-session-prefill",
+            JSON.stringify({
+              locale,
+              answers: normalizedAnswers,
+              result: localResult,
+              diagnosticSummary: localResult.suggestedMessage,
+            }),
+          )
+        } catch {
+          // The result remains usable even when browser storage is unavailable.
+        }
+
         window.dispatchEvent(
           new CustomEvent("methode:diagnostic-complete", {
             detail: {
@@ -121,7 +184,7 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
               ...normalizedAnswers,
               recommended_action: localResult.recommendedAction,
               recommended_service: localResult.recommendedService,
-              limited_mode: false,
+              limited_mode: true,
             },
           }),
         )
@@ -139,8 +202,8 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
     } catch {
       setError(
         locale === "en"
-          ? "The diagnostic could not be generated."
-          : "Le diagnostic n'a pas pu \u00EAtre g\u00E9n\u00E9r\u00E9.",
+          ? "The orientation check-in could not be prepared."
+          : "Le mini-bilan n'a pas pu être préparé.",
       )
     } finally {
       setIsSubmitting(false)
@@ -165,7 +228,14 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
       return
     }
 
-    window.dispatchEvent(new CustomEvent("methode:jump-contact"))
+    window.dispatchEvent(
+      new CustomEvent("methode:jump-contact", {
+        detail: {
+          locale,
+          requestedOffer: result?.requestedOffer || "first_session_declic",
+        },
+      }),
+    )
   }
 
   if (!currentQuestion && !result) {
@@ -173,7 +243,18 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
   }
 
   if (result) {
-    const callIsPrimary = result.recommendedAction === "call_now"
+    const primaryAction = result.recommendedAction
+    const isProgressionBlock = ["progression_block_10", "weekly_follow_up_10"].includes(result.requestedOffer)
+    const requestHref = isProgressionBlock ? `${requestUrl}?offer=progression` : requestUrl
+    const orderedActions = [
+      primaryAction,
+      primaryAction === "call_now" ? "book_session" : "call_now",
+    ].map((action) => ({
+      action,
+      href: action === "call_now" ? `tel:${assistantBusinessInfo.phone}` : requestHref,
+      label: ui.actions[action],
+      Icon: action === "call_now" ? Phone : CalendarDays,
+    }))
 
     return (
       <div className="space-y-4">
@@ -242,37 +323,35 @@ export default function LeadDiagnosticPanel({ locale = "fr" }) {
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <Button
-            asChild
-            className={cn(
-              "rounded-full py-6",
-              callIsPrimary
-                ? "bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]"
-                : "border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white",
-            )}
-            variant={callIsPrimary ? "default" : "outline"}
-          >
-            <a href={`tel:${assistantBusinessInfo.phone}`}>
-              <Phone className="h-4 w-4" />
-              {ui.actions.call_now}
-            </a>
-          </Button>
-
-          <Button
-            asChild
-            className={cn(
-              "rounded-full py-6",
-              !callIsPrimary
-                ? "bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]"
-                : "border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white",
-            )}
-            variant={!callIsPrimary ? "default" : "outline"}
-          >
-            <a href={assistantBusinessInfo.bookingUrl} target="_blank" rel="noreferrer">
-              <CalendarDays className="h-4 w-4" />
-              {ui.actions.book_session}
-            </a>
-          </Button>
+          {orderedActions.map(({ action, href, label, Icon }, index) => {
+            const isPrimary = index === 0
+            return (
+              <div key={action} className="space-y-2">
+                <div className="px-1 text-xs font-medium uppercase tracking-[0.18em] text-white/55">
+                  {isPrimary ? ui.primaryActionLabel : ui.secondaryActionLabel}
+                </div>
+                <Button
+                  asChild
+                  className={cn(
+                    "w-full rounded-full py-6",
+                    isPrimary
+                      ? "bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]"
+                      : "border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white",
+                  )}
+                  variant={isPrimary ? "default" : "outline"}
+                >
+                  <a
+                    href={href}
+                    aria-label={`${isPrimary ? ui.primaryActionLabel : ui.secondaryActionLabel}: ${label}`}
+                    onClick={() => emitDiagnosticEvent("methode:diagnostic-result-cta", { locale, action })}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {label}
+                  </a>
+                </Button>
+              </div>
+            )
+          })}
         </div>
 
         <div className="flex flex-wrap gap-3">

@@ -259,7 +259,7 @@ export const blogPageContent = {
         {
           title: "Ce qu'un parent devrait demander avant de payer",
           paragraphs: [
-            "Un bon service devrait etre capable d'expliquer pourquoi il recommande un appel, une seance ciblee, un sprint ou un suivi hebdomadaire. Quand tout est vendu de la meme facon, la probabilite de payer pour un mauvais format augmente.",
+            "Un bon service devrait etre capable d'expliquer pourquoi il recommande un appel, une seance ciblee, un sprint ou un bloc de progression de 10 seances. Quand tout est vendu de la meme facon, la probabilite de payer pour un mauvais format augmente.",
           ],
           bullets: [
             "Quel est le vrai blocage observe ?",
@@ -294,7 +294,7 @@ export const blogPageContent = {
       ],
       ctaTitle: "Si tu veux payer pour le bon format plutot que pour de simples heures",
       ctaText:
-        "Le premier gain vient souvent d'un bon cadrage: besoin ponctuel, suivi hebdomadaire ou sprint d'examen. C'est la que la valeur du tutorat devient visible.",
+        "Le premier gain vient souvent d'un bon cadrage: besoin ponctuel, bloc de progression de 10 seances ou sprint d'examen. C'est la que la valeur du tutorat devient visible.",
       relatedRouteKeys: ["blogMathAnxiety", "blogHomeworkResearch", "weeklyFollowUp"],
     },
     en: {
@@ -348,7 +348,7 @@ export const blogPageContent = {
         {
           title: "What parents should ask before paying",
           paragraphs: [
-            "A strong service should be able to explain why it recommends a call, a focused session, an exam sprint or weekly follow-up. When every situation is sold the same way, the risk of paying for the wrong format increases.",
+            "A strong service should be able to explain why it recommends a call, a focused session, an exam sprint or a 10-session progress block. When every situation is sold the same way, the risk of paying for the wrong format increases.",
           ],
           bullets: [
             "What is the actual learning block?",
@@ -383,7 +383,7 @@ export const blogPageContent = {
       ],
       ctaTitle: "If you want to pay for the right format rather than random hours",
       ctaText:
-        "The first real gain often comes from sharper diagnosis: one-time need, weekly follow-up or exam sprint. That is where tutoring starts becoming worth the money.",
+        "The first real gain often comes from sharper diagnosis: a one-time need, a 10-session progress block or an exam sprint. That is where tutoring starts becoming worth the money.",
       relatedRouteKeys: ["blogMathAnxiety", "blogHomeworkResearch", "weeklyFollowUp"],
     },
   },

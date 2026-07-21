@@ -60,4 +60,19 @@ assert.match(pricingSection, /methode:pricing-offer-selected/)
 assert.match(requestForm, /methode:first-session-request-submit/)
 assert.doesNotMatch(pricingSection, /Séance Déclic/)
 
+const copyFiles = [
+  "src/lib/assistantConfig.js",
+  "src/lib/leadDiagnostic.js",
+  "src/components/GrowthProgramSection.jsx",
+  "src/components/OfferPathwaysSection.jsx",
+  "src/components/LeadDiagnosticPanel.jsx",
+  "src/components/StudentAssistantWidget.jsx",
+  "src/pages/LeadThanks.jsx",
+  "src/pages/ResourcesHub.jsx",
+]
+const sources = await Promise.all(copyFiles.map((file) => fs.readFile(new URL(`../${file}`, import.meta.url), "utf8")))
+sources.forEach((source, index) => {
+  assert.doesNotMatch(source, /S(?:é|\\u00e9)ance D(?:é|\\u00e9)clic|D(?:é|\\u00e9)clic \/ one-off session|weekly follow-up package/i, copyFiles[index])
+})
+
 console.log("Pricing package contract passed.")

@@ -1,15 +1,14 @@
 import { Link, useLocation } from "react-router-dom"
-import { ArrowRight, Compass, Sparkles } from "lucide-react"
+import { ArrowRight, BookOpenText, CalendarDays, Compass, LineChart, MessageCircle, Target } from "lucide-react"
 
 import BlogGridSection from "@/components/BlogGridSection"
 import MotionCard from "@/components/MotionCard"
-import OfferPathwaysSection from "@/components/OfferPathwaysSection"
 import ParentJourneyNote from "@/components/ParentJourneyNote"
 import ResourceGridSection from "@/components/ResourceGridSection"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { BOOKING_URL } from "@/config/booking"
+import { BOOKING_URL, BOOKING_URL_EN } from "@/config/booking"
 import { resourceHubCopyByLocale } from "@/lib/resourceContent"
 import {
   buildAlternates,
@@ -44,6 +43,7 @@ export default function ResourcesHub() {
   const copy = resourceHubCopyByLocale[locale]
   const seo = seoByLocale[locale]
   const path = getLocalizedPath("resourcesHub", locale)
+  const requestUrl = locale === "en" ? BOOKING_URL_EN : BOOKING_URL
 
   const schema = {
     "@context": "https://schema.org",
@@ -52,6 +52,108 @@ export default function ResourcesHub() {
     description: seo.description,
     url: absoluteUrl(path),
   }
+
+  const quickPaths =
+    locale === "en"
+      ? [
+          {
+            href: "#guides",
+            icon: BookOpenText,
+            label: "Find a practical guide",
+            description: "Prepare, catch up or get organized.",
+          },
+          {
+            href: "#articles",
+            icon: Compass,
+            label: "Understand the situation",
+            description: "Read a clear answer before choosing a next step.",
+          },
+          {
+            href: "#support",
+            icon: MessageCircle,
+            label: "Get personal support",
+            description: "Choose a focused session or a steadier follow-up.",
+          },
+        ]
+      : [
+          {
+            href: "#guides",
+            icon: BookOpenText,
+            label: "Trouver un guide pratique",
+            description: "Préparer, rattraper ou remettre de l'ordre.",
+          },
+          {
+            href: "#articles",
+            icon: Compass,
+            label: "Mieux comprendre la situation",
+            description: "Lire une réponse claire avant de choisir la suite.",
+          },
+          {
+            href: "#support",
+            icon: MessageCircle,
+            label: "Être accompagné",
+            description: "Choisir une séance ciblée ou un suivi régulier.",
+          },
+        ]
+
+  const supportPaths =
+    locale === "en"
+      ? [
+          {
+            icon: Target,
+            routeKey: "examSprint",
+            badge: "A near deadline",
+            title: "Exam sprint",
+            description: "For the moments when an exam is close and review needs a clearer order.",
+            details: [
+              "A focused plan for what matters most right now.",
+              "A useful format before tests or ministerial exams.",
+              "Talk it through first if you are not sure which format fits.",
+            ],
+            cta: "Explore the exam sprint",
+          },
+          {
+            icon: LineChart,
+            routeKey: "weeklyFollowUp",
+            badge: "A priority that keeps returning",
+            title: "Progress block",
+            description: "For when material or stress keeps returning and a 10-session block could help. A weekly rhythm can be suggested after matching.",
+            details: [
+              "A clear structure to consolidate what keeps returning.",
+              "Especially helpful in Secondary 4 and 5.",
+              "The short request helps confirm the right starting point and cadence.",
+            ],
+            cta: "Explore the progress block",
+          },
+        ]
+      : [
+          {
+            icon: Target,
+            routeKey: "examSprint",
+            badge: "Une échéance approche",
+            title: "Sprint examen",
+            description: "Pour les moments où une évaluation arrive et où la révision a besoin de retrouver un ordre clair.",
+            details: [
+              "Un plan ciblé pour ce qui compte le plus maintenant.",
+              "Un format utile avant une évaluation ou un examen ministériel.",
+              "On peut en parler d'abord si vous hésitez entre les formats.",
+            ],
+            cta: "Découvrir le Sprint examen",
+          },
+          {
+            icon: LineChart,
+            routeKey: "weeklyFollowUp",
+            badge: "Une priorité qui revient",
+            title: "Bloc de progression — 10 séances",
+            description: "Pour les moments où la matière ou le stress reviennent et où un bloc de 10 séances pourrait aider. Un rythme hebdomadaire peut être proposé après le jumelage.",
+            details: [
+              "Une structure claire pour consolider ce qui revient.",
+              "Particulièrement utile en secondaire 4 et 5.",
+              "La courte demande aide à confirmer le bon point de départ et la cadence.",
+            ],
+            cta: "Découvrir le bloc de progression",
+          },
+        ]
 
   return (
     <div className="relative overflow-hidden">
@@ -72,24 +174,26 @@ export default function ResourcesHub() {
         <div className="absolute right-0 top-16 h-72 w-72 rounded-full bg-[#f5c977]/12 blur-3xl" />
       </div>
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
-        <section className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
+      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-9 sm:px-6 sm:pt-12 lg:px-8 lg:pb-28 lg:pt-16">
+        <section className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-center lg:gap-8">
           <div className="max-w-3xl">
             <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
               {copy.eyebrow}
             </Badge>
-            <h1 className="balanced-copy mt-7 font-display text-5xl font-semibold leading-[0.95] text-white sm:text-6xl">
+            <h1 className="balanced-copy mt-6 font-display text-[2.65rem] font-semibold leading-[0.98] text-white sm:mt-7 sm:text-6xl">
               {copy.title}
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-8 text-white/72">{copy.description}</p>
+            <p className="mt-5 max-w-2xl text-base leading-7 text-white/72 sm:mt-6 sm:text-lg sm:leading-8">
+              {copy.description}
+            </p>
 
-            <div className="mt-8 flex flex-wrap gap-3">
+            <div className="mt-8 grid max-w-xl gap-3 sm:flex sm:flex-wrap">
               <Button
                 asChild
-                className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]"
+                className="w-full justify-center rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
               >
-                <a href={BOOKING_URL} target="_blank" rel="noreferrer">
-                  {locale === "en" ? "Book a focused session" : "Réserver une séance ciblée"}
+                <a href="#guides">
+                  {locale === "en" ? "Explore the guides" : "Explorer les guides"}
                   <ArrowRight className="h-4 w-4" />
                 </a>
               </Button>
@@ -97,106 +201,178 @@ export default function ResourcesHub() {
               <Button
                 asChild
                 variant="outline"
-                className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                className="w-full justify-center rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white sm:w-auto"
               >
-                <Link to={getLocalizedPath("teenMathScienceSlide", locale)}>
-                  {locale === "en" ? "Read the parent guide" : "Voir le guide parents"}
-                </Link>
+                <a href={requestUrl}>
+                  {locale === "en" ? "Request a focused session" : "Demander une séance ciblée"}
+                </a>
               </Button>
+            </div>
 
-              <Button
-                asChild
-                variant="outline"
-                className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+            <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-sm font-medium text-white/72">
+              <Link
+                to={getLocalizedPath("teenMathScienceSlide", locale)}
+                className="inline-flex items-center gap-1 transition hover:text-white"
               >
-                <Link to={getLocalizedPath("home", locale)}>
-                  {locale === "en" ? "Back to home" : "Retour à l'accueil"}
-                </Link>
-              </Button>
+                {locale === "en" ? "Read the parent guide" : "Voir le guide parents"}
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
+              <Link
+                to={getLocalizedPath("home", locale)}
+                className="inline-flex items-center gap-1 transition hover:text-white"
+              >
+                {locale === "en" ? "Back to home" : "Retour à l'accueil"}
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Link>
             </div>
 
             <ParentJourneyNote locale={locale} className="mt-6 max-w-2xl" />
           </div>
 
-          <MotionCard className="glass-panel rounded-[32px] border-white/10 bg-white/[0.05] p-7 text-white">
-            <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
-              <Compass className="h-5 w-5" />
-            </div>
-            <h2 className="mt-5 font-display text-3xl font-semibold">
-              {locale === "en"
-                ? "Built for searches with strong intent"
-                : "Des pages faites pour les recherches à forte intention"}
-            </h2>
-            <div className="mt-6 space-y-4 text-sm text-white/80">
-              {[
-                locale === "en"
-                  ? "Exam prep pages for families looking for last-mile structure."
-                  : "Des pages examen pour les familles qui cherchent une vraie structure de révision.",
-                locale === "en"
-                  ? "Catch-up pages for situations where chapters have already piled up."
-                  : "Des pages rattrapage pour les périodes où les chapitres se sont déjà accumulés.",
-                locale === "en"
-                  ? "Grade-specific pages for searches that are more precise than generic tutoring."
-                  : "Des pages plus précises qu'une recherche générique de tutorat.",
-              ].map((line) => (
-                <div
-                  key={line}
-                  className="rounded-[22px] border border-white/10 bg-white/5 px-4 py-4"
-                >
-                  {line}
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 rounded-[24px] border border-white/10 bg-[#081a38]/80 px-5 py-5 text-sm leading-7 text-white/72">
-              <div className="flex items-center gap-2 font-semibold text-white">
-                <Sparkles className="h-4 w-4 text-[#f5c977]" />
-                {locale === "en" ? "Why this matters" : "Pourquoi c'est utile"}
+          <MotionCard className="glass-panel rounded-[28px] border-white/10 bg-white/[0.05] p-5 text-white sm:rounded-[32px] sm:p-7">
+            <div className="flex items-center justify-between gap-3">
+              <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
+                <Compass className="h-5 w-5" />
               </div>
-              <p className="mt-2">
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-white/65">
+                {locale === "en" ? "Three easy ways in" : "Trois façons de commencer"}
+              </span>
+            </div>
+            <h2 className="mt-5 font-display text-3xl font-semibold leading-tight sm:text-4xl">
+              {locale === "en" ? "What would make this week easier?" : "Qu'est-ce qui aiderait le plus cette semaine?"}
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-white/70 sm:text-base sm:leading-7">
+              {locale === "en"
+                ? "Start with the situation you recognize. You do not need to read everything."
+                : "Partez de la situation qui vous ressemble. Vous n'avez pas besoin de tout lire."}
+            </p>
+
+            <nav
+              aria-label={locale === "en" ? "Resource choices" : "Choix de ressources"}
+              className="mt-6 grid gap-2"
+            >
+              {quickPaths.map(({ href, icon: Icon, label, description }) => (
+                <a
+                  key={href}
+                  href={href}
+                  className="group flex items-center gap-3 rounded-[20px] border border-white/10 bg-white/[0.04] p-3.5 transition hover:border-[#f5c977]/45 hover:bg-white/[0.08]"
+                >
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#f5c977]/12 text-[#f5c977]">
+                    <Icon className="h-4 w-4" />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold text-white">{label}</span>
+                    <span className="mt-0.5 block text-xs leading-5 text-white/60">{description}</span>
+                  </span>
+                  <ArrowRight className="h-4 w-4 shrink-0 text-white/35 transition group-hover:translate-x-0.5 group-hover:text-[#f5c977]" />
+                </a>
+              ))}
+            </nav>
+
+            <div className="mt-5 flex items-start gap-3 rounded-[20px] border border-[#f5c977]/15 bg-[#081a38]/55 px-4 py-3.5 text-sm leading-6 text-white/70">
+              <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+              <p>
                 {locale === "en"
-                  ? "These pages are not generic blog posts. They are written to answer the exact situations families search for right before calling or booking a focused session."
-                  : "Ces pages ne sont pas des billets de blog génériques. Elles répondent à des situations précises que les familles cherchent juste avant d'appeler ou de réserver une séance ciblée."}
+                  ? "A short, useful next step is enough. Come back whenever another question appears."
+                  : "Une petite prochaine étape utile suffit. Revenez dès qu'une autre question se présente."}
               </p>
             </div>
           </MotionCard>
         </section>
 
-        <ResourceGridSection locale={locale} className="pt-20" showHubLink={false} />
-
-        <BlogGridSection
-          locale={locale}
-          className="pt-20"
-          heading={{
-            eyebrow: locale === "en" ? "Research-backed blog" : "Blogue fonde sur la recherche",
-            title:
+        <div id="guides" className="scroll-mt-28">
+          <ResourceGridSection
+            locale={locale}
+            className="pt-16 sm:pt-20"
+            showHubLink={false}
+            heading={{
+              eyebrow: locale === "en" ? "Start with your need" : "Partir de votre besoin",
+              title:
+                locale === "en"
+                  ? "Choose the guide that feels closest to your situation"
+                  : "Choisissez le guide qui ressemble le plus à votre situation",
+            }}
+            description={
               locale === "en"
-                ? "Articles built to reassure parents and attract stronger intent"
-                : "Des articles pensés pour rassurer les parents et attirer des recherches plus fortes",
-          }}
-          description={
-            locale === "en"
-              ? "Some families want advice, but many want proof. These articles connect scientific studies to real parent situations in math, science and homework."
-              : "Certaines familles veulent des conseils, mais beaucoup veulent aussi des preuves. Ces articles relient des études scientifiques à de vraies situations parentales en maths, en sciences et autour des devoirs."
-          }
-        />
+                ? "A few clear starting points for the moments families most often need to sort out."
+                : "Quelques points de départ clairs pour les moments que les familles cherchent le plus souvent à démêler."
+            }
+          />
+        </div>
 
-        <OfferPathwaysSection
-          locale={locale}
-          className="pt-20"
-          heading={{
-            eyebrow: locale === "en" ? "Best pages to push now" : "Pages d'offre a pousser maintenant",
-            title:
+        <div id="articles" className="scroll-mt-28">
+          <BlogGridSection
+            locale={locale}
+            className="pt-16 sm:pt-20"
+            heading={{
+              eyebrow: locale === "en" ? "For a little more clarity" : "Pour y voir un peu plus clair",
+              title:
+                locale === "en"
+                  ? "Clear answers for the questions behind the question"
+                  : "Des réponses claires aux questions derrière la question",
+            }}
+            description={
               locale === "en"
-                ? "The two offer pages that should keep receiving internal links"
-                : "Les deux pages d'offre qui meritent de recevoir le plus de liens internes",
-          }}
-          description={
-            locale === "en"
-              ? "Resource content should not stop at advice. These offer pages are the most natural conversion targets once a family recognizes its situation."
-              : "Les ressources ne doivent pas s'arreter au conseil. Ces pages d'offre sont les cibles de conversion les plus naturelles une fois qu'une famille reconnait sa situation."
-          }
-        />
+                ? "Read at your own pace, then keep only the idea that helps you decide what to do next."
+                : "Lisez à votre rythme, puis gardez seulement l'idée qui vous aide à choisir la suite."
+            }
+          />
+        </div>
+
+        <section id="support" className="scroll-mt-28 pt-16 sm:pt-20">
+          <div className="max-w-3xl">
+            <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
+              {locale === "en" ? "When you want support" : "Quand vous souhaitez être accompagné"}
+            </div>
+            <h2 className="balanced-copy mt-4 font-display text-4xl font-semibold text-white sm:text-5xl">
+              {locale === "en" ? "Choose the rhythm that fits the moment" : "Choisissez le rythme qui convient au moment"}
+            </h2>
+            <p className="mt-4 text-base leading-8 text-white/72 sm:text-lg">
+              {locale === "en"
+                ? "A focused boost for a near deadline, or a regular rhythm to make progress feel steadier."
+                : "Un coup de pouce ciblé avant une échéance, ou un rythme régulier pour avancer avec plus de stabilité."}
+            </p>
+          </div>
+
+          <div className="mt-8 grid gap-4 lg:grid-cols-2">
+            {supportPaths.map(({ icon: Icon, routeKey, badge, title, description, details, cta }) => (
+              <MotionCard
+                key={routeKey}
+                className="glass-panel rounded-[28px] border-white/10 bg-white/[0.04] p-5 text-white sm:rounded-[32px] sm:p-7"
+              >
+                <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <div className="mt-5 text-sm uppercase tracking-[0.2em] text-white/45">{badge}</div>
+                <h3 className="mt-3 font-display text-3xl font-semibold">{title}</h3>
+                <p className="mt-3 text-sm leading-7 text-white/72">{description}</p>
+
+                <ul className="mt-6 grid gap-2">
+                  {details.map((detail) => (
+                    <li
+                      key={detail}
+                      className="flex items-start gap-3 rounded-[18px] border border-white/10 bg-white/[0.04] px-3.5 py-3 text-sm leading-6 text-white/75"
+                    >
+                      <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
+                      {detail}
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  asChild
+                  variant="outline"
+                  className="mt-6 w-full justify-center rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white sm:w-auto"
+                >
+                  <Link to={getLocalizedPath(routeKey, locale)}>
+                    {cta}
+                    <ArrowRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </MotionCard>
+            ))}
+          </div>
+        </section>
       </main>
     </div>
   )

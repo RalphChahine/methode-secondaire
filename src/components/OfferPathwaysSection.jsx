@@ -12,10 +12,10 @@ const iconMap = {
 
 const copyByLocale = {
   fr: {
-    eyebrow: "Formats a choisir",
-    title: "Deux pages d'offre a pousser selon le vrai besoin",
+    eyebrow: "Parcours selon votre situation",
+    title: "Deux repères pour choisir le bon prochain pas",
     description:
-      "Ces deux parcours meritent d'etre visibles partout ou une famille hesite entre un besoin urgent et un vrai suivi semaine apres semaine.",
+      "Ces deux parcours aident une famille à distinguer une urgence d'examen d'un besoin qui se répète et mérite un accompagnement plus continu.",
     cards: [
       {
         icon: "sprint",
@@ -26,7 +26,7 @@ const copyByLocale = {
           "A pousser quand un examen approche, que la revision manque d'ordre et qu'il faut clarifier vite les priorites.",
         bullets: [
           "Tres pertinent avant evaluation ou ministeriel",
-          "Compatible avec une reservation directe si le besoin est deja clair",
+          "Compatible avec une demande de séance si le besoin est déjà clair",
           "Bon pont entre les pages ressources et un vrai lead rapide",
         ],
         cta: "Voir le Sprint examen",
@@ -34,24 +34,24 @@ const copyByLocale = {
       {
         icon: "weekly",
         routeKey: "weeklyFollowUp",
-        badge: "Progression durable",
-        title: "Suivi hebdomadaire",
+        badge: "Une priorité qui revient",
+        title: "Bloc de progression — 10 séances",
         description:
-          "A pousser quand le parent sent que les notions s'accumulent, que le stress revient chaque semaine et qu'un rythme stable devient necessaire.",
+          "À envisager quand les notions s'accumulent ou que le stress revient. Après le jumelage, un rythme hebdomadaire peut être proposé s'il aide vraiment.",
         bullets: [
-          "Ideal pour un cadre plus regulier",
-          "Tres bon choix pour secondaire 4 et 5",
-          "Le meilleur premier pas reste l'appel avant toute reservation",
+          "10 séances de 60 minutes pour consolider la priorité",
+          "Un rythme hebdomadaire reste une option, pas un forfait distinct",
+          "La courte demande permet de confirmer le tuteur et le bon départ",
         ],
-        cta: "Voir le Suivi hebdomadaire",
+        cta: "Voir le bloc de progression",
       },
     ],
   },
   en: {
-    eyebrow: "Offer pathways",
-    title: "Two offer pages worth pushing based on the real need",
+    eyebrow: "Paths by situation",
+    title: "Two guides to the right next step",
     description:
-      "These two paths deserve strong visibility everywhere a family is hesitating between urgent help and steady week-to-week support.",
+      "These two paths help a family distinguish an urgent exam need from a recurring need that could benefit from more continuous support.",
     cards: [
       {
         icon: "sprint",
@@ -62,7 +62,7 @@ const copyByLocale = {
           "Push this page when an exam is close, the review plan feels messy and the family needs fast clarity on what matters most.",
         bullets: [
           "Strong before tests or ministerial exams",
-          "Fits direct booking when the need is already clear",
+          "Fits a session request when the need is already clear",
           "A good bridge from resource content into a fast lead",
         ],
         cta: "See the exam sprint",
@@ -70,16 +70,16 @@ const copyByLocale = {
       {
         icon: "weekly",
         routeKey: "weeklyFollowUp",
-        badge: "Longer-term progress",
-        title: "Weekly follow-up",
+        badge: "A priority that keeps returning",
+        title: "Progress block",
         description:
-          "Push this page when the parent feels the material is piling up, stress returns each week and a stable rhythm is becoming necessary.",
+          "Consider it when material piles up or stress keeps returning. After matching, a weekly rhythm can be suggested if it genuinely helps.",
         bullets: [
-          "Ideal for steadier academic structure",
-          "Especially strong for Secondary 4 and 5",
-          "The best first move remains a phone call before any booking",
+          "10 60-minute sessions to consolidate the priority",
+          "A weekly rhythm is an option, not a separate product",
+          "The short request lets the team confirm the tutor and right start",
         ],
-        cta: "See weekly follow-up",
+        cta: "See the progress block",
       },
     ],
   },
