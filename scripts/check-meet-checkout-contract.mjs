@@ -41,6 +41,13 @@ async function main() {
   expect(packageJson.includes('"test:payments": "node --test test/stripe-checkout.test.mjs"'), "package.json: test:payments command is missing")
   expect(checkoutBuilder.includes("checkout.session.expired") && stripeWebhook.includes("classifyStripeCheckoutEvent"), "Stripe webhook: checkout.session.expired handling is missing")
   expect(crmCode.includes("portal_mark_payment_expired_webhook"), "CRM: payment expiration webhook action is missing")
+  expect(crmCode.includes("Calendar.Events.insert"), "CRM: Google Calendar event insertion is missing")
+  expect(crmCode.includes("conferenceDataVersion: 1"), "CRM: Google Meet conference data version is missing")
+  expect(crmCode.includes("hangoutsMeet"), "CRM: Google Meet conference request is missing")
+  expect(crmCode.includes('sendUpdates: "none"'), "CRM: Meet invitations must wait for a ready link")
+  expect(crmCode.includes('sendUpdates: "all"'), "CRM: Meet invitations are not sent after the link is ready")
+  expect(crmCode.includes("google_meet_url"), "CRM: Google Meet URL persistence is missing")
+  expect(crmCode.includes("processPendingSessionConferences"), "CRM: pending Google Meet conference processing is missing")
 
   if (failures.length > 0) {
     console.error("Meet Checkout contract checks failed:\n")

@@ -1,6 +1,13 @@
 {
   "timeZone": "America/Toronto",
   "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "Calendar",
+        "serviceId": "calendar",
+        "version": "v3"
+      }
+    ]
   },
   "webapp": {
     "access": "ANYONE_ANONYMOUS",

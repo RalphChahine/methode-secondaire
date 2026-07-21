@@ -198,6 +198,10 @@ const SESSION_COLUMNS = [
   "modification_deadline_at",
   "cancellation_notice_hours",
   "credit_reservation_id",
+  "google_meet_url",
+  "calendar_conference_status",
+  "payment_due_at",
+  "stripe_checkout_session_id",
 ];
 
 const STUDENT_COLUMNS = [
@@ -582,8 +586,9 @@ function syncConfirmedSessionsToCalendar() {
     const row = values[rowIndex];
     const status = normalizeValue_(row[columns.session_status]);
     const existingEventId = normalizeValue_(row[columns.google_calendar_event_id]);
+    const conferenceStatus = normalizeValue_(row[columns.calendar_conference_status]);
 
-    if (status !== "confirmed" || existingEventId) {
+    if (status !== "confirmed" || existingEventId || conferenceStatus === "failed") {
       continue;
     }
 
@@ -595,40 +600,120 @@ function syncConfirmedSessionsToCalendar() {
       continue;
     }
 
+    const session = rowToRecord_(row, SESSION_COLUMNS);
     const title = buildCalendarTitle_(row, columns);
-    const options = {
-      description: buildCalendarDescription_(row, columns),
-      location: normalizeValue_(row[columns.location]),
-      sendInvites: true,
-    };
-
-    const guests = [row[columns.tutor_calendar_email], row[columns.parent_email]]
-      .map(normalizeValue_)
-      .filter(Boolean)
-      .join(",");
-
-    if (guests) {
-      options.guests = guests;
-    }
 
     try {
-      const calendar = resolveCalendarForTutor_(spreadsheet, row[columns.tutor_id]);
-      if (!calendar) {
-        errors.push(`Row ${rowIndex + 1}: tutor calendar is not available to the team account`);
+      if (normalizeValue_(session.format) === "online") {
+        if (!normalizeValue_(session.tutor_id) || !normalizeEmail_(session.tutor_calendar_email) ||
+            !normalizeEmail_(session.parent_email)) {
+          throw new Error("les participants de la seance en ligne sont incomplets");
+        }
+        const calendarId = resolveTutorCalendarId_(spreadsheet, session);
+        if (!calendarId) {
+          throw new Error("le calendrier du tuteur n'est pas configure");
+        }
+
+        const event = Calendar.Events.insert(buildTutorHostedMeetEvent_(session), calendarId, {
+          conferenceDataVersion: 1,
+          sendUpdates: "none",
+        });
+        writeRecord_(sheet, SESSION_COLUMNS, rowIndex + 1, {
+          ...session,
+          google_calendar_event_id: normalizeValue_(event.id),
+          session_status: "calendar_created",
+          calendar_conference_status: "pending",
+          updated_at: new Date().toISOString(),
+        });
+        created += 1;
         continue;
       }
+
+      const calendar = resolveCalendarForTutor_(spreadsheet, session.tutor_id);
+      if (!calendar) {
+        throw new Error("le calendrier du tuteur n'est pas disponible a l'equipe");
+      }
+      const options = {
+        description: buildCalendarDescription_(row, columns),
+        location: normalizeValue_(session.location),
+        sendInvites: true,
+      };
+      const guests = [session.tutor_calendar_email, session.parent_email]
+        .map(normalizeValue_)
+        .filter(Boolean)
+        .join(",");
+      if (guests) options.guests = guests;
       const event = calendar.createEvent(title, startAt, endAt, options);
-      sheet.getRange(rowIndex + 1, columns.google_calendar_event_id + 1).setValue(event.getId());
-      sheet.getRange(rowIndex + 1, columns.session_status + 1).setValue("calendar_created");
-      sheet.getRange(rowIndex + 1, columns.calendar_invites_sent_at + 1).setValue(new Date().toISOString());
-      sheet.getRange(rowIndex + 1, columns.updated_at + 1).setValue(new Date().toISOString());
+      writeRecord_(sheet, SESSION_COLUMNS, rowIndex + 1, {
+        ...session,
+        google_calendar_event_id: event.getId(),
+        session_status: "calendar_created",
+        calendar_conference_status: "not_required",
+        calendar_invites_sent_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
       created += 1;
     } catch (error) {
+      if (normalizeValue_(session.format) === "online") {
+        markSessionConferenceFailed_(spreadsheet, sheet, rowIndex + 1, session, String(error));
+      }
       errors.push(`Row ${rowIndex + 1}: ${String(error)}`);
     }
   }
 
   return { ok: errors.length === 0, created, errors };
+}
+
+function processPendingSessionConferences() {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  ensureCrmReady_(spreadsheet);
+  const sheet = getOrCreateSheet_(spreadsheet, CRM_SESSION_SHEET_NAME);
+  const pendingSessions = getSheetRecordsFromSheet_(sheet, SESSION_COLUMNS)
+    .filter((record) => normalizeValue_(record.data.format) === "online")
+    .filter((record) => normalizeValue_(record.data.calendar_conference_status) === "pending")
+    .filter((record) => normalizeValue_(record.data.google_calendar_event_id))
+    .filter((record) => !["cancelled", "no_show"].includes(normalizeValue_(record.data.session_status)));
+  const errors = [];
+  let ready = 0;
+
+  pendingSessions.forEach((record) => {
+    const session = record.data;
+    const calendarId = resolveTutorCalendarId_(spreadsheet, session);
+    const eventId = normalizeValue_(session.google_calendar_event_id);
+    try {
+      if (!calendarId) {
+        throw new Error("le calendrier du tuteur n'est pas configure");
+      }
+      const event = Calendar.Events.get(calendarId, eventId, { conferenceDataVersion: 1 });
+      const meetUrl = getGoogleMeetUrl_(event);
+      if (!meetUrl) {
+        if (isTerminalConferenceFailure_(event)) {
+          throw new Error("la conference Google Meet n'a pas pu etre creee");
+        }
+        return;
+      }
+
+      Calendar.Events.patch({
+        description: appendMeetUrlToCalendarDescription_(event.description, meetUrl),
+      }, calendarId, eventId, {
+        conferenceDataVersion: 1,
+        sendUpdates: "all",
+      });
+      writeRecord_(sheet, SESSION_COLUMNS, record.rowNumber, {
+        ...session,
+        google_meet_url: meetUrl,
+        calendar_conference_status: "ready",
+        calendar_invites_sent_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      });
+      ready += 1;
+    } catch (error) {
+      markSessionConferenceFailed_(spreadsheet, sheet, record.rowNumber, session, String(error));
+      errors.push(`${session.session_id || `Row ${record.rowNumber}`}: ${String(error)}`);
+    }
+  });
+
+  return { ok: errors.length === 0, ready, pending: pendingSessions.length, errors };
 }
 
 function createPaymentRowsForScheduledSessions() {
@@ -6264,6 +6349,7 @@ function runPortalAutomation() {
     payment_simulations: normalizeDemoPaymentRecords_(spreadsheet),
     credit_settlements: settleCompletedPlanCreditReservations_(spreadsheet),
     calendar: syncConfirmedSessionsToCalendar(),
+    conferences: processPendingSessionConferences(),
     payments: createPaymentRowsForScheduledSessions(),
     parent_updates: sendPendingParentUpdates_(spreadsheet),
     message_sla: sendOverdueMessageSlaAlerts_(spreadsheet),
@@ -6528,6 +6614,7 @@ function escapeHtml_(value) {
 function finalizeConfirmedPortalSession_(spreadsheet) {
   return {
     calendar: syncConfirmedSessionsToCalendar(),
+    conferences: processPendingSessionConferences(),
     payments: createPaymentRowsForScheduledSessions(),
   };
 }
@@ -7251,6 +7338,94 @@ function buildCalendarTitle_(row, columns) {
   const tutorName = normalizeValue_(row[columns.tutor_name]) || "tuteur";
 
   return `Méthode Secondaire - ${subject} - ${tutorName}`;
+}
+
+function rowToRecord_(row, columns) {
+  return columns.reduce((record, column, position) => {
+    record[column] = serializeValue_(row[position]);
+    return record;
+  }, {});
+}
+
+function resolveTutorCalendarId_(spreadsheet, session) {
+  const tutor = getSheetRecords_(spreadsheet, CRM_TUTOR_SHEET_NAME, TUTOR_COLUMNS)
+    .find((record) => normalizeValue_(record.tutor_id) === normalizeValue_(session.tutor_id));
+  return normalizeValue_(tutor?.calendar_id) || normalizeEmail_(tutor?.calendar_email) ||
+    normalizeEmail_(session.tutor_calendar_email);
+}
+
+function buildTutorHostedMeetEvent_(session) {
+  const attendees = [session.tutor_calendar_email, session.parent_email]
+    .map(normalizeEmail_)
+    .filter(Boolean)
+    .map((email) => ({ email }));
+  return {
+    summary: `Méthode Secondaire - ${normalizeValue_(session.student_level_subject) || "Tutorat"} - ${normalizeValue_(session.tutor_name) || "tuteur"}`,
+    description: buildCalendarDescription_(SESSION_COLUMNS.map((column) => session[column]), indexColumns_(SESSION_COLUMNS)),
+    location: normalizeValue_(session.location),
+    start: {
+      dateTime: normalizeValue_(session.start_at),
+      timeZone: normalizeValue_(session.timezone) || "America/Toronto",
+    },
+    end: {
+      dateTime: normalizeValue_(session.end_at),
+      timeZone: normalizeValue_(session.timezone) || "America/Toronto",
+    },
+    attendees,
+    conferenceData: {
+      createRequest: {
+        requestId: `meet-${normalizeValue_(session.session_id)}`,
+        conferenceSolutionKey: { type: "hangoutsMeet" },
+      },
+    },
+  };
+}
+
+function getGoogleMeetUrl_(event) {
+  const entryPoint = (event?.conferenceData?.entryPoints || [])
+    .find((entry) => normalizeValue_(entry.entryPointType) === "video" && normalizeValue_(entry.uri));
+  return normalizeValue_(entryPoint?.uri) || normalizeValue_(event?.hangoutLink);
+}
+
+function isTerminalConferenceFailure_(event) {
+  const statusCode = normalizeValue_(event?.conferenceData?.createRequest?.status?.statusCode).toLowerCase();
+  if (["failure", "failed"].includes(statusCode)) return true;
+  return Boolean(event?.conferenceData?.conferenceSolution && !getGoogleMeetUrl_(event));
+}
+
+function appendMeetUrlToCalendarDescription_(description, meetUrl) {
+  const normalizedDescription = normalizeValue_(description);
+  if (normalizedDescription.includes(meetUrl)) return normalizedDescription;
+  return [normalizedDescription, `Google Meet: ${meetUrl}`].filter(Boolean).join("\n\n");
+}
+
+function markSessionConferenceFailed_(spreadsheet, sheet, rowNumber, session, errorMessage) {
+  const alreadyFailed = normalizeValue_(session.calendar_conference_status) === "failed";
+  const calendarId = resolveTutorCalendarId_(spreadsheet, session);
+  const eventId = normalizeValue_(session.google_calendar_event_id);
+  if (calendarId && eventId) {
+    try {
+      Calendar.Events.remove(calendarId, eventId, { sendUpdates: "none" });
+    } catch (error) {
+      // Keep the CRM failure visible even when a partially-created event cannot be removed.
+    }
+  }
+  writeRecord_(sheet, SESSION_COLUMNS, rowNumber, {
+    ...session,
+    google_meet_url: "",
+    calendar_conference_status: "failed",
+    updated_at: new Date().toISOString(),
+  });
+  if (!alreadyFailed) {
+    appendPortalRequestRecord_(spreadsheet, {
+      role: "operator",
+      email: "",
+      related_id: normalizeValue_(session.session_id),
+      request_type: "technical_help",
+      subject: `Google Meet a verifier - ${normalizeValue_(session.tutor_name) || "tuteur"}`,
+      message: `Le calendrier du tuteur ${normalizeValue_(session.tutor_name) || normalizeValue_(session.tutor_id) || "non assigne"} a empeche la creation du lien Google Meet pour la seance ${normalizeValue_(session.session_id)}. Probleme: ${normalizeValue_(errorMessage)}`,
+    });
+  }
 }
 
 function resolveCalendarForTutor_(spreadsheet, tutorId) {
