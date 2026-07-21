@@ -13,6 +13,7 @@ import MotionCard from "@/components/MotionCard"
 import { Button } from "@/components/ui/button"
 import { BOOKING_URL, BOOKING_URL_EN } from "@/config/booking"
 import { getLocalizedPath } from "@/lib/i18n"
+import { getOffer } from "@/lib/pricing"
 import { siteConfig } from "@/lib/seo"
 
 const iconMap = {
@@ -22,6 +23,22 @@ const iconMap = {
   first: Phone,
   early: Clock3,
   visible: LineChart,
+}
+
+function getOfferDetails(offerCode, locale) {
+  const offer = getOffer(offerCode)
+  if (locale === "en") {
+    return [
+      `${offer.sessionCount} 60-minute sessions · $${offer.totalPriceCad} total`,
+      `$${offer.perSessionPriceCad} per session`,
+      "Cadence is confirmed after matching; no automatic renewal.",
+    ]
+  }
+  return [
+    `${offer.sessionCount} séances de 60 minutes · ${offer.totalPriceCad} $ au total`,
+    `${offer.perSessionPriceCad.toFixed(2).replace(".", ",")} $ par séance`,
+    "La cadence est confirmée après le jumelage; aucun renouvellement automatique.",
+  ]
 }
 
 const copyByLocale = {
@@ -34,6 +51,7 @@ const copyByLocale = {
       cards: [
         {
           icon: "sprint",
+          offerCode: "targeted_session",
           title: "Séance ciblée",
           subtitle: "Pour une priorité concrète à travailler.",
           action: "book",
@@ -46,6 +64,7 @@ const copyByLocale = {
         },
         {
           icon: "weekly",
+          offerCode: "momentum_block",
           title: "Bloc d'élan",
           subtitle: "Pour reprendre l'élan pendant environ un mois.",
           action: "book",
@@ -59,10 +78,11 @@ const copyByLocale = {
         },
         {
           icon: "reset",
+          offerCode: "progression_block",
           title: "Bloc de progression",
           subtitle: "Pour une difficulté récurrente ou une structure scolaire durable.",
           action: "book",
-          cta: "Demander une s\u00E9ance cibl\u00E9e",
+          cta: "Demander le bloc de progression",
           bullets: [
             "Bon pour un rattrapage propre",
             "Permet de retrouver un cap clair",
@@ -118,6 +138,7 @@ const copyByLocale = {
       cards: [
         {
           icon: "sprint",
+          offerCode: "targeted_session",
           title: "Targeted session",
           subtitle: "For one concrete priority to work on.",
           action: "book",
@@ -130,6 +151,7 @@ const copyByLocale = {
         },
         {
           icon: "weekly",
+          offerCode: "momentum_block",
           title: "Momentum block",
           subtitle: "To regain momentum over roughly one month.",
           action: "book",
@@ -143,6 +165,7 @@ const copyByLocale = {
         },
         {
           icon: "reset",
+          offerCode: "progression_block",
           title: "Progress block",
           subtitle: "For a recurring difficulty or lasting academic structure.",
           action: "book",
@@ -223,7 +246,7 @@ export default function GrowthProgramSection({ locale = "fr", className = "pt-20
 
           return (
             <MotionCard
-              key={card.title}
+              key={card.offerCode}
               className="rounded-[30px] border-white/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(8,26,56,0.88))] p-7 text-white"
             >
               <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
@@ -233,7 +256,7 @@ export default function GrowthProgramSection({ locale = "fr", className = "pt-20
               <p className="mt-3 text-sm leading-7 text-white/72">{card.subtitle}</p>
 
               <div className="mt-6 space-y-3 text-sm text-white/80">
-                {card.bullets.map((bullet) => (
+                {getOfferDetails(card.offerCode, locale).map((bullet) => (
                   <div key={bullet} className="flex items-start gap-3 rounded-[22px] border border-white/10 bg-white/5 px-4 py-4">
                     <Check className="mt-0.5 h-4 w-4 shrink-0 text-[#f5c977]" />
                     {bullet}
@@ -241,7 +264,18 @@ export default function GrowthProgramSection({ locale = "fr", className = "pt-20
                 ))}
               </div>
 
-              {card.routeKey ? (
+              {card.offerCode ? (
+                <Button
+                  asChild
+                  variant="outline"
+                  className="mt-6 rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                >
+                  <a href={`${requestUrl}?offer=${card.offerCode}`}>
+                    {card.cta}
+                    <CalendarDays className="h-4 w-4" />
+                  </a>
+                </Button>
+              ) : card.routeKey ? (
                 <Button
                   asChild
                   variant="outline"

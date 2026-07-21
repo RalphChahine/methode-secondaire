@@ -101,6 +101,7 @@ export default function ResourcesHub() {
       ? [
           {
             icon: Target,
+            offerCode: "targeted_session",
             routeKey: "request",
             badge: "One concrete priority",
             title: "Targeted session",
@@ -114,6 +115,7 @@ export default function ResourcesHub() {
           },
           {
             icon: LineChart,
+            offerCode: "momentum_block",
             routeKey: "request",
             badge: "Regain momentum",
             title: "Momentum block",
@@ -127,6 +129,7 @@ export default function ResourcesHub() {
           },
           {
             icon: LineChart,
+            offerCode: "progression_block",
             routeKey: "weeklyFollowUp",
             badge: "A recurring difficulty",
             title: "Progress block",
@@ -138,6 +141,7 @@ export default function ResourcesHub() {
       : [
           {
             icon: Target,
+            offerCode: "targeted_session",
             routeKey: "request",
             badge: "Une priorité concrète",
             title: "Séance ciblée",
@@ -151,6 +155,7 @@ export default function ResourcesHub() {
           },
           {
             icon: LineChart,
+            offerCode: "momentum_block",
             routeKey: "request",
             badge: "Reprendre l'élan",
             title: "Bloc d'élan",
@@ -164,6 +169,7 @@ export default function ResourcesHub() {
           },
           {
             icon: LineChart,
+            offerCode: "progression_block",
             routeKey: "weeklyFollowUp",
             badge: "Une difficulté qui revient",
             title: "Bloc de progression",
@@ -353,9 +359,9 @@ export default function ResourcesHub() {
           </div>
 
           <div className="mt-8 grid gap-4 lg:grid-cols-2">
-            {supportPaths.map(({ icon: Icon, routeKey, badge, title, description, details, cta }) => (
+            {supportPaths.map(({ icon: Icon, offerCode, badge, title, description, details, cta }) => (
               <MotionCard
-                key={routeKey}
+                key={offerCode}
                 className="glass-panel rounded-[28px] border-white/10 bg-white/[0.04] p-5 text-white sm:rounded-[32px] sm:p-7"
               >
                 <div className="inline-flex rounded-2xl bg-[#f5c977] p-3 text-[#071631]">
@@ -382,7 +388,7 @@ export default function ResourcesHub() {
                   variant="outline"
                   className="mt-6 w-full justify-center rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white sm:w-auto"
                 >
-                  <Link to={getLocalizedPath(routeKey, locale)}>
+                  <Link to={`${getLocalizedPath("request", locale)}?offer=${offerCode}`}>
                     {cta}
                     <ArrowRight className="h-4 w-4" />
                   </Link>

@@ -95,5 +95,16 @@ assert.match(diagnostic, /requestedOffer: isProgressionBlock \? "progression_blo
   assert.match(source, /Bloc de progression|Progress block/)
   assert.doesNotMatch(source, /Sprint examen|exam sprint/i)
 })
+assert.match(growthProgram, /offerCode: "momentum_block"/)
+assert.match(growthProgram, /offerCode: "progression_block"/)
+assert.match(growthProgram, /getOffer\(offerCode\)/)
+assert.match(growthProgram, /offer\.sessionCount.*offer\.totalPriceCad/)
+assert.match(growthProgram, /offer\.perSessionPriceCad/)
+assert.match(growthProgram, /\?offer=\$\{card.offerCode\}/)
+;["targeted_session", "momentum_block", "progression_block"].forEach((code) => {
+  assert.match(resourcesHub, new RegExp(`offerCode: "${code}"`))
+})
+assert.match(resourcesHub, /key=\{offerCode\}/)
+assert.match(resourcesHub, /\?offer=\$\{offerCode\}/)
 
 console.log("Pricing package contract passed.")
