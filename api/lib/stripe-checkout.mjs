@@ -9,10 +9,13 @@ export function validateCheckoutInput(input) {
   const offer = normalizeString(input?.offer)
   const successUrl = normalizeString(input?.success_url)
   const cancelUrl = normalizeString(input?.cancel_url)
-  const amountCents = Math.round(Number(input?.amount_cad) * 100)
+  const amountCad = Number(input?.amount_cad)
+  const exactAmountCents = amountCad * 100
+  const amountCents = Math.round(exactAmountCents)
+  const hasFractionalCent = !Number.isFinite(exactAmountCents) || Math.abs(exactAmountCents - amountCents) > 1e-8
 
   if (!paymentId || !email || !offer || !successUrl || !cancelUrl ||
-      !Number.isInteger(amountCents) || amountCents < MIN_AMOUNT_CENTS || amountCents > MAX_AMOUNT_CENTS) {
+      hasFractionalCent || !Number.isInteger(amountCents) || amountCents < MIN_AMOUNT_CENTS || amountCents > MAX_AMOUNT_CENTS) {
     throw new Error("PAYMENT_CHECKOUT_DETAILS_REQUIRED")
   }
 

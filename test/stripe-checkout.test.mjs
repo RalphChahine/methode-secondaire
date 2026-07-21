@@ -38,6 +38,20 @@ test("rejects a Checkout amount below one CAD", () => {
   )
 })
 
+test("rejects a Checkout amount with a fractional cent", () => {
+  assert.throws(
+    () => createCheckoutRequest({
+      payment_id: "PAY-001",
+      amount_cad: 65.009,
+      email: "parent@example.com",
+      offer: "Séance ciblée",
+      success_url: "https://example.com/success",
+      cancel_url: "https://example.com/cancel",
+    }, new Date()),
+    { message: "PAYMENT_CHECKOUT_DETAILS_REQUIRED" },
+  )
+})
+
 test("creates a Stripe Checkout Session only for an authenticated internal POST", async () => {
   const originalFetch = globalThis.fetch
   const response = makeResponse()
@@ -88,7 +102,6 @@ test("creates a Stripe Checkout Session only for an authenticated internal POST"
   assert.match(options.body, /client_reference_id=PAY-001/)
   assert.match(options.body, /line_items%5B0%5D%5Bprice_data%5D%5Bunit_amount%5D=6500/)
   assert.deepEqual(response.payload, {
-    ok: true,
     checkout_session_id: "cs_test_123",
     checkout_url: "https://checkout.stripe.com/c/pay/cs_test_123",
     expires_at: "2026-07-21T17:00:00.000Z",
@@ -114,6 +127,35 @@ test("rejects unauthenticated Checkout requests without calling Stripe", async (
   assert.deepEqual(response.payload, { ok: false, code: "UNAUTHORIZED_PAYMENT_SESSION" })
 })
 
+test("rejects non-POST Checkout requests", async () => {
+  const response = makeResponse()
+
+  await createCheckoutSession({ method: "GET" }, response)
+
+  assert.equal(response.statusCode, 405)
+  assert.equal(response.headers.Allow, "POST")
+  assert.deepEqual(response.payload, { ok: false, code: "METHOD_NOT_ALLOWED" })
+})
+
+test("rejects Checkout requests when server configuration is missing", async () => {
+  const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET
+  const originalStripeSecret = process.env.STRIPE_SECRET_KEY
+  const response = makeResponse()
+
+  delete process.env.PAYMENT_SESSION_SECRET
+  delete process.env.STRIPE_SECRET_KEY
+
+  try {
+    await createCheckoutSession({ method: "POST", body: {} }, response)
+  } finally {
+    restoreEnvironment("PAYMENT_SESSION_SECRET", originalPaymentSecret)
+    restoreEnvironment("STRIPE_SECRET_KEY", originalStripeSecret)
+  }
+
+  assert.equal(response.statusCode, 503)
+  assert.deepEqual(response.payload, { ok: false, code: "PAYMENT_CHECKOUT_NOT_CONFIGURED" })
+})
+
 test("keeps the Checkout boundary static contract green", () => {
   const result = spawnSync(process.execPath, ["scripts/check-meet-checkout-contract.mjs"], {
     cwd: process.cwd(),
@@ -125,6 +167,7 @@ test("keeps the Checkout boundary static contract green", () => {
 
 function makeResponse() {
   return {
+    headers: {},
     statusCode: 200,
     status(code) {
       this.statusCode = code
@@ -134,7 +177,9 @@ function makeResponse() {
       this.payload = payload
       return this
     },
-    setHeader() {},
+    setHeader(name, value) {
+      this.headers[name] = value
+    },
   }
 }
 

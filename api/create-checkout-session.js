@@ -63,7 +63,6 @@ export default async function handler(req, res) {
   }
 
   return res.status(200).json({
-    ok: true,
     checkout_session_id: checkoutSessionId,
     checkout_url: checkoutUrl,
     expires_at: new Date(expirySeconds * 1000).toISOString(),
