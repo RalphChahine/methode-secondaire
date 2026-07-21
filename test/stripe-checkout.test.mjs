@@ -99,9 +99,11 @@ test("creates a Stripe Checkout Session only for an authenticated internal POST"
   assert.equal(stripeUrl, "https://api.stripe.com/v1/checkout/sessions")
   assert.equal(options.method, "POST")
   assert.equal(options.headers.Authorization, `Basic ${Buffer.from("sk_test_secret:").toString("base64")}`)
+  assert.equal(options.headers["Idempotency-Key"], "PAY-001")
   assert.match(options.body, /client_reference_id=PAY-001/)
   assert.match(options.body, /line_items%5B0%5D%5Bprice_data%5D%5Bunit_amount%5D=6500/)
   assert.deepEqual(response.payload, {
+    ok: true,
     checkout_session_id: "cs_test_123",
     checkout_url: "https://checkout.stripe.com/c/pay/cs_test_123",
     expires_at: "2026-07-21T17:00:00.000Z",
@@ -125,6 +127,51 @@ test("rejects unauthenticated Checkout requests without calling Stripe", async (
 
   assert.equal(response.statusCode, 401)
   assert.deepEqual(response.payload, { ok: false, code: "UNAUTHORIZED_PAYMENT_SESSION" })
+})
+
+test("uses a distinct validated Checkout reference for a later reissue", async () => {
+  const originalFetch = globalThis.fetch
+  const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET
+  const originalStripeSecret = process.env.STRIPE_SECRET_KEY
+  const response = makeResponse()
+  const fetchCalls = []
+
+  process.env.PAYMENT_SESSION_SECRET = "internal-secret"
+  process.env.STRIPE_SECRET_KEY = "sk_test_secret"
+  globalThis.fetch = async (...args) => {
+    fetchCalls.push(args)
+    return {
+      ok: true,
+      json: async () => ({
+        id: "cs_test_reissue",
+        url: "https://checkout.stripe.com/c/pay/cs_test_reissue",
+        expires_at: 1784653200,
+      }),
+    }
+  }
+
+  try {
+    await createCheckoutSession({
+      method: "POST",
+      body: {
+        payment_session_secret: "internal-secret",
+        checkout_reference: "PAY-001-reissue-2",
+        payment_id: "PAY-001",
+        amount_cad: 65,
+        email: "parent@example.com",
+        offer: "Séance ciblée",
+        success_url: "https://example.com/success",
+        cancel_url: "https://example.com/cancel",
+      },
+    }, response)
+  } finally {
+    globalThis.fetch = originalFetch
+    restoreEnvironment("PAYMENT_SESSION_SECRET", originalPaymentSecret)
+    restoreEnvironment("STRIPE_SECRET_KEY", originalStripeSecret)
+  }
+
+  assert.equal(fetchCalls.length, 1)
+  assert.equal(fetchCalls[0][1].headers["Idempotency-Key"], "PAY-001-reissue-2")
 })
 
 test("rejects non-POST Checkout requests", async () => {

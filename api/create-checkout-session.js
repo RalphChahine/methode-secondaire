@@ -29,8 +29,10 @@ export default async function handler(req, res) {
   }
 
   let checkoutRequest
+  let checkoutReference
   try {
     checkoutRequest = createCheckoutRequest(input, new Date())
+    checkoutReference = getCheckoutReference(input?.checkout_reference, checkoutRequest.client_reference_id)
   } catch (error) {
     return res.status(400).json({ ok: false, code: error?.message || "PAYMENT_CHECKOUT_DETAILS_REQUIRED" })
   }
@@ -42,6 +44,7 @@ export default async function handler(req, res) {
       headers: {
         Authorization: `Basic ${Buffer.from(`${stripeSecretKey}:`, "utf8").toString("base64")}`,
         "Content-Type": "application/x-www-form-urlencoded",
+        "Idempotency-Key": checkoutReference,
       },
       body: flattenFormParameters(checkoutRequest).toString(),
     })
@@ -63,6 +66,7 @@ export default async function handler(req, res) {
   }
 
   return res.status(200).json({
+    ok: true,
     checkout_session_id: checkoutSessionId,
     checkout_url: checkoutUrl,
     expires_at: new Date(expirySeconds * 1000).toISOString(),
@@ -73,6 +77,19 @@ function safeEqual(value, expected) {
   const left = crypto.createHash("sha256").update(value, "utf8").digest()
   const right = crypto.createHash("sha256").update(expected, "utf8").digest()
   return crypto.timingSafeEqual(left, right)
+}
+
+function getCheckoutReference(value, paymentId) {
+  if (value === undefined || value === null) {
+    return paymentId
+  }
+
+  const checkoutReference = normalizeString(value)
+  if (!checkoutReference || checkoutReference.length > 255 || /[\u0000-\u001F\u007F]/.test(checkoutReference)) {
+    throw new Error("PAYMENT_CHECKOUT_DETAILS_REQUIRED")
+  }
+
+  return checkoutReference
 }
 
 function flattenFormParameters(input) {
