@@ -61,7 +61,7 @@ Le formulaire confirme la demande uniquement après que la route `/api/lead-crm`
 - `Session Notes`: notes après séance et résumés parent.
 - `Session Notes Queue`: notes à envoyer ou à traiter.
 - `Payments`: paiements parents et payouts tuteurs.
-- `Payment Links`: liens Stripe/Interac par offre.
+- `Payment Links`: schéma historique de compatibilité, conservé en lecture seule. Ne pas y créer, coller ou gérer une URL de paiement; les paiements actifs utilisent le code d'offre canonique et un Stripe Checkout hébergé unique émis par le serveur.
 - `Payment Queue`: paiements à régler.
 - `Plans`: catalogue des offres actives et politique de 72 h.
 - `Plan Enrollments`: Séance ciblée et blocs parent/élève; pour un bloc, le jumelage et un créneau réaliste doivent être confirmés avant la demande de paiement.
@@ -81,6 +81,8 @@ Le formulaire confirme la demande uniquement après que la route `/api/lead-crm`
 `setupCrm` initialise aussi le catalogue premium : une séance ciblée à 65 $ pour 60 min, un Bloc d'élan de 4 séances à 250 $ en un paiement, et un Bloc de progression de 10 séances à 600 $ en deux paiements de 300 $. Après paiement vérifié, le workflow accorde respectivement 4 crédits pour le Bloc d'élan, ou 5 crédits après chaque versement du Bloc de progression dans `Credit Ledger`; aucun débit ni renouvellement automatique n'est créé. Le rythme hebdomadaire ou aux deux semaines est choisi après le jumelage, ce n'est pas un forfait distinct. Avec 72 h de préavis ou plus, le report est garanti et aucun crédit n'est perdu automatiquement.
 
 Les nouvelles demandes du site envoient `progression_block` pour ce bloc. Les valeurs `progression_block_10` et `weekly_follow_up_10` sont uniquement des alias historiques acceptés puis normalisés dans `Parent Leads`; les identifiants de plan et de séance existants restent inchangés.
+
+Pour activer les paiements, utiliser les montants canoniques des offres et le [runbook Stripe Checkout](../stripe-webhook.md). `Payment Links` reste un onglet de lecture seule pour les lignes historiques; aucun nouveau paiement ne lit une URL de cet onglet.
 
 `setupCrm` vérifie le préfixe exact des en-têtes structurés et ajoute seulement les colonnes manquantes à droite. En cas d'en-tête incompatible, la migration s'arrête avec `CRM_SCHEMA_HEADER_MISMATCH` sans réécrire la ligne existante.
 

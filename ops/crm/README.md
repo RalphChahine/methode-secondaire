@@ -28,7 +28,7 @@ Le workflow horaire, prix, paiement et crédits est détaillé dans `scheduling-
 
 Pour les nouvelles demandes, les codes d'offre CRM sont `targeted_session`, `momentum_block` et `progression_block`. Les codes historiques connus, dont `progression_block_10` et `weekly_follow_up_10`, restent acceptés et sont normalisés vers le code public correspondant; `weekly_follow_up` reste un type de séance interne et n'est pas un produit.
 
-Avant toute mise en production du catalogue, lancer `setupCrm` dans une copie du classeur et vérifier que `Plans` contient exactement trois plans actifs : `PLAN-FIRST-60`, `PLAN-PACK4-250` et `PLAN-PACK10-600`. Vérifier aussi qu'une nouvelle ligne `Payment Links` accepte les trois codes de paiement canoniques.
+Avant toute mise en production du catalogue, lancer `setupCrm` dans une copie du classeur et vérifier que `Plans` contient exactement trois plans actifs : `PLAN-FIRST-60`, `PLAN-PACK4-250` et `PLAN-PACK10-600`. Les paiements actifs utilisent les codes d'offre canoniques, le montant de la séance ou de l'offre, puis un Stripe Checkout hébergé unique émis par le serveur; suivre le [runbook Stripe Checkout](stripe-webhook.md). L'onglet `Payment Links` et son modèle sont seulement des données de compatibilité historiques, en lecture seule : ne pas y ajouter, modifier ou réutiliser une URL de paiement.
 
 ## Branchement site
 

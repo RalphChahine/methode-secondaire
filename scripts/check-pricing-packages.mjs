@@ -38,7 +38,7 @@ expected.forEach(([code, planId, sessionCount, totalPriceCad, perSessionPriceCad
 })
 assert.equal(getOfferByPlanId("PLAN-UNKNOWN"), null)
 
-const expectedPaymentLinkOfferCodes = [
+const expectedCheckoutPaymentOfferCodes = [
   "first_session",
   "weekly_follow_up",
   "exam_sprint",
@@ -48,7 +48,7 @@ const expectedPaymentLinkOfferCodes = [
   "progression_block_payment_1",
   "progression_block_payment_2",
 ]
-assert.deepEqual(paymentLinkOfferCodes, expectedPaymentLinkOfferCodes)
+assert.deepEqual(paymentLinkOfferCodes, expectedCheckoutPaymentOfferCodes)
 assert.equal(Object.isFrozen(paymentLinkOfferCodes), true)
 ;["first_session", "weekly_follow_up", "exam_sprint", "catch_up", "one_time"].forEach((code) => {
   assert.equal(getPaymentLinkDefaultAmountCad(code), 65)
@@ -217,9 +217,37 @@ const extractStringArray = (source, constantName) => {
 }
 const crmSessionOfferCodes = extractStringArray(crmSource, "SESSION_TYPE_OPTIONS")
 const crmPackageOfferCodes = extractStringArray(crmSource, "PACKAGE_PAYMENT_OFFER_CODES")
-assert.deepEqual([...crmSessionOfferCodes, ...crmPackageOfferCodes], expectedPaymentLinkOfferCodes)
-assert.match(crmSource, /const PAYMENT_LINK_OFFER_OPTIONS = \[\s*\.\.\.SESSION_TYPE_OPTIONS,\s*\.\.\.PACKAGE_PAYMENT_OFFER_CODES,\s*\];/)
+assert.deepEqual(crmSessionOfferCodes, expectedCheckoutPaymentOfferCodes.slice(0, 5))
+assert.deepEqual(crmPackageOfferCodes, expectedCheckoutPaymentOfferCodes.slice(5))
+assert.match(crmSource, /const PUBLIC_OFFER_CODES = \["targeted_session", "momentum_block", "progression_block"\];/)
+assert.match(crmSource, /const DEFAULT_SESSION_PRICE_CAD = \{\s*first_session: "65",\s*weekly_follow_up: "65",\s*exam_sprint: "65",\s*catch_up: "65",\s*one_time: "65",\s*\};/)
+const sessionPricingSource = crmSource.match(/function resolveSessionPaymentDetails_\([\s\S]+?\n}\n/)?.[0] || ""
+assert.match(sessionPricingSource, /amount_cad: directAmount \|\| defaultAmount/)
+assert.doesNotMatch(sessionPricingSource, /payment_link|CRM_PAYMENT_LINK_SHEET_NAME/,
+  "New session pricing must not read the historical Payment Links schema")
+assert.match(crmSource, /function issueCheckoutForPayment_\([\s\S]+?const amountCad = Number\(paymentRecord && paymentRecord\.amount_cad\);/)
+assert.match(crmSource, /payment_method: "stripe_checkout"/)
+assert.match(crmSource, /const CRM_PAYMENT_LINK_SHEET_NAME = "Payment Links";/,
+  "Historical Payment Links schema must remain provisioned for existing records")
 const parentActivitySource = crmSource.match(/function buildParentActivityTimeline_\([\s\S]+?\n}\n/)?.[0] || ""
 assert.doesNotMatch(parentActivitySource, /payment\.offer/)
+
+const [crmReadme, appsScriptReadme, paymentLinksTemplate] = await Promise.all([
+  fs.readFile(new URL("../ops/crm/README.md", import.meta.url), "utf8"),
+  fs.readFile(new URL("../ops/crm/google-apps-script/README.md", import.meta.url), "utf8"),
+  fs.readFile(new URL("../ops/crm/payment-links-template.csv", import.meta.url), "utf8"),
+])
+;[crmReadme, appsScriptReadme, paymentLinksTemplate].forEach((source) => {
+  assert.match(source, /read-only|lecture seule/i,
+    "Legacy Payment Links guidance must be explicitly historical and read-only")
+  assert.match(source, /server-issued hosted Stripe Checkout|Stripe Checkout hébergé unique émis par le serveur/i,
+    "Active payment guidance must name server-issued hosted Stripe Checkout")
+})
+assert.doesNotMatch(paymentLinksTemplate, /Create in Stripe Payment Links|Manual plan-payment link only/,
+  "Legacy Payment Links template must not instruct reusable-link setup")
+assert.equal((paymentLinksTemplate.match(/,paused,/g) || []).length, 4,
+  "Historical Payment Links template rows must remain paused")
+assert.doesNotMatch(paymentLinksTemplate, /,(?:active|draft),/,
+  "Historical Payment Links template must not activate reusable payment rows")
 
 console.log("Pricing package contract passed.")
