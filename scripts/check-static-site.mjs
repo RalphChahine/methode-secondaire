@@ -371,6 +371,7 @@ async function verifyPlanPaymentLifecycleSources() {
     grantCreditsForPaidPlanPayment_,
     markPortalPaymentPaidFromWebhook_,
     markPortalPaymentExpiredFromWebhook_,
+    expireSessionCheckoutBeforeMeetCancellation_,
     replaceDependencies(dependencies) {
       getOrCreateSheet_ = dependencies.getOrCreateSheet
       findSheetRecordById_ = dependencies.findSheetRecordById
@@ -384,9 +385,16 @@ async function verifyPlanPaymentLifecycleSources() {
       writeRecord_ = dependencies.writeRecord
       grantCreditsForPaidPlanPayment_ = dependencies.grantCreditsForPaidPlanPayment
       sendPaymentReceiptEmail_ = dependencies.sendPaymentReceiptEmail
+      appendPortalRequestRecord_ = dependencies.appendPortalRequestRecord
       globalThis.PropertiesService = dependencies.PropertiesService
       globalThis.LockService = dependencies.LockService
       globalThis.expireLinkedSessionForPayment_ = dependencies.expireLinkedSessionForPayment
+    },
+    replaceMeetFailureDependencies(dependencies) {
+      getOrCreateSheet_ = dependencies.getOrCreateSheet
+      getSheetRecordsFromSheet_ = dependencies.getSheetRecordsFromSheet
+      writeRecord_ = dependencies.writeRecord
+      appendPortalRequestRecord_ = dependencies.appendPortalRequestRecord
     },
   }`, sandbox)
 
@@ -506,6 +514,114 @@ async function verifyPlanPaymentLifecycleSources() {
   expect(
     expiredReplay.ok === true && expiredReplay.already_expired === true && expiryBridgeCalls === 0,
     "Apps Script: replaying an overdue expiration must not call the linked-session expiry bridge",
+  )
+
+  const mismatchWrites = []
+  const mismatchRequests = []
+  lifecycle.replaceWebhookDependencies({
+    getOrCreateSheet: (_spreadsheet, name) => name,
+    setupPaymentSheet() {},
+    findSheetRecordById: (sheet) => sheet === "Payments"
+      ? {
+          rowNumber: 2,
+          data: {
+            payment_id: "PAY-SESSION-MISMATCH",
+            session_id: "SESSION-SESSION-MISMATCH",
+            amount_cad: "65",
+            payment_status: "payment_requested",
+            stripe_checkout_session_id: "cs_original",
+          },
+        }
+      : null,
+    writeRecord: (...args) => mismatchWrites.push(args),
+    grantCreditsForPaidPlanPayment: () => ({ granted: false, skipped: true }),
+    sendPaymentReceiptEmail: () => false,
+    appendPortalRequestRecord: (_spreadsheet, request) => mismatchRequests.push(request),
+    PropertiesService: { getScriptProperties: () => ({ getProperty: () => "webhook-secret" }) },
+    LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock() {} }) },
+    expireLinkedSessionForPayment: null,
+  })
+  const paidSessionMismatch = lifecycle.markPortalPaymentPaidFromWebhook_(null, {
+    webhook_secret: "webhook-secret",
+    payment_id: "PAY-SESSION-MISMATCH",
+    stripe_session_id: "cs_unexpected",
+    amount_cad: 65,
+    currency: "cad",
+  })
+  expect(
+    paidSessionMismatch.ok === false && paidSessionMismatch.code === "PAYMENT_WEBHOOK_SESSION_MISMATCH" &&
+      mismatchWrites.length === 0 && mismatchRequests.length === 1,
+    "Apps Script: a mismatched paid Checkout webhook must not mutate payment or session rows",
+  )
+
+  const waivedWrites = []
+  let waivedExpiryBridgeCalls = 0
+  lifecycle.replaceWebhookDependencies({
+    getOrCreateSheet: (_spreadsheet, name) => name,
+    setupPaymentSheet() {},
+    findSheetRecordById: () => ({
+      rowNumber: 2,
+      data: {
+        payment_id: "PAY-WAIVED-EXPIRY",
+        session_id: "SESSION-WAIVED-EXPIRY",
+        payment_status: "waived",
+        stripe_checkout_session_id: "cs_waived_expiry",
+      },
+    }),
+    writeRecord: (...args) => waivedWrites.push(args),
+    grantCreditsForPaidPlanPayment: () => ({ granted: false, skipped: true }),
+    sendPaymentReceiptEmail: () => false,
+    appendPortalRequestRecord() {},
+    PropertiesService: { getScriptProperties: () => ({ getProperty: () => "webhook-secret" }) },
+    LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock() {} }) },
+    expireLinkedSessionForPayment: () => { waivedExpiryBridgeCalls += 1 },
+  })
+  const waivedExpiryReplay = lifecycle.markPortalPaymentExpiredFromWebhook_(null, {
+    webhook_secret: "webhook-secret",
+    payment_id: "PAY-WAIVED-EXPIRY",
+    stripe_session_id: "cs_waived_expiry",
+    expired_at: "2026-07-21T13:00:00.000Z",
+  })
+  expect(
+    waivedExpiryReplay.ok === true && waivedExpiryReplay.already_expired === true &&
+      waivedWrites.length === 0 && waivedExpiryBridgeCalls === 0,
+    "Apps Script: a matching waived Checkout expiration must acknowledge without repeat lifecycle mutations",
+  )
+
+  const paidMeetWrites = []
+  const paidMeetRequests = []
+  let paidMeetPayment = {
+    payment_id: "PAY-PAID-MEET-FAILURE",
+    session_id: "SESSION-PAID-MEET-FAILURE",
+    payment_status: "paid",
+    payout_status: "",
+    checkout_url: "https://checkout.stripe.com/c/pay/cs_paid_meet_failure",
+    checkout_expires_at: "2026-07-21T13:00:00.000Z",
+    due_date: "2026-07-21T13:00:00.000Z",
+    stripe_checkout_session_id: "cs_paid_meet_failure",
+    email: "parent@example.com",
+  }
+  lifecycle.replaceMeetFailureDependencies({
+    getOrCreateSheet: (_spreadsheet, name) => name,
+    getSheetRecordsFromSheet: () => [{ rowNumber: 2, data: paidMeetPayment }],
+    writeRecord: (_sheet, _columns, _rowNumber, next) => {
+      paidMeetPayment = next
+      paidMeetWrites.push(next)
+    },
+    appendPortalRequestRecord: (_spreadsheet, request) => paidMeetRequests.push(request),
+  })
+  const paidMeetFailure = lifecycle.expireSessionCheckoutBeforeMeetCancellation_(null, {
+    session_id: "SESSION-PAID-MEET-FAILURE",
+  })
+  const paidMeetFailureReplay = lifecycle.expireSessionCheckoutBeforeMeetCancellation_(null, {
+    session_id: "SESSION-PAID-MEET-FAILURE",
+  })
+  expect(
+    paidMeetFailure.ok === true && paidMeetFailure.has_paid_checkout === true && paidMeetFailure.requires_reconciliation === true &&
+      paidMeetFailureReplay.ok === true && paidMeetFailureReplay.has_paid_checkout === true &&
+      paidMeetWrites.length === 1 && paidMeetRequests.length === 1 &&
+      paidMeetPayment.payout_status === "held" && paidMeetPayment.checkout_url === "",
+    "Apps Script: a paid Checkout at terminal Meet failure must be held/reconciled exactly once before cancellation",
   )
 }
 

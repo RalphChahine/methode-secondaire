@@ -49,6 +49,9 @@ export default async function handler(req, res) {
 
   if (expireResponse.ok) {
     const expiredSession = await readStripeJson(expireResponse)
+    if (isPaidSession(expiredSession, checkoutSessionId)) {
+      return respondCompletedCheckout(res, checkoutSessionId, expiredSession)
+    }
     if (isMatchingExpiredSession(expiredSession, checkoutSessionId)) {
       return res.status(200).json({
         ok: true,
@@ -74,6 +77,10 @@ export default async function handler(req, res) {
     return res.status(502).json({ ok: false, code: "STRIPE_CHECKOUT_EXPIRY_UNCONFIRMED" })
   }
 
+  if (isPaidSession(currentSession, checkoutSessionId)) {
+    return respondCompletedCheckout(res, checkoutSessionId, currentSession)
+  }
+
   if (isMatchingExpiredSession(currentSession, checkoutSessionId)) {
     return res.status(200).json({
       ok: true,
@@ -84,13 +91,7 @@ export default async function handler(req, res) {
   }
 
   if (normalizeString(currentSession?.id) === checkoutSessionId && normalizeString(currentSession?.status) === "complete") {
-    return res.status(409).json({
-      ok: false,
-      code: "STRIPE_CHECKOUT_ALREADY_COMPLETED",
-      checkout_session_id: checkoutSessionId,
-      checkout_status: "complete",
-      payment_status: normalizeString(currentSession?.payment_status),
-    })
+    return respondCompletedCheckout(res, checkoutSessionId, currentSession)
   }
 
   return res.status(502).json({ ok: false, code: "STRIPE_CHECKOUT_EXPIRY_UNCONFIRMED" })
@@ -108,6 +109,20 @@ function isCheckoutSessionId(value) {
 
 function isMatchingExpiredSession(session, checkoutSessionId) {
   return normalizeString(session?.id) === checkoutSessionId && normalizeString(session?.status) === "expired"
+}
+
+function isPaidSession(session, checkoutSessionId) {
+  return normalizeString(session?.id) === checkoutSessionId && normalizeString(session?.payment_status) === "paid"
+}
+
+function respondCompletedCheckout(res, checkoutSessionId, session) {
+  return res.status(409).json({
+    ok: false,
+    code: "STRIPE_CHECKOUT_ALREADY_COMPLETED",
+    checkout_session_id: checkoutSessionId,
+    checkout_status: normalizeString(session?.status),
+    payment_status: normalizeString(session?.payment_status),
+  })
 }
 
 async function readStripeJson(response) {

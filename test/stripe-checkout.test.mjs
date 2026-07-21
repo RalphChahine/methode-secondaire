@@ -480,6 +480,40 @@ test("accepts an already expired Checkout only after Stripe confirms its termina
   })
 })
 
+test("holds a paid Checkout for reconciliation even when Stripe reports it expired", async () => {
+  const originalFetch = globalThis.fetch
+  const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET
+  const originalStripeSecret = process.env.STRIPE_SECRET_KEY
+  const response = makeResponse()
+
+  process.env.PAYMENT_SESSION_SECRET = "internal-secret"
+  process.env.STRIPE_SECRET_KEY = "sk_test_secret"
+  globalThis.fetch = async () => ({
+    ok: true,
+    json: async () => ({ id: "cs_test_123", status: "expired", payment_status: "paid" }),
+  })
+
+  try {
+    await expireCheckoutSession({
+      method: "POST",
+      body: { payment_session_secret: "internal-secret", checkout_session_id: "cs_test_123" },
+    }, response)
+  } finally {
+    globalThis.fetch = originalFetch
+    restoreEnvironment("PAYMENT_SESSION_SECRET", originalPaymentSecret)
+    restoreEnvironment("STRIPE_SECRET_KEY", originalStripeSecret)
+  }
+
+  assert.equal(response.statusCode, 409)
+  assert.deepEqual(response.payload, {
+    ok: false,
+    code: "STRIPE_CHECKOUT_ALREADY_COMPLETED",
+    checkout_session_id: "cs_test_123",
+    checkout_status: "expired",
+    payment_status: "paid",
+  })
+})
+
 test("does not claim Checkout expiry when Stripe cannot confirm a terminal state", async () => {
   const originalFetch = globalThis.fetch
   const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET

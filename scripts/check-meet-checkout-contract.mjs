@@ -99,6 +99,22 @@ async function main() {
     crmCode.indexOf("function getCheckoutPaymentUrl_("),
     crmCode.indexOf("function issueCheckoutForPayment_("),
   )
+  const calendarNotFoundFunction = crmCode.slice(
+    crmCode.indexOf("function isCalendarNotFoundError_("),
+    crmCode.indexOf("function appendCalendarDeletionFailureRequest_("),
+  )
+  const paidWebhookFunction = crmCode.slice(
+    crmCode.indexOf("function markPortalPaymentPaidFromWebhook_("),
+    crmCode.indexOf("function markPortalPaymentExpiredFromWebhook_("),
+  )
+  const expiredWebhookFunction = crmCode.slice(
+    crmCode.indexOf("function markPortalPaymentExpiredFromWebhook_("),
+    crmCode.indexOf("function expireLinkedSessionForPaymentIfAvailable_("),
+  )
+  const meetFailureCheckoutFunction = crmCode.slice(
+    crmCode.indexOf("function expireSessionCheckoutBeforeMeetCancellation_("),
+    crmCode.indexOf("function expirePersistedCheckoutSession_("),
+  )
   const parentSessionSanitizer = crmCode.slice(
     crmCode.indexOf("function sanitizeSessionForParent_("),
     crmCode.indexOf("function sanitizeSessionForTutor_("),
@@ -123,6 +139,19 @@ async function main() {
   expect(crmCode.includes("Paiement Stripe recu apres une inscription de forfait non admissible") &&
     crmCode.includes("requires_reconciliation: true"),
   "CRM: paid terminal package enrollments must create a reconciliation record")
+  expect(calendarNotFoundFunction.includes("return errorCode === 404;") &&
+    !calendarNotFoundFunction.includes("errorText"),
+  "CRM: only an explicit numeric Calendar API 404 may count as already deleted")
+  expect(paidWebhookFunction.includes("PAYMENT_WEBHOOK_SESSION_MISMATCH") &&
+    paidWebhookFunction.includes("storedStripeSessionId") &&
+    paidWebhookFunction.indexOf("PAYMENT_WEBHOOK_SESSION_MISMATCH") < paidWebhookFunction.indexOf("const alreadyPaid"),
+  "CRM: a paid webhook must reject a mismatched stored Stripe Checkout Session before mutation")
+  expect(meetFailureCheckoutFunction.includes('paymentStatus === "paid"') &&
+    meetFailureCheckoutFunction.includes("holdCompletedCheckoutForMeetFailure_"),
+  "CRM: an already-paid session must be held and reconciled before Meet-failure cancellation")
+  expect(expiredWebhookFunction.includes('paymentStatus === "waived"') &&
+    expiredWebhookFunction.includes("already_expired: true"),
+  "CRM: a matching waived Checkout-expiry webhook must be acknowledged idempotently")
   expect(portalEndpoint.includes("portal_reissue_payment_checkout"), "Portal API: Checkout reissue route is missing")
   expect(portalClient.includes("reissuePortalPaymentCheckout"), "Portal client: Checkout reissue helper is missing")
   expect(!portalEndpoint.includes("portal_complete_demo_payment") &&

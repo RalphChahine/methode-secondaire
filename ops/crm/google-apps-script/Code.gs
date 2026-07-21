@@ -4010,13 +4010,32 @@ function expireSessionCheckoutBeforeMeetCancellation_(spreadsheet, session) {
   const paymentSheet = getOrCreateSheet_(spreadsheet, CRM_PAYMENT_SHEET_NAME);
   const activeCheckouts = getSheetRecordsFromSheet_(paymentSheet, PAYMENT_COLUMNS)
     .filter((record) => normalizeValue_(record.data.session_id) === sessionId)
-    .filter((record) => normalizeValue_(record.data.stripe_checkout_session_id))
-    .filter((record) => !["paid", "refunded", "waived"].includes(normalizeValue_(record.data.payment_status)))
-    .filter((record) => normalizeValue_(record.data.payout_status) !== "held");
+    .filter((record) => normalizeValue_(record.data.stripe_checkout_session_id));
 
   let hasPaidCheckout = false;
   let requiresReconciliation = false;
   for (const paymentRecord of activeCheckouts) {
+    const paymentStatus = normalizeValue_(paymentRecord.data.payment_status);
+    if (normalizeValue_(paymentRecord.data.payout_status) === "held") {
+      hasPaidCheckout = hasPaidCheckout || paymentStatus === "paid";
+      requiresReconciliation = requiresReconciliation || paymentStatus === "paid";
+      continue;
+    }
+    if (["refunded", "waived"].includes(paymentStatus)) {
+      continue;
+    }
+    if (paymentStatus === "paid") {
+      const held = holdCompletedCheckoutForMeetFailure_(
+        spreadsheet,
+        paymentSheet,
+        paymentRecord,
+        session,
+        { payment_status: "paid" },
+      );
+      hasPaidCheckout = hasPaidCheckout || held.paid;
+      requiresReconciliation = true;
+      continue;
+    }
     const expiry = expirePersistedCheckoutSession_(paymentRecord.data);
     if (expiry.checkout_completed) {
       const held = holdCompletedCheckoutForMeetFailure_(spreadsheet, paymentSheet, paymentRecord, session, expiry);
@@ -4182,9 +4201,8 @@ function deleteLegacyCalendarEvent_(spreadsheet, session, eventId) {
 }
 
 function isCalendarNotFoundError_(error) {
-  const errorText = String(error && (error.message || error)).toLowerCase();
   const errorCode = Number(error && (error.code || error.status || error.responseCode));
-  return errorCode === 404 || /\b404\b/.test(errorText) || /already (?:deleted|gone)/.test(errorText);
+  return errorCode === 404;
 }
 
 function appendCalendarDeletionFailureRequest_(spreadsheet, session, action, code) {
@@ -4229,6 +4247,20 @@ function markPortalPaymentPaidFromWebhook_(spreadsheet, payload) {
     if (!Number.isFinite(amountCad) || amountCad <= 0 ||
         (Number.isFinite(expectedAmount) && Math.abs(expectedAmount - amountCad) > 0.01)) {
       return { ok: false, code: "PAYMENT_WEBHOOK_AMOUNT_MISMATCH" };
+    }
+
+    const storedStripeSessionId = normalizeValue_(paymentRecord.data.stripe_checkout_session_id);
+    if (storedStripeSessionId && storedStripeSessionId !== stripeSessionId) {
+      const reconciliationNote = "Webhook Stripe refuse: la session Checkout recue ne correspond pas a la session enregistree.";
+      appendPortalRequestRecord_(spreadsheet, {
+        role: "operator",
+        email: normalizeEmail_(paymentRecord.data.email),
+        related_id: paymentId,
+        request_type: "payment_question",
+        subject: "Reconciliation requise: session Stripe inattendue",
+        message: `${reconciliationNote} Paiement ${paymentId}, seance ${normalizeValue_(paymentRecord.data.session_id)}, session enregistree ${storedStripeSessionId}, session recue ${stripeSessionId}.`,
+      });
+      return { ok: false, code: "PAYMENT_WEBHOOK_SESSION_MISMATCH" };
     }
 
     const alreadyPaid = normalizeValue_(paymentRecord.data.payment_status) === "paid";
@@ -4406,6 +4438,9 @@ function markPortalPaymentExpiredFromWebhook_(spreadsheet, payload) {
     }
 
     const paymentStatus = normalizeValue_(paymentRecord.data.payment_status);
+    if (paymentStatus === "waived" && storedStripeSessionId === stripeSessionId) {
+      return { ok: true, payment_id: paymentId, already_expired: true, already_waived: true };
+    }
     if (!["payment_requested", "overdue"].includes(paymentStatus)) {
       return { ok: false, code: "PAYMENT_WEBHOOK_PAYMENT_NOT_ACTIONABLE" };
     }
