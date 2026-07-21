@@ -1,9 +1,61 @@
 import assert from "node:assert/strict"
 import { spawnSync } from "node:child_process"
+import crypto from "node:crypto"
+import { Readable } from "node:stream"
 import test from "node:test"
 
-import { createCheckoutRequest } from "../api/lib/stripe-checkout.mjs"
+import { classifyStripeCheckoutEvent, createCheckoutRequest } from "../api/lib/stripe-checkout.mjs"
 import createCheckoutSession from "../api/create-checkout-session.js"
+import stripeWebhook from "../api/stripe-webhook.js"
+
+test("classifies a paid Checkout completion for its payment", () => {
+  assert.deepEqual(classifyStripeCheckoutEvent({
+    type: "checkout.session.completed",
+    data: { object: { client_reference_id: "PAY-001", payment_status: "paid" } },
+  }), { kind: "paid", payment_id: "PAY-001" })
+})
+
+test("classifies an expired Checkout Session for its payment", () => {
+  assert.deepEqual(classifyStripeCheckoutEvent({
+    type: "checkout.session.expired",
+    data: { object: { client_reference_id: "PAY-001", status: "expired" } },
+  }), { kind: "expired", payment_id: "PAY-001" })
+})
+
+test("ignores an unrelated Stripe event", () => {
+  assert.deepEqual(classifyStripeCheckoutEvent({ type: "payment_intent.succeeded" }), { kind: "ignored" })
+})
+
+test("acknowledges a signed unrelated Stripe event without CRM configuration", async () => {
+  const originalStripeWebhookSecret = process.env.STRIPE_WEBHOOK_SECRET
+  const originalPaymentWebhookSecret = process.env.PAYMENT_WEBHOOK_SECRET
+  const originalCrmWebhookUrl = process.env.CRM_WEBHOOK_URL
+  const stripeWebhookSecret = "whsec_test"
+  const rawBody = JSON.stringify({ type: "payment_intent.succeeded" })
+  const timestamp = Math.floor(Date.now() / 1000)
+  const signature = crypto.createHmac("sha256", stripeWebhookSecret)
+    .update(`${timestamp}.${rawBody}`, "utf8")
+    .digest("hex")
+  const request = Readable.from([rawBody])
+  request.method = "POST"
+  request.headers = { "stripe-signature": `t=${timestamp},v1=${signature}` }
+  const response = makeResponse()
+
+  process.env.STRIPE_WEBHOOK_SECRET = stripeWebhookSecret
+  delete process.env.PAYMENT_WEBHOOK_SECRET
+  delete process.env.CRM_WEBHOOK_URL
+
+  try {
+    await stripeWebhook(request, response)
+  } finally {
+    restoreEnvironment("STRIPE_WEBHOOK_SECRET", originalStripeWebhookSecret)
+    restoreEnvironment("PAYMENT_WEBHOOK_SECRET", originalPaymentWebhookSecret)
+    restoreEnvironment("CRM_WEBHOOK_URL", originalCrmWebhookUrl)
+  }
+
+  assert.equal(response.statusCode, 200)
+  assert.deepEqual(response.payload, { ok: true, ignored: true })
+})
 
 test("creates a one-hour CAD Checkout Session", () => {
   const now = new Date("2026-07-21T16:00:00.000Z")

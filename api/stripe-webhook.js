@@ -1,5 +1,7 @@
 import crypto from "node:crypto"
 
+import { classifyStripeCheckoutEvent } from "./lib/stripe-checkout.mjs"
+
 const MAX_BODY_BYTES = 256 * 1024
 const SIGNATURE_TOLERANCE_SECONDS = 5 * 60
 
@@ -18,7 +20,7 @@ export default async function handler(req, res) {
   const stripeWebhookSecret = normalizeString(process.env.STRIPE_WEBHOOK_SECRET)
   const paymentWebhookSecret = normalizeString(process.env.PAYMENT_WEBHOOK_SECRET)
   const crmWebhookUrl = normalizeString(process.env.CRM_WEBHOOK_URL)
-  if (!stripeWebhookSecret || !paymentWebhookSecret || !crmWebhookUrl) {
+  if (!stripeWebhookSecret) {
     return res.status(503).json({ ok: false, code: "STRIPE_WEBHOOK_NOT_CONFIGURED" })
   }
 
@@ -40,18 +42,34 @@ export default async function handler(req, res) {
     return res.status(400).json({ ok: false, code: "INVALID_STRIPE_EVENT" })
   }
 
-  if (![
-    "checkout.session.completed",
-    "checkout.session.async_payment_succeeded",
-  ].includes(event?.type)) {
+  const checkout = event?.data?.object || {}
+  const classification = classifyStripeCheckoutEvent(event)
+  if (classification.kind === "ignored") {
     return res.status(200).json({ ok: true, ignored: true })
   }
 
-  const checkout = event?.data?.object || {}
-  const paymentId = normalizeString(checkout.client_reference_id)
-  if (!paymentId || checkout.payment_status !== "paid") {
-    return res.status(200).json({ ok: true, ignored: true })
+  if (!paymentWebhookSecret || !crmWebhookUrl) {
+    return res.status(503).json({ ok: false, code: "STRIPE_WEBHOOK_NOT_CONFIGURED" })
   }
+
+  const paymentId = classification.payment_id
+  const crmPayload = classification.kind === "paid"
+    ? {
+      action: "portal_mark_payment_paid_webhook",
+      webhook_secret: paymentWebhookSecret,
+      payment_id: paymentId,
+      stripe_session_id: normalizeString(checkout.id),
+      amount_cad: Number(checkout.amount_total || 0) / 100,
+      currency: normalizeString(checkout.currency),
+      paid_at: checkout.created ? new Date(Number(checkout.created) * 1000).toISOString() : new Date().toISOString(),
+    }
+    : {
+      action: "portal_mark_payment_expired_webhook",
+      webhook_secret: paymentWebhookSecret,
+      payment_id: paymentId,
+      stripe_session_id: normalizeString(checkout.id),
+      expired_at: checkout.expires_at ? new Date(Number(checkout.expires_at) * 1000).toISOString() : new Date().toISOString(),
+    }
 
   try {
     const crmResponse = await fetch(crmWebhookUrl, {
@@ -61,15 +79,7 @@ export default async function handler(req, res) {
         Accept: "application/json",
         "Content-Type": "text/plain;charset=utf-8",
       },
-      body: JSON.stringify({
-        action: "portal_mark_payment_paid_webhook",
-        webhook_secret: paymentWebhookSecret,
-        payment_id: paymentId,
-        stripe_session_id: normalizeString(checkout.id),
-        amount_cad: Number(checkout.amount_total || 0) / 100,
-        currency: normalizeString(checkout.currency),
-        paid_at: checkout.created ? new Date(Number(checkout.created) * 1000).toISOString() : new Date().toISOString(),
-      }),
+      body: JSON.stringify(crmPayload),
     })
     const crmText = await crmResponse.text()
     const crmBody = parseJsonMaybe(crmText)

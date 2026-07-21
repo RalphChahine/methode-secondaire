@@ -22,11 +22,13 @@ function expect(condition, message) {
 }
 
 async function main() {
-  const [checkoutEndpoint, checkoutBuilder, checkoutTest, packageJson] = await Promise.all([
+  const [checkoutEndpoint, checkoutBuilder, checkoutTest, packageJson, stripeWebhook, crmCode] = await Promise.all([
     readSource("api/create-checkout-session.js"),
     readSource("api/lib/stripe-checkout.mjs"),
     readSource("test/stripe-checkout.test.mjs"),
     readSource("package.json"),
+    readSource("api/stripe-webhook.js"),
+    readSource("ops/crm/google-apps-script/Code.gs"),
   ])
 
   expect(checkoutEndpoint.includes("PAYMENT_SESSION_SECRET"), "Checkout endpoint: PAYMENT_SESSION_SECRET is missing")
@@ -37,6 +39,8 @@ async function main() {
   expect(checkoutBuilder.includes('currency: "cad"'), "Checkout builder: CAD currency is missing")
   expect(checkoutTest.includes("createCheckoutRequest"), "Checkout test: request builder coverage is missing")
   expect(packageJson.includes('"test:payments": "node --test test/stripe-checkout.test.mjs"'), "package.json: test:payments command is missing")
+  expect(checkoutBuilder.includes("checkout.session.expired") && stripeWebhook.includes("classifyStripeCheckoutEvent"), "Stripe webhook: checkout.session.expired handling is missing")
+  expect(crmCode.includes("portal_mark_payment_expired_webhook"), "CRM: payment expiration webhook action is missing")
 
   if (failures.length > 0) {
     console.error("Meet Checkout contract checks failed:\n")

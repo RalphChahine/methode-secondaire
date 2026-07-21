@@ -49,6 +49,26 @@ export function createCheckoutRequest(input, now) {
   }
 }
 
+export function classifyStripeCheckoutEvent(event) {
+  const checkout = event?.data?.object || {}
+  const paymentId = normalizeString(checkout.client_reference_id)
+
+  if (!paymentId) {
+    return { kind: "ignored" }
+  }
+
+  if (["checkout.session.completed", "checkout.session.async_payment_succeeded"].includes(event?.type) &&
+      checkout.payment_status === "paid") {
+    return { kind: "paid", payment_id: paymentId }
+  }
+
+  if (event?.type === "checkout.session.expired" && checkout.status === "expired") {
+    return { kind: "expired", payment_id: paymentId }
+  }
+
+  return { kind: "ignored" }
+}
+
 function normalizeString(value) {
   return typeof value === "string" ? value.trim() : ""
 }

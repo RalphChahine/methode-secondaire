@@ -217,7 +217,10 @@ async function verifyFinalReviewSafetyContracts() {
   )
   expect(appsScriptSource.includes('const CRM_PORTAL_SECRET_PROPERTY = "CRM_PORTAL_SECRET"'), "Apps Script: CRM_PORTAL_SECRET script property is not declared")
   expect(appsScriptSource.includes("function constantTimeStringEquals_"), "Apps Script: portal proxy secret comparison is not constant-time")
-  expect(appsScriptSource.includes('normalizeValue_(action) === "portal_mark_payment_paid_webhook"'), "Apps Script: Stripe webhook must retain its separate secret path")
+  expect(
+    appsScriptSource.includes('"portal_mark_payment_paid_webhook"') && appsScriptSource.includes('"portal_mark_payment_expired_webhook"'),
+    "Apps Script: Stripe webhook actions must retain their separate secret path",
+  )
   expect(productionProxySource.includes("MISSING_CRM_PORTAL_SECRET"), "production portal proxy: missing CRM_PORTAL_SECRET is not rejected")
   expect(devProxySource.includes("MISSING_CRM_PORTAL_SECRET"), "development portal proxy: missing CRM_PORTAL_SECRET is not rejected")
 
@@ -276,6 +279,7 @@ async function verifyFinalReviewSafetyContracts() {
   expect(helpers.hasValidPortalProxySecret_("portal_request_code", "wrong") === false, "portal proxy secret: wrong secret is accepted")
   expect(helpers.hasValidPortalProxySecret_("portal_request_code", "") === false, "portal proxy secret: empty secret is accepted")
   expect(helpers.hasValidPortalProxySecret_("portal_mark_payment_paid_webhook", "") === true, "Stripe webhook: separate webhook-secret route was blocked by portal proxy secret")
+  expect(helpers.hasValidPortalProxySecret_("portal_mark_payment_expired_webhook", "") === true, "Stripe expiration webhook: separate webhook-secret route was blocked by portal proxy secret")
 
   const nowMs = Date.parse("2026-07-21T12:00:00.000Z")
   const locked = helpers.getPortalCodeSecurityState_({ code_locked_until: "2026-07-21T12:10:00.000Z" }, nowMs)
@@ -297,11 +301,11 @@ async function verifyPlanPaymentLifecycleSources() {
   const paymentColumns = appsScriptSource.match(/const PAYMENT_COLUMNS = \[([\s\S]*?)\n\];/)?.[1] || ""
   const creditLedgerColumns = appsScriptSource.match(/const CREDIT_LEDGER_COLUMNS = \[([\s\S]*?)\n\];/)?.[1] || ""
   const paymentRequestFunction = appsScriptSource.match(/function createPortalPlanPaymentRequest_\([\s\S]*?\n}\n\nfunction updatePortalPlanEnrollment_/)?.[0] || ""
-  const paymentWebhookFunction = appsScriptSource.match(/function markPortalPaymentPaidFromWebhook_\([\s\S]*?\n}\n\nfunction grantCreditsForPaidPlanPayment_/)?.[0] || ""
+  const paymentWebhookFunction = appsScriptSource.match(/function markPortalPaymentPaidFromWebhook_\([\s\S]*?\n}\n\n(?=function )/)?.[0] || ""
 
   expect(
-    /"created_at",\s*"updated_at",\s*"plan_enrollment_id",\s*"credit_grant_count",\s*$/.test(paymentColumns),
-    "CRM payments: plan linkage fields must be appended after every legacy column",
+    /"created_at",\s*"updated_at",\s*"plan_enrollment_id",\s*"credit_grant_count",\s*"stripe_checkout_session_id",\s*"checkout_expires_at",\s*"checkout_url",\s*$/.test(paymentColumns),
+    "CRM payments: Checkout fields must be appended after every legacy and plan-linkage column",
   )
   expect(
     /"created_at",\s*"source_payment_id",\s*$/.test(creditLedgerColumns),

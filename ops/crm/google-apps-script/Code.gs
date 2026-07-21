@@ -362,6 +362,9 @@ const PAYMENT_COLUMNS = [
   "updated_at",
   "plan_enrollment_id",
   "credit_grant_count",
+  "stripe_checkout_session_id",
+  "checkout_expires_at",
+  "checkout_url",
 ];
 
 const PAYMENT_LINK_COLUMNS = [
@@ -1368,7 +1371,7 @@ function constantTimeStringEquals_(leftValue, rightValue) {
 function hasValidPortalProxySecret_(action, suppliedSecret) {
   // Stripe reaches Apps Script through its own server-only proxy and continues
   // to authenticate with PAYMENT_WEBHOOK_SECRET inside the webhook handler.
-  if (normalizeValue_(action) === "portal_mark_payment_paid_webhook") {
+  if (["portal_mark_payment_paid_webhook", "portal_mark_payment_expired_webhook"].includes(normalizeValue_(action))) {
     return true;
   }
   const expectedSecret = PropertiesService.getScriptProperties().getProperty(CRM_PORTAL_SECRET_PROPERTY);
@@ -1444,6 +1447,8 @@ function handlePortalAction_(spreadsheet, payload) {
       return completePortalDemoPayment_(spreadsheet, payload);
     case "portal_mark_payment_paid_webhook":
       return markPortalPaymentPaidFromWebhook_(spreadsheet, payload);
+    case "portal_mark_payment_expired_webhook":
+      return markPortalPaymentExpiredFromWebhook_(spreadsheet, payload);
     case "portal_update_request_status":
       return updatePortalRequestStatus_(spreadsheet, payload);
     case "portal_create_request":
@@ -3834,6 +3839,7 @@ function markPortalPaymentPaidFromWebhook_(spreadsheet, payload) {
       payment_method: "stripe_payment_link",
       payment_status: "paid",
       invoice_id: stripeSessionId,
+      stripe_checkout_session_id: stripeSessionId,
       paid_at: paidAt.toISOString(),
       notes: [normalizeValue_(paymentRecord.data.notes), `Stripe Checkout ${stripeSessionId}`].filter(Boolean).join(" | "),
       updated_at: new Date().toISOString(),
@@ -3902,6 +3908,79 @@ function markPortalPaymentPaidFromWebhook_(spreadsheet, payload) {
   } finally {
     paymentLock.releaseLock();
   }
+}
+
+function markPortalPaymentExpiredFromWebhook_(spreadsheet, payload) {
+  const expectedSecret = PropertiesService.getScriptProperties().getProperty(PAYMENT_WEBHOOK_SECRET_PROPERTY);
+  if (!expectedSecret || !constantTimeStringEquals_(payload.webhook_secret, expectedSecret)) {
+    return { ok: false, code: "PAYMENT_WEBHOOK_UNAUTHORIZED" };
+  }
+
+  const paymentId = normalizeValue_(payload.payment_id);
+  const stripeSessionId = normalizeValue_(payload.stripe_session_id);
+  if (!paymentId || !stripeSessionId) {
+    return { ok: false, code: "PAYMENT_WEBHOOK_PAYMENT_NOT_FOUND" };
+  }
+
+  const paymentLock = LockService.getScriptLock();
+  if (!paymentLock.tryLock(5000)) {
+    return { ok: false, code: "PAYMENT_WEBHOOK_BUSY" };
+  }
+
+  let paymentToExpire = null;
+  let alreadyExpired = false;
+  try {
+    const paymentSheet = getOrCreateSheet_(spreadsheet, CRM_PAYMENT_SHEET_NAME);
+    setupPaymentSheet_(paymentSheet);
+    const paymentRecord = findSheetRecordById_(paymentSheet, PAYMENT_COLUMNS, "payment_id", paymentId);
+    if (!paymentRecord) {
+      return { ok: false, code: "PAYMENT_WEBHOOK_PAYMENT_NOT_FOUND" };
+    }
+
+    const storedStripeSessionId = normalizeValue_(paymentRecord.data.stripe_checkout_session_id);
+    if (storedStripeSessionId && storedStripeSessionId !== stripeSessionId) {
+      return { ok: false, code: "PAYMENT_WEBHOOK_SESSION_MISMATCH" };
+    }
+
+    if (normalizeValue_(paymentRecord.data.payment_status) === "paid") {
+      return { ok: true, already_paid: true };
+    }
+
+    const paymentStatus = normalizeValue_(paymentRecord.data.payment_status);
+    if (!["payment_requested", "overdue"].includes(paymentStatus)) {
+      return { ok: false, code: "PAYMENT_WEBHOOK_PAYMENT_NOT_ACTIONABLE" };
+    }
+
+    const expiredAt = coerceDate_(payload.expired_at) || new Date();
+    alreadyExpired = paymentStatus === "overdue";
+    paymentToExpire = {
+      ...paymentRecord.data,
+      payment_status: "overdue",
+      stripe_checkout_session_id: storedStripeSessionId || stripeSessionId,
+      checkout_expires_at: expiredAt.toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+    if (!alreadyExpired) {
+      writeRecord_(paymentSheet, PAYMENT_COLUMNS, paymentRecord.rowNumber, paymentToExpire);
+    }
+  } finally {
+    paymentLock.releaseLock();
+  }
+
+  expireLinkedSessionForPaymentIfAvailable_(spreadsheet, paymentToExpire, "stripe_checkout_expired");
+  return { ok: true, payment_id: paymentId, already_expired: alreadyExpired };
+}
+
+function expireLinkedSessionForPaymentIfAvailable_(spreadsheet, payment, reason) {
+  if (!normalizeValue_(payment && payment.session_id)) {
+    return { ok: true, skipped: true };
+  }
+
+  if (typeof expireLinkedSessionForPayment_ !== "function") {
+    return { ok: true, deferred: true };
+  }
+
+  return expireLinkedSessionForPayment_(spreadsheet, payment, reason);
 }
 
 function grantCreditsForPaidPlanPayment_(spreadsheet, payment) {
