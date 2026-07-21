@@ -48,7 +48,7 @@
 
 **Interfaces:**
 - Consumes: PAYMENT_SESSION_SECRET, STRIPE_SECRET_KEY, et { payment_id, amount_cad, email, offer, success_url, cancel_url }.
-- Produces: POST /api/create-checkout-session → { ok, checkout_session_id, checkout_url, expires_at }.
+- Produces: POST /api/create-checkout-session → { ok: true, checkout_session_id, checkout_url, expires_at }.
 - Produces: createCheckoutRequest(input, now).
 
 - [ ] **Step 1: Write the failing test**
@@ -103,7 +103,7 @@ Create api/lib/stripe-checkout.mjs with CHECKOUT_EXPIRY_SECONDS = 60 * 60, valid
       metadata: { payment_id: paymentId },
     }
 
-Amounts use Math.round(Number(amount_cad) * 100) and must be integers from 100 to 1 000 000 cents.
+Amounts use Math.round(Number(amount_cad) * 100), must be integers from 100 to 1 000 000 cents, and reject a supplied amount that is not an exact CAD-cent value before it reaches Stripe.
 
 - [ ] **Step 4: Implement the protected endpoint**
 
@@ -121,7 +121,7 @@ Add this package script:
 
     "test:payments": "node --test test/stripe-checkout.test.mjs"
 
-Create scripts/check-meet-checkout-contract.mjs. It exits nonzero unless source contains create-checkout-session.js, PAYMENT_SESSION_SECRET, checkout.session.expired, google_meet_url, calendar_conference_status, stripe_checkout_session_id, checkout_expires_at, and French/English expiry copy. Invoke it from scripts/check-static-site.mjs.
+Create scripts/check-meet-checkout-contract.mjs. In Task 1 it exits nonzero unless source contains create-checkout-session.js, PAYMENT_SESSION_SECRET, the payment-test command, and the Checkout issuance contract. Tasks 2, 3 and 5 extend it respectively with webhook-expiry, Calendar/Meet, and French/English UI contracts. Invoke it from scripts/check-static-site.mjs.
 
 - [ ] **Step 7: Commit**
 
