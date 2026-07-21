@@ -69,7 +69,7 @@ The owner account `chahineralph@gmail.com` can choose `Equipe` on the portal log
 - choose an active tutor and create their portal access. The invite sends the tutor a one-time login code.
 - set the time, duration, subject, format and recurrence;
 - see confirmations and open schedule-change requests;
-- configure the amount for each session type so the system can issue its hosted Stripe Checkout.
+- create a session with its selected offer; the server then issues its unique hosted Stripe Checkout.
 - manage the active plan catalogue and enroll a matched parent/student in a Momentum or Progress block, selecting a cadence only after the match is confirmed;
 - create the first linked session after activating a plan, so the session is explicitly attached to its block and credit ledger;
 - verify each external payment, then let the verified workflow grant four Momentum-block credits after $250 or five Progress-block credits after each $300 payment; this never triggers a card charge or an automatic renewal from the portal;
@@ -91,7 +91,6 @@ Apps Script actions:
 - `portal_get_dashboard`
 - `portal_create_session`
 - `portal_respond_to_session`
-- `portal_upsert_payment_link`
 - `portal_submit_session_note`
 - `portal_book_session`
 - `portal_submit_parent_feedback`
@@ -261,6 +260,7 @@ If login codes do not send, open Apps Script and run/authorize `setupCrm` or any
 - Do not grant tutor access until the tutor is in `Tutor Roster` with `status=active`; use the owner invite rather than sharing a generic login.
 - Do not expose a parent summary until the tuteur note is clear.
 - Ask a parent to pay only through the server-issued, hosted Stripe Checkout URL; legacy Payment Links and portal demo payments are not a production payment path.
+- Keep the legacy `Payment Links` sheet read-only for historical records. New sessions use their stored amount or the canonical offer amount and never read a reusable link.
 - Do not grant block credits until an operator has verified the corresponding payment: four credits after the Momentum-block $250 payment, or five credits after each Progress-block $300 instalment. Do not use a credit adjustment as a substitute for payment confirmation.
 - Do not describe a block as an automatic subscription or debit. Each block is closed with no automatic renewal; cadence is selected after matching.
 - Treat a paid cancellation as a manual refund or credit decision; do not tell a parent it is automatically refunded.

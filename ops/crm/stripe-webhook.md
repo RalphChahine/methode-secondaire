@@ -38,7 +38,7 @@ Never commit any of these values or put them in a `VITE_*` variable, frontend co
 
 ## Restricted live verification
 
-Only the owner may switch the four variables to live Stripe values, create the live webhook endpoint, and make a deliberately authorized low-value live verification payment. Confirm the payment and receipt from both Stripe and the CRM, then stop. Do not send a public payment link until that owner-controlled verification has succeeded.
+Only the owner may switch the four variables to live Stripe values, create the live webhook endpoint, and make a deliberately authorized low-value live verification payment. Confirm the payment and receipt from both Stripe and the CRM, then stop. Do not send a public Checkout URL until that owner-controlled verification has succeeded.
 
 ## What happens after payment
 
@@ -52,7 +52,7 @@ The update is idempotent: a retry from Stripe will not create a second payment, 
 
 ## Legacy-payment safety
 
-Historical `payment_link` values remain in the CRM only for record continuity. They are never sent to a parent, returned as a payment CTA, or converted into a Checkout URL. If a payment row lacks a valid persisted `https://checkout.stripe.com/c/...` URL, the owner must issue or repair a hosted Checkout Session before requesting payment.
+Historical `payment_link` values remain in the CRM only for record continuity. They are never sent to a portal user, returned as a payment CTA, or converted into a Checkout URL. The `Payment Links` sheet is read-only historical data: new payments use their session amount or canonical offer amount and receive a newly issued hosted Checkout Session. If a payment row lacks a valid persisted `https://checkout.stripe.com/c/...` URL, the owner must issue or repair a hosted Checkout Session before requesting payment.
 
 ## Policy implemented in the portal
 

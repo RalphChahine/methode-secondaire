@@ -82,7 +82,6 @@ import {
   updatePortalParentProfile,
   updatePortalTutorCalendar,
   updatePortalRequestStatus,
-  upsertPortalPaymentLink,
   upsertPortalParent,
   upsertPortalStudent,
   upsertPortalTutorAvailability,
@@ -93,10 +92,7 @@ import {
   getOffer,
   getOfferByPlanId,
   getPaymentLinkDefaultAmountCad,
-  getPaymentLinkOfferLabel,
   getPricingCopy,
-  normalizePaymentLinkOfferCode,
-  paymentLinkOfferCodes,
   pricing,
 } from "@/lib/pricing"
 import { siteConfig } from "@/lib/seo"
@@ -314,14 +310,6 @@ const copyByLocale = {
     parentConfirmed: "Parent confirmé",
     tutorConfirmed: "Tuteur confirmé",
     paymentReady: "Paiement prêt",
-    paymentLinkSetup: "Liens de paiement",
-    paymentOffer: "Type de séance ou versement",
-    paymentLink: "Lien Stripe",
-    savePaymentLink: "Enregistrer le lien",
-    paymentLinkSaved: "Lien de paiement activé.",
-    paymentLinkDetailsRequired: "Ajoutez un montant et un lien Stripe sécurisé.",
-    paymentNotConfigured: "Le paiement par carte n'est pas encore configuré pour cette séance. L'équipe doit d'abord ajouter le lien Stripe.",
-    paymentDemoNotice: "Mode démonstration: aucun paiement réel n'est effectué tant que Stripe n'est pas activé.",
     planSetupTitle: "Blocs et paiements",
     planSetupIntro: "Créez un Bloc d'élan ou un Bloc de progression. La vérification Stripe accorde automatiquement les crédits prévus, une seule fois.",
     planChoose: "Formule",
@@ -588,8 +576,8 @@ const copyByLocale = {
     automationReminderDetail: "avant seance, bilan et retour parent",
     automationCalendarDetail: "cree apres les deux confirmations",
     automationDigestDetail: "chaque jour",
-    paymentModeDemo: "Mode demonstration",
-    paymentModeStripe: "Liens Stripe actifs",
+    paymentModeCheckout: "Checkout Stripe sécurisés",
+    paymentModeUnavailable: "Configuration requise",
     empty: "Rien à afficher pour l'instant.",
     loginHelp:
       "Ce portail est destiné aux clients existants. Les accès tuteurs sont créés uniquement par l'équipe.",
@@ -810,14 +798,6 @@ const copyByLocale = {
     parentConfirmed: "Parent confirmed",
     tutorConfirmed: "Tutor confirmed",
     paymentReady: "Payment ready",
-    paymentLinkSetup: "Payment links",
-    paymentOffer: "Session or payment type",
-    paymentLink: "Stripe link",
-    savePaymentLink: "Save link",
-    paymentLinkSaved: "Payment link activated.",
-    paymentLinkDetailsRequired: "Add an amount and a secure Stripe link.",
-    paymentNotConfigured: "Card payment is not configured for this session yet. The team must add the Stripe link first.",
-    paymentDemoNotice: "Demo mode: no real payment is taken until Stripe is enabled.",
     planSetupTitle: "Blocks and payments",
     planSetupIntro: "Create a Momentum block or a Progress block. Stripe verification automatically grants the included credits exactly once.",
     planChoose: "Offer",
@@ -1084,8 +1064,8 @@ const copyByLocale = {
     automationReminderDetail: "before sessions, notes and parent feedback",
     automationCalendarDetail: "created after both confirmations",
     automationDigestDetail: "every day",
-    paymentModeDemo: "Demo mode",
-    paymentModeStripe: "Stripe links active",
+    paymentModeCheckout: "Secure Stripe Checkout",
+    paymentModeUnavailable: "Setup required",
     empty: "Nothing to show yet.",
     loginHelp:
       "This portal is for current clients. Tutor access is created only by the team.",
@@ -1579,14 +1559,6 @@ function getPortalErrorMessage(copy, code) {
 
   if (code === "SESSION_RESCHEDULE_NOT_AVAILABLE") {
     return copy.rescheduleNotAvailable
-  }
-
-  if (code === "PAYMENT_LINK_DETAILS_REQUIRED") {
-    return copy.paymentLinkDetailsRequired
-  }
-
-  if (code === "PAYMENT_LINK_NOT_CONFIGURED") {
-    return copy.paymentNotConfigured
   }
 
   if (code === "PLAN_PAYMENT_STAGE_NOT_READY") {
@@ -3217,7 +3189,6 @@ function OperatorDashboard({ copy, dashboard, locale, token, onSaved }) {
           <TutorAccessPanel copy={copy} tutors={safeDashboard.tutor_records || safeDashboard.tutors} token={token} onSaved={onSaved} />
           <PlanEnrollmentPanel copy={copy} dashboard={safeDashboard} locale={locale} token={token} onSaved={onSaved} />
           <ScheduleSessionForm copy={copy} dashboard={safeDashboard} token={token} onSaved={onSaved} />
-          <PaymentLinkForm copy={copy} dashboard={safeDashboard} locale={locale} token={token} onSaved={onSaved} />
           <TestDataCleanupPanel copy={copy} records={safeDashboard.test_data} token={token} onSaved={onSaved} />
         </div>
         <div className="min-w-0 space-y-6">
@@ -3261,7 +3232,6 @@ function normalizeOperatorDashboard(dashboard) {
     "parent_candidates",
     "tutors",
     "tutor_records",
-    "payment_links",
     "sessions",
     "requests",
     "parent_feedback",
@@ -3391,7 +3361,7 @@ function TeamPriorityBoard({ copy, queues = {}, automation = {} }) {
         <div><span className="font-semibold text-white/84">{copy.automationReminders}:</span> {automation.reminder_cadence_minutes || 15} min, {copy.automationReminderDetail}</div>
         <div><span className="font-semibold text-white/84">{copy.automationCalendar}:</span> {copy.automationCalendarDetail}</div>
         <div><span className="font-semibold text-white/84">{copy.automationDigest}:</span> {automation.daily_digest_hour || "07:30"}, {copy.automationDigestDetail}</div>
-        <div><span className="font-semibold text-white/84">{copy.automationPayments}:</span> {automation.payment_mode === "stripe_links" ? copy.paymentModeStripe : copy.paymentModeDemo}</div>
+        <div><span className="font-semibold text-white/84">{copy.automationPayments}:</span> {automation.payment_mode === "stripe_checkout" ? copy.paymentModeCheckout : copy.paymentModeUnavailable}</div>
       </div>
     </section>
   )
@@ -4767,96 +4737,6 @@ function PlanEnrollmentPanel({ copy, dashboard, locale, token, onSaved }) {
       ) : null}
       {status ? <p className="mt-4 text-sm leading-6 text-white/68">{status}</p> : null}
     </section>
-  )
-}
-
-function PaymentLinkForm({ copy, dashboard, locale, token, onSaved }) {
-  const [values, setValues] = useState({
-    offer: "first_session",
-    amount_cad: String(getPaymentLinkDefaultAmountCad("first_session")),
-    stripe_payment_link: "",
-  })
-  const [status, setStatus] = useState("")
-  const [isSaving, setIsSaving] = useState(false)
-
-  function updateValue(key, value) {
-    setValues((current) => ({ ...current, [key]: value }))
-  }
-
-  function chooseOffer(offer) {
-    const existing = (dashboard.payment_links || [])
-      .find((link) => normalizePaymentLinkOfferCode(link.offer) === offer)
-    setValues({
-      offer,
-      amount_cad: existing?.amount_cad || String(getPaymentLinkDefaultAmountCad(offer)),
-      stripe_payment_link: existing?.stripe_payment_link || "",
-    })
-  }
-
-  async function handleSubmit(event) {
-    event.preventDefault()
-    setIsSaving(true)
-    setStatus("")
-
-    const result = await upsertPortalPaymentLink({ token, values })
-    setIsSaving(false)
-    if (result.ok) {
-      setStatus(copy.paymentLinkSaved)
-      onSaved?.()
-    } else {
-      setStatus(getPortalErrorMessage(copy, result.code))
-    }
-  }
-
-  return (
-    <form onSubmit={handleSubmit} className="panel-soft rounded-[24px] p-5 text-white">
-      <div className="flex items-center gap-3">
-        <CreditCard className="h-5 w-5 text-[#f5c977]" />
-        <h2 className="font-display text-3xl font-semibold">{copy.paymentLinkSetup}</h2>
-      </div>
-      <div className="mt-5 grid gap-3 sm:grid-cols-2">
-        <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-white/45">
-          {copy.paymentOffer}
-          <select
-            value={values.offer}
-            onChange={(event) => chooseOffer(event.target.value)}
-            className="mt-2 h-11 w-full rounded-2xl border border-white/15 bg-[#0b1b3a] px-3 text-sm normal-case tracking-normal text-white"
-          >
-            {paymentLinkOfferCodes.map((offer) => (
-              <option key={offer} value={offer}>{getPaymentLinkOfferLabel(offer, locale)}</option>
-            ))}
-          </select>
-        </label>
-        <label className="block text-sm font-semibold text-white/84">
-          {copy.amount}
-          <Input
-            value={values.amount_cad}
-            onChange={(event) => updateValue("amount_cad", event.target.value)}
-            type="number"
-            min="0"
-            step="0.01"
-            required
-            className="mt-2 h-12 rounded-2xl border-white/15 bg-white/5 text-white"
-          />
-        </label>
-      </div>
-      <label className="mt-3 block text-sm font-semibold text-white/84">
-        {copy.paymentLink}
-        <Input
-          value={values.stripe_payment_link}
-          onChange={(event) => updateValue("stripe_payment_link", event.target.value)}
-          type="url"
-          placeholder="https://buy.stripe.com/..."
-          required
-          className="mt-2 h-12 rounded-2xl border-white/15 bg-white/5 text-white placeholder:text-white/35"
-        />
-      </label>
-      <Button type="submit" disabled={isSaving} className="mt-4 w-full rounded-full bg-[#f5c977] px-5 py-6 text-[#071631] hover:bg-[#f7d38f]">
-        <CreditCard className="h-4 w-4" />
-        {copy.savePaymentLink}
-      </Button>
-      {status ? <p className="mt-4 text-sm leading-6 text-white/68">{status}</p> : null}
-    </form>
   )
 }
 

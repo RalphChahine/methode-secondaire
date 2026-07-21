@@ -119,6 +119,18 @@ async function main() {
     crmCode.indexOf("function sanitizeSessionForParent_("),
     crmCode.indexOf("function sanitizeSessionForTutor_("),
   )
+  const operatorSessionSanitizer = crmCode.slice(
+    crmCode.indexOf("function sanitizeSessionForOperator_("),
+    crmCode.indexOf("function sanitizeTutorAvailabilityForPortal_("),
+  )
+  const operatorPaymentSanitizer = crmCode.slice(
+    crmCode.indexOf("function sanitizePaymentForOperator_("),
+    crmCode.indexOf("function sanitizeSessionNoteForPortal_("),
+  )
+  const sessionPaymentDetailsFunction = crmCode.slice(
+    crmCode.indexOf("function resolveSessionPaymentDetails_("),
+    crmCode.indexOf("function defaultSessionAmountCad_("),
+  )
   expect(expiryFunction.includes("deleteCalendarEventForExpiredSession_(currentSession.data)") &&
     expiryFunction.indexOf("deleteCalendarEventForExpiredSession_(currentSession.data)") < expiryFunction.indexOf("session_status: \"cancelled\""),
   "CRM: expired session must delete its Calendar event before cancellation")
@@ -146,6 +158,9 @@ async function main() {
     paidWebhookFunction.includes("storedStripeSessionId") &&
     paidWebhookFunction.indexOf("PAYMENT_WEBHOOK_SESSION_MISMATCH") < paidWebhookFunction.indexOf("const alreadyPaid"),
   "CRM: a paid webhook must reject a mismatched stored Stripe Checkout Session before mutation")
+  expect(paidWebhookFunction.includes('payment_method: "stripe_checkout"') &&
+    !paidWebhookFunction.includes('payment_method: "stripe_payment_link"'),
+  "CRM: verified hosted Checkout is still recorded as a legacy Payment Link payment")
   expect(meetFailureCheckoutFunction.includes('paymentStatus === "paid"') &&
     meetFailureCheckoutFunction.includes("holdCompletedCheckoutForMeetFailure_"),
   "CRM: an already-paid session must be held and reconciled before Meet-failure cancellation")
@@ -164,6 +179,19 @@ async function main() {
   "Payment security: Checkout URL lookup falls back to a legacy Payment Link")
   expect(!parentSessionSanitizer.includes("payment_link"),
   "Payment security: a legacy Payment Link is exposed in the parent session payload")
+  expect(!portalEndpoint.includes("portal_upsert_payment_link") &&
+    !portalClient.includes("upsertPortalPaymentLink") &&
+    !portalSource.includes("PaymentLinkForm") &&
+    !portalSource.includes("buy.stripe.com") &&
+    !crmCode.includes('case "portal_upsert_payment_link":') &&
+    !crmCode.includes("function upsertPortalPaymentLink_("),
+  "Payment security: reusable Payment Link administration remains active in the portal")
+  expect(!sessionPaymentDetailsFunction.includes("CRM_PAYMENT_LINK_SHEET_NAME") &&
+    !sessionPaymentDetailsFunction.includes("payment_link") &&
+    !crmCode.includes("resolveSessionPaymentDetails_(spreadsheet"),
+  "Payment security: new session pricing still depends on the legacy Payment Links table")
+  expect(!operatorSessionSanitizer.includes("payment_link") && !operatorPaymentSanitizer.includes("payment_link"),
+  "Payment security: a legacy Payment Link is still sent to the operations portal")
   expect(portalSource.includes('paymentDueOneHour: "Paiement à effectuer dans l’heure"') &&
     portalSource.includes('paymentDueOneHour: "Payment due within one hour"'),
   "Portal UI: one-hour payment status must have French and English copy")

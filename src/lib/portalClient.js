@@ -71,14 +71,6 @@ export async function createPortalSession({ token, values }) {
   })
 }
 
-export async function upsertPortalPaymentLink({ token, values }) {
-  return portalRequest({
-    action: "portal_upsert_payment_link",
-    token,
-    ...values,
-  })
-}
-
 export async function respondToPortalSession({ role, token, sessionId, response, message }) {
   return portalRequest({
     action: "portal_respond_to_session",

@@ -10,7 +10,6 @@ const ALLOWED_ACTIONS = new Set([
   "portal_verify_code",
   "portal_get_dashboard",
   "portal_create_session",
-  "portal_upsert_payment_link",
   "portal_respond_to_session",
   "portal_submit_session_note",
   "portal_book_session",

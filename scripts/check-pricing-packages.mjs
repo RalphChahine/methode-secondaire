@@ -203,12 +203,12 @@ const portalSource = await fs.readFile(new URL("../src/pages/Portal.jsx", import
 assert.doesNotMatch(portalSource, /SÃ©ance DÃ©clic|DÃ©clic \/ one-off session/)
 assert.doesNotMatch(portalSource, /Séance Déclic|Déclic \/ one-off session/)
 assert.doesNotMatch(portalSource, /pricing\.weeklyFollowUp/)
-assert.match(portalSource, /paymentLinkOfferCodes\.map/)
-assert.match(portalSource, /getPaymentLinkDefaultAmountCad/)
+assert.match(portalSource, /getPaymentLinkDefaultAmountCad\(sessionType\)/)
 assert.match(portalSource, /formatCadAmount\(payment\.amount_cad, locale\)/)
-assert.match(portalSource, /normalizePaymentLinkOfferCode\(link\.offer\) === offer/)
 assert.match(portalSource, /pricing\.offers\.progression_block\.installmentPriceCad/)
 assert.doesNotMatch(portalSource, /(?:\$300|300\s*\$)/, "Portal midpoint copy must derive the installment price")
+assert.doesNotMatch(portalSource, /PaymentLinkForm|upsertPortalPaymentLink|buy\.stripe\.com/,
+  "Portal must not expose reusable Payment Link administration")
 
 const crmSource = await fs.readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
 const extractStringArray = (source, constantName) => {

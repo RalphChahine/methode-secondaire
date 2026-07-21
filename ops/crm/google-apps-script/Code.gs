@@ -905,9 +905,8 @@ function createPaymentRowsForScheduledSessions() {
       continue;
     }
 
-    const paymentDetails = resolveSessionPaymentDetails_(spreadsheet, {
+    const paymentDetails = resolveSessionPaymentDetails_({
       session_type: normalizeValue_(row[sessionColumns.session_type]),
-      payment_link: normalizeValue_(row[sessionColumns.payment_link]),
       amount_cad: normalizeValue_(row[sessionColumns.amount_cad]),
     });
 
@@ -1639,8 +1638,6 @@ function handlePortalAction_(spreadsheet, payload) {
       return getPortalDashboard_(spreadsheet, payload);
     case "portal_create_session":
       return createPortalSession_(spreadsheet, payload);
-    case "portal_upsert_payment_link":
-      return upsertPortalPaymentLink_(spreadsheet, payload);
     case "portal_respond_to_session":
       return respondToPortalSession_(spreadsheet, payload);
     case "portal_submit_session_note":
@@ -2761,7 +2758,7 @@ function createPortalSession_(spreadsheet, payload) {
     return { ok: false, code: "SESSION_TIME_CONFLICT" };
   }
 
-  const paymentDetails = resolveSessionPaymentDetails_(spreadsheet, { session_type: sessionType });
+  const paymentDetails = resolveSessionPaymentDetails_({ session_type: sessionType });
   const amountCad = paymentDetails.amount_cad || defaultSessionAmountCad_(sessionType);
   const now = new Date().toISOString();
   const record = {
@@ -2783,7 +2780,7 @@ function createPortalSession_(spreadsheet, payload) {
     location: normalizeValue_(payload.location).slice(0, 400),
     google_calendar_event_id: "",
     payment_status: planBinding.requires_credit ? "not_requested" : "payment_requested",
-    payment_link: planBinding.requires_credit ? "" : paymentDetails.payment_link,
+    payment_link: "",
     amount_cad: planBinding.requires_credit ? "" : amountCad,
     notes: [normalizeValue_(payload.notes).slice(0, 1200), planBinding.requires_credit ? "Pack credit reserved for this session." : ""].filter(Boolean).join(" | "),
     created_at: now,
@@ -2883,7 +2880,7 @@ function bookPortalSession_(spreadsheet, payload) {
     return planBinding;
   }
 
-  const paymentDetails = resolveSessionPaymentDetails_(spreadsheet, { session_type: sessionType });
+  const paymentDetails = resolveSessionPaymentDetails_({ session_type: sessionType });
   const paymentMode = planBinding.requires_credit ? "plan_credit" : "stripe_checkout";
   const amountCad = paymentDetails.amount_cad || defaultSessionAmountCad_(sessionType);
 
@@ -2907,7 +2904,7 @@ function bookPortalSession_(spreadsheet, payload) {
     location: slot.location || "",
     google_calendar_event_id: "",
     payment_status: planBinding.requires_credit ? "not_requested" : "payment_requested",
-    payment_link: planBinding.requires_credit ? "" : paymentDetails.payment_link,
+    payment_link: "",
     amount_cad: planBinding.requires_credit ? "" : amountCad,
     notes: ["Booked by parent in portal.", planBinding.requires_credit ? "Pack credit reserved for this session." : ""].filter(Boolean).join(" | "),
     created_at: now,
@@ -4292,7 +4289,7 @@ function markPortalPaymentPaidFromWebhook_(spreadsheet, payload) {
     const paidAt = coerceDate_(payload.paid_at) || new Date();
     const updatedPayment = {
       ...paymentRecord.data,
-      payment_method: "stripe_payment_link",
+      payment_method: "stripe_checkout",
       payment_status: "paid",
       invoice_id: stripeSessionId,
       stripe_checkout_session_id: stripeSessionId,
@@ -4729,40 +4726,6 @@ function grantCreditsForPaidPlanPayment_(spreadsheet, payment) {
     expires_at: enrollment.data.expires_at,
   });
   return { granted: true, ledger };
-}
-
-function upsertPortalPaymentLink_(spreadsheet, payload) {
-  const session = verifyPortalSession_(spreadsheet, payload.token, "operator");
-  if (!session.ok) {
-    return session;
-  }
-
-  const offer = normalizePaymentLinkOfferCode_(payload.offer);
-  const paymentLink = normalizeValue_(payload.stripe_payment_link).trim();
-  const amount = normalizeValue_(payload.amount_cad).trim();
-  if (!PAYMENT_LINK_OFFER_OPTIONS.includes(offer) || !paymentLink || !/^https:\/\//i.test(paymentLink) || !amount) {
-    return { ok: false, code: "PAYMENT_LINK_DETAILS_REQUIRED" };
-  }
-
-  const sheet = getOrCreateSheet_(spreadsheet, CRM_PAYMENT_LINK_SHEET_NAME);
-  setupPaymentLinksSheet_(sheet);
-  const existing = getSheetRecordsFromSheet_(sheet, PAYMENT_LINK_COLUMNS)
-    .find((record) => normalizePaymentLinkOfferCode_(record.data.offer) === offer);
-  const now = new Date().toISOString();
-  const record = {
-    payment_link_id: existing ? existing.data.payment_link_id : createRecordId_("LINK"),
-    offer,
-    description: normalizeValue_(payload.description).slice(0, 500),
-    amount_cad: amount,
-    stripe_payment_link: paymentLink,
-    interac_email: existing ? existing.data.interac_email : "",
-    status: "active",
-    notes: normalizeValue_(payload.notes).slice(0, 1000),
-    last_updated_at: now,
-  };
-
-  writeRecord_(sheet, PAYMENT_LINK_COLUMNS, existing ? existing.rowNumber : null, record);
-  return { ok: true, offer, payment_link_id: record.payment_link_id };
 }
 
 function normalizePaymentLinkOfferCode_(value) {
@@ -5471,7 +5434,6 @@ function buildOperatorPortalDashboard_(spreadsheet, access) {
   const feedbackRecords = getSheetRecords_(spreadsheet, CRM_PARENT_FEEDBACK_SHEET_NAME, PARENT_FEEDBACK_COLUMNS);
   const messageRecords = getSheetRecords_(spreadsheet, CRM_PORTAL_MESSAGE_SHEET_NAME, PORTAL_MESSAGE_COLUMNS);
   const paymentRecords = getSheetRecords_(spreadsheet, CRM_PAYMENT_SHEET_NAME, PAYMENT_COLUMNS);
-  const paymentLinkRecords = getSheetRecords_(spreadsheet, CRM_PAYMENT_LINK_SHEET_NAME, PAYMENT_LINK_COLUMNS);
   const sessionNoteRecords = getSheetRecords_(spreadsheet, CRM_SESSION_NOTE_SHEET_NAME, SESSION_NOTE_COLUMNS);
   const studentSourceRecords = getSheetRecords_(spreadsheet, CRM_STUDENT_SHEET_NAME, STUDENT_COLUMNS);
   const parentAccessByLead = accessRecords
@@ -5572,13 +5534,6 @@ function buildOperatorPortalDashboard_(spreadsheet, access) {
   const ratedFeedback = feedback.filter((record) => Number(record.rating) >= 1 && Number(record.rating) <= 5);
   const messages = liveMessageRecords
     .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)));
-  const activePaymentLinks = paymentLinkRecords
-    .filter((record) => normalizeValue_(record.status) === "active")
-    .map((record) => ({
-      offer: record.offer,
-      amount_cad: record.amount_cad,
-      stripe_payment_link: record.stripe_payment_link,
-    }));
   const planById = planSourceRecords.reduce((all, plan) => {
     all[normalizeValue_(plan.plan_id)] = plan;
     return all;
@@ -5632,7 +5587,6 @@ function buildOperatorPortalDashboard_(spreadsheet, access) {
     parent_candidates: parentCandidates,
     tutors,
     tutor_records: tutorRecords,
-    payment_links: activePaymentLinks,
     plans,
     plan_enrollments: planEnrollments,
     credit_ledger: creditLedger,
@@ -5642,7 +5596,7 @@ function buildOperatorPortalDashboard_(spreadsheet, access) {
       reminder_cadence_minutes: 15,
       calendar_flow: "on_confirmation",
       daily_digest_hour: `${TEAM_DAILY_DIGEST_HOUR}:${String(TEAM_DAILY_DIGEST_MINUTE).padStart(2, "0")}`,
-      payment_mode: activePaymentLinks.length ? "stripe_links" : "demo",
+      payment_mode: "stripe_checkout",
     },
     sessions,
     requests,
@@ -6290,22 +6244,12 @@ function notifyPortalMessageRecipient_(message) {
   }
 }
 
-function resolveSessionPaymentDetails_(spreadsheet, session) {
-  const directLink = normalizeValue_(session.payment_link);
+function resolveSessionPaymentDetails_(session) {
   const directAmount = normalizeValue_(session.amount_cad);
   const sessionType = normalizeAllowed_(session.session_type, SESSION_TYPE_OPTIONS, "one_time");
   const defaultAmount = defaultSessionAmountCad_(sessionType);
-  if (directLink || directAmount) {
-    return { payment_link: directLink, amount_cad: directAmount || defaultAmount };
-  }
-
-  const offer = sessionType;
-  const paymentLink = getSheetRecords_(spreadsheet, CRM_PAYMENT_LINK_SHEET_NAME, PAYMENT_LINK_COLUMNS)
-    .find((record) => normalizeValue_(record.status) === "active" && normalizeValue_(record.offer) === offer);
-
   return {
-    payment_link: paymentLink ? normalizeValue_(paymentLink.stripe_payment_link) : "",
-    amount_cad: paymentLink ? normalizeValue_(paymentLink.amount_cad) || defaultAmount : defaultAmount,
+    amount_cad: directAmount || defaultAmount,
   };
 }
 
@@ -6544,8 +6488,8 @@ function proposeNextRecurringSession_(spreadsheet, sourceRecord, note) {
   }
   const coveredByCredit = planBinding.requires_credit;
   const paymentDetails = coveredByCredit
-    ? { payment_link: "", amount_cad: "" }
-    : resolveSessionPaymentDetails_(spreadsheet, { session_type: nextSessionType });
+    ? { amount_cad: "" }
+    : resolveSessionPaymentDetails_({ session_type: nextSessionType });
   const now = new Date().toISOString();
   const next = {
     ...source,
@@ -6555,8 +6499,8 @@ function proposeNextRecurringSession_(spreadsheet, sourceRecord, note) {
     start_at: nextStart.toISOString(),
     end_at: new Date(nextStart.getTime() + duration).toISOString(),
     google_calendar_event_id: "",
-    payment_status: coveredByCredit ? "not_requested" : (paymentDetails.payment_link ? "payment_requested" : "not_requested"),
-    payment_link: coveredByCredit ? "" : paymentDetails.payment_link,
+    payment_status: coveredByCredit ? "not_requested" : "payment_requested",
+    payment_link: "",
     amount_cad: coveredByCredit ? "" : (paymentDetails.amount_cad || defaultSessionAmountCad_(nextSessionType)),
     parent_confirmed_at: "",
     tutor_confirmed_at: "",
@@ -7811,7 +7755,6 @@ function sanitizeSessionForOperator_(record) {
     parent_email: record.parent_email,
     tutor_calendar_email: record.tutor_calendar_email,
     google_calendar_event_id: record.google_calendar_event_id,
-    payment_link: record.payment_link,
     parent_confirmed_at: record.parent_confirmed_at,
     tutor_confirmed_at: record.tutor_confirmed_at,
     recurrence_weeks: record.recurrence_weeks,
@@ -7878,7 +7821,6 @@ function sanitizePaymentForOperator_(record) {
     amount_cad: record.amount_cad,
     payment_method: record.payment_method,
     payment_status: record.payment_status,
-    payment_link: record.payment_link,
     invoice_id: record.invoice_id,
     due_date: record.due_date,
     paid_at: record.paid_at,
