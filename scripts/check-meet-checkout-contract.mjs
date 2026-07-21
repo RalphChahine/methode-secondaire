@@ -48,6 +48,11 @@ async function main() {
   expect(crmCode.includes('sendUpdates: "all"'), "CRM: Meet invitations are not sent after the link is ready")
   expect(crmCode.includes("google_meet_url"), "CRM: Google Meet URL persistence is missing")
   expect(crmCode.includes("processPendingSessionConferences"), "CRM: pending Google Meet conference processing is missing")
+  expect(crmCode.includes("withMeetConferenceState_"), "CRM: Meet creation is not protected by a session lock")
+  expect(crmCode.includes("extendedProperties"), "CRM: calendar invitation idempotency marker is missing")
+  expect(crmCode.includes("meet_invitation_sent"), "CRM: calendar invitation marker is missing")
+  expect(crmCode.includes("google_meet_url: record.google_meet_url"), "CRM: portal session Meet URL is not exposed")
+  expect(crmCode.includes("calendar_conference_status: record.calendar_conference_status"), "CRM: portal session conference state is not exposed")
 
   if (failures.length > 0) {
     console.error("Meet Checkout contract checks failed:\n")
