@@ -3752,44 +3752,57 @@ function uploadPortalSessionMaterial_(spreadsheet, payload) {
 
   const validated = validatePortalMaterialPayload_(payload);
   if (!validated.ok) return validated;
-
-  const active = getSessionMaterialRecords_(spreadsheet)
-    .filter((record) => normalizeValue_(record.data.session_id) === normalizeValue_(sessionRecord.data.session_id))
-    .filter((record) => normalizeValue_(record.data.status) === "shared");
-  if (active.length >= PORTAL_MATERIAL_MAX_FILES_PER_SESSION) {
-    return { ok: false, code: "SESSION_MATERIAL_LIMIT_REACHED" };
-  }
-
-  const storage = getPortalSessionMaterialsFolder_(sessionRecord.data.session_id);
-  if (!storage.ok) return storage;
-
-  const file = storage.folder.createFile(Utilities.newBlob(
-    Utilities.base64Decode(validated.data_base64),
-    validated.mime_type,
-    validated.file_name,
-  ));
-  try {
-    file.addViewer(sessionRecord.data.tutor_calendar_email);
-  } catch (error) {
-    try {
-      file.setTrashed(true);
-    } catch (cleanupError) {
-      // The failed upload has no Sheet row. A later Drive audit can identify
-      // this exceptional orphan if Google also refuses the compensating trash.
-    }
-    return { ok: false, code: "SESSION_MATERIAL_SHARE_FAILED" };
-  }
-
+  const tutorEmail = normalizeEmail_(sessionRecord.data.tutor_calendar_email);
+  const uploadLock = LockService.getScriptLock();
+  let lockAcquired = false;
   let material;
+
   try {
-    material = createSessionMaterialRecord_(spreadsheet, sessionRecord.data, file, validated);
+    lockAcquired = uploadLock.tryLock(10000);
   } catch (error) {
-    try {
-      file.setTrashed(true);
-    } catch (cleanupError) {
-      // Do not expose an untracked Drive file through the portal response.
-    }
     return { ok: false, code: "SESSION_MATERIAL_STORAGE_FAILED" };
+  }
+  if (!lockAcquired) {
+    return { ok: false, code: "SESSION_MATERIAL_STORAGE_FAILED" };
+  }
+
+  try {
+    const active = getSessionMaterialRecords_(spreadsheet)
+      .filter((record) => normalizeValue_(record.data.session_id) === normalizeValue_(sessionRecord.data.session_id))
+      .filter((record) => normalizeValue_(record.data.status) === "shared");
+    if (active.length >= PORTAL_MATERIAL_MAX_FILES_PER_SESSION) {
+      return { ok: false, code: "SESSION_MATERIAL_LIMIT_REACHED" };
+    }
+
+    const storage = getPortalSessionMaterialsFolder_(sessionRecord.data.session_id);
+    if (!storage.ok) return storage;
+
+    let file;
+    try {
+      file = storage.folder.createFile(Utilities.newBlob(
+        Utilities.base64Decode(validated.data_base64),
+        validated.mime_type,
+        validated.file_name,
+      ));
+    } catch (error) {
+      return { ok: false, code: "SESSION_MATERIAL_STORAGE_FAILED" };
+    }
+
+    try {
+      grantSessionMaterialTutorAccess_(file.getId(), tutorEmail);
+    } catch (error) {
+      cleanupSessionMaterialFile_(file.getId(), tutorEmail, file);
+      return { ok: false, code: "SESSION_MATERIAL_SHARE_FAILED" };
+    }
+
+    try {
+      material = createSessionMaterialRecord_(spreadsheet, sessionRecord.data, file, validated);
+    } catch (error) {
+      cleanupSessionMaterialFile_(file.getId(), tutorEmail, file);
+      return { ok: false, code: "SESSION_MATERIAL_STORAGE_FAILED" };
+    }
+  } finally {
+    uploadLock.releaseLock();
   }
 
   try {
@@ -3811,6 +3824,7 @@ function validatePortalMaterialPayload_(payload) {
   const unsafeName = !fileName ||
     fileName.length > 180 ||
     [".", ".."].includes(fileName) ||
+    /^[=+\-@]/.test(fileName) ||
     /[\\/\u0000-\u001f\u007f]/.test(fileName);
 
   if (unsafeName || !declaredSizeText || !Number.isInteger(declaredSize) || declaredSize < 1) {
@@ -3818,6 +3832,16 @@ function validatePortalMaterialPayload_(payload) {
   }
   if (!PORTAL_MATERIAL_MIME_TYPES.includes(mimeType)) {
     return { ok: false, code: "SESSION_MATERIAL_TYPE_NOT_ALLOWED" };
+  }
+  const allowedExtensions = {
+    "image/jpeg": [".jpg", ".jpeg"],
+    "image/png": [".png"],
+    "image/webp": [".webp"],
+    "application/pdf": [".pdf"],
+  };
+  const lowerFileName = fileName.toLowerCase();
+  if (!allowedExtensions[mimeType].some((extension) => lowerFileName.endsWith(extension))) {
+    return { ok: false, code: "SESSION_MATERIAL_FILE_INVALID" };
   }
   if (declaredSize > PORTAL_MATERIAL_MAX_BYTES) {
     return { ok: false, code: "SESSION_MATERIAL_FILE_TOO_LARGE" };
@@ -3842,6 +3866,20 @@ function validatePortalMaterialPayload_(payload) {
   if (decoded.length > PORTAL_MATERIAL_MAX_BYTES) {
     return { ok: false, code: "SESSION_MATERIAL_FILE_TOO_LARGE" };
   }
+  const bytes = decoded.slice(0, 12).map((byte) => ((Number(byte) % 256) + 256) % 256);
+  const startsWith = (signature) =>
+    signature.every((byte, index) => bytes[index] === byte);
+  const signatureMatches = mimeType === "application/pdf"
+    ? startsWith([0x25, 0x50, 0x44, 0x46, 0x2d])
+    : mimeType === "image/jpeg"
+      ? startsWith([0xff, 0xd8, 0xff])
+      : mimeType === "image/png"
+        ? startsWith([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+        : startsWith([0x52, 0x49, 0x46, 0x46]) &&
+          bytes[8] === 0x57 && bytes[9] === 0x45 && bytes[10] === 0x42 && bytes[11] === 0x50;
+  if (!signatureMatches) {
+    return { ok: false, code: "SESSION_MATERIAL_FILE_INVALID" };
+  }
 
   return {
     ok: true,
@@ -3850,6 +3888,22 @@ function validatePortalMaterialPayload_(payload) {
     size_bytes: decoded.length,
     data_base64: encoded,
   };
+}
+
+function grantSessionMaterialTutorAccess_(fileId, tutorEmail) {
+  const normalizedEmail = normalizeEmail_(tutorEmail);
+  if (!normalizedEmail) {
+    throw new Error("SESSION_MATERIAL_TUTOR_REQUIRED");
+  }
+  return Drive.Permissions.create({
+    role: "reader",
+    type: "user",
+    emailAddress: normalizedEmail,
+  }, normalizeValue_(fileId), {
+    sendNotificationEmail: false,
+    supportsAllDrives: true,
+    fields: "id",
+  });
 }
 
 function getSessionMaterialRecords_(spreadsheet) {
@@ -3951,7 +4005,10 @@ function withdrawPortalSessionMaterial_(spreadsheet, payload) {
   if (!sessionRecord || !isUpcomingDate_(sessionRecord.data.start_at)) {
     return { ok: false, code: "SESSION_MATERIAL_NOT_AVAILABLE" };
   }
-  if (!trashSessionMaterialFile_(materialRecord.data.drive_file_id)) {
+  if (!cleanupSessionMaterialFile_(
+    materialRecord.data.drive_file_id,
+    materialRecord.data.tutor_email,
+  )) {
     return { ok: false, code: "SESSION_MATERIAL_WITHDRAW_FAILED" };
   }
 
@@ -6470,6 +6527,9 @@ function syncParentReferences_(spreadsheet, leadId, previousEmail, lead, options
   updateRows(CRM_PORTAL_MESSAGE_SHEET_NAME, PORTAL_MESSAGE_COLUMNS,
     (record) => normalizeValue_(record.lead_id) === leadId || normalizeEmail_(record.parent_email) === previousEmail,
     (record) => ({ ...record, parent_email: nextEmail }));
+  updateRows(CRM_SESSION_MATERIAL_SHEET_NAME, SESSION_MATERIAL_COLUMNS,
+    (record) => normalizeValue_(record.lead_id) === leadId || normalizeEmail_(record.parent_email) === previousEmail,
+    (record) => ({ ...record, lead_id: leadId, parent_email: nextEmail }));
   updateRows(CRM_PLAN_ENROLLMENT_SHEET_NAME, PLAN_ENROLLMENT_COLUMNS,
     (record) => normalizeValue_(record.lead_id) === leadId || normalizeEmail_(record.parent_email) === previousEmail,
     (record) => ({ ...record, parent_email: nextEmail, updated_at: new Date().toISOString() }));
@@ -7304,19 +7364,24 @@ function sendTutorNoteEscalationEmail_(session) {
   }
 }
 
-function trashSessionMaterialFile_(driveFileId) {
+function cleanupSessionMaterialFile_(driveFileId, tutorEmail, existingFile) {
   const fileId = normalizeValue_(driveFileId);
   if (!fileId) return true;
 
-  let file;
-  try {
-    file = DriveApp.getFileById(fileId);
-  } catch (error) {
-    const message = String(error || "").toLowerCase();
-    // A missing prior file is already in the desired cleanup state. Permission
-    // and transient Drive errors must retain the audit row for a safe retry.
-    return ["not found", "does not exist", "unable to find", "no item with the given id"]
-      .some((marker) => message.includes(marker));
+  let file = existingFile;
+  if (!file) {
+    try {
+      file = DriveApp.getFileById(fileId);
+    } catch (error) {
+      const message = String(error || "").toLowerCase();
+      // A missing prior file is already in the desired cleanup state.
+      return ["not found", "does not exist", "unable to find", "no item with the given id"]
+        .some((marker) => message.includes(marker));
+    }
+  }
+
+  if (!revokeSessionMaterialTutorAccess_(fileId, tutorEmail, file)) {
+    return false;
   }
 
   try {
@@ -7324,6 +7389,39 @@ function trashSessionMaterialFile_(driveFileId) {
     return true;
   } catch (error) {
     return false;
+  }
+}
+
+function revokeSessionMaterialTutorAccess_(fileId, tutorEmail, file) {
+  const normalizedEmail = normalizeEmail_(tutorEmail);
+  if (!normalizedEmail) return false;
+
+  try {
+    let pageToken = "";
+    do {
+      const options = {
+        fields: "nextPageToken,permissions(id,emailAddress,type)",
+        pageSize: 100,
+        supportsAllDrives: true,
+      };
+      if (pageToken) options.pageToken = pageToken;
+      const response = Drive.Permissions.list(fileId, options);
+      (response.permissions || [])
+        .filter((permission) =>
+          normalizeValue_(permission.type) === "user" &&
+          normalizeEmail_(permission.emailAddress) === normalizedEmail)
+        .forEach((permission) =>
+          Drive.Permissions.remove(fileId, permission.id, { supportsAllDrives: true }));
+      pageToken = normalizeValue_(response.nextPageToken);
+    } while (pageToken);
+    return true;
+  } catch (error) {
+    try {
+      file.revokePermissions(normalizedEmail);
+      return true;
+    } catch (fallbackError) {
+      return false;
+    }
   }
 }
 
@@ -7340,7 +7438,10 @@ function expireSessionMaterials_(spreadsheet) {
       return expiresAt && expiresAt.getTime() <= now;
     })
     .forEach((record) => {
-      if (!trashSessionMaterialFile_(record.data.drive_file_id)) {
+      if (!cleanupSessionMaterialFile_(
+        record.data.drive_file_id,
+        record.data.tutor_email,
+      )) {
         errors += 1;
         return;
       }
@@ -7361,7 +7462,10 @@ function deleteSessionMaterialRecords_(spreadsheet, predicate) {
     .sort((a, b) => b.rowNumber - a.rowNumber);
 
   const cleanupFailed = matches
-    .map((record) => trashSessionMaterialFile_(record.data.drive_file_id))
+    .map((record) => cleanupSessionMaterialFile_(
+      record.data.drive_file_id,
+      record.data.tutor_email,
+    ))
     .some((ok) => !ok);
   if (cleanupFailed) {
     return { ok: false, code: "SESSION_MATERIAL_CLEANUP_FAILED", deleted: 0 };
@@ -8121,9 +8225,18 @@ function sanitizeSessionMaterialForParent_(record) {
 }
 
 function sanitizeSessionMaterialForTutor_(record) {
+  let driveUrl = "";
+  try {
+    const file = DriveApp.getFileById(record.drive_file_id);
+    const isTrashed = typeof file.isTrashed === "function" && file.isTrashed();
+    driveUrl = isTrashed ? "" : file.getUrl();
+  } catch (error) {
+    // Keep the rest of the tutor dashboard available while automation or an
+    // operator reconciles a missing/out-of-band trashed Drive file.
+  }
   return {
     ...sanitizeSessionMaterialForParent_(record),
-    drive_url: DriveApp.getFileById(record.drive_file_id).getUrl(),
+    drive_url: driveUrl,
   };
 }
 
