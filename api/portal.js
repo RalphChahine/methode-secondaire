@@ -160,7 +160,15 @@ async function fetchCrmWebhook(webhookUrl, payload) {
 
 async function readJsonBody(req) {
   if (req.body) {
-    return typeof req.body === "string" ? JSON.parse(req.body) : req.body
+    if (typeof req.body === "string") {
+      if (Buffer.byteLength(req.body) > MAX_PORTAL_BODY_BYTES) {
+        throw new Error("Request body too large.")
+      }
+
+      return JSON.parse(req.body)
+    }
+
+    return req.body
   }
 
   const rawBody = await readRawBody(req)
@@ -170,16 +178,26 @@ async function readJsonBody(req) {
 function readRawBody(req) {
   return new Promise((resolve, reject) => {
     let body = ""
+    let finished = false
 
     req.on("data", (chunk) => {
+      if (finished) {
+        return
+      }
+
       body += chunk
 
       if (Buffer.byteLength(body) > MAX_PORTAL_BODY_BYTES) {
+        finished = true
         reject(new Error("Request body too large."))
       }
     })
 
-    req.on("end", () => resolve(body))
+    req.on("end", () => {
+      if (!finished) {
+        resolve(body)
+      }
+    })
     req.on("error", reject)
   })
 }
