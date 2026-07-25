@@ -3791,14 +3791,42 @@ function uploadPortalSessionMaterial_(spreadsheet, payload) {
     try {
       grantSessionMaterialTutorAccess_(file.getId(), tutorEmail);
     } catch (error) {
-      cleanupSessionMaterialFile_(file.getId(), tutorEmail, file);
+      if (!cleanupSessionMaterialFile_(file.getId(), tutorEmail, file)) {
+        const escalation = appendSessionMaterialCleanupEscalation_(
+          spreadsheet,
+          sessionRecord.data,
+          file.getId(),
+          tutorEmail,
+          "permission_grant",
+          error,
+        );
+        return {
+          ok: false,
+          code: "SESSION_MATERIAL_CLEANUP_FAILED",
+          cleanup_request_id: escalation.request_id,
+        };
+      }
       return { ok: false, code: "SESSION_MATERIAL_SHARE_FAILED" };
     }
 
     try {
       material = createSessionMaterialRecord_(spreadsheet, sessionRecord.data, file, validated);
     } catch (error) {
-      cleanupSessionMaterialFile_(file.getId(), tutorEmail, file);
+      if (!cleanupSessionMaterialFile_(file.getId(), tutorEmail, file)) {
+        const escalation = appendSessionMaterialCleanupEscalation_(
+          spreadsheet,
+          sessionRecord.data,
+          file.getId(),
+          tutorEmail,
+          "material_row_create",
+          error,
+        );
+        return {
+          ok: false,
+          code: "SESSION_MATERIAL_CLEANUP_FAILED",
+          cleanup_request_id: escalation.request_id,
+        };
+      }
       return { ok: false, code: "SESSION_MATERIAL_STORAGE_FAILED" };
     }
   } finally {
@@ -3812,6 +3840,35 @@ function uploadPortalSessionMaterial_(spreadsheet, payload) {
     // Portal Messages notification cannot be appended.
   }
   return { ok: true, material: sanitizeSessionMaterialForParent_(material) };
+}
+
+function appendSessionMaterialCleanupEscalation_(
+  spreadsheet,
+  session,
+  fileId,
+  tutorEmail,
+  operation,
+  error,
+) {
+  const sessionId = normalizeValue_(session.session_id);
+  const normalizedFileId = normalizeValue_(fileId);
+  const normalizedTutorEmail = normalizeEmail_(tutorEmail);
+  const normalizedOperation = normalizeValue_(operation);
+  return appendPortalRequestRecord_(spreadsheet, {
+    role: "operator",
+    email: "",
+    related_id: sessionId,
+    request_type: "technical_help",
+    subject: `Nettoyage document requis - ${sessionId}`,
+    message: [
+      `operation=${normalizedOperation}`,
+      `file_id=${normalizedFileId}`,
+      `session_id=${sessionId}`,
+      `tutor_id=${normalizeValue_(session.tutor_id)}`,
+      `tutor_email=${normalizedTutorEmail}`,
+      `error=${normalizeValue_(error).slice(0, 500)}`,
+    ].join("; "),
+  });
 }
 
 function validatePortalMaterialPayload_(payload) {
