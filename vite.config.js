@@ -4,7 +4,7 @@ import path from "path"
 
 const DEFAULT_CRM_WEBHOOK_URL =
   "https://script.google.com/macros/s/AKfycbzx2pzUigC7eI4wgg9CgomGWZRA7tbUG-4pHLhjbO1YYS6FRQ4NpPrW7d05LwERGdQ4Ow/exec"
-const MAX_PORTAL_BODY_BYTES = 120 * 1024
+const MAX_PORTAL_BODY_BYTES = 4 * 1024 * 1024
 const CRM_REQUEST_TIMEOUT_MS = 22000
 const PORTAL_ACTIONS = new Set([
   "portal_create_account",
@@ -12,7 +12,6 @@ const PORTAL_ACTIONS = new Set([
   "portal_verify_code",
   "portal_get_dashboard",
   "portal_create_session",
-  "portal_upsert_payment_link",
   "portal_respond_to_session",
   "portal_submit_session_note",
   "portal_book_session",
@@ -36,7 +35,6 @@ const PORTAL_ACTIONS = new Set([
   "portal_cancel_session",
   "portal_reschedule_session",
   "portal_upsert_tutor_availability",
-  "portal_complete_demo_payment",
   "portal_reissue_payment_checkout",
   "portal_update_request_status",
   "portal_create_request",
@@ -48,6 +46,8 @@ const PORTAL_ACTIONS = new Set([
   "portal_resume_plan_enrollment",
   "portal_adjust_plan_credits",
   "portal_get_plan_change_deadline",
+  "portal_upload_session_material",
+  "portal_withdraw_session_material",
 ])
 
 export default defineConfig(({ mode }) => {

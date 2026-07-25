@@ -1,10 +1,10 @@
-const MAX_BODY_BYTES = 120 * 1024
+export const MAX_PORTAL_BODY_BYTES = 4 * 1024 * 1024
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
 const RATE_LIMIT_MAX_REQUESTS = 30
 const CRM_REQUEST_TIMEOUT_MS = 22000
 const requestLog = new Map()
 
-const ALLOWED_ACTIONS = new Set([
+export const PORTAL_ACTIONS = new Set([
   "portal_create_account",
   "portal_request_code",
   "portal_verify_code",
@@ -44,6 +44,8 @@ const ALLOWED_ACTIONS = new Set([
   "portal_resume_plan_enrollment",
   "portal_adjust_plan_credits",
   "portal_get_plan_change_deadline",
+  "portal_upload_session_material",
+  "portal_withdraw_session_material",
 ])
 
 export default async function handler(req, res) {
@@ -78,7 +80,7 @@ export default async function handler(req, res) {
   }
 
   const action = normalizeString(body?.action)
-  if (!ALLOWED_ACTIONS.has(action)) {
+  if (!PORTAL_ACTIONS.has(action)) {
     return res.status(400).json({
       ok: false,
       code: "UNKNOWN_PORTAL_ACTION",
@@ -172,7 +174,7 @@ function readRawBody(req) {
     req.on("data", (chunk) => {
       body += chunk
 
-      if (Buffer.byteLength(body) > MAX_BODY_BYTES) {
+      if (Buffer.byteLength(body) > MAX_PORTAL_BODY_BYTES) {
         reject(new Error("Request body too large."))
       }
     })
