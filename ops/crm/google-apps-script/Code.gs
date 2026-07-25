@@ -29,6 +29,9 @@ const PORTAL_MATERIAL_MAX_BYTES = 2621440;
 const PORTAL_MATERIAL_MAX_FILES_PER_SESSION = 5;
 const PORTAL_MATERIAL_RETENTION_DAYS = 30;
 const PORTAL_MATERIAL_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+const PORTAL_MATERIAL_CLEANUP_QUEUE_PROPERTY = "PORTAL_MATERIAL_CLEANUP_QUEUE";
+const PORTAL_MATERIAL_CLEANUP_QUEUE_MAX_ITEMS = 20;
+const PORTAL_MATERIAL_CLEANUP_QUEUE_MAX_CHARS = 8000;
 const PORTAL_OPERATOR_EMAILS = ["chahineralph@gmail.com"];
 const CRM_REQUIRED_SHEET_NAMES = [
   CRM_SHEET_NAME,
@@ -3803,7 +3806,9 @@ function uploadPortalSessionMaterial_(spreadsheet, payload) {
         return {
           ok: false,
           code: "SESSION_MATERIAL_CLEANUP_FAILED",
-          cleanup_request_id: escalation.request_id,
+          cleanup_request_id: escalation.request_id || "",
+          cleanup_queue_id: escalation.cleanup_queue_id || "",
+          cleanup_queued: Boolean(escalation.queued),
         };
       }
       return { ok: false, code: "SESSION_MATERIAL_SHARE_FAILED" };
@@ -3824,7 +3829,9 @@ function uploadPortalSessionMaterial_(spreadsheet, payload) {
         return {
           ok: false,
           code: "SESSION_MATERIAL_CLEANUP_FAILED",
-          cleanup_request_id: escalation.request_id,
+          cleanup_request_id: escalation.request_id || "",
+          cleanup_queue_id: escalation.cleanup_queue_id || "",
+          cleanup_queued: Boolean(escalation.queued),
         };
       }
       return { ok: false, code: "SESSION_MATERIAL_STORAGE_FAILED" };
@@ -3850,25 +3857,168 @@ function appendSessionMaterialCleanupEscalation_(
   operation,
   error,
 ) {
-  const sessionId = normalizeValue_(session.session_id);
-  const normalizedFileId = normalizeValue_(fileId);
-  const normalizedTutorEmail = normalizeEmail_(tutorEmail);
-  const normalizedOperation = normalizeValue_(operation);
-  return appendPortalRequestRecord_(spreadsheet, {
+  const details = buildSessionMaterialCleanupDetails_(
+    session,
+    fileId,
+    tutorEmail,
+    operation,
+    error,
+  );
+  try {
+    const request = appendPortalRequestRecord_(
+      spreadsheet,
+      buildSessionMaterialCleanupRequestParams_(details),
+    );
+    return { ...request, queued: false };
+  } catch (auditError) {
+    const queued = queueSessionMaterialCleanupEscalation_(
+      session,
+      fileId,
+      tutorEmail,
+      operation,
+      error,
+      auditError,
+    );
+    return {
+      request_id: "",
+      cleanup_queue_id: queued.queue_id,
+      queued: true,
+    };
+  }
+}
+
+function buildSessionMaterialCleanupDetails_(session, fileId, tutorEmail, operation, error) {
+  const now = new Date().toISOString();
+  return {
+    queue_id: createRecordId_("CLEANUP"),
+    file_id: normalizeValue_(fileId).slice(0, 200),
+    session_id: normalizeValue_(session.session_id).slice(0, 200),
+    tutor_id: normalizeValue_(session.tutor_id).slice(0, 200),
+    tutor_email: normalizeEmail_(tutorEmail).slice(0, 320),
+    operation: normalizeValue_(operation).slice(0, 80),
+    error: normalizeValue_(error).slice(0, 300),
+    audit_error: "",
+    queued_at: now,
+    last_seen_at: now,
+    occurrences: 1,
+  };
+}
+
+function buildSessionMaterialCleanupRequestParams_(details) {
+  return {
     role: "operator",
     email: "",
-    related_id: sessionId,
+    related_id: details.session_id,
     request_type: "technical_help",
-    subject: `Nettoyage document requis - ${sessionId}`,
+    subject: `Nettoyage document requis - ${details.session_id}`,
     message: [
-      `operation=${normalizedOperation}`,
-      `file_id=${normalizedFileId}`,
-      `session_id=${sessionId}`,
-      `tutor_id=${normalizeValue_(session.tutor_id)}`,
-      `tutor_email=${normalizedTutorEmail}`,
-      `error=${normalizeValue_(error).slice(0, 500)}`,
+      `queue_id=${details.queue_id}`,
+      `operation=${details.operation}`,
+      `file_id=${details.file_id}`,
+      `session_id=${details.session_id}`,
+      `tutor_id=${details.tutor_id}`,
+      `tutor_email=${details.tutor_email}`,
+      `error=${details.error}`,
+      `audit_error=${details.audit_error}`,
+      `occurrences=${details.occurrences}`,
     ].join("; "),
-  });
+  };
+}
+
+function readSessionMaterialCleanupQueue_() {
+  const raw = PropertiesService.getScriptProperties()
+    .getProperty(PORTAL_MATERIAL_CLEANUP_QUEUE_PROPERTY);
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function writeSessionMaterialCleanupQueue_(entries) {
+  const properties = PropertiesService.getScriptProperties();
+  const bounded = (entries || []).slice(-PORTAL_MATERIAL_CLEANUP_QUEUE_MAX_ITEMS);
+  let serialized = JSON.stringify(bounded);
+  while (serialized.length > PORTAL_MATERIAL_CLEANUP_QUEUE_MAX_CHARS && bounded.length > 1) {
+    bounded.shift();
+    serialized = JSON.stringify(bounded);
+  }
+  if (!bounded.length) {
+    properties.deleteProperty(PORTAL_MATERIAL_CLEANUP_QUEUE_PROPERTY);
+    return [];
+  }
+  properties.setProperty(PORTAL_MATERIAL_CLEANUP_QUEUE_PROPERTY, serialized);
+  return bounded;
+}
+
+function queueSessionMaterialCleanupEscalation_(
+  session,
+  fileId,
+  tutorEmail,
+  operation,
+  error,
+  auditError,
+) {
+  const next = buildSessionMaterialCleanupDetails_(session, fileId, tutorEmail, operation, error);
+  next.audit_error = normalizeValue_(auditError).slice(0, 300);
+  const entries = readSessionMaterialCleanupQueue_();
+  const existing = entries.find((entry) =>
+    normalizeValue_(entry.file_id) === next.file_id &&
+    normalizeValue_(entry.operation) === next.operation);
+  if (existing) {
+    existing.session_id = next.session_id;
+    existing.tutor_id = next.tutor_id;
+    existing.tutor_email = next.tutor_email;
+    existing.error = next.error;
+    existing.audit_error = next.audit_error;
+    existing.last_seen_at = next.last_seen_at;
+    existing.occurrences = (Number(existing.occurrences) || 1) + 1;
+    writeSessionMaterialCleanupQueue_(entries);
+    return existing;
+  }
+  writeSessionMaterialCleanupQueue_([...entries, next]);
+  return next;
+}
+
+function flushSessionMaterialCleanupQueue_(spreadsheet) {
+  const initialEntries = readSessionMaterialCleanupQueue_();
+  if (!initialEntries.length) {
+    return { ok: true, surfaced: 0, pending: 0 };
+  }
+
+  const queueLock = LockService.getScriptLock();
+  let lockAcquired = false;
+  try {
+    lockAcquired = queueLock.tryLock(5000);
+  } catch (error) {
+    return { ok: false, surfaced: 0, pending: initialEntries.length };
+  }
+  if (!lockAcquired) {
+    return { ok: false, surfaced: 0, pending: initialEntries.length };
+  }
+
+  try {
+    const entries = readSessionMaterialCleanupQueue_();
+    const pending = [];
+    let surfaced = 0;
+    entries.forEach((entry) => {
+      try {
+        appendPortalRequestRecord_(
+          spreadsheet,
+          buildSessionMaterialCleanupRequestParams_(entry),
+        );
+        surfaced += 1;
+      } catch (error) {
+        pending.push(entry);
+      }
+    });
+    writeSessionMaterialCleanupQueue_(pending);
+    return { ok: pending.length === 0, surfaced, pending: pending.length };
+  } finally {
+    queueLock.releaseLock();
+  }
 }
 
 function validatePortalMaterialPayload_(payload) {
@@ -7537,6 +7687,7 @@ function runPortalAutomation() {
   ensureCrmReady_(spreadsheet);
   return {
     ok: true,
+    material_cleanup_queue: flushSessionMaterialCleanupQueue_(spreadsheet),
     payment_simulations: normalizeDemoPaymentRecords_(spreadsheet),
     credit_settlements: settleCompletedPlanCreditReservations_(spreadsheet),
     calendar: syncConfirmedSessionsToCalendar(),
