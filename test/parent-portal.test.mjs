@@ -20,6 +20,17 @@ test("does not repeat prepare once the upcoming session has shared material", ()
   }), { key: "all_set", destination: "today" })
 })
 
+test("does not prepare a confirmed session without a valid future start time", () => {
+  for (const start_at of [undefined, "not-a-date"]) {
+    const action = getParentNextAction({
+      profile: { name: "Parent" }, matching: { tutor_id: "T-1" },
+      sessions: [{ session_id: "S-1", session_status: "confirmed", start_at }],
+      metrics: { payments_due: 0, messages_waiting: 0 }, session_materials: [],
+    })
+    assert.notEqual(action.key, "prepare")
+  }
+})
+
 test("uses the fixed next-action priority", () => {
   assert.equal(getParentNextAction({ profile: {}, sessions: [] }).key, "profile")
   assert.equal(getParentNextAction({ profile: { name: "P" }, matching: {}, sessions: [] }).key, "matching")

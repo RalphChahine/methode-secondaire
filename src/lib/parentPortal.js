@@ -11,7 +11,7 @@ function isUpcomingConfirmedSession(session) {
     return false
   }
   const startAt = new Date(session.start_at).getTime()
-  return !Number.isFinite(startAt) || startAt > Date.now()
+  return Number.isFinite(startAt) && startAt > Date.now()
 }
 
 export function getParentNextAction(dashboard = {}) {
