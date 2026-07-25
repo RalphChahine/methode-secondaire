@@ -32,7 +32,7 @@ Parents can:
 - see an online session's Google Meet link only after the conference is ready;
 - add a note tied to any of their sessions; it is routed to `Portal Requests` for the team;
 - prepare an upcoming session directly for the assigned tutor with a written note; it creates a session message with the normal response SLA instead of an untracked email;
-- see clearly that photos and PDFs are not uploaded or stored by the portal yet; selected files stay on the parent's device and only the written note is sent to the tutor;
+- continue using the written preparation note in the current UI; the private photo/PDF storage workflow exists in Apps Script, but the upload controls are not enabled until the non-production Drive acceptance below passes;
 - rate a completed session, signal whether follow-up is needed, and leave written feedback;
 - exchange portal messages with the tutor attached to that same session; the recipient receives an email alert, but neither contact email is exposed in the portal;
 - see that a portal message is awaiting a response or answered; overdue unanswered messages are escalated to the operations inbox after 24 hours;
@@ -102,6 +102,8 @@ Apps Script actions:
 - `portal_assign_tutor`
 - `portal_invite_tutor`
 - `portal_send_session_message`
+- `portal_upload_session_material`
+- `portal_withdraw_session_material`
 - `portal_cancel_session`
 - `portal_upsert_tutor_availability`
 - `portal_update_request_status`
@@ -130,6 +132,7 @@ CRM tabs:
 - `Portal Requests`
 - `Parent Feedback`
 - `Portal Messages`
+- `Session Materials`
 - `Session Notes`
 - `Session Notes Queue`
 - `Payments`
@@ -219,7 +222,11 @@ Stripe remains the payment processor and the portal never stores card data. A si
 - A new message is marked `awaiting_reply` with a 24-hour response target. A response marks the preceding message as `answered`.
 - The automation emails the operations inbox once for overdue conversations, so there is a human escalation path.
 - A parent preparation note uses this same secured session-message path, so the tutor sees it before the session and the team can see the audit trail.
-- Direct file upload is intentionally not live: photos and PDFs selected in the preparation interface are not transmitted or retained by the portal. The parent can send a written note now; the team must provide an approved secure channel before requesting an actual file.
+- The Apps Script backend accepts only JPEG, PNG, WebP, and PDF material up to exactly 2,621,440 bytes, for a maximum of five active files on a linked future session. It stores only metadata in `Session Materials`, keeps the bytes in the configured private Drive folder, grants the assigned tutor viewer access, and never sends an attachment or public link by email.
+- Parent dashboard records contain metadata only. The assigned tutor's dashboard additionally receives the private Drive URL; unrelated tutors receive neither metadata nor URL. Withdrawn and expired records are omitted from both views.
+- Parent withdrawal trashes the Drive file and marks the audit row `withdrawn`. Automation trashes a shared file after the session end plus 30 days and marks the row `expired`.
+- Material alerts use `message_status=info`, have no reply deadline, and do not enter the 24-hour message SLA.
+- Production upload controls remain disabled until the non-production Drive acceptance below has passed and been recorded.
 - Requests sent to the team remain visible to their parent or tutor author with their current status. Only the operator role can change that status.
 
 ### Notes and payment confirmation
@@ -236,6 +243,7 @@ Stripe remains the payment processor and the portal never stores card data. A si
 - settlement of any completed progress-block credit reservation;
 - parent summaries marked `ready_to_send`.
 - one-time overdue-message escalation alerts for conversations without a reply after 24 hours.
+- expiry and Drive cleanup for shared session material whose 30-day post-session retention period has ended.
 
 ## Stripe Checkout production activation
 
@@ -251,7 +259,31 @@ For local development, `npm run dev` includes a Vite-only `/api/portal` relay so
 
 The script now uses `MailApp.sendEmail`.
 
-If login codes do not send, open Apps Script and run/authorize `setupCrm` or any portal action once from the script editor so Google grants the send-mail permission.
+If login codes do not send, open Apps Script and run/authorize `setupCrm` or any portal action once from the script editor so Google grants the send-mail permission. Before material uploads can be enabled, configure the non-production Drive folder property and run `setupCrm` once so the deployment also requests the required Drive scope.
+
+## Non-production session-material acceptance
+
+This checklist must be run with test identities, a test future session, and a private non-production Drive folder. Do not reuse a production parent, tutor, session, or storage folder.
+
+1. Configure a non-production PORTAL_MATERIALS_DRIVE_FOLDER_ID and run setupCrm once to grant Drive scope.
+2. A linked test parent uploads a sub-2.5 MiB JPEG to a future session: one material row, a non-public Drive file, and no bytes in Sheets.
+3. Assigned tutor sees and opens it; unrelated tutor sees neither metadata nor URL.
+4. DOCX, 2.5 MiB-plus-one-byte PDF, and sixth material are rejected without a row or Drive file.
+5. Parent withdrawal trashes the file and removes it from both portal views.
+6. A past-due material expires when runPortalAutomation runs and is marked expired.
+
+Acceptance record prepared on 2026-07-25:
+
+| Case | File type / exact size | Outcome |
+| --- | --- | --- |
+| Configuration and Drive authorization | Private test Drive folder; no file | Not run — requires an owner-controlled non-production Script Property, Apps Script authorization, and deployment. |
+| Linked-parent upload | JPEG, less than 2,621,440 bytes | Not run — requires a real test parent/tutor/session and Drive inspection. |
+| Assigned versus unrelated tutor access | Previously uploaded JPEG | Not run — requires two real test tutor identities and Drive permission inspection. |
+| Rejection boundaries | DOCX; PDF at 2,621,441 bytes; sixth supported file | Not run — requires the deployed non-production Apps Script action and Drive/Sheet before-and-after inspection. |
+| Parent withdrawal | Previously uploaded JPEG | Not run — requires the deployed non-production workflow and Drive trash inspection. |
+| Automated expiry | Supported test file with `expires_at` in the past | Not run — requires a test Drive file/row and execution of `runPortalAutomation`. |
+
+The local/static verification covers payload validation, role-owned filtering, tutor-only URL serialization, share-failure cleanup, missing-file withdrawal, metadata-only rows, 30-day expiry calculations, informational messages, and Drive cleanup behavior. It does not substitute for the six owner-run Google acceptance cases above.
 
 ## Operating rules
 
@@ -265,12 +297,13 @@ If login codes do not send, open Apps Script and run/authorize `setupCrm` or any
 - Do not describe a block as an automatic subscription or debit. Each block is closed with no automatic renewal; cadence is selected after matching.
 - Treat a paid cancellation as a manual refund or credit decision; do not tell a parent it is automatically refunded.
 - Treat an in-window 72-hour change as a team-review request. For a progress-block session, do not release its reserved credit until the team accepts the change; do not automatically forfeit it.
-- Do not ask parents to upload schoolwork through the portal yet. A preparation note is supported; document storage and file transfer are not.
+- Do not ask parents to upload schoolwork through the portal until the six non-production material checks are complete and the client upload controls are explicitly enabled.
+- Keep `PORTAL_MATERIALS_DRIVE_FOLDER_ID` pointed at a private, dedicated folder. Never enable public link sharing; material must be opened only by the assigned tutor through the authenticated portal.
 - Review message-SLA alerts promptly, especially when a parent message is due before a session.
 - Use `Portal Requests` as the inbox for parent/tutor messages that arrive from the portal.
 
 ## Next upgrades
 
 1. Add custom Stripe Checkout sessions or subscriptions only after consent, failed-payment, pause and refund behaviour are explicitly designed.
-2. Add a private document-upload service only with secure storage, access control, retention rules and parent consent; until then, preparation is a text note only.
+2. Enable the client material-upload controls only after the private Drive workflow passes the recorded non-production acceptance checklist.
 3. Add richer operations screens only after the CRM workflow is stable.

@@ -19,10 +19,16 @@ const CRM_PORTAL_ACCESS_SHEET_NAME = "Portal Access";
 const CRM_PORTAL_REQUEST_SHEET_NAME = "Portal Requests";
 const CRM_PARENT_FEEDBACK_SHEET_NAME = "Parent Feedback";
 const CRM_PORTAL_MESSAGE_SHEET_NAME = "Portal Messages";
+const CRM_SESSION_MATERIAL_SHEET_NAME = "Session Materials";
 const CRM_STUDENT_SHEET_NAME = "Students";
 const CRM_PLAN_SHEET_NAME = "Plans";
 const CRM_PLAN_ENROLLMENT_SHEET_NAME = "Plan Enrollments";
 const CRM_CREDIT_LEDGER_SHEET_NAME = "Credit Ledger";
+const PORTAL_MATERIALS_DRIVE_FOLDER_PROPERTY = "PORTAL_MATERIALS_DRIVE_FOLDER_ID";
+const PORTAL_MATERIAL_MAX_BYTES = 2621440;
+const PORTAL_MATERIAL_MAX_FILES_PER_SESSION = 5;
+const PORTAL_MATERIAL_RETENTION_DAYS = 30;
+const PORTAL_MATERIAL_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
 const PORTAL_OPERATOR_EMAILS = ["chahineralph@gmail.com"];
 const CRM_REQUIRED_SHEET_NAMES = [
   CRM_SHEET_NAME,
@@ -45,6 +51,7 @@ const CRM_REQUIRED_SHEET_NAMES = [
   CRM_PORTAL_REQUEST_SHEET_NAME,
   CRM_PARENT_FEEDBACK_SHEET_NAME,
   CRM_PORTAL_MESSAGE_SHEET_NAME,
+  CRM_SESSION_MATERIAL_SHEET_NAME,
   CRM_STUDENT_SHEET_NAME,
   CRM_PLAN_SHEET_NAME,
   CRM_PLAN_ENROLLMENT_SHEET_NAME,
@@ -281,6 +288,12 @@ const PORTAL_MESSAGE_COLUMNS = [
   "answered_at",
 ];
 
+const SESSION_MATERIAL_COLUMNS = [
+  "material_id", "session_id", "lead_id", "parent_email", "tutor_id", "tutor_email",
+  "drive_file_id", "file_name", "mime_type", "size_bytes", "status",
+  "created_at", "withdrawn_at", "expires_at",
+];
+
 const PLAN_COLUMNS = [
   "plan_id",
   "plan_type",
@@ -488,7 +501,8 @@ const PORTAL_REQUEST_TYPE_OPTIONS = [
 const PORTAL_REQUEST_STATUS_OPTIONS = ["new", "in_review", "done", "closed"];
 const PARENT_FEEDBACK_STATUS_OPTIONS = ["new", "reviewed", "closed"];
 const PORTAL_MESSAGE_DELIVERY_OPTIONS = ["portal_only", "email_notified"];
-const PORTAL_MESSAGE_STATUS_OPTIONS = ["awaiting_reply", "answered", "overdue_alerted"];
+const PORTAL_MESSAGE_STATUS_OPTIONS = ["awaiting_reply", "answered", "overdue_alerted", "info"];
+const SESSION_MATERIAL_STATUS_OPTIONS = ["shared", "withdrawn", "expired"];
 const PORTAL_SESSION_DAYS = 14;
 const PORTAL_CODE_MINUTES = 15;
 const PORTAL_CODE_MAX_FAILED_ATTEMPTS = 5;
@@ -527,6 +541,7 @@ function setupCrm() {
   setupPortalRequestsSheet_(getOrCreateSheet_(spreadsheet, CRM_PORTAL_REQUEST_SHEET_NAME));
   setupParentFeedbackSheet_(getOrCreateSheet_(spreadsheet, CRM_PARENT_FEEDBACK_SHEET_NAME));
   setupPortalMessagesSheet_(getOrCreateSheet_(spreadsheet, CRM_PORTAL_MESSAGE_SHEET_NAME));
+  setupSessionMaterialsSheet_(getOrCreateSheet_(spreadsheet, CRM_SESSION_MATERIAL_SHEET_NAME));
   setupStudentsSheet_(getOrCreateSheet_(spreadsheet, CRM_STUDENT_SHEET_NAME));
   setupPlansSheet_(getOrCreateSheet_(spreadsheet, CRM_PLAN_SHEET_NAME));
   setupPlanEnrollmentsSheet_(getOrCreateSheet_(spreadsheet, CRM_PLAN_ENROLLMENT_SHEET_NAME));
@@ -1164,6 +1179,11 @@ function setupPortalMessagesSheet_(sheet) {
   applyStructuredValidation_(sheet, PORTAL_MESSAGE_COLUMNS, "message_status", PORTAL_MESSAGE_STATUS_OPTIONS);
 }
 
+function setupSessionMaterialsSheet_(sheet) {
+  setupStructuredSheet_(sheet, SESSION_MATERIAL_COLUMNS, "#29455f");
+  applyStructuredValidation_(sheet, SESSION_MATERIAL_COLUMNS, "status", SESSION_MATERIAL_STATUS_OPTIONS);
+}
+
 function setupPlansSheet_(sheet) {
   setupStructuredSheet_(sheet, PLAN_COLUMNS, "#3a315f");
   applyStructuredValidation_(sheet, PLAN_COLUMNS, "plan_type", PLAN_TYPE_OPTIONS);
@@ -1678,6 +1698,10 @@ function handlePortalAction_(spreadsheet, payload) {
       return invitePortalTutor_(spreadsheet, payload);
     case "portal_send_session_message":
       return sendPortalSessionMessage_(spreadsheet, payload);
+    case "portal_upload_session_material":
+      return uploadPortalSessionMaterial_(spreadsheet, payload);
+    case "portal_withdraw_session_material":
+      return withdrawPortalSessionMaterial_(spreadsheet, payload);
     case "portal_cancel_session":
       return cancelPortalSession_(spreadsheet, payload);
     case "portal_reschedule_session":
@@ -3717,6 +3741,229 @@ function sendPortalSessionMessage_(spreadsheet, payload) {
   return { ok: true, message_id: record.message_id, delivery_status: deliveryStatus };
 }
 
+function uploadPortalSessionMaterial_(spreadsheet, payload) {
+  const portalSession = verifyPortalSession_(spreadsheet, payload.token, "parent");
+  if (!portalSession.ok) return portalSession;
+
+  const sessionRecord = findSessionForPortalAccess_(spreadsheet, portalSession.access, normalizeValue_(payload.session_id));
+  if (!sessionRecord || !isUpcomingDate_(sessionRecord.data.start_at)) {
+    return { ok: false, code: "SESSION_MATERIAL_NOT_AVAILABLE" };
+  }
+
+  const validated = validatePortalMaterialPayload_(payload);
+  if (!validated.ok) return validated;
+
+  const active = getSessionMaterialRecords_(spreadsheet)
+    .filter((record) => normalizeValue_(record.data.session_id) === normalizeValue_(sessionRecord.data.session_id))
+    .filter((record) => normalizeValue_(record.data.status) === "shared");
+  if (active.length >= PORTAL_MATERIAL_MAX_FILES_PER_SESSION) {
+    return { ok: false, code: "SESSION_MATERIAL_LIMIT_REACHED" };
+  }
+
+  const storage = getPortalSessionMaterialsFolder_(sessionRecord.data.session_id);
+  if (!storage.ok) return storage;
+
+  const file = storage.folder.createFile(Utilities.newBlob(
+    Utilities.base64Decode(validated.data_base64),
+    validated.mime_type,
+    validated.file_name,
+  ));
+  try {
+    file.addViewer(sessionRecord.data.tutor_calendar_email);
+  } catch (error) {
+    try {
+      file.setTrashed(true);
+    } catch (cleanupError) {
+      // The failed upload has no Sheet row. A later Drive audit can identify
+      // this exceptional orphan if Google also refuses the compensating trash.
+    }
+    return { ok: false, code: "SESSION_MATERIAL_SHARE_FAILED" };
+  }
+
+  let material;
+  try {
+    material = createSessionMaterialRecord_(spreadsheet, sessionRecord.data, file, validated);
+  } catch (error) {
+    try {
+      file.setTrashed(true);
+    } catch (cleanupError) {
+      // Do not expose an untracked Drive file through the portal response.
+    }
+    return { ok: false, code: "SESSION_MATERIAL_STORAGE_FAILED" };
+  }
+
+  try {
+    appendSessionMaterialNotification_(spreadsheet, sessionRecord.data, portalSession.access, material);
+  } catch (error) {
+    // The durable material row remains authoritative if the informational
+    // Portal Messages notification cannot be appended.
+  }
+  return { ok: true, material: sanitizeSessionMaterialForParent_(material) };
+}
+
+function validatePortalMaterialPayload_(payload) {
+  const fileName = normalizeValue_(payload.file_name).trim();
+  const mimeType = normalizeValue_(payload.mime_type).trim().toLowerCase();
+  const encodedRaw = normalizeValue_(payload.data_base64);
+  const encoded = encodedRaw.trim();
+  const declaredSizeText = normalizeValue_(payload.size_bytes).trim();
+  const declaredSize = Number(declaredSizeText);
+  const unsafeName = !fileName ||
+    fileName.length > 180 ||
+    [".", ".."].includes(fileName) ||
+    /[\\/\u0000-\u001f\u007f]/.test(fileName);
+
+  if (unsafeName || !declaredSizeText || !Number.isInteger(declaredSize) || declaredSize < 1) {
+    return { ok: false, code: "SESSION_MATERIAL_FILE_INVALID" };
+  }
+  if (!PORTAL_MATERIAL_MIME_TYPES.includes(mimeType)) {
+    return { ok: false, code: "SESSION_MATERIAL_TYPE_NOT_ALLOWED" };
+  }
+  if (declaredSize > PORTAL_MATERIAL_MAX_BYTES) {
+    return { ok: false, code: "SESSION_MATERIAL_FILE_TOO_LARGE" };
+  }
+  if (!encoded ||
+    encoded !== encodedRaw ||
+    /^data:/i.test(encoded) ||
+    encoded.length % 4 !== 0 ||
+    !/^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/.test(encoded)) {
+    return { ok: false, code: "SESSION_MATERIAL_FILE_INVALID" };
+  }
+
+  let decoded;
+  try {
+    decoded = Utilities.base64Decode(encoded);
+  } catch (error) {
+    return { ok: false, code: "SESSION_MATERIAL_FILE_INVALID" };
+  }
+  if (!decoded || decoded.length !== declaredSize) {
+    return { ok: false, code: "SESSION_MATERIAL_FILE_INVALID" };
+  }
+  if (decoded.length > PORTAL_MATERIAL_MAX_BYTES) {
+    return { ok: false, code: "SESSION_MATERIAL_FILE_TOO_LARGE" };
+  }
+
+  return {
+    ok: true,
+    file_name: fileName,
+    mime_type: mimeType,
+    size_bytes: decoded.length,
+    data_base64: encoded,
+  };
+}
+
+function getSessionMaterialRecords_(spreadsheet) {
+  const sheet = getOrCreateSheet_(spreadsheet, CRM_SESSION_MATERIAL_SHEET_NAME);
+  setupSessionMaterialsSheet_(sheet);
+  return getSheetRecordsFromSheet_(sheet, SESSION_MATERIAL_COLUMNS);
+}
+
+function getPortalSessionMaterialsFolder_(sessionId) {
+  const rootFolderId = normalizeValue_(
+    PropertiesService.getScriptProperties().getProperty(PORTAL_MATERIALS_DRIVE_FOLDER_PROPERTY),
+  );
+  if (!rootFolderId) {
+    return { ok: false, code: "SESSION_MATERIAL_STORAGE_NOT_CONFIGURED" };
+  }
+
+  try {
+    const rootFolder = DriveApp.getFolderById(rootFolderId);
+    const normalizedSessionId = normalizeValue_(sessionId);
+    const matches = rootFolder.getFoldersByName(normalizedSessionId);
+    const folder = matches.hasNext() ? matches.next() : rootFolder.createFolder(normalizedSessionId);
+    return { ok: true, folder };
+  } catch (error) {
+    return { ok: false, code: "SESSION_MATERIAL_STORAGE_NOT_CONFIGURED" };
+  }
+}
+
+function createSessionMaterialRecord_(spreadsheet, session, file, validated) {
+  const now = new Date();
+  const sessionEnd = coerceDate_(session.end_at) || coerceDate_(session.start_at) || now;
+  const record = {
+    material_id: createRecordId_("MATERIAL"),
+    session_id: normalizeValue_(session.session_id),
+    lead_id: normalizeValue_(session.lead_id),
+    parent_email: normalizeEmail_(session.parent_email),
+    tutor_id: normalizeValue_(session.tutor_id),
+    tutor_email: normalizeEmail_(session.tutor_calendar_email),
+    drive_file_id: file.getId(),
+    file_name: validated.file_name,
+    mime_type: validated.mime_type,
+    size_bytes: validated.size_bytes,
+    status: "shared",
+    created_at: now.toISOString(),
+    withdrawn_at: "",
+    expires_at: new Date(
+      sessionEnd.getTime() + PORTAL_MATERIAL_RETENTION_DAYS * 24 * 60 * 60 * 1000,
+    ).toISOString(),
+  };
+  const sheet = getOrCreateSheet_(spreadsheet, CRM_SESSION_MATERIAL_SHEET_NAME);
+  setupSessionMaterialsSheet_(sheet);
+  sheet.appendRow(SESSION_MATERIAL_COLUMNS.map((column) => record[column] || ""));
+  return record;
+}
+
+function appendSessionMaterialNotification_(spreadsheet, session, access, material) {
+  const now = new Date().toISOString();
+  const record = {
+    message_id: createRecordId_("MESSAGE"),
+    session_id: normalizeValue_(session.session_id),
+    lead_id: normalizeValue_(session.lead_id),
+    sender_role: "parent",
+    sender_name: normalizeValue_(access.display_name) || normalizeValue_(session.parent_name) || "Parent",
+    parent_email: normalizeEmail_(session.parent_email),
+    tutor_id: normalizeValue_(session.tutor_id),
+    tutor_email: normalizeEmail_(session.tutor_calendar_email),
+    message: `Nouveau document partage pour la seance: ${normalizeValue_(material.file_name)}`,
+    delivery_status: "portal_only",
+    created_at: now,
+    recipient_role: "tutor",
+    message_status: "info",
+    reply_due_at: "",
+    answered_at: "",
+  };
+  record.delivery_status = notifyPortalMessageRecipient_(record);
+  const sheet = getOrCreateSheet_(spreadsheet, CRM_PORTAL_MESSAGE_SHEET_NAME);
+  setupPortalMessagesSheet_(sheet);
+  sheet.appendRow(PORTAL_MESSAGE_COLUMNS.map((column) => record[column] || ""));
+  return record;
+}
+
+function withdrawPortalSessionMaterial_(spreadsheet, payload) {
+  const portalSession = verifyPortalSession_(spreadsheet, payload.token, "parent");
+  if (!portalSession.ok) return portalSession;
+
+  const materialId = normalizeValue_(payload.material_id);
+  const materialRecord = getSessionMaterialRecords_(spreadsheet)
+    .find((record) => normalizeValue_(record.data.material_id) === materialId);
+  if (!materialRecord ||
+    normalizeEmail_(materialRecord.data.parent_email) !== normalizeEmail_(portalSession.access.email) ||
+    normalizeValue_(materialRecord.data.status) !== "shared") {
+    return { ok: false, code: "SESSION_MATERIAL_NOT_AVAILABLE" };
+  }
+
+  const sessionRecord = findSessionForPortalAccess_(
+    spreadsheet,
+    portalSession.access,
+    normalizeValue_(materialRecord.data.session_id),
+  );
+  if (!sessionRecord || !isUpcomingDate_(sessionRecord.data.start_at)) {
+    return { ok: false, code: "SESSION_MATERIAL_NOT_AVAILABLE" };
+  }
+  if (!trashSessionMaterialFile_(materialRecord.data.drive_file_id)) {
+    return { ok: false, code: "SESSION_MATERIAL_WITHDRAW_FAILED" };
+  }
+
+  const sheet = getOrCreateSheet_(spreadsheet, CRM_SESSION_MATERIAL_SHEET_NAME);
+  writeRecord_(sheet, SESSION_MATERIAL_COLUMNS, materialRecord.rowNumber, {
+    ...materialRecord.data,
+    status: "withdrawn",
+    withdrawn_at: new Date().toISOString(),
+  });
+  return { ok: true, material_id: materialId };
+}
+
 function respondToPortalSession_(spreadsheet, payload) {
   const session = verifyPortalSession_(spreadsheet, payload.token, payload.role);
   if (!session.ok || !["parent", "tutor"].includes(session.access.role)) {
@@ -5258,6 +5505,24 @@ function buildPortalDashboard_(spreadsheet, access) {
     : buildParentPortalDashboard_(spreadsheet, access);
 }
 
+function buildSessionMaterialsForAccess_(spreadsheet, access, sessions) {
+  const role = normalizeValue_(access.role);
+  if (!["parent", "tutor"].includes(role)) return [];
+
+  const ownedSessionIds = new Set((sessions || [])
+    .map((session) => normalizeValue_(session.session_id))
+    .filter(Boolean));
+  const sanitizer = role === "tutor"
+    ? sanitizeSessionMaterialForTutor_
+    : sanitizeSessionMaterialForParent_;
+
+  return getSheetRecords_(spreadsheet, CRM_SESSION_MATERIAL_SHEET_NAME, SESSION_MATERIAL_COLUMNS)
+    .filter((record) => ownedSessionIds.has(normalizeValue_(record.session_id)))
+    .filter((record) => normalizeValue_(record.status) === "shared")
+    .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))
+    .map(sanitizer);
+}
+
 function buildParentPortalDashboard_(spreadsheet, access) {
   const email = normalizeEmail_(access.email);
   const leadRecords = getSheetRecords_(spreadsheet, CRM_SHEET_NAME, CRM_COLUMNS)
@@ -5292,6 +5557,7 @@ function buildParentPortalDashboard_(spreadsheet, access) {
     .filter((record) => isUpcomingDate_(record.start_at))
     .sort((a, b) => String(a.start_at).localeCompare(String(b.start_at)))[0] || null;
   const messages = buildPortalMessagesForAccess_(spreadsheet, access);
+  const sessionMaterials = buildSessionMaterialsForAccess_(spreadsheet, access, sessions);
   const requests = buildPortalRequestsForAccess_(spreadsheet, access);
   const planData = buildParentPlanData_(spreadsheet, email);
   const assignedTutorId = assignedTutorIdForLead_(primaryLead);
@@ -5330,6 +5596,7 @@ function buildParentPortalDashboard_(spreadsheet, access) {
     leads,
     students,
     sessions,
+    session_materials: sessionMaterials,
     notes,
     payments,
     plans: planData.plans,
@@ -5390,6 +5657,7 @@ function buildTutorPortalDashboard_(spreadsheet, access) {
     .filter((record) => isUpcomingDate_(record.start_at))
     .sort((a, b) => String(a.start_at).localeCompare(String(b.start_at)))[0] || null;
   const messages = buildPortalMessagesForAccess_(spreadsheet, access);
+  const sessionMaterials = buildSessionMaterialsForAccess_(spreadsheet, access, sessions);
   const bookableWindows = availability.filter((record) => ["open", "limited"].includes(normalizeValue_(record.status)));
   const requests = buildPortalRequestsForAccess_(spreadsheet, access);
 
@@ -5413,6 +5681,7 @@ function buildTutorPortalDashboard_(spreadsheet, access) {
     },
     next_session: nextSession,
     sessions,
+    session_materials: sessionMaterials,
     sessions_needing_notes,
     notes,
     availability,
@@ -5840,7 +6109,10 @@ function deleteParentLeadCascade_(spreadsheet, lead) {
   const sessionIds = new Set(sessionRecords.map((record) => normalizeValue_(record.session_id)).filter(Boolean));
   const sessionDeletion = deleteTestSessions_(spreadsheet, sessionIds);
   if (!sessionDeletion.ok) return sessionDeletion;
-  let deleted = sessionDeletion.deleted;
+  const orphanMaterialDeletion = deleteSessionMaterialRecords_(spreadsheet, (record) =>
+    normalizeValue_(record.lead_id) === leadId || normalizeEmail_(record.parent_email) === email);
+  if (!orphanMaterialDeletion.ok) return orphanMaterialDeletion;
+  let deleted = sessionDeletion.deleted + orphanMaterialDeletion.deleted;
 
   deleted += deleteMatchingSheetRecords_(getOrCreateSheet_(spreadsheet, CRM_PAYMENT_SHEET_NAME), PAYMENT_COLUMNS, (record) =>
     normalizeValue_(record.lead_id) === leadId || normalizeEmail_(record.email) === email);
@@ -5920,7 +6192,12 @@ function deleteTestSessions_(spreadsheet, sessionIds) {
     return { ok: false, code: calendarDeletion.code || "CALENDAR_DELETE_FAILED", deleted: 0 };
   }
 
-  let deleted = deleteMatchingSheetRecords_(getOrCreateSheet_(spreadsheet, CRM_PAYMENT_SHEET_NAME), PAYMENT_COLUMNS, (record) =>
+  const materialDeletion = deleteSessionMaterialRecords_(spreadsheet, (record) =>
+    sessionIds.has(normalizeValue_(record.session_id)));
+  if (!materialDeletion.ok) return materialDeletion;
+
+  let deleted = materialDeletion.deleted;
+  deleted += deleteMatchingSheetRecords_(getOrCreateSheet_(spreadsheet, CRM_PAYMENT_SHEET_NAME), PAYMENT_COLUMNS, (record) =>
     sessionIds.has(normalizeValue_(record.session_id)));
   deleted += deleteMatchingSheetRecords_(getOrCreateSheet_(spreadsheet, CRM_SESSION_NOTE_SHEET_NAME), SESSION_NOTE_COLUMNS, (record) =>
     sessionIds.has(normalizeValue_(record.session_id)));
@@ -7027,6 +7304,73 @@ function sendTutorNoteEscalationEmail_(session) {
   }
 }
 
+function trashSessionMaterialFile_(driveFileId) {
+  const fileId = normalizeValue_(driveFileId);
+  if (!fileId) return true;
+
+  let file;
+  try {
+    file = DriveApp.getFileById(fileId);
+  } catch (error) {
+    const message = String(error || "").toLowerCase();
+    // A missing prior file is already in the desired cleanup state. Permission
+    // and transient Drive errors must retain the audit row for a safe retry.
+    return ["not found", "does not exist", "unable to find", "no item with the given id"]
+      .some((marker) => message.includes(marker));
+  }
+
+  try {
+    file.setTrashed(true);
+    return true;
+  } catch (error) {
+    return false;
+  }
+}
+
+function expireSessionMaterials_(spreadsheet) {
+  const sheet = getOrCreateSheet_(spreadsheet, CRM_SESSION_MATERIAL_SHEET_NAME);
+  const now = Date.now();
+  let expired = 0;
+  let errors = 0;
+
+  getSessionMaterialRecords_(spreadsheet)
+    .filter((record) => normalizeValue_(record.data.status) === "shared")
+    .filter((record) => {
+      const expiresAt = coerceDate_(record.data.expires_at);
+      return expiresAt && expiresAt.getTime() <= now;
+    })
+    .forEach((record) => {
+      if (!trashSessionMaterialFile_(record.data.drive_file_id)) {
+        errors += 1;
+        return;
+      }
+      writeRecord_(sheet, SESSION_MATERIAL_COLUMNS, record.rowNumber, {
+        ...record.data,
+        status: "expired",
+      });
+      expired += 1;
+    });
+
+  return { ok: errors === 0, expired, errors };
+}
+
+function deleteSessionMaterialRecords_(spreadsheet, predicate) {
+  const sheet = getOrCreateSheet_(spreadsheet, CRM_SESSION_MATERIAL_SHEET_NAME);
+  const matches = getSessionMaterialRecords_(spreadsheet)
+    .filter((record) => predicate(record.data))
+    .sort((a, b) => b.rowNumber - a.rowNumber);
+
+  const cleanupFailed = matches
+    .map((record) => trashSessionMaterialFile_(record.data.drive_file_id))
+    .some((ok) => !ok);
+  if (cleanupFailed) {
+    return { ok: false, code: "SESSION_MATERIAL_CLEANUP_FAILED", deleted: 0 };
+  }
+
+  matches.forEach((record) => sheet.deleteRow(record.rowNumber));
+  return { ok: true, deleted: matches.length };
+}
+
 function runPortalAutomation() {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   ensureCrmReady_(spreadsheet);
@@ -7040,6 +7384,7 @@ function runPortalAutomation() {
     parent_updates: sendPendingParentUpdates_(spreadsheet),
     message_sla: sendOverdueMessageSlaAlerts_(spreadsheet),
     reminders: sendSessionJourneyReminders_(spreadsheet),
+    session_material_expiry: expireSessionMaterials_(spreadsheet),
   };
 }
 
@@ -7759,6 +8104,26 @@ function sanitizeSessionForOperator_(record) {
     tutor_confirmed_at: record.tutor_confirmed_at,
     recurrence_weeks: record.recurrence_weeks,
     recurring_from_session_id: record.recurring_from_session_id,
+  };
+}
+
+function sanitizeSessionMaterialForParent_(record) {
+  return {
+    material_id: record.material_id,
+    session_id: record.session_id,
+    file_name: record.file_name,
+    mime_type: record.mime_type,
+    size_bytes: Number(record.size_bytes) || 0,
+    status: record.status,
+    created_at: record.created_at,
+    expires_at: record.expires_at,
+  };
+}
+
+function sanitizeSessionMaterialForTutor_(record) {
+  return {
+    ...sanitizeSessionMaterialForParent_(record),
+    drive_url: DriveApp.getFileById(record.drive_file_id).getUrl(),
   };
 }
 
