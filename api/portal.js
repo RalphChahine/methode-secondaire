@@ -168,6 +168,10 @@ async function readJsonBody(req) {
       return JSON.parse(req.body)
     }
 
+    if (Buffer.byteLength(JSON.stringify(req.body)) > MAX_PORTAL_BODY_BYTES) {
+      throw new Error("Request body too large.")
+    }
+
     return req.body
   }
 

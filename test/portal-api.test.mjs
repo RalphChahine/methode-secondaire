@@ -95,6 +95,38 @@ test("rejects an oversized pre-parsed JSON body without calling CRM", async () =
   assert.equal(response.payload.code, "INVALID_JSON")
 })
 
+test("rejects an oversized pre-parsed object body without calling CRM", async () => {
+  const originalFetch = globalThis.fetch
+  const originalUrl = process.env.CRM_WEBHOOK_URL
+  const originalSecret = process.env.CRM_PORTAL_SECRET
+  let fetchCalled = false
+  process.env.CRM_WEBHOOK_URL = "https://crm.example.test"
+  process.env.CRM_PORTAL_SECRET = "shared-secret"
+  globalThis.fetch = async () => {
+    fetchCalled = true
+    throw new Error("CRM must not be called")
+  }
+  const body = {
+    action: "portal_upload_session_material",
+    data_base64: "",
+  }
+  body.data_base64 = "x".repeat((MAX_PORTAL_BODY_BYTES + 60) - Buffer.byteLength(JSON.stringify(body)))
+  assert.equal(Buffer.byteLength(JSON.stringify(body)), MAX_PORTAL_BODY_BYTES + 60)
+  const response = makeResponse()
+
+  try {
+    await portalHandler({ method: "POST", body, headers: {}, socket: {} }, response)
+  } finally {
+    globalThis.fetch = originalFetch
+    restoreEnvironment("CRM_WEBHOOK_URL", originalUrl)
+    restoreEnvironment("CRM_PORTAL_SECRET", originalSecret)
+  }
+
+  assert.equal(fetchCalled, false)
+  assert.equal(response.statusCode, 400)
+  assert.equal(response.payload.code, "INVALID_JSON")
+})
+
 test("stops reading streamed chunks after the body limit", async () => {
   const request = Readable.from([
     "x".repeat(MAX_PORTAL_BODY_BYTES + 1),
