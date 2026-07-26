@@ -3,7 +3,11 @@ import { readFile } from "node:fs/promises"
 import test from "node:test"
 import { renderToStaticMarkup } from "react-dom/server"
 import { createServer } from "vite"
-import { getParentNextAction, getParentSessionProgress } from "../src/lib/parentPortal.js"
+import {
+  getParentNextAction,
+  getParentSessionProgress,
+  getParentTodaySession,
+} from "../src/lib/parentPortal.js"
 
 test("returns one prepare action for an upcoming confirmed session", () => {
   const action = getParentNextAction({
@@ -148,6 +152,68 @@ test("the prepare action focuses the material panel already rendered on Today", 
   assert.match(source, /preparation\?\.focus/)
   assert.match(source, /id="portal-preparation-focus-target"/)
   assert.match(source, /tabIndex=\{-1\}/)
+})
+
+test("keeps the prepare action and Today session aligned with unsorted sessions", () => {
+  const dashboard = {
+    profile: { name: "Parent" },
+    matching: { tutor_id: "T-1" },
+    next_session: {
+      session_id: "S-SOON",
+      session_status: "confirmed",
+      start_at: "2099-01-01T15:00:00.000Z",
+    },
+    sessions: [
+      {
+        session_id: "S-LATER",
+        session_status: "confirmed",
+        start_at: "2099-01-08T15:00:00.000Z",
+      },
+      {
+        session_id: "S-SOON",
+        session_status: "confirmed",
+        start_at: "2099-01-01T15:00:00.000Z",
+      },
+    ],
+    metrics: {},
+  }
+  const action = getParentNextAction(dashboard)
+
+  assert.equal(action.sessionId, "S-LATER")
+  assert.equal(getParentTodaySession(dashboard, action)?.session_id, action.sessionId)
+})
+
+test("moves Today to the unprepared session when the canonical next session already has material", async () => {
+  const dashboard = {
+    profile: { name: "Parent" },
+    matching: { tutor_id: "T-1" },
+    next_session: {
+      session_id: "S-NEXT",
+      session_status: "confirmed",
+      start_at: "2099-01-01T15:00:00.000Z",
+    },
+    sessions: [
+      {
+        session_id: "S-NEXT",
+        session_status: "confirmed",
+        start_at: "2099-01-01T15:00:00.000Z",
+      },
+      {
+        session_id: "S-NEEDS-MATERIAL",
+        session_status: "confirmed",
+        start_at: "2099-01-08T15:00:00.000Z",
+      },
+    ],
+    session_materials: [{ session_id: "S-NEXT", status: "shared" }],
+    metrics: {},
+  }
+  const action = getParentNextAction(dashboard)
+
+  assert.equal(action.sessionId, "S-NEEDS-MATERIAL")
+  assert.equal(getParentTodaySession(dashboard, action)?.session_id, action.sessionId)
+
+  const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
+  assert.equal((source.match(/session=\{todaySession\}/g) || []).length, 3)
 })
 
 test("keeps recap current until a released note exists", () => {

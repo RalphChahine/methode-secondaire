@@ -46,7 +46,11 @@ import {
   getLocalizedPath,
   getOgLocale,
 } from "@/lib/i18n"
-import { getParentNextAction, getParentSessionProgress } from "@/lib/parentPortal"
+import {
+  getParentNextAction,
+  getParentSessionProgress,
+  getParentTodaySession,
+} from "@/lib/parentPortal"
 import {
   clearPortalSession,
   adjustPortalPlanCredits,
@@ -2252,10 +2256,10 @@ function ParentActionCenter({ copy, action, onOpenDestination }) {
 
 function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
   const [activeDestination, setActiveDestination] = useState("today")
-  const offerSnapshot = getParentOfferSnapshot(dashboard)
   const rhythmSnapshot = getParentOfferSnapshot(dashboard, "weekly")
   const programSnapshot = getParentOfferSnapshot(dashboard, "pack")
   const nextAction = getParentNextAction(dashboard)
+  const todaySession = getParentTodaySession(dashboard, nextAction)
   const navigationItems = [
     { key: "today", label: copy.parentNavToday, icon: CalendarCheck },
     { key: "sessions", label: copy.parentNavSessions, icon: CalendarDays },
@@ -2290,7 +2294,7 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
           <ParentActionCenter copy={copy} action={nextAction} onOpenDestination={openParentDestination} />
           <NextSessionCard
             copy={copy}
-            session={dashboard.next_session}
+            session={todaySession}
             role={role}
             onAction={() => setActiveDestination("sessions")}
           />
@@ -2300,9 +2304,9 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
             className="scroll-mt-24 rounded-[24px] focus:outline-none focus:ring-2 focus:ring-[#f5c977]"
           >
             <SessionMaterialsPanel
-              key={offerSnapshot.nextSession?.session_id || "no-session"}
+              key={todaySession?.session_id || "no-session"}
               copy={copy}
-              session={offerSnapshot.nextSession}
+              session={todaySession}
               materials={dashboard.session_materials}
               token={token}
               onSaved={onSaved}
@@ -2312,7 +2316,7 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
           </div>
           <ParentSessionProgressPanel
             copy={copy}
-            session={offerSnapshot.nextSession}
+            session={todaySession}
             materials={dashboard.session_materials}
             notes={dashboard.notes}
           />

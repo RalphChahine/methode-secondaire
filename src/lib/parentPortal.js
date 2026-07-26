@@ -41,6 +41,28 @@ export function getParentNextAction(dashboard = {}) {
   return { key: "all_set", destination: "today" }
 }
 
+export function getParentTodaySession(dashboard = {}, action = getParentNextAction(dashboard)) {
+  const sessions = records(dashboard.sessions)
+  if (action?.sessionId) {
+    const actionSession = sessions.find((session) => (
+      session && session.session_id === action.sessionId
+    ))
+    if (actionSession) {
+      return actionSession
+    }
+  }
+
+  if (dashboard.next_session && typeof dashboard.next_session === "object") {
+    return dashboard.next_session
+  }
+
+  return sessions
+    .filter((session) => (
+      session && !["cancelled", "no_show", "completed"].includes(session.session_status)
+    ))
+    .sort((left, right) => String(left.start_at || "").localeCompare(String(right.start_at || "")))[0] || null
+}
+
 function hasSharedMaterial(materials, sessionId) {
   return records(materials).some((material) => (
     material && material.session_id === sessionId && material.status === "shared"
