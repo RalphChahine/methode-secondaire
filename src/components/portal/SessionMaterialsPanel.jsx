@@ -68,7 +68,7 @@ export async function processPortalMaterialWithdrawal({
 
   onWithdrawn(materialId)
   try {
-    await onSaved?.()
+    await onSaved?.({ silent: true })
   } catch {
     // The server withdrawal is already authoritative. Keep the row hidden
     // locally and let a later dashboard refresh reconcile the CRM snapshot.

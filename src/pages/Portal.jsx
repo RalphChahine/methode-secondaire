@@ -1142,6 +1142,52 @@ function emitPortalTrackingEvent(name, detail = {}) {
   window.dispatchEvent(new CustomEvent(name, { detail }))
 }
 
+export async function reconcilePortalDashboard({
+  currentSession,
+  silent = false,
+  requestDashboard = getPortalDashboard,
+  onLoadingChange,
+  onError,
+  onInvalidSession,
+  onDashboard,
+  getErrorMessage,
+}) {
+  if (!currentSession?.token) {
+    return { ok: false, code: "PORTAL_SESSION_REQUIRED" }
+  }
+
+  if (!silent) {
+    onLoadingChange("loadingDashboard")
+    onError("")
+  }
+
+  const result = await requestDashboard(currentSession)
+
+  if (!silent) {
+    onLoadingChange("")
+  }
+
+  if (!result.ok) {
+    if (!silent) {
+      const invalidSession = [
+        "PORTAL_SESSION_REQUIRED",
+        "PORTAL_SESSION_INVALID",
+        "PORTAL_SESSION_EXPIRED",
+      ].includes(result.code)
+
+      if (invalidSession) {
+        onInvalidSession()
+      }
+
+      onError(getErrorMessage(result.code))
+    }
+    return result
+  }
+
+  onDashboard(result.dashboard)
+  return result
+}
+
 export default function Portal() {
   const location = useLocation()
   const locale = getLocaleFromPath(location.pathname)
@@ -1283,30 +1329,20 @@ export default function Portal() {
     setCode("")
   }
 
-  async function refreshDashboard(currentSession = session) {
-    if (!currentSession?.token) {
-      return
-    }
-
-    setLoadingAction("loadingDashboard")
-    setError("")
-    const result = await getPortalDashboard(currentSession)
-    setLoadingAction("")
-
-    if (!result.ok) {
-      const invalidSession = ["PORTAL_SESSION_REQUIRED", "PORTAL_SESSION_INVALID", "PORTAL_SESSION_EXPIRED"].includes(result.code)
-
-      if (invalidSession) {
+  async function refreshDashboard(currentSession = session, options = {}) {
+    return reconcilePortalDashboard({
+      currentSession,
+      silent: options.silent,
+      onLoadingChange: setLoadingAction,
+      onError: setError,
+      onInvalidSession: () => {
         clearPortalSession()
         setSession(null)
         setDashboard(null)
-      }
-
-      setError(getPortalErrorMessage(copy, result.code))
-      return
-    }
-
-    setDashboard(result.dashboard)
+      },
+      onDashboard: setDashboard,
+      getErrorMessage: (code) => getPortalErrorMessage(copy, code),
+    })
   }
 
   function handleLogout() {
@@ -1434,13 +1470,13 @@ export default function Portal() {
         {session && dashboard ? (
           <PortalDashboardBoundary copy={copy} onRetry={retryDashboard}>
             {session.role === "operator" ? (
-              <OperatorDashboard copy={copy} dashboard={dashboard} locale={locale} token={session.token} onSaved={() => refreshDashboard()} />
+              <OperatorDashboard copy={copy} dashboard={dashboard} locale={locale} token={session.token} onSaved={(options) => refreshDashboard(session, options)} />
             ) : session.role === "tutor" ? (
               <TutorDashboard
                 copy={copy}
                 dashboard={dashboard}
                 token={session.token}
-                onSaved={() => refreshDashboard()}
+                onSaved={(options) => refreshDashboard(session, options)}
               />
             ) : (
               <ParentDashboard
@@ -1449,7 +1485,7 @@ export default function Portal() {
                 locale={locale}
                 role={session.role}
                 token={session.token}
-                onSaved={() => refreshDashboard()}
+                onSaved={(options) => refreshDashboard(session, options)}
               />
             )}
           </PortalDashboardBoundary>

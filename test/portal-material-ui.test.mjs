@@ -150,18 +150,60 @@ test("successful withdrawal hides the shared row before a non-fatal dashboard re
         events.push("hide")
         withdrawnIds.add(materialId)
       },
-      onSaved: async () => {
-        events.push("refresh")
+      onSaved: async (options) => {
+        events.push(`refresh:${options?.silent}`)
         throw new Error("dashboard refresh failed")
       },
     })
 
     assert.equal(result.ok, true)
-    assert.deepEqual(events, ["withdraw", "hide", "refresh"])
+    assert.deepEqual(events, ["withdraw", "hide", "refresh:true"])
     assert.deepEqual(getVisibleSessionMaterials([
       { material_id: "MATERIAL-1", session_id: "SESSION-1", status: "shared" },
       { material_id: "MATERIAL-2", session_id: "SESSION-1", status: "shared" },
     ], "SESSION-1", withdrawnIds).map((material) => material.material_id), ["MATERIAL-2"])
+  } finally {
+    await vite.close()
+  }
+})
+
+test("silent dashboard reconciliation contains resolved refresh failures", async () => {
+  const vite = await createServer({ server: { middlewareMode: true }, appType: "custom" })
+  try {
+    const { reconcilePortalDashboard } = await vite.ssrLoadModule("/src/pages/Portal.jsx")
+    const requestDashboard = async () => ({ ok: false, code: "PORTAL_CRM_FAILED" })
+    const silentEvents = []
+
+    const silentResult = await reconcilePortalDashboard({
+      currentSession: { token: "parent-token" },
+      silent: true,
+      requestDashboard,
+      onLoadingChange: (value) => silentEvents.push(`loading:${value}`),
+      onError: (value) => silentEvents.push(`error:${value}`),
+      onInvalidSession: () => silentEvents.push("invalid"),
+      onDashboard: () => silentEvents.push("dashboard"),
+      getErrorMessage: (code) => `mapped:${code}`,
+    })
+
+    assert.equal(silentResult.ok, false)
+    assert.deepEqual(silentEvents, [])
+
+    const normalEvents = []
+    await reconcilePortalDashboard({
+      currentSession: { token: "parent-token" },
+      requestDashboard,
+      onLoadingChange: (value) => normalEvents.push(`loading:${value}`),
+      onError: (value) => normalEvents.push(`error:${value}`),
+      onInvalidSession: () => normalEvents.push("invalid"),
+      onDashboard: () => normalEvents.push("dashboard"),
+      getErrorMessage: (code) => `mapped:${code}`,
+    })
+    assert.deepEqual(normalEvents, [
+      "loading:loadingDashboard",
+      "error:",
+      "loading:",
+      "error:mapped:PORTAL_CRM_FAILED",
+    ])
   } finally {
     await vite.close()
   }
@@ -213,6 +255,7 @@ test("Portal integrates the real material panels and maps every material error c
   assert.match(source, /<SessionMaterialsPanel/)
   assert.match(source, /key=\{offerSnapshot\.nextSession\?\.session_id \|\| "no-session"\}/)
   assert.match(source, /<TutorSessionMaterialsPanel/)
+  assert.match(source, /onSaved=\{\(options\) => refreshDashboard\(session, options\)\}/)
   assert.doesNotMatch(source, /function SessionPreparationCard/)
   assert.doesNotMatch(source, /materialsLocalOnly/)
 
