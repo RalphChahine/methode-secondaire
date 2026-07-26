@@ -8,15 +8,16 @@
 | Review owner | Chahine |
 | Next review | 2026-08-03 |
 | Current phase | Establish the operating truth |
-| One decision this week | Complete the fall capacity map before promising ongoing matches |
+| One decision this week | Use the provisional 19-slot baseline; recruit capacity before promising ongoing matches beyond confirmed availability |
 
 ## Capacity
 
 | Metric | Current | Standard | Status | Owner | Due date |
 | --- | ---: | ---: | --- | --- | --- |
 | Expected active students at school-year start | 20 | 20 | watch | Chahine | 2026-08-02 |
-| Confirmed recurring weekly session slots | not-measured | 24 | watch | Chahine | 2026-08-02 |
-| Evening/weekend slots | not-measured | 16 | watch | Chahine | 2026-08-02 |
+| Confirmed recurring weekly session slots | 19 (provisional) | 24 | high | Chahine | 2026-08-02 |
+| Staffing gap to initial buffer | 5 | 0 | high | Chahine | 2026-08-02 |
+| Evening/weekend slots | 19 (provisional) | 16 | green | Chahine | 2026-08-02 |
 | Active non-owner tutors | 1 | 3 | high | Chahine | 2026-08-23 |
 | Trained backup tutors | 0 | 1 | high | Chahine | 2026-08-30 |
 
@@ -51,4 +52,6 @@
 | Risk or decision | Level | Owner | Due date | Resolution |
 | --- | --- | --- | --- | --- |
 | Fall demand exceeds trained capacity | high | Chahine | 2026-08-23 | Recruit two active tutors and one backup |
+| Roster capacity and scheduled availability disagree | high | Chahine | 2026-08-02 | Use the 19 scheduled slots until the 29 roster slots are reconciled |
 | Subject expansion becomes too broad | watch | Chahine | 2026-08-30 | Apply launch gate before public promotion |
+| Tutor availability changes after a match is discussed | watch | Chahine | 2026-08-02 | Confirm the live CRM availability before every parent promise |
