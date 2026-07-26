@@ -3,7 +3,6 @@ import { Link, useLocation } from "react-router-dom"
 import { Component } from "react"
 import {
   ArrowRight,
-  Camera,
   CalendarCheck,
   CalendarClock,
   CalendarDays,
@@ -13,7 +12,6 @@ import {
   Clock3,
   CreditCard,
   FileText,
-  ImagePlus,
   LoaderCircle,
   LogOut,
   Mail,
@@ -35,6 +33,8 @@ import {
 import MotionCard from "@/components/MotionCard"
 import ProgressJourney from "@/components/ProgressJourney"
 import Seo from "@/components/Seo"
+import SessionMaterialsPanel from "@/components/portal/SessionMaterialsPanel"
+import TutorSessionMaterialsPanel from "@/components/portal/TutorSessionMaterialsPanel"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -260,10 +260,30 @@ const copyByLocale = {
     materialsRemove: "Retirer",
     materialsNote: "Ce qui bloque le plus (facultatif)",
     materialsNotePlaceholder: "Ex. Je ne comprends pas comment commencer la question 4.",
-    materialsLocalOnly: "Les photos et PDF restent sur cet appareil jusqu'à l'activation du transfert sécurisé. La note peut toutefois être envoyée au tuteur maintenant.",
-    materialsReady: "Ajoutez une note pour préciser ce que votre jeune veut travailler; le transfert sécurisé des fichiers sera activé séparément.",
-    materialsMessageTutor: "Écrire au tuteur",
-    materialsSendNote: "Envoyer la note au tuteur",
+    materialsFileTypes: "Photos JPG, PNG ou WebP et PDF seulement.",
+    materialsFileLimit: "Maximum 2,5 Mio par fichier.",
+    materialsSessionLimit: "Maximum cinq fichiers par séance.",
+    materialsFileInvalid: "Ce fichier ne peut pas être traité. Choisissez une photo ou un PDF valide.",
+    materialsProcessingFailed: "La photo n'a pas pu être préparée. Réessayez ou choisissez un autre fichier.",
+    materialsNotAvailable: "Les documents peuvent être partagés ou retirés seulement avant une séance à venir.",
+    materialsStorageNotConfigured: "Le transfert sécurisé des documents n'est pas encore configuré. Contactez Méthode Secondaire.",
+    materialsStorageFailed: "Le document n'a pas pu être enregistré. Réessayez dans quelques instants.",
+    materialsCleanupFailed: "Le document n'a pas pu être partagé et son nettoyage doit être vérifié par l'équipe.",
+    materialsShareFailed: "L'accès du tuteur au document n'a pas pu être confirmé. Le document n'a pas été partagé.",
+    materialsWithdrawFailed: "Le document n'a pas pu être retiré. Réessayez ou contactez Méthode Secondaire.",
+    materialsReadyState: "Prêt",
+    materialsUploading: "Envoi...",
+    materialsShared: "Partagé avec votre tuteur",
+    materialsFailed: "Échec",
+    materialsRetry: "Réessayer",
+    materialsSendToTutor: "Envoyer au tuteur",
+    materialsWithdraw: "Retirer",
+    materialsWithdrawn: "Le document a été retiré de l'accès du tuteur.",
+    materialsRetention: "Les documents partagés sont supprimés 30 jours après la fin de la séance.",
+    materialsOpen: "Ouvrir le document",
+    materialsOpenUnavailable: "Document temporairement indisponible",
+    tutorMaterialsEyebrow: "Avant la séance",
+    tutorMaterialsTitle: "Documents partagés par les parents",
     calendarNoSessions: "Aucune séance prévue cette semaine.",
     profileTitle: "Profil de suivi",
     profileIntro: "Gardez les renseignements de l'élève à jour pour que chaque séance parte du bon contexte.",
@@ -748,10 +768,30 @@ const copyByLocale = {
     materialsRemove: "Remove",
     materialsNote: "What feels most stuck? (optional)",
     materialsNotePlaceholder: "For example: I do not know how to start question 4.",
-    materialsLocalOnly: "Photos and PDFs stay on this device until secure transfer is enabled. You can still send the note to the tutor now.",
-    materialsReady: "Add a note to clarify what your student wants to work on; secure file transfer will be enabled separately.",
-    materialsMessageTutor: "Message the tutor",
-    materialsSendNote: "Send note to tutor",
+    materialsFileTypes: "JPG, PNG or WebP photos and PDF files only.",
+    materialsFileLimit: "Maximum 2.5 MiB per file.",
+    materialsSessionLimit: "Maximum five files per session.",
+    materialsFileInvalid: "This file cannot be processed. Choose a valid photo or PDF.",
+    materialsProcessingFailed: "The photo could not be prepared. Try again or choose another file.",
+    materialsNotAvailable: "Materials can be shared or withdrawn only before an upcoming session.",
+    materialsStorageNotConfigured: "Secure material transfer is not configured yet. Contact Méthode Secondaire.",
+    materialsStorageFailed: "The material could not be stored. Try again in a few moments.",
+    materialsCleanupFailed: "The material could not be shared and its cleanup must be checked by the team.",
+    materialsShareFailed: "Tutor access to the material could not be confirmed. The material was not shared.",
+    materialsWithdrawFailed: "The material could not be withdrawn. Try again or contact Méthode Secondaire.",
+    materialsReadyState: "Ready",
+    materialsUploading: "Uploading...",
+    materialsShared: "Shared with your tutor",
+    materialsFailed: "Failed",
+    materialsRetry: "Try again",
+    materialsSendToTutor: "Send to tutor",
+    materialsWithdraw: "Withdraw",
+    materialsWithdrawn: "The material was withdrawn from the tutor's access.",
+    materialsRetention: "Shared materials are deleted 30 days after the session ends.",
+    materialsOpen: "Open material",
+    materialsOpenUnavailable: "Material temporarily unavailable",
+    tutorMaterialsEyebrow: "Before the session",
+    tutorMaterialsTitle: "Materials shared by parents",
     calendarNoSessions: "No sessions scheduled this week.",
     profileTitle: "Learning profile",
     profileIntro: "Keep the student's information current so each session starts with the right context.",
@@ -1677,6 +1717,50 @@ function getPortalErrorMessage(copy, code) {
     return copy.paymentDemoNotAvailable
   }
 
+  if (code === "SESSION_MATERIAL_FILE_INVALID") {
+    return copy.materialsFileInvalid
+  }
+
+  if (code === "SESSION_MATERIAL_TYPE_NOT_ALLOWED") {
+    return copy.materialsFileTypes
+  }
+
+  if (code === "SESSION_MATERIAL_FILE_TOO_LARGE") {
+    return copy.materialsFileLimit
+  }
+
+  if (code === "SESSION_MATERIAL_IMAGE_PROCESSING_FAILED") {
+    return copy.materialsProcessingFailed
+  }
+
+  if (code === "SESSION_MATERIAL_NOT_AVAILABLE") {
+    return copy.materialsNotAvailable
+  }
+
+  if (code === "SESSION_MATERIAL_LIMIT_REACHED") {
+    return copy.materialsSessionLimit
+  }
+
+  if (code === "SESSION_MATERIAL_STORAGE_NOT_CONFIGURED") {
+    return copy.materialsStorageNotConfigured
+  }
+
+  if (code === "SESSION_MATERIAL_STORAGE_FAILED") {
+    return copy.materialsStorageFailed
+  }
+
+  if (code === "SESSION_MATERIAL_CLEANUP_FAILED") {
+    return copy.materialsCleanupFailed
+  }
+
+  if (code === "SESSION_MATERIAL_SHARE_FAILED") {
+    return copy.materialsShareFailed
+  }
+
+  if (code === "SESSION_MATERIAL_WITHDRAW_FAILED") {
+    return copy.materialsWithdrawFailed
+  }
+
   if (code === "SESSION_MESSAGE_REQUIRED") {
     return copy.messageRequired
   }
@@ -2126,7 +2210,16 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
           <ParentActionCenter copy={copy} dashboard={dashboard} />
           <ParentRhythmCard copy={copy} locale={locale} snapshot={rhythmSnapshot} token={token} onSaved={onSaved} />
           <NextSessionCard copy={copy} session={dashboard.next_session} role={role} actionHref="#portal-seances" />
-          <SessionPreparationCard copy={copy} dashboard={dashboard} session={offerSnapshot.nextSession} token={token} onSaved={onSaved} />
+          <SessionMaterialsPanel
+            key={offerSnapshot.nextSession?.session_id || "no-session"}
+            copy={copy}
+            session={offerSnapshot.nextSession}
+            materials={dashboard.session_materials}
+            token={token}
+            onSaved={onSaved}
+            formatDateTime={formatDateTime}
+            getErrorMessage={getPortalErrorMessage}
+          />
           <ProgramProgressCard copy={copy} locale={locale} snapshot={programSnapshot} />
           <ParentJourneyPanel copy={copy} dashboard={dashboard} />
           <MetricStrip metrics={dashboard.metrics} compact />
@@ -2387,133 +2480,6 @@ function ProgramProgressCard({ copy, locale, snapshot }) {
         {copy.programAction}
         <ArrowRight className="h-4 w-4" />
       </a>
-    </section>
-  )
-}
-
-function SessionPreparationCard({ copy, dashboard, session, token, onSaved }) {
-  const [localFiles, setLocalFiles] = useState([])
-  const [note, setNote] = useState("")
-  const [status, setStatus] = useState("")
-  const [isSaving, setIsSaving] = useState(false)
-  const receivedMaterials = getPortalSessionMaterials(dashboard, session?.session_id)
-
-  function stageFiles(event) {
-    const nextFiles = Array.from(event.target.files || []).map((file) => ({
-      id: `${file.name}-${file.size}-${file.lastModified}`,
-      name: file.name,
-    }))
-
-    if (nextFiles.length) {
-      setLocalFiles((current) => {
-        const existing = new Set(current.map((file) => file.id))
-        return [...current, ...nextFiles.filter((file) => !existing.has(file.id))].slice(0, 5)
-      })
-    }
-
-    event.target.value = ""
-  }
-
-  async function sendPreparationNote() {
-    if (!session?.session_id || !note.trim()) {
-      return
-    }
-
-    setIsSaving(true)
-    setStatus("")
-    const result = await sendPortalSessionMessage({
-      token,
-      sessionId: session.session_id,
-      message: [`${copy.sessionPrepTitle} · ${formatDateTime(session.start_at)}`, note.trim()].join("\n\n"),
-    })
-    setIsSaving(false)
-
-    if (result.ok) {
-      setNote("")
-      setStatus(copy.sessionPrepSent)
-      onSaved?.()
-      return
-    }
-
-    setStatus(getPortalErrorMessage(copy, result.code))
-  }
-
-  return (
-    <section id="portal-preparation" className="panel-soft min-w-0 scroll-mt-24 rounded-[24px] p-4 text-white sm:p-5">
-      <div className="flex min-w-0 items-start gap-3">
-        <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/10 text-[#f5c977]">
-          <Camera className="h-5 w-5" />
-        </div>
-        <div className="min-w-0">
-          <div className="journey-eyebrow">{copy.materialsEyebrow}</div>
-          <h2 className="mt-1 font-display text-2xl font-semibold leading-tight sm:text-3xl">{copy.materialsTitle}</h2>
-          <p className="mt-2 text-sm leading-6 text-white/62">{session ? copy.materialsDescription : copy.materialsNoSession}</p>
-        </div>
-      </div>
-
-      {session ? (
-        <>
-          <div className="mt-5 grid gap-2 sm:grid-cols-2">
-            <label className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl bg-[#f5c977] px-4 py-3 text-center text-sm font-semibold text-[#071631] transition hover:bg-[#f7d38f]">
-              <input type="file" accept="image/*" capture="environment" onChange={stageFiles} className="sr-only" />
-              <Camera className="h-4 w-4" />
-              {copy.materialsCapture}
-            </label>
-            <label className="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-white/10">
-              <input type="file" accept="image/*,application/pdf" multiple onChange={stageFiles} className="sr-only" />
-              <ImagePlus className="h-4 w-4" />
-              {copy.materialsAddFile}
-            </label>
-          </div>
-
-          {(receivedMaterials.length || localFiles.length) ? (
-            <div className="mt-3 space-y-2">
-              {receivedMaterials.map((material, index) => (
-                <div key={material.id || material.material_id || index} className="flex min-w-0 items-center gap-3 rounded-2xl border border-[#f5c977]/20 bg-[#f5c977]/8 px-3 py-2.5 text-sm text-white/82">
-                  <CircleCheck className="h-4 w-4 shrink-0 text-[#f5c977]" />
-                  <span className="min-w-0 flex-1 truncate">{material.name || material.file_name || material.title || copy.materialsReceived}</span>
-                  <span className="shrink-0 text-xs text-white/50">{copy.materialsReceived}</span>
-                </div>
-              ))}
-              {localFiles.map((file) => (
-                <div key={file.id} className="flex min-w-0 items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2.5 text-sm text-white/78">
-                  <FileText className="h-4 w-4 shrink-0 text-[#f5c977]" />
-                  <span className="min-w-0 flex-1 truncate">{file.name}</span>
-                  <button
-                    type="button"
-                    onClick={() => setLocalFiles((current) => current.filter((currentFile) => currentFile.id !== file.id))}
-                    className="shrink-0 text-xs font-semibold text-white/58 transition hover:text-white"
-                  >
-                    {copy.materialsRemove}
-                  </button>
-                </div>
-              ))}
-            </div>
-          ) : null}
-
-          <label className="mt-3 block text-sm font-semibold text-white/84">
-            {copy.materialsNote}
-            <Textarea
-              value={note}
-              onChange={(event) => setNote(event.target.value)}
-              className="mt-2 min-h-20 rounded-2xl border-white/15 bg-white/5 text-white placeholder:text-white/35"
-              placeholder={copy.materialsNotePlaceholder}
-            />
-          </label>
-          <p className="mt-3 text-xs leading-5 text-white/50">{localFiles.length || note.trim() ? copy.materialsLocalOnly : copy.materialsReady}</p>
-          <Button
-            type="button"
-            disabled={isSaving || !note.trim()}
-            onClick={sendPreparationNote}
-            variant="outline"
-            className="mt-3 min-h-11 w-full rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
-          >
-            {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <MessageSquareText className="h-4 w-4" />}
-            {copy.materialsSendNote}
-          </Button>
-          {status ? <p className="mt-3 text-sm leading-6 text-white/68">{status}</p> : null}
-        </>
-      ) : null}
     </section>
   )
 }
@@ -2972,6 +2938,11 @@ function TutorDashboard({ copy, dashboard, token, onSaved }) {
       <div className="min-w-0 space-y-6">
         <MetricStrip metrics={dashboard.metrics} />
         <NextSessionCard copy={copy} session={dashboard.next_session} role="tutor" />
+        <TutorSessionMaterialsPanel
+          copy={copy}
+          sessions={dashboard.sessions}
+          materials={dashboard.session_materials}
+        />
         <div className="lg:hidden">
           <RecordList
             icon={ClipboardList}
@@ -6181,25 +6152,6 @@ function getParentOfferSnapshot(dashboard = {}, preferredPlanType = "") {
       : null),
     kind: hasProgram ? "program" : isWeekly ? "weekly" : isTargeted ? "targeted" : "first",
   }
-}
-
-function getPortalSessionMaterials(dashboard = {}, sessionId = "") {
-  if (!sessionId) {
-    return []
-  }
-
-  const sources = [
-    dashboard.session_materials,
-    dashboard.materials,
-    dashboard.attachments,
-    dashboard.documents,
-  ]
-  const materials = sources.find(Array.isArray) || []
-
-  return materials
-    .filter((material) => isPortalRecord(material))
-    .filter((material) => material.session_id === sessionId)
-    .slice(0, 5)
 }
 
 function isPortalRecord(value) {

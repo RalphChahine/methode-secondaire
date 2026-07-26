@@ -248,6 +248,23 @@ export async function sendPortalSessionMessage({ token, sessionId, message }) {
   })
 }
 
+export async function uploadPortalSessionMaterial({ token, sessionId, material }) {
+  return portalRequest({
+    action: "portal_upload_session_material",
+    token,
+    session_id: sessionId,
+    ...material,
+  })
+}
+
+export async function withdrawPortalSessionMaterial({ token, materialId }) {
+  return portalRequest({
+    action: "portal_withdraw_session_material",
+    token,
+    material_id: materialId,
+  })
+}
+
 export async function cancelPortalSession({ role, token, sessionId, reason }) {
   return portalRequest({
     action: "portal_cancel_session",
