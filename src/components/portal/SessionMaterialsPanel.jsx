@@ -45,6 +45,37 @@ export function stagePortalMaterialFiles(currentEntries, selectedFiles, sharedCo
   return [...current, ...additions]
 }
 
+export function getVisibleSessionMaterials(materials, sessionId, withdrawnMaterialIds = []) {
+  const withdrawnIds = withdrawnMaterialIds instanceof Set
+    ? withdrawnMaterialIds
+    : new Set(withdrawnMaterialIds)
+
+  return getSessionMaterials(materials, sessionId)
+    .filter((material) => !withdrawnIds.has(material.material_id))
+}
+
+export async function processPortalMaterialWithdrawal({
+  token,
+  materialId,
+  withdraw = withdrawPortalSessionMaterial,
+  onWithdrawn,
+  onSaved,
+}) {
+  const result = await withdraw({ token, materialId })
+  if (!result.ok) {
+    return result
+  }
+
+  onWithdrawn(materialId)
+  try {
+    await onSaved?.()
+  } catch {
+    // The server withdrawal is already authoritative. Keep the row hidden
+    // locally and let a later dashboard refresh reconcile the CRM snapshot.
+  }
+  return result
+}
+
 export async function processReadyPortalMaterials({
   entries,
   token,
@@ -111,7 +142,12 @@ export default function SessionMaterialsPanel({
   const [status, setStatus] = useState("")
   const [isSending, setIsSending] = useState(false)
   const [withdrawingId, setWithdrawingId] = useState("")
-  const sharedMaterials = getSessionMaterials(materials, session?.session_id)
+  const [withdrawnMaterialIds, setWithdrawnMaterialIds] = useState([])
+  const sharedMaterials = getVisibleSessionMaterials(
+    materials,
+    session?.session_id,
+    withdrawnMaterialIds,
+  )
   const isUpcoming = Boolean(
     session?.start_at &&
     new Date(session.start_at).getTime() > Date.now() &&
@@ -201,15 +237,24 @@ export default function SessionMaterialsPanel({
   async function withdraw(materialId) {
     setWithdrawingId(materialId)
     setStatus("")
-    const result = await withdrawPortalSessionMaterial({ token, materialId })
-    setWithdrawingId("")
+    const result = await processPortalMaterialWithdrawal({
+      token,
+      materialId,
+      onWithdrawn: (withdrawnId) => {
+        setWithdrawnMaterialIds((current) => current.includes(withdrawnId)
+          ? current
+          : [...current, withdrawnId])
+        setWithdrawingId("")
+        setStatus(copy.materialsWithdrawn)
+      },
+      onSaved,
+    })
 
     if (result.ok) {
-      setStatus(copy.materialsWithdrawn)
-      onSaved?.()
       return
     }
 
+    setWithdrawingId("")
     setStatus(getErrorMessage(copy, result.code))
   }
 

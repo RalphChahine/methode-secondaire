@@ -129,6 +129,44 @@ test("material uploads are sequential and a failed file does not block the next"
   }
 })
 
+test("successful withdrawal hides the shared row before a non-fatal dashboard refresh", async () => {
+  const vite = await createServer({ server: { middlewareMode: true }, appType: "custom" })
+  try {
+    const {
+      getVisibleSessionMaterials,
+      processPortalMaterialWithdrawal,
+    } = await vite.ssrLoadModule("/src/components/portal/SessionMaterialsPanel.jsx")
+    const events = []
+    const withdrawnIds = new Set()
+
+    const result = await processPortalMaterialWithdrawal({
+      token: "parent-token",
+      materialId: "MATERIAL-1",
+      withdraw: async () => {
+        events.push("withdraw")
+        return { ok: true, material_id: "MATERIAL-1" }
+      },
+      onWithdrawn: (materialId) => {
+        events.push("hide")
+        withdrawnIds.add(materialId)
+      },
+      onSaved: async () => {
+        events.push("refresh")
+        throw new Error("dashboard refresh failed")
+      },
+    })
+
+    assert.equal(result.ok, true)
+    assert.deepEqual(events, ["withdraw", "hide", "refresh"])
+    assert.deepEqual(getVisibleSessionMaterials([
+      { material_id: "MATERIAL-1", session_id: "SESSION-1", status: "shared" },
+      { material_id: "MATERIAL-2", session_id: "SESSION-1", status: "shared" },
+    ], "SESSION-1", withdrawnIds).map((material) => material.material_id), ["MATERIAL-2"])
+  } finally {
+    await vite.close()
+  }
+})
+
 test("tutor materials render only returned Drive URLs and group active items by session", async () => {
   const vite = await createServer({ server: { middlewareMode: true }, appType: "custom" })
   try {
