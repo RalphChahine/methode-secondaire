@@ -16,6 +16,7 @@ This folder contains the repeatable management system for Méthode Secondaire. T
 - `recruiting/candidate-scorecard.md`
 - `recruiting/secondary-tutor-job-post-fr.md`
 - `recruiting/interview-and-mock-lesson.md`
+- `recruiting/application-triage.md`
 - `playbook/teaching-playbook.md`
 - `playbook/first-session-diagnostic.md`
 - `playbook/subject-launch-gate.md`

@@ -7,8 +7,8 @@
 | Week of | 2026-07-27 |
 | Review owner | Chahine |
 | Next review | 2026-08-03 |
-| Current phase | Establish the operating truth |
-| One decision this week | Use the provisional 19-slot baseline; recruit capacity before promising ongoing matches beyond confirmed availability |
+| Current phase | Recruit and approve before fall |
+| One decision this week | Use the existing tutor-application page and daily triage; recruit two approved active tutors and one backup before expanding client-facing subjects |
 
 ## Capacity
 
