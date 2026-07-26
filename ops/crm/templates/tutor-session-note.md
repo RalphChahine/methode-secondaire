@@ -47,6 +47,8 @@ Choisir une seule option:
 - watch: a surveiller avant la prochaine evaluation
 - high: il faut une action rapide
 
+Pour une premiere seance, nommer aussi la priorite des 2 a 4 prochaines seances et le jalon ou l'evaluation vise lorsque connu.
+
 ## Resume parent pret a envoyer
 
 [4 a 6 phrases, ton rassurant, clair, concret]

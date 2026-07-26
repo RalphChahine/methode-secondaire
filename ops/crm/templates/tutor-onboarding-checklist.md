@@ -12,6 +12,9 @@ Objectif: aucun tuteur ne prend un eleve avant d'etre clair sur la methode, l'ho
 - Email calendrier confirme.
 - Format accepte: en ligne, presentiel ou les deux.
 - Zones de presentiel confirmees si applicable.
+- Mini seance simulee observee et evaluee avec `ops/agency/recruiting/candidate-scorecard.md`.
+- Lecture confirmee de `ops/agency/playbook/teaching-playbook.md` et `ops/agency/playbook/first-session-diagnostic.md`.
+- Note tuteur et resume parent d'exemple approuves.
 
 ## Cadre de service
 
