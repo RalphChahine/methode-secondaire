@@ -136,6 +136,12 @@ Chaque lead doit toujours avoir un prochain geste clair:
 - envoyer le résumé de première séance;
 - fermer avec une raison.
 
+## Mise à jour parent aux quatre semaines
+
+Pour chaque élève actif, envoyer une mise à jour structurée au moins une fois par 28 jours. Le tuteur fournit les faits dans ses notes; Méthode Secondaire vérifie le ton et envoie le message parent avec `ops/agency/templates/four-week-parent-update.md`.
+
+Si les notes indiquent `watch` ou `high`, ne pas attendre la mise à jour mensuelle : inscrire `follow_up_owner` et `follow_up_due`, puis faire le suivi selon l'urgence.
+
 ## Templates
 
 Les messages prêts à copier sont dans `templates/`.
