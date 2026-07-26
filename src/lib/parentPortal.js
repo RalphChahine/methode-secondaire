@@ -19,12 +19,18 @@ export function getParentNextAction(dashboard = {}) {
   const matching = dashboard.matching || {}
   const sessions = records(dashboard.sessions)
   const metrics = dashboard.metrics || {}
+  const hasTutor = Boolean(
+    matching.tutor_id ||
+    records(dashboard.students).some((student) => student && student.assigned_tutor_id),
+  )
 
   if (!profile.name) return { key: "profile", destination: "account" }
-  if (!matching.tutor_id) return { key: "matching", destination: "sessions" }
+  if (!hasTutor) return { key: "matching", destination: "sessions" }
   if (!sessions.some(isScheduled)) return { key: "booking", destination: "sessions" }
   if (Number(metrics.payments_due) > 0) return { key: "payment", destination: "sessions" }
-  if (Number(metrics.messages_waiting) > 0) return { key: "message", destination: "messages" }
+  if (Number(metrics.messages_to_reply || metrics.messages_waiting) > 0) {
+    return { key: "message", destination: "messages" }
+  }
 
   const session = sessions.find((candidate) => (
     isUpcomingConfirmedSession(candidate) &&
