@@ -32,10 +32,18 @@ export function getParentNextAction(dashboard = {}) {
     return { key: "message", destination: "messages" }
   }
 
-  const session = sessions.find((candidate) => (
+  const canonicalNextSession = dashboard.next_session
+  const needsPreparation = (candidate) => (
     isUpcomingConfirmedSession(candidate) &&
     !hasSharedMaterial(dashboard.session_materials, candidate.session_id)
-  ))
+  )
+  const session = needsPreparation(canonicalNextSession)
+    ? canonicalNextSession
+    : sessions
+        .filter(needsPreparation)
+        .sort((left, right) => (
+          new Date(left.start_at).getTime() - new Date(right.start_at).getTime()
+        ))[0]
   if (session) return { key: "prepare", destination: "today", sessionId: session.session_id }
 
   return { key: "all_set", destination: "today" }
@@ -44,6 +52,9 @@ export function getParentNextAction(dashboard = {}) {
 export function getParentTodaySession(dashboard = {}, action = getParentNextAction(dashboard)) {
   const sessions = records(dashboard.sessions)
   if (action?.sessionId) {
+    if (dashboard.next_session?.session_id === action.sessionId) {
+      return dashboard.next_session
+    }
     const actionSession = sessions.find((session) => (
       session && session.session_id === action.sessionId
     ))

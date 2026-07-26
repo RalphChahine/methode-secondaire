@@ -154,36 +154,38 @@ test("the prepare action focuses the material panel already rendered on Today", 
   assert.match(source, /tabIndex=\{-1\}/)
 })
 
-test("keeps the prepare action and Today session aligned with unsorted sessions", () => {
+test("uses an unprepared canonical next session before an earlier array session", () => {
   const dashboard = {
     profile: { name: "Parent" },
     matching: { tutor_id: "T-1" },
     next_session: {
-      session_id: "S-SOON",
+      session_id: "S-CANONICAL",
       session_status: "confirmed",
-      start_at: "2099-01-01T15:00:00.000Z",
+      start_at: "2099-01-08T15:00:00.000Z",
     },
     sessions: [
       {
-        session_id: "S-LATER",
-        session_status: "confirmed",
-        start_at: "2099-01-08T15:00:00.000Z",
-      },
-      {
-        session_id: "S-SOON",
+        session_id: "S-EARLIER",
         session_status: "confirmed",
         start_at: "2099-01-01T15:00:00.000Z",
+      },
+      {
+        session_id: "S-CANONICAL",
+        session_status: "confirmed",
+        start_at: "2099-01-08T15:00:00.000Z",
       },
     ],
     metrics: {},
   }
   const action = getParentNextAction(dashboard)
+  const todaySession = getParentTodaySession(dashboard, action)
 
-  assert.equal(action.sessionId, "S-LATER")
-  assert.equal(getParentTodaySession(dashboard, action)?.session_id, action.sessionId)
+  assert.equal(action.sessionId, "S-CANONICAL")
+  assert.equal(todaySession?.session_id, action.sessionId)
+  assert.equal(todaySession, dashboard.next_session)
 })
 
-test("moves Today to the unprepared session when the canonical next session already has material", async () => {
+test("moves Today to the earliest unprepared session when the canonical next session already has material", async () => {
   const dashboard = {
     profile: { name: "Parent" },
     matching: { tutor_id: "T-1" },
@@ -199,9 +201,14 @@ test("moves Today to the unprepared session when the canonical next session alre
         start_at: "2099-01-01T15:00:00.000Z",
       },
       {
-        session_id: "S-NEEDS-MATERIAL",
+        session_id: "S-NEEDS-LATER",
         session_status: "confirmed",
         start_at: "2099-01-08T15:00:00.000Z",
+      },
+      {
+        session_id: "S-NEEDS-EARLIER",
+        session_status: "confirmed",
+        start_at: "2099-01-03T15:00:00.000Z",
       },
     ],
     session_materials: [{ session_id: "S-NEXT", status: "shared" }],
@@ -209,7 +216,7 @@ test("moves Today to the unprepared session when the canonical next session alre
   }
   const action = getParentNextAction(dashboard)
 
-  assert.equal(action.sessionId, "S-NEEDS-MATERIAL")
+  assert.equal(action.sessionId, "S-NEEDS-EARLIER")
   assert.equal(getParentTodaySession(dashboard, action)?.session_id, action.sessionId)
 
   const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
