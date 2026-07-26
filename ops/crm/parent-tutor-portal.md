@@ -262,29 +262,44 @@ The script now uses `MailApp.sendEmail`.
 
 If login codes do not send, open Apps Script and run/authorize `setupCrm` or any portal action once from the script editor so Google grants the send-mail permission. The manifest enables the Advanced Drive v3 service. Before material uploads can be enabled, configure the non-production Drive folder property and run `setupCrm` once so the deployment requests the required Drive scope; for a standard Cloud project, also confirm the Google Drive API is enabled in that project.
 
+## Secure session-material policy
+
+- Each file is capped at 2.5 MiB (exactly 2,621,440 bytes), with no more than five active files per session. Only JPEG, PNG, WebP, and PDF are accepted.
+- The linked parent may upload only to their own eligible future session. Only that session's assigned tutor receives explicit viewer access and the authenticated private Drive URL; an unrelated session or tutor receives neither metadata nor access.
+- Files remain in the dedicated, non-public Drive folder. The workflow never creates public links, sends Drive sharing emails, or attaches schoolwork to an email.
+- Before the session, the linked parent may withdraw a shared file. Withdrawal revokes the assigned tutor's permission before trashing the Drive file and marks the authoritative record `withdrawn`.
+- Thirty days after the session's scheduled end, automation revokes access, trashes the Drive file, and marks a still-shared record `expired`.
+- `PORTAL_MATERIALS_DRIVE_FOLDER_ID` is an Apps Script project property only. Never copy it into `VITE_*`, Vercel, repository, screenshot, or support-message configuration.
+
+The repository checks exercise validation and authorization code paths without authorizing Drive or deploying Apps Script. Live Drive acceptance remains owner-gated and must use only the isolated non-production identities and folder below.
+
 ## Non-production session-material acceptance
 
 This checklist must be run with test identities, a test future session, and a private non-production Drive folder. Do not reuse a production parent, tutor, session, or storage folder.
 
-1. Configure a non-production PORTAL_MATERIALS_DRIVE_FOLDER_ID and run setupCrm once to grant Drive scope.
-2. A linked test parent uploads a sub-2.5 MiB JPEG to a future session: one material row, a non-public Drive file, and no bytes in Sheets.
-3. Assigned tutor sees and opens it; unrelated tutor sees neither metadata nor URL.
-4. DOCX, 2.5 MiB-plus-one-byte PDF, and sixth material are rejected without a row or Drive file.
-5. Parent withdrawal trashes the file and removes it from both portal views.
-6. A past-due material expires when runPortalAutomation runs and is marked expired.
+1. Configure a non-production `PORTAL_MATERIALS_DRIVE_FOLDER_ID`, run `setupCrm` once to grant Drive scope, and redeploy the Apps Script web app.
+2. A linked test parent uploads a JPEG and a PDF, each no larger than 2.5 MiB, to the linked future session: each accepted file creates one material row and one non-public Drive file, stores no bytes in Sheets, and creates the tutor's portal alert only after the CRM write succeeds.
+3. The same parent submits an unrelated session ID: authorization fails and no Drive file or `Session Materials` row is created.
+4. The assigned tutor sees the material metadata and opens the private Drive link; an unrelated tutor sees neither metadata nor URL.
+5. A DOCX, a PDF at 2,621,441 bytes, and a sixth active supported file each produce the specific rejection without a row or Drive file.
+6. Before the session, parent withdrawal revokes tutor access, trashes the file, marks the row `withdrawn`, and removes the item from both portal views.
+7. A past-due material expires when `runPortalAutomation` runs: tutor access is revoked, the Drive file is trashed, and the row is marked `expired`.
+8. With French and English test parents, verify the parent home at mobile and desktop widths: Today is the default, shows exactly one primary action and three factual stages, exposes no secondary content before navigation, and all four destinations work with keyboard focus and visible selected state.
 
 Acceptance record prepared on 2026-07-25:
 
 | Case | File type / exact size | Outcome |
 | --- | --- | --- |
 | Configuration and Drive authorization | Private test Drive folder; no file | Not run — requires an owner-controlled non-production Script Property, Apps Script authorization, and deployment. |
-| Linked-parent upload | JPEG, less than 2,621,440 bytes | Not run — requires a real test parent/tutor/session and Drive inspection. |
+| Linked-parent valid upload | JPEG and PDF, each at or below 2,621,440 bytes | Not run — requires a real test parent/tutor/session, deployed Apps Script action, and Drive/Sheet inspection. |
+| Unrelated session ID | Supported file at or below 2,621,440 bytes | Not run — requires the deployed non-production action plus Drive/Sheet before-and-after inspection. |
 | Assigned versus unrelated tutor access | Previously uploaded JPEG | Not run — requires two real test tutor identities and Drive permission inspection. |
 | Rejection boundaries | DOCX; PDF at 2,621,441 bytes; sixth supported file | Not run — requires the deployed non-production Apps Script action and Drive/Sheet before-and-after inspection. |
-| Parent withdrawal | Previously uploaded JPEG | Not run — requires the deployed non-production workflow and Drive trash inspection. |
+| Parent withdrawal before session | Previously uploaded JPEG | Not run — requires the deployed non-production workflow and Drive permission/trash inspection. |
 | Automated expiry | Supported test file with `expires_at` in the past | Not run — requires a test Drive file/row and execution of `runPortalAutomation`. |
+| Parent home mobile, keyboard, and bilingual | French and English test parent dashboards | Not run — requires representative owner-controlled portal accounts and browser acceptance at mobile and desktop widths. |
 
-The local/static verification covers payload validation, role-owned filtering, tutor-only URL serialization, share-failure cleanup, missing-file withdrawal, metadata-only rows, 30-day expiry calculations, informational messages, and Drive cleanup behavior. It does not substitute for the six owner-run Google acceptance cases above.
+Local verification completed on 2026-07-25 with `npm.cmd run test:payments`, `npm.cmd run test:portal`, and `npm.cmd run test:site`. It covers payload validation, role-owned filtering, tutor-only URL serialization, share-failure cleanup, missing-file withdrawal, metadata-only rows, 30-day expiry calculations, informational messages, Drive cleanup behavior, parent action selection, and the four-destination composition. It does not authorize Drive, deploy Apps Script, or substitute for the eight owner-run acceptance cases above.
 
 ## Operating rules
 
@@ -298,7 +313,7 @@ The local/static verification covers payload validation, role-owned filtering, t
 - Do not describe a block as an automatic subscription or debit. Each block is closed with no automatic renewal; cadence is selected after matching.
 - Treat a paid cancellation as a manual refund or credit decision; do not tell a parent it is automatically refunded.
 - Treat an in-window 72-hour change as a team-review request. For a progress-block session, do not release its reserved credit until the team accepts the change; do not automatically forfeit it.
-- Do not ask parents to upload schoolwork through the portal until the six non-production material checks are complete and the client upload controls are explicitly enabled.
+- Do not ask parents to upload schoolwork through the portal until the eight non-production material and parent-home checks are complete and the client upload controls are explicitly enabled.
 - Keep `PORTAL_MATERIALS_DRIVE_FOLDER_ID` pointed at a private, dedicated folder. Never enable public link sharing; material must be opened only by the assigned tutor through the authenticated portal.
 - Review message-SLA alerts promptly, especially when a parent message is due before a session.
 - Use `Portal Requests` as the inbox for parent/tutor messages that arrive from the portal.

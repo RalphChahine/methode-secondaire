@@ -37,6 +37,18 @@ The repository can verify the code paths with `npm.cmd run test:payments` and `n
 
 Do not put Stripe or Apps Script secrets in the frontend, a `VITE_*` variable, the repository, screenshots, or support messages.
 
+## Secure session materials
+
+Session photos and PDFs require an owner-controlled, private Google Drive rollout:
+
+1. Create a dedicated, non-public Drive folder owned by the Google account that executes the Apps Script web app. Never enable public or anyone-with-the-link sharing.
+2. Store the folder ID only in the Apps Script project property `PORTAL_MATERIALS_DRIVE_FOLDER_ID`. It is not a `VITE_*` value, a Vercel variable, or repository configuration.
+3. Authorize the required Drive scope and redeploy the Apps Script web app first. Deploy the verified frontend and authenticated API proxies only after that backend deployment is ready.
+4. Before public rollout, complete the non-production acceptance matrix with a test parent, assigned and unrelated test tutors, a future test session, and a private test folder. Repository tests do not replace this owner-gated Drive check.
+5. Roll back by removing `portal_upload_session_material` and `portal_withdraw_session_material` from both authenticated proxy allowlists and removing the upload UI. Existing files remain private; reconcile and clean them through the `Session Materials` records and the dedicated Drive folder.
+
+Do not upload production schoolwork or authorize a production Drive folder until the test-account acceptance is recorded.
+
 ## AI assistant setup
 
 The site includes a floating AI assistant powered by the OpenAI Responses API and a Vercel serverless function.
