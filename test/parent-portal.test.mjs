@@ -8,6 +8,88 @@ import {
   getParentSessionProgress,
   getParentTodaySession,
 } from "../src/lib/parentPortal.js"
+import {
+  findReleasedParentRecap,
+  getPortalSessionState,
+  groupParentSessions,
+  isPortalSessionCurrentOrFuture,
+} from "../src/lib/portalSessionState.js"
+
+test("does not let a parent confirm a proposal after its start time", () => {
+  const state = getPortalSessionState({
+    session_status: "proposed",
+    start_at: "2026-07-14T21:40:00.000Z",
+    payment_status: "payment_requested",
+    parent_confirmed_at: "2026-07-10T12:00:00.000Z",
+  }, "parent", new Date("2026-07-26T12:00:00.000Z"))
+
+  assert.equal(state.isExpiredProposal, true)
+  assert.equal(state.canConfirm, false)
+  assert.equal(state.canShowPayment, false)
+  assert.equal(state.canRequestChange, true)
+})
+
+test("shows a waiting state instead of a second confirmation for the current participant", () => {
+  const state = getPortalSessionState({
+    session_status: "proposed",
+    start_at: "2026-08-01T17:00:00.000Z",
+    parent_confirmed_at: "2026-07-26T12:00:00.000Z",
+  }, "parent", new Date("2026-07-26T12:00:00.000Z"))
+
+  assert.equal(state.isWaitingForOther, true)
+  assert.equal(state.canConfirm, false)
+  assert.equal(state.canRequestChange, true)
+})
+
+test("only exposes a requested payment after both confirmations", () => {
+  const session = {
+    session_status: "proposed",
+    start_at: "2026-08-01T17:00:00.000Z",
+    payment_status: "payment_requested",
+    parent_confirmed_at: "2026-07-26T12:00:00.000Z",
+  }
+  assert.equal(getPortalSessionState(session, "parent", new Date("2026-07-26T12:00:00.000Z")).canShowPayment, false)
+
+  assert.equal(getPortalSessionState({
+    ...session,
+    session_status: "confirmed",
+    tutor_confirmed_at: "2026-07-26T12:05:00.000Z",
+  }, "parent", new Date("2026-07-26T12:00:00.000Z")).canShowPayment, true)
+})
+
+test("groups parent history and finds only the released recap for a completed session", () => {
+  const now = new Date("2026-07-26T12:00:00.000Z")
+  const groups = groupParentSessions([
+    { session_id: "UP", session_status: "confirmed", start_at: "2026-08-01T17:00:00.000Z" },
+    { session_id: "PAST", session_status: "completed", start_at: "2026-07-14T17:00:00.000Z" },
+    { session_id: "CANCELLED", session_status: "cancelled", start_at: "2026-07-22T17:00:00.000Z" },
+  ], now)
+
+  assert.deepEqual(groups.upcoming.map((session) => session.session_id), ["UP"])
+  assert.deepEqual(groups.past.map((session) => session.session_id), ["PAST"])
+  assert.deepEqual(groups.cancelled.map((session) => session.session_id), ["CANCELLED"])
+  assert.equal(findReleasedParentRecap([
+    { session_id: "PAST", status: "draft", parent_summary: "Do not show" },
+    { session_id: "PAST", status: "released", parent_summary: "Visible recap" },
+  ], "PAST").parent_summary, "Visible recap")
+})
+
+test("keeps only current or future non-terminal sessions in the parent action path", () => {
+  const now = new Date("2026-07-26T12:00:00.000Z")
+
+  assert.equal(isPortalSessionCurrentOrFuture({
+    session_status: "proposed",
+    start_at: "2026-07-14T17:00:00.000Z",
+  }, now), false)
+  assert.equal(isPortalSessionCurrentOrFuture({
+    session_status: "confirmed",
+    start_at: "2026-08-01T17:00:00.000Z",
+  }, now), true)
+  assert.equal(isPortalSessionCurrentOrFuture({
+    session_status: "cancelled",
+    start_at: "2026-08-01T17:00:00.000Z",
+  }, now), false)
+})
 
 test("returns one prepare action for an upcoming confirmed session", () => {
   const action = getParentNextAction({
