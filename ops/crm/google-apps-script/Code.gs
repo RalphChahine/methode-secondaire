@@ -879,6 +879,7 @@ function createPaymentRowsForScheduledSessions() {
   );
   const now = new Date().toISOString();
   let created = 0;
+  const checkoutResults = {};
 
   for (let rowIndex = 1; rowIndex < sessionValues.length; rowIndex += 1) {
     const row = sessionValues[rowIndex];
@@ -963,6 +964,10 @@ function createPaymentRowsForScheduledSessions() {
       payment.checkout_url = issued.payment_url;
       payment.checkout_expires_at = issued.due_date;
       payment.due_date = issued.due_date;
+      checkoutResults[payment.payment_id] = {
+        checkout_url: issued.payment_url,
+        stripe_mode: normalizeAllowed_(issued.stripe_mode, ["test", "live"], ""),
+      };
     }
     if (issued.ok && payment.email) {
       try {
@@ -975,7 +980,7 @@ function createPaymentRowsForScheduledSessions() {
     created += 1;
   }
 
-  return { ok: true, created };
+  return { ok: true, created, checkout_results: checkoutResults };
   } finally {
     paymentCreationLock.releaseLock();
   }
@@ -2990,10 +2995,13 @@ function bookPortalSession_(spreadsheet, payload) {
   } finally {
     bookingLock.releaseLock();
   }
-  finalizeConfirmedPortalSession_(spreadsheet);
+  const finalization = finalizeConfirmedPortalSession_(spreadsheet);
   const payment = getSheetRecords_(spreadsheet, CRM_PAYMENT_SHEET_NAME, PAYMENT_COLUMNS)
     .find((candidate) => normalizeValue_(candidate.session_id) === record.session_id);
   const checkoutUrl = getCheckoutPaymentUrl_(payment);
+  const checkoutResult = payment && finalization.payments && finalization.payments.checkout_results
+    ? finalization.payments.checkout_results[payment.payment_id] || {}
+    : {};
 
   return {
     ok: true,
@@ -3002,6 +3010,7 @@ function bookPortalSession_(spreadsheet, payload) {
     payment_mode: paymentMode,
     checkout_url: checkoutUrl,
     checkout_expires_at: payment ? payment.checkout_expires_at : "",
+    stripe_mode: normalizeAllowed_(checkoutResult.stripe_mode, ["test", "live"], ""),
     amount_cad: record.amount_cad,
   };
 }
@@ -7287,7 +7296,13 @@ function issueCheckoutForPayment_(spreadsheet, paymentRecord, options) {
     updated_at: new Date().toISOString(),
   };
   writeRecord_(paymentSheet, PAYMENT_COLUMNS, currentPayment.rowNumber, nextPayment);
-  return { ok: true, payment_id: paymentId, payment_url: nextPayment.checkout_url, due_date: dueDate };
+  return {
+    ok: true,
+    payment_id: paymentId,
+    payment_url: nextPayment.checkout_url,
+    due_date: dueDate,
+    stripe_mode: normalizeAllowed_(checkout.stripe_mode, ["test", "live"], ""),
+  };
 }
 
 function sendParentSessionSummary_(sessionRecord, note) {

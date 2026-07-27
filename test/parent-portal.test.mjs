@@ -336,6 +336,27 @@ test("CRM protects confirmation and payment state for proposed sessions", async 
   assert.match(rescheduler, /voidUnpaidSessionPayments_\(spreadsheet, sessionId, "Session rescheduled by the team\."\)/)
 })
 
+test("CRM returns only the safe Stripe mode for a newly issued portal Checkout", async () => {
+  const source = await readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
+  const paymentCreator = source.slice(
+    source.indexOf("function createPaymentRowsForScheduledSessions()"),
+    source.indexOf("function ensureCrmReady_("),
+  )
+  const checkoutIssuer = source.slice(
+    source.indexOf("function issueCheckoutForPayment_("),
+    source.indexOf("function sendParentSessionSummary_("),
+  )
+  const booker = source.slice(
+    source.indexOf("function bookPortalSession_("),
+    source.indexOf("function submitParentFeedback_("),
+  )
+
+  assert.match(paymentCreator, /checkout_results/)
+  assert.match(checkoutIssuer, /stripe_mode/)
+  assert.match(booker, /finalization\.payments\.checkout_results/)
+  assert.match(booker, /stripe_mode:/)
+})
+
 test("the prepare action focuses the material panel already rendered on Today", async () => {
   const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
 
