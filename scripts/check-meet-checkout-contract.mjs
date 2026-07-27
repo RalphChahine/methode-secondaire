@@ -22,7 +22,7 @@ function expect(condition, message) {
 }
 
 async function main() {
-  const [checkoutEndpoint, checkoutExpiryEndpoint, checkoutBuilder, checkoutTest, packageJson, stripeWebhook, crmCode, portalEndpoint, portalClient, portalSource, parentTutorRunbook] = await Promise.all([
+  const [checkoutEndpoint, checkoutExpiryEndpoint, checkoutBuilder, checkoutTest, packageJson, stripeWebhook, crmCode, portalEndpoint, portalClient, portalSource, portalBookingOutcome, parentTutorRunbook] = await Promise.all([
     readSource("api/create-checkout-session.js"),
     readSource("api/expire-checkout-session.js"),
     readSource("api/lib/stripe-checkout.mjs"),
@@ -33,6 +33,7 @@ async function main() {
     readSource("api/portal.js"),
     readSource("src/lib/portalClient.js"),
     readSource("src/pages/Portal.jsx"),
+    readSource("src/lib/portalBookingOutcome.js"),
     readSource("ops/crm/parent-tutor-portal.md"),
   ])
 
@@ -220,8 +221,9 @@ async function main() {
     !portalSource.includes('payment_mode === "demo"') &&
     !portalSource.includes("setPaymentUrl(result.payment_link)"),
   "Portal UI: demo or arbitrary booking payment-link flow remains enabled")
-  expect(portalSource.includes("getSafeHostedCheckoutUrl(result.checkout_url || result.payment_url)") &&
-    portalSource.includes('url.hostname === "checkout.stripe.com"') && portalSource.includes('url.pathname.startsWith("/c/")') &&
+  expect(portalSource.includes("getPortalBookingOutcome(result)") &&
+    portalBookingOutcome.includes("getSafeHostedCheckoutUrl(result.checkout_url || result.payment_url)") &&
+    portalBookingOutcome.includes('url.hostname === "checkout.stripe.com"') && portalBookingOutcome.includes('url.pathname.startsWith("/c/")') &&
     !portalSource.includes("paymentResult.payment?.payment_link") &&
     !portalSource.includes("result.payment?.payment_link"),
   "Portal UI: payment CTAs must use only a validated hosted Checkout URL")

@@ -14,6 +14,7 @@ import {
   groupParentSessions,
   isPortalSessionCurrentOrFuture,
 } from "../src/lib/portalSessionState.js"
+import { getPortalBookingOutcome } from "../src/lib/portalBookingOutcome.js"
 
 test("does not let a parent confirm a proposal after its start time", () => {
   const state = getPortalSessionState({
@@ -26,7 +27,35 @@ test("does not let a parent confirm a proposal after its start time", () => {
   assert.equal(state.isExpiredProposal, true)
   assert.equal(state.canConfirm, false)
   assert.equal(state.canShowPayment, false)
-  assert.equal(state.canRequestChange, true)
+  assert.equal(state.canRequestChange, false)
+})
+
+test("does not offer an adjustment after a confirmed session has ended", () => {
+  const state = getPortalSessionState({
+    session_status: "confirmed",
+    start_at: "2026-07-14T17:00:00.000Z",
+    end_at: "2026-07-14T18:00:00.000Z",
+  }, "parent", new Date("2026-07-26T12:00:00.000Z"))
+
+  assert.equal(state.canRequestChange, false)
+})
+
+test("classifies a missing Checkout without calling it simulated", () => {
+  assert.deepEqual(getPortalBookingOutcome({ payment_mode: "plan_credit" }), {
+    kind: "plan_credit", checkoutUrl: "", stripeMode: "",
+  })
+  assert.deepEqual(getPortalBookingOutcome({
+    payment_mode: "stripe_checkout",
+    checkout_url: "https://checkout.stripe.com/c/pay/cs_test_123",
+    stripe_mode: "test",
+  }), {
+    kind: "checkout_ready",
+    checkoutUrl: "https://checkout.stripe.com/c/pay/cs_test_123",
+    stripeMode: "test",
+  })
+  assert.deepEqual(getPortalBookingOutcome({ payment_mode: "stripe_checkout" }), {
+    kind: "checkout_unavailable", checkoutUrl: "", stripeMode: "",
+  })
 })
 
 test("shows a waiting state instead of a second confirmation for the current participant", () => {

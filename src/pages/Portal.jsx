@@ -56,6 +56,7 @@ import {
   getPortalSessionState,
   groupParentSessions,
 } from "@/lib/portalSessionState"
+import { getPortalBookingOutcome, getSafeHostedCheckoutUrl } from "@/lib/portalBookingOutcome"
 import {
   clearPortalSession,
   adjustPortalPlanCredits,
@@ -423,7 +424,9 @@ const copyByLocale = {
     bookSession: "Réserver et payer",
     bookWithProgramCredit: "Réserver avec un crédit",
     bookingLoading: "Validation du créneau...",
-    bookingSuccess: "Séance réservée. Vous pouvez maintenant compléter le paiement simulé.",
+    bookingCheckoutReady: "Séance réservée. Votre paiement Stripe sécurisé est prêt.",
+    bookingTestCheckoutReady: "Séance réservée. Votre Checkout Stripe de test est prêt; aucune carte réelle ne sera débitée.",
+    bookingPaymentSetupRequired: "Séance réservée, mais le Checkout Stripe n’est pas encore configuré. Aucun paiement n’a été effectué; l’équipe doit finaliser la configuration.",
     bookingCreditSuccess: "Séance réservée. Un crédit du programme est maintenant réservé.",
     bookingDetailsRequired: "Choisissez un créneau et ajoutez le nom de l'élève.",
     childrenTitle: "Mes élèves",
@@ -950,7 +953,9 @@ const copyByLocale = {
     bookSession: "Book and pay",
     bookWithProgramCredit: "Book with a credit",
     bookingLoading: "Confirming time...",
-    bookingSuccess: "Session booked. You can now complete the simulated payment.",
+    bookingCheckoutReady: "Session booked. Your secure Stripe payment is ready.",
+    bookingTestCheckoutReady: "Session booked. Your Stripe test Checkout is ready; no real card will be charged.",
+    bookingPaymentSetupRequired: "Session booked, but Stripe Checkout is not configured yet. No payment was taken; the team must finish setup.",
     bookingCreditSuccess: "Session booked. One program credit is now reserved.",
     bookingDetailsRequired: "Choose a time and add the student name.",
     childrenTitle: "My students",
@@ -4941,11 +4946,19 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved }) {
         session_type: sessionType,
         payment_mode: result.payment_mode || "",
       })
-      const checkoutUrl = getSafeHostedCheckoutUrl(result.checkout_url || result.payment_url)
-      setPaymentUrl(checkoutUrl)
+      const outcome = getPortalBookingOutcome(result)
+      setPaymentUrl(outcome.checkoutUrl)
       setPaymentAmount(result.amount_cad || "")
       setPaymentDeadline(result.checkout_expires_at || result.due_date || "")
-      setStatus(result.payment_mode === "plan_credit" ? copy.bookingCreditSuccess : copy.bookingSuccess)
+      setStatus(
+        outcome.kind === "plan_credit"
+          ? copy.bookingCreditSuccess
+          : outcome.kind === "checkout_unavailable"
+            ? copy.bookingPaymentSetupRequired
+            : outcome.stripeMode === "test"
+              ? copy.bookingTestCheckoutReady
+              : copy.bookingCheckoutReady,
+      )
       setSlotId("")
       onSaved?.()
     } else {
@@ -6476,17 +6489,6 @@ function buildStripePaymentUrl(paymentLink, paymentId) {
     return url.toString()
   } catch {
     return paymentLink
-  }
-}
-
-function getSafeHostedCheckoutUrl(value) {
-  try {
-    const url = new URL(String(value || ""))
-    return url.protocol === "https:" && url.hostname === "checkout.stripe.com" && url.pathname.startsWith("/c/")
-      ? url.toString()
-      : ""
-  } catch {
-    return ""
   }
 }
 
