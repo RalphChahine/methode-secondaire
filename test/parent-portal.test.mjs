@@ -91,6 +91,38 @@ test("keeps only current or future non-terminal sessions in the parent action pa
   }, now), false)
 })
 
+test("does not let a stale proposal block a parent from booking a real next session", () => {
+  const action = getParentNextAction({
+    profile: { name: "Parent" },
+    matching: { tutor_id: "T-1" },
+    sessions: [{
+      session_status: "proposed",
+      start_at: "2026-07-14T17:00:00.000Z",
+    }],
+    metrics: {},
+  })
+
+  assert.equal(action.key, "booking")
+  assert.equal(action.destination, "sessions")
+})
+
+test("does not show a stale proposal as the parent next session", () => {
+  const nextSession = getParentTodaySession({
+    next_session: {
+      session_id: "STALE",
+      session_status: "proposed",
+      start_at: "2026-07-14T17:00:00.000Z",
+    },
+    sessions: [{
+      session_id: "FUTURE",
+      session_status: "confirmed",
+      start_at: "2099-01-01T17:00:00.000Z",
+    }],
+  })
+
+  assert.equal(nextSession.session_id, "FUTURE")
+})
+
 test("returns one prepare action for an upcoming confirmed session", () => {
   const action = getParentNextAction({
     profile: { name: "Parent" }, matching: { tutor_id: "T-1" },
@@ -222,6 +254,21 @@ test("parent dashboard defaults to Today and gates secondary destinations", asyn
   ]) {
     assert.match(source, new RegExp(label))
   }
+})
+
+test("renders grouped parent session history and state-driven session actions", async () => {
+  const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
+
+  assert.match(source, /getPortalSessionState/)
+  assert.match(source, /groupParentSessions/)
+  assert.match(source, /findReleasedParentRecap/)
+  assert.match(source, /copy\.upcomingSessions/)
+  assert.match(source, /copy\.pastSessions/)
+  assert.match(source, /copy\.cancelledSessions/)
+  assert.match(source, /presentation\.canConfirm/)
+  assert.match(source, /presentation\.isWaitingForOther/)
+  assert.match(source, /presentation\.isExpiredProposal/)
+  assert.match(source, /presentation\.canShowPayment/)
 })
 
 test("the prepare action focuses the material panel already rendered on Today", async () => {

@@ -1,9 +1,16 @@
+import { isPortalSessionCurrentOrFuture } from "./portalSessionState.js"
+
 function records(value) {
   return Array.isArray(value) ? value : []
 }
 
-function isScheduled(session) {
-  return session && !["cancelled", "no_show"].includes(session.session_status)
+function isCurrentOrFutureOrUndated(session) {
+  if (!session || ["cancelled", "no_show", "completed"].includes(session.session_status)) {
+    return false
+  }
+
+  const startAt = new Date(session.start_at).getTime()
+  return !Number.isFinite(startAt) || isPortalSessionCurrentOrFuture(session)
 }
 
 function isUpcomingConfirmedSession(session) {
@@ -26,7 +33,7 @@ export function getParentNextAction(dashboard = {}) {
 
   if (!profile.name) return { key: "profile", destination: "account" }
   if (!hasTutor) return { key: "matching", destination: "sessions" }
-  if (!sessions.some(isScheduled)) return { key: "booking", destination: "sessions" }
+  if (!sessions.some(isCurrentOrFutureOrUndated)) return { key: "booking", destination: "sessions" }
   if (Number(metrics.payments_due) > 0) return { key: "payment", destination: "sessions" }
   if (Number(metrics.messages_to_reply || metrics.messages_waiting) > 0) {
     return { key: "message", destination: "messages" }
@@ -63,14 +70,12 @@ export function getParentTodaySession(dashboard = {}, action = getParentNextActi
     }
   }
 
-  if (dashboard.next_session && typeof dashboard.next_session === "object") {
+  if (dashboard.next_session && typeof dashboard.next_session === "object" && isCurrentOrFutureOrUndated(dashboard.next_session)) {
     return dashboard.next_session
   }
 
   return sessions
-    .filter((session) => (
-      session && !["cancelled", "no_show", "completed"].includes(session.session_status)
-    ))
+    .filter(isCurrentOrFutureOrUndated)
     .sort((left, right) => String(left.start_at || "").localeCompare(String(right.start_at || "")))[0] || null
 }
 

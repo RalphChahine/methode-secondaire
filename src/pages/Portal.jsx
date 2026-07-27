@@ -52,6 +52,11 @@ import {
   getParentTodaySession,
 } from "@/lib/parentPortal"
 import {
+  findReleasedParentRecap,
+  getPortalSessionState,
+  groupParentSessions,
+} from "@/lib/portalSessionState"
+import {
   clearPortalSession,
   adjustPortalPlanCredits,
   assignPortalTutor,
@@ -312,6 +317,9 @@ const copyByLocale = {
     manageSession: "Gérer cette séance",
     noNextSession: "Aucune séance confirmée à venir.",
     sessions: "Séances",
+    upcomingSessions: "À venir",
+    pastSessions: "Passées",
+    cancelledSessions: "Annulées",
     scheduleSession: "Planifier une séance",
     chooseParent: "Choisir un parent",
     chooseTutor: "Choisir un tuteur",
@@ -346,6 +354,11 @@ const copyByLocale = {
     parentConfirmed: "Parent confirmé",
     tutorConfirmed: "Tuteur confirmé",
     paymentReady: "Paiement prêt",
+    sessionAwaitingTutor: "Vous avez confirmé — en attente de la confirmation du tuteur.",
+    sessionAwaitingParent: "Le tuteur a confirmé — votre confirmation est attendue.",
+    sessionProposalExpired: "Cette proposition est expirée.",
+    sessionProposalExpiredText: "Demandez un ajustement et l'équipe vous proposera un nouveau créneau.",
+    sessionRecapTitle: "Bilan de la séance",
     planSetupTitle: "Blocs et paiements",
     planSetupIntro: "Créez un Bloc d'élan ou un Bloc de progression. La vérification Stripe accorde automatiquement les crédits prévus, une seule fois.",
     planChoose: "Formule",
@@ -831,6 +844,9 @@ const copyByLocale = {
     manageSession: "Manage this session",
     noNextSession: "No confirmed upcoming session.",
     sessions: "Sessions",
+    upcomingSessions: "Upcoming",
+    pastSessions: "Past",
+    cancelledSessions: "Cancelled",
     scheduleSession: "Schedule a session",
     chooseParent: "Choose a parent",
     chooseTutor: "Choose a tutor",
@@ -865,6 +881,11 @@ const copyByLocale = {
     parentConfirmed: "Parent confirmed",
     tutorConfirmed: "Tutor confirmed",
     paymentReady: "Payment ready",
+    sessionAwaitingTutor: "You confirmed — waiting for the tutor to confirm.",
+    sessionAwaitingParent: "The tutor confirmed — your confirmation is needed.",
+    sessionProposalExpired: "This proposal has expired.",
+    sessionProposalExpiredText: "Request a change and the team will propose a new time.",
+    sessionRecapTitle: "Session recap",
     planSetupTitle: "Blocks and payments",
     planSetupIntro: "Create a Momentum block or a Progress block. Stripe verification automatically grants the included credits exactly once.",
     planChoose: "Offer",
@@ -2260,6 +2281,7 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
   const programSnapshot = getParentOfferSnapshot(dashboard, "pack")
   const nextAction = getParentNextAction(dashboard)
   const todaySession = getParentTodaySession(dashboard, nextAction)
+  const sessionGroups = groupParentSessions(dashboard.sessions)
   const navigationItems = [
     { key: "today", label: copy.parentNavToday, icon: CalendarCheck },
     { key: "sessions", label: copy.parentNavSessions, icon: CalendarDays },
@@ -2330,9 +2352,42 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
           <CalendarAgenda copy={copy} sessions={dashboard.sessions} />
           <RecordList
             icon={CalendarCheck}
-            title={copy.sessions}
+            title={copy.upcomingSessions}
             empty={copy.empty}
-            records={dashboard.sessions}
+            records={sessionGroups.upcoming}
+            render={(session) => (
+              <SessionRow
+                key={session.session_id}
+                copy={copy}
+                session={session}
+                role={role}
+                token={token}
+                onSaved={onSaved}
+              />
+            )}
+          />
+          <RecordList
+            icon={ClipboardList}
+            title={copy.pastSessions}
+            empty={copy.empty}
+            records={sessionGroups.past}
+            render={(session) => (
+              <SessionRow
+                key={session.session_id}
+                copy={copy}
+                session={session}
+                role={role}
+                token={token}
+                recap={findReleasedParentRecap(dashboard.notes, session.session_id)}
+                onSaved={onSaved}
+              />
+            )}
+          />
+          <RecordList
+            icon={CalendarClock}
+            title={copy.cancelledSessions}
+            empty={copy.empty}
+            records={sessionGroups.cancelled}
             render={(session) => (
               <SessionRow
                 key={session.session_id}
@@ -5378,7 +5433,7 @@ function RecordList({ icon: Icon, title, empty, records = [], render }) {
   )
 }
 
-function SessionRow({ copy, session, role, token, onSaved }) {
+function SessionRow({ copy, session, role, token, recap, onSaved }) {
   const [status, setStatus] = useState("")
   const [isSaving, setIsSaving] = useState(false)
   const [showChange, setShowChange] = useState(false)
@@ -5386,7 +5441,7 @@ function SessionRow({ copy, session, role, token, onSaved }) {
   const [showReschedule, setShowReschedule] = useState(false)
   const [rescheduleStart, setRescheduleStart] = useState(() => toDateTimeLocal(session.start_at))
   const [rescheduleDuration, setRescheduleDuration] = useState(() => getSessionDurationMinutes(session))
-  const canRespond = Boolean(role && token && ["requested", "proposed"].includes(session.session_status))
+  const presentation = getPortalSessionState(session, role)
   const startsAt = coerceDate(session.start_at)
   const isOperator = role === "operator"
   const canCancel = Boolean(role && token && startsAt && startsAt.getTime() > Date.now() && ["proposed", "confirmed", "calendar_created"].includes(session.session_status))
@@ -5508,29 +5563,33 @@ function SessionRow({ copy, session, role, token, onSaved }) {
           {session.tutor_confirmed_at ? <StatusPill value={copy.tutorConfirmed} /> : null}
         </div>
       ) : null}
-      {canRespond ? (
+      {(presentation.canConfirm || presentation.canRequestChange) ? (
         <div className="mt-4 border-t border-white/10 pt-4">
           {!showChange ? (
             <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
-              <Button
-                type="button"
-                disabled={isSaving}
-                onClick={() => respond("confirm")}
-                className="w-full rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
-              >
-                <CircleCheck className="h-4 w-4" />
-                {copy.confirmSession}
-              </Button>
-              <Button
-                type="button"
-                disabled={isSaving}
-                onClick={() => setShowChange(true)}
-                variant="outline"
-                className="w-full rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white sm:w-auto"
-              >
-                <CalendarClock className="h-4 w-4" />
-                {copy.requestChange}
-              </Button>
+              {presentation.canConfirm ? (
+                <Button
+                  type="button"
+                  disabled={isSaving}
+                  onClick={() => respond("confirm")}
+                  className="w-full rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
+                >
+                  <CircleCheck className="h-4 w-4" />
+                  {copy.confirmSession}
+                </Button>
+              ) : null}
+              {presentation.canRequestChange ? (
+                <Button
+                  type="button"
+                  disabled={isSaving}
+                  onClick={() => setShowChange(true)}
+                  variant="outline"
+                  className="w-full rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white sm:w-auto"
+                >
+                  <CalendarClock className="h-4 w-4" />
+                  {copy.requestChange}
+                </Button>
+              ) : null}
             </div>
           ) : (
             <div className="space-y-3">
@@ -5552,10 +5611,18 @@ function SessionRow({ copy, session, role, token, onSaved }) {
               </div>
             </div>
           )}
-          {!session.parent_confirmed_at || !session.tutor_confirmed_at ? (
-            <p className="mt-3 text-sm text-white/56">{copy.confirmationWaiting}</p>
-          ) : null}
         </div>
+      ) : null}
+      {presentation.isExpiredProposal ? (
+        <div className="mt-3 rounded-2xl border border-[#f5c977]/20 bg-[#f5c977]/8 px-3 py-3 text-sm leading-6 text-white/74">
+          <div className="font-semibold text-white/88">{copy.sessionProposalExpired}</div>
+          <p className="mt-1">{copy.sessionProposalExpiredText}</p>
+        </div>
+      ) : null}
+      {presentation.isWaitingForOther ? (
+        <p className="mt-3 text-sm leading-6 text-white/68">
+          {role === "parent" ? copy.sessionAwaitingTutor : copy.sessionAwaitingParent}
+        </p>
       ) : null}
       {canReschedule ? (
         <div className="mt-4 border-t border-white/10 pt-4">
@@ -5623,10 +5690,19 @@ function SessionRow({ copy, session, role, token, onSaved }) {
           </Button>
         </div>
       ) : null}
-      {session.payment_status === "payment_requested" ? (
+      {presentation.canShowPayment ? (
         <div className="mt-4 flex items-center gap-2 text-sm text-[#f5c977]">
           <CreditCard className="h-4 w-4" />
           {copy.paymentReady}
+        </div>
+      ) : null}
+      {recap?.parent_summary ? (
+        <div className="mt-4 border-t border-white/10 pt-4">
+          <div className="text-sm font-semibold text-white/88">{copy.sessionRecapTitle}</div>
+          <p className="mt-2 text-sm leading-6 text-white/68">{recap.parent_summary}</p>
+          {recap.homework_next ? (
+            <p className="mt-3 rounded-2xl bg-white/5 px-3 py-2 text-sm leading-6 text-white/68">{recap.homework_next}</p>
+          ) : null}
         </div>
       ) : null}
       {status ? <p className="mt-3 text-sm leading-6 text-white/68">{status}</p> : null}
