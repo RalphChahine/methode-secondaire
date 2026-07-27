@@ -28,6 +28,23 @@ The portal uses one hosted Stripe Checkout Session per payment request; it does 
 
 Never commit any of these values or put them in a `VITE_*` variable, frontend code, browser payload, or documentation screenshot.
 
+## Temporary Test mode on the public production portal
+
+Use this temporary configuration only while no real parent is allowed to reserve or pay. It sends the live portal to Stripe **Test mode**: a test Checkout is still a real booking workflow, but no real card is charged.
+
+1. In the Stripe Dashboard, switch to **Test mode**. Create the webhook endpoint `https://methode-secondaire.vercel.app/api/stripe-webhook`, subscribe to the three events above, and copy that endpoint's test signing secret.
+2. In Vercel **Production** environment variables, set `STRIPE_SECRET_KEY` to the Stripe test key (`sk_test_...`) and `STRIPE_WEBHOOK_SECRET` to that test endpoint's signing secret. Keep both values server-only; do not use any `VITE_*` name.
+3. Confirm Vercel and Apps Script have the same `PAYMENT_SESSION_SECRET` and `PAYMENT_WEBHOOK_SECRET`. In Apps Script, keep `PAYMENT_CHECKOUT_ENDPOINT` set to `https://methode-secondaire.vercel.app/api/create-checkout-session` unless a different trusted endpoint is intentionally used.
+4. Deploy the current Apps Script `Code.gs`, then redeploy Vercel production so the new server variables are active.
+5. Book a new test session in the production portal. The portal must show that a Stripe **test** Checkout is ready, then open `checkout.stripe.com`. Complete it with Stripe's test card `4242 4242 4242 4242`, any future expiry, any CVC, and any postal code.
+6. Confirm the matching payment becomes `paid` once in the CRM and Stripe's test webhook delivery is successful. A session that shows setup required must not be described as paid or simulated; finish configuration first.
+
+Only a newly issued Checkout reflects the active key. Do not use an old Checkout link as proof that Test mode is configured.
+
+## Switch back before real parents can pay
+
+Before allowing a real booking, the owner must replace the Vercel test key and test webhook secret with the matching live values, create/verify the live webhook endpoint and events, redeploy Vercel, and complete the restricted live verification below. Do not make this switch through the portal or by sharing a secret in chat.
+
 ## Test-mode validation before production
 
 1. Create the endpoint in Stripe **test mode** and use its test-mode `whsec_...` value in Vercel.

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict"
 import { spawnSync } from "node:child_process"
 import crypto from "node:crypto"
+import { readFile } from "node:fs/promises"
 import { Readable } from "node:stream"
 import test from "node:test"
 
@@ -8,6 +9,20 @@ import { classifyStripeCheckoutEvent, createCheckoutRequest } from "../api/lib/s
 import createCheckoutSession from "../api/create-checkout-session.js"
 import expireCheckoutSession from "../api/expire-checkout-session.js"
 import stripeWebhook from "../api/stripe-webhook.js"
+
+test("documents owner-controlled production Stripe Test mode", async () => {
+  const [environmentTemplate, runbook] = await Promise.all([
+    readFile(new URL("../.env.example", import.meta.url), "utf8"),
+    readFile(new URL("../ops/crm/stripe-webhook.md", import.meta.url), "utf8"),
+  ])
+
+  assert.match(environmentTemplate, /STRIPE_SECRET_KEY/)
+  assert.match(environmentTemplate, /PAYMENT_SESSION_SECRET/)
+  assert.match(runbook, /sk_test_/)
+  assert.match(runbook, /4242 4242 4242 4242/)
+  assert.match(runbook, /checkout\.session\.completed/)
+  assert.match(runbook, /https:\/\/methode-secondaire\.vercel\.app\/api\/stripe-webhook/)
+})
 
 test("classifies a paid Checkout completion for its payment", () => {
   assert.deepEqual(classifyStripeCheckoutEvent({
