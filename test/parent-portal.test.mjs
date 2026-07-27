@@ -41,6 +41,17 @@ test("shows a waiting state instead of a second confirmation for the current par
   assert.equal(state.canRequestChange, true)
 })
 
+test("does not offer a schedule-change action after a calendar event exists", () => {
+  const state = getPortalSessionState({
+    session_status: "calendar_created",
+    start_at: "2026-08-01T17:00:00.000Z",
+    parent_confirmed_at: "2026-07-26T12:00:00.000Z",
+    tutor_confirmed_at: "2026-07-26T12:05:00.000Z",
+  }, "parent", new Date("2026-07-26T12:00:00.000Z"))
+
+  assert.equal(state.canRequestChange, false)
+})
+
 test("only exposes a requested payment after both confirmations", () => {
   const session = {
     session_status: "proposed",

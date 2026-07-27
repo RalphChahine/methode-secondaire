@@ -50,7 +50,7 @@ export function getPortalSessionState(session = {}, role = "", now = new Date())
     isExpiredProposal,
     isWaitingForOther: status === "proposed" && isFuture && ownConfirmed && !otherConfirmed,
     canConfirm: isParticipant && status === "proposed" && isFuture && !ownConfirmed,
-    canRequestChange: isParticipant && ["proposed", "confirmed", "calendar_created"].includes(status),
+    canRequestChange: isParticipant && ["proposed", "confirmed"].includes(status),
     canShowPayment: Boolean(
       ["confirmed", "calendar_created", "completed"].includes(status) &&
       session.payment_status === "payment_requested" &&
