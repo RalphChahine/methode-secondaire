@@ -199,6 +199,8 @@ Stripe remains the payment processor and the portal never stores card data. A si
 7. When the tutor submits a post-session note, a green/watch parent summary is emailed and visible in the parent portal. High-risk notes stay as drafts for owner review.
 8. For either block, the team records a weekly or biweekly cadence only after matching and after confirming a realistic day and time. When the fit remains right, it uses the same preferred time, tutor and format. Each future session is still explicitly scheduled and confirmed. After the final included session, no new block, payment or renewal is created unless the parent chooses one.
 
+For an operator-created proposal, no payment is requested until both the parent and tutor have confirmed. A stale proposal cannot be confirmed. It remains visible as expired and can create a schedule-change request for the team; it is never treated as a payable booking.
+
 ### Block credit lifecycle
 
 1. The team verifies the payment; the verified workflow activates the enrollment and grants four credits for the Momentum block or five credits for the relevant Progress-block instalment, with a reason in `Credit Ledger`.
