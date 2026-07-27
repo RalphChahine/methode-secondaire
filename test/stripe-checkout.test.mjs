@@ -160,7 +160,41 @@ test("creates a Stripe Checkout Session only for an authenticated internal POST"
     checkout_session_id: "cs_test_123",
     checkout_url: "https://checkout.stripe.com/c/pay/cs_test_123",
     expires_at: "2026-07-21T17:00:00.000Z",
+    stripe_mode: "test",
   })
+})
+
+test("labels a Checkout created with a live key without exposing that key", async () => {
+  const originalFetch = globalThis.fetch
+  const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET
+  const originalStripeSecret = process.env.STRIPE_SECRET_KEY
+  const response = makeResponse()
+
+  process.env.PAYMENT_SESSION_SECRET = "internal-secret"
+  process.env.STRIPE_SECRET_KEY = "sk_live_secret"
+  globalThis.fetch = async () => ({
+    ok: true,
+    json: async () => ({
+      id: "cs_live_123",
+      url: "https://checkout.stripe.com/c/pay/cs_live_123",
+      expires_at: 1784653200,
+    }),
+  })
+
+  try {
+    await createCheckoutSession({
+      method: "POST",
+      body: makeCheckoutInput({ payment_session_secret: "internal-secret" }),
+    }, response)
+  } finally {
+    globalThis.fetch = originalFetch
+    restoreEnvironment("PAYMENT_SESSION_SECRET", originalPaymentSecret)
+    restoreEnvironment("STRIPE_SECRET_KEY", originalStripeSecret)
+  }
+
+  assert.equal(response.statusCode, 200)
+  assert.equal(response.payload.stripe_mode, "live")
+  assert.equal("stripe_secret_key" in response.payload, false)
 })
 
 test("rejects unauthenticated Checkout requests without calling Stripe", async () => {

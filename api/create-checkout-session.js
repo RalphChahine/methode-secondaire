@@ -70,7 +70,12 @@ export default async function handler(req, res) {
     checkout_session_id: checkoutSessionId,
     checkout_url: checkoutUrl,
     expires_at: new Date(expirySeconds * 1000).toISOString(),
+    stripe_mode: getStripeMode(stripeSecretKey),
   })
+}
+
+function getStripeMode(stripeSecretKey) {
+  return stripeSecretKey.startsWith("sk_test_") ? "test" : "live"
 }
 
 function safeEqual(value, expected) {
