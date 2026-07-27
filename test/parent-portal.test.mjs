@@ -271,6 +271,31 @@ test("renders grouped parent session history and state-driven session actions", 
   assert.match(source, /presentation\.canShowPayment/)
 })
 
+test("CRM protects confirmation and payment state for proposed sessions", async () => {
+  const source = await readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
+  const responder = source.slice(
+    source.indexOf("function respondToPortalSession_("),
+    source.indexOf("function reschedulePortalSession_("),
+  )
+  const creator = source.slice(
+    source.indexOf("function createPortalSession_("),
+    source.indexOf("function bookPortalSession_("),
+  )
+  const rescheduler = source.slice(
+    source.indexOf("function reschedulePortalSession_("),
+    source.indexOf("function cancelPortalSession_("),
+  )
+
+  assert.match(responder, /response === "confirm" && !isUpcomingDate_\(sessionRecord\.data\.start_at\)/)
+  assert.match(responder, /already_confirmed: true/)
+  assert.match(responder, /next\.payment_status = next\.credit_reservation_id \? "not_requested" : "payment_requested"/)
+  assert.match(responder, /next\.payment_status = "not_requested"/)
+  assert.match(responder, /voidUnpaidSessionPayments_\(spreadsheet, sessionId, "Schedule change requested\."\)/)
+  assert.match(creator, /payment_status: "not_requested"/)
+  assert.match(rescheduler, /payment_status: "not_requested"/)
+  assert.match(rescheduler, /voidUnpaidSessionPayments_\(spreadsheet, sessionId, "Session rescheduled by the team\."\)/)
+})
+
 test("the prepare action focuses the material panel already rendered on Today", async () => {
   const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
 

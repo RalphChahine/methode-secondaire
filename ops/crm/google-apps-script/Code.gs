@@ -2806,7 +2806,7 @@ function createPortalSession_(spreadsheet, payload) {
     format: normalizeAllowed_(payload.format, TUTOR_FORMAT_OPTIONS, parent.format || "online"),
     location: normalizeValue_(payload.location).slice(0, 400),
     google_calendar_event_id: "",
-    payment_status: planBinding.requires_credit ? "not_requested" : "payment_requested",
+    payment_status: "not_requested",
     payment_link: "",
     amount_cad: planBinding.requires_credit ? "" : amountCad,
     notes: [normalizeValue_(payload.notes).slice(0, 1200), planBinding.requires_credit ? "Pack credit reserved for this session." : ""].filter(Boolean).join(" | "),
@@ -4245,6 +4245,18 @@ function respondToPortalSession_(spreadsheet, payload) {
   if (!["requested", "proposed", "confirmed"].includes(status)) {
     return { ok: false, code: "SESSION_NOT_ACTIONABLE" };
   }
+  if (response === "confirm" && status !== "proposed") {
+    return { ok: false, code: "SESSION_NOT_ACTIONABLE" };
+  }
+  if (response === "confirm" && !isUpcomingDate_(sessionRecord.data.start_at)) {
+    return { ok: false, code: "SESSION_NOT_ACTIONABLE" };
+  }
+  if (response === "confirm" && (
+    (session.access.role === "parent" && sessionRecord.data.parent_confirmed_at) ||
+    (session.access.role === "tutor" && sessionRecord.data.tutor_confirmed_at)
+  )) {
+    return { ok: true, already_confirmed: true, session_id: sessionId, session_status: status };
+  }
 
   const now = new Date().toISOString();
   const next = { ...sessionRecord.data, updated_at: now };
@@ -4257,10 +4269,13 @@ function respondToPortalSession_(spreadsheet, payload) {
     }
 
     next.session_status = next.parent_confirmed_at && next.tutor_confirmed_at ? "confirmed" : "proposed";
+    next.payment_status = next.credit_reservation_id ? "not_requested" : "payment_requested";
   } else if (["request_change", "decline"].includes(response)) {
     next.session_status = "requested";
     next.parent_confirmed_at = "";
     next.tutor_confirmed_at = "";
+    next.payment_status = "not_requested";
+    voidUnpaidSessionPayments_(spreadsheet, sessionId, "Schedule change requested.");
     appendPortalRequestRecord_(spreadsheet, {
       role: session.access.role,
       email: session.access.email,
@@ -4317,6 +4332,7 @@ function reschedulePortalSession_(spreadsheet, payload) {
       appendCalendarDeletionFailureRequest_(spreadsheet, sessionRecord.data, "replanification", calendarDeletion.code);
       return { ok: false, code: "SESSION_CALENDAR_DELETE_FAILED" };
     }
+    voidUnpaidSessionPayments_(spreadsheet, sessionId, "Session rescheduled by the team.");
     next = {
       ...sessionRecord.data,
       start_at: startAt.toISOString(),
@@ -4324,6 +4340,7 @@ function reschedulePortalSession_(spreadsheet, payload) {
       session_status: "proposed",
       parent_confirmed_at: "",
       tutor_confirmed_at: "",
+      payment_status: "not_requested",
       google_calendar_event_id: "",
       calendar_invites_sent_at: "",
       modification_deadline_at: normalizeValue_(sessionRecord.data.plan_enrollment_id)
