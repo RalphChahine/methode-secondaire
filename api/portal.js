@@ -128,6 +128,13 @@ export default async function handler(req, res) {
       })
     }
 
+    if (upstreamBody?.ok === false) {
+      console.warn("portal_crm_action_failed", {
+        action,
+        code: normalizeString(upstreamBody.code) || "PORTAL_REQUEST_FAILED",
+      })
+    }
+
     return res.status(200).json(upstreamBody || { ok: false, code: "PORTAL_EMPTY_RESPONSE" })
   } catch (error) {
     return res.status(502).json({

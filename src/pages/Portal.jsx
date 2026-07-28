@@ -538,6 +538,7 @@ const copyByLocale = {
     paid: "Payé",
     paymentDueOneHour: "Paiement à effectuer dans l’heure",
     paymentDueUntil: "À régler avant",
+    paymentLinkPreparing: "Votre lien Stripe sécurisé est en préparation. Actualisez dans un instant; aucun paiement n’a été débité.",
     paymentLinkExpired: "Ce lien de paiement a expiré.",
     requestNewPaymentLink: "Demander un nouveau lien de paiement",
     paymentReissueSuccess: "Un nouveau lien de paiement sécurisé est prêt pendant une heure.",
@@ -1072,6 +1073,7 @@ const copyByLocale = {
     paid: "Paid",
     paymentDueOneHour: "Payment due within one hour",
     paymentDueUntil: "Pay by",
+    paymentLinkPreparing: "Your secure Stripe link is being prepared. Refresh in a moment; no payment has been charged.",
     paymentLinkExpired: "This payment link has expired.",
     requestNewPaymentLink: "Request a new payment link",
     paymentReissueSuccess: "A new secure payment link is ready for one hour.",
@@ -5824,6 +5826,15 @@ function PaymentRow({ copy, locale, payment, token, onSaved }) {
             {copy.pay}
           </a>
         </Button>
+      ) : null}
+      {currentPayment.payment_status === "payment_requested" && !paymentUrl ? (
+        <div className="mt-3 rounded-2xl border border-white/10 bg-white/5 p-3 text-sm leading-6 text-white/70">
+          <p>{copy.paymentLinkPreparing}</p>
+          <Button type="button" variant="outline" onClick={() => onSaved?.()} className="mt-3 rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white">
+            <RefreshCw className="h-4 w-4" />
+            {copy.refresh}
+          </Button>
+        </div>
       ) : null}
       {isOverdue ? (
         <div className="mt-4 rounded-2xl border border-[#f5c977]/20 bg-[#f5c977]/8 p-3 text-sm leading-6 text-white/76">

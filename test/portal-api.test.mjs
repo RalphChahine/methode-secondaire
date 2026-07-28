@@ -60,6 +60,45 @@ test("forwards material action with the server-only secret", async () => {
   assert.equal(response.payload.portal_secret, undefined)
 })
 
+test("logs a safe CRM action code when a booking fails after reaching the CRM", async () => {
+  const originalFetch = globalThis.fetch
+  const originalWarn = console.warn
+  const originalUrl = process.env.CRM_WEBHOOK_URL
+  const originalSecret = process.env.CRM_PORTAL_SECRET
+  const warnings = []
+  process.env.CRM_WEBHOOK_URL = "https://crm.example.test"
+  process.env.CRM_PORTAL_SECRET = "shared-secret"
+  globalThis.fetch = async () => new Response(JSON.stringify({
+    ok: false,
+    code: "PORTAL_REQUEST_FAILED",
+  }), {
+    status: 200, headers: { "content-type": "application/json" },
+  })
+  console.warn = (...args) => warnings.push(args)
+  const response = makeResponse()
+
+  try {
+    await portalHandler({
+      method: "POST",
+      body: { action: "portal_book_session", token: "parent-token" },
+      headers: {},
+      socket: {},
+    }, response)
+  } finally {
+    globalThis.fetch = originalFetch
+    console.warn = originalWarn
+    restoreEnvironment("CRM_WEBHOOK_URL", originalUrl)
+    restoreEnvironment("CRM_PORTAL_SECRET", originalSecret)
+  }
+
+  assert.equal(response.statusCode, 200)
+  assert.deepEqual(response.payload, { ok: false, code: "PORTAL_REQUEST_FAILED" })
+  assert.deepEqual(warnings, [["portal_crm_action_failed", {
+    action: "portal_book_session",
+    code: "PORTAL_REQUEST_FAILED",
+  }]])
+})
+
 test("rejects an oversized streamed material payload", async () => {
   const request = Readable.from(["x".repeat(MAX_PORTAL_BODY_BYTES + 1)])
   request.method = "POST"
