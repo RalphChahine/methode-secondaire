@@ -1,5 +1,5 @@
 const PORTAL_STORAGE_KEY = "methode-secondaire-portal-session"
-const PORTAL_REQUEST_TIMEOUT_MS = 25000
+const PORTAL_REQUEST_TIMEOUT_MS = 55000
 
 export function loadPortalSession() {
   if (typeof window === "undefined") {

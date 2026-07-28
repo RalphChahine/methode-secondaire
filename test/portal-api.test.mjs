@@ -1,4 +1,5 @@
 import assert from "node:assert/strict"
+import { readFile } from "node:fs/promises"
 import { Readable } from "node:stream"
 import test from "node:test"
 
@@ -8,6 +9,16 @@ test("allowlists the material actions at the bounded upload limit", () => {
   assert.equal(PORTAL_ACTIONS.has("portal_upload_session_material"), true)
   assert.equal(PORTAL_ACTIONS.has("portal_withdraw_session_material"), true)
   assert.equal(MAX_PORTAL_BODY_BYTES, 4 * 1024 * 1024)
+})
+
+test("keeps the portal request alive long enough for a managed booking", async () => {
+  const [portalApi, portalClient] = await Promise.all([
+    readFile(new URL("../api/portal.js", import.meta.url), "utf8"),
+    readFile(new URL("../src/lib/portalClient.js", import.meta.url), "utf8"),
+  ])
+
+  assert.match(portalApi, /const CRM_REQUEST_TIMEOUT_MS = 50000/)
+  assert.match(portalClient, /const PORTAL_REQUEST_TIMEOUT_MS = 55000/)
 })
 
 test("forwards material action with the server-only secret", async () => {

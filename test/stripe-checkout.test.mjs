@@ -24,6 +24,15 @@ test("documents owner-controlled production Stripe Test mode", async () => {
   assert.match(runbook, /https:\/\/methode-secondaire\.vercel\.app\/api\/stripe-webhook/)
 })
 
+test("authorizes Apps Script to issue server-side Stripe Checkouts", async () => {
+  const manifest = JSON.parse(await readFile(
+    new URL("../ops/crm/google-apps-script/appsscript.json", import.meta.url),
+    "utf8",
+  ))
+
+  assert.ok(manifest.oauthScopes.includes("https://www.googleapis.com/auth/script.external_request"))
+})
+
 test("classifies a paid Checkout completion for its payment", () => {
   assert.deepEqual(classifyStripeCheckoutEvent({
     type: "checkout.session.completed",

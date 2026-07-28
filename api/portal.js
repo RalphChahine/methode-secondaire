@@ -1,7 +1,7 @@
 export const MAX_PORTAL_BODY_BYTES = 4 * 1024 * 1024
 const RATE_LIMIT_WINDOW_MS = 10 * 60 * 1000
 const RATE_LIMIT_MAX_REQUESTS = 30
-const CRM_REQUEST_TIMEOUT_MS = 22000
+const CRM_REQUEST_TIMEOUT_MS = 50000
 const requestLog = new Map()
 
 export const PORTAL_ACTIONS = new Set([
