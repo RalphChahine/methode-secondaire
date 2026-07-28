@@ -331,6 +331,9 @@ const copyByLocale = {
     sessionFormat: "Format",
     location: "Lieu ou lien de rencontre",
     recurrence: "Récurrence",
+    sessionPrice: "Montant à facturer (CAD)",
+    sessionPriceDefault: "Tarif par défaut",
+    sessionPriceHelp: "Entrez 0 $ pour une séance gratuite. À partir de 1 $, un Checkout Stripe Test est créé après confirmation.",
     createSession: "Envoyer la proposition",
     sessionCreated: "Séance proposée aux deux personnes pour confirmation.",
     confirmSession: "Confirmer",
@@ -428,6 +431,7 @@ const copyByLocale = {
     bookingTestCheckoutReady: "Séance réservée. Votre Checkout Stripe de test est prêt; aucune carte réelle ne sera débitée.",
     bookingPaymentSetupRequired: "Séance réservée, mais le Checkout Stripe n’est pas encore configuré. Aucun paiement n’a été effectué; l’équipe doit finaliser la configuration.",
     bookingCreditSuccess: "Séance réservée. Un crédit du programme est maintenant réservé.",
+    bookingFreeSuccess: "Séance réservée. Elle est gratuite : aucun paiement n’est requis.",
     bookingDetailsRequired: "Choisissez un créneau et ajoutez le nom de l'élève.",
     childrenTitle: "Mes élèves",
     childrenIntro: "Chaque enfant garde son niveau, son tuteur et son suivi. Ajoutez tous les enfants de la famille ici.",
@@ -529,6 +533,7 @@ const copyByLocale = {
     notes: "Résumés",
     payments: "Paiements",
     amount: "Montant",
+    freeSession: "Gratuit",
     pay: "Payer",
     paid: "Payé",
     paymentDueOneHour: "Paiement à effectuer dans l’heure",
@@ -860,6 +865,9 @@ const copyByLocale = {
     sessionFormat: "Format",
     location: "Location or meeting link",
     recurrence: "Recurrence",
+    sessionPrice: "Amount to charge (CAD)",
+    sessionPriceDefault: "Default price",
+    sessionPriceHelp: "Enter $0 for a free session. From $1, a Stripe Test Checkout is created after confirmation.",
     createSession: "Send proposal",
     sessionCreated: "The session was proposed to both people for confirmation.",
     confirmSession: "Confirm",
@@ -957,6 +965,7 @@ const copyByLocale = {
     bookingTestCheckoutReady: "Session booked. Your Stripe test Checkout is ready; no real card will be charged.",
     bookingPaymentSetupRequired: "Session booked, but Stripe Checkout is not configured yet. No payment was taken; the team must finish setup.",
     bookingCreditSuccess: "Session booked. One program credit is now reserved.",
+    bookingFreeSuccess: "Session booked. It is free: no payment is required.",
     bookingDetailsRequired: "Choose a time and add the student name.",
     childrenTitle: "My students",
     childrenIntro: "Each child keeps their grade, tutor and follow-up. Add every student in the family here.",
@@ -1058,6 +1067,7 @@ const copyByLocale = {
     notes: "Summaries",
     payments: "Payments",
     amount: "Amount",
+    freeSession: "Free",
     pay: "Pay",
     paid: "Paid",
     paymentDueOneHour: "Payment due within one hour",
@@ -4253,6 +4263,7 @@ function ScheduleSessionForm({ copy, dashboard, token, onSaved }) {
     start_at: "",
     duration_minutes: "60",
     session_type: "first_session",
+    amount_cad: "",
     format: "online",
     location: "",
     recurrence_weeks: "1",
@@ -4357,6 +4368,7 @@ function ScheduleSessionForm({ copy, dashboard, token, onSaved }) {
         ...current,
         student_name: "",
         start_at: "",
+        amount_cad: "",
         location: "",
         plan_enrollment_id: "",
       }))
@@ -4474,6 +4486,20 @@ function ScheduleSessionForm({ copy, dashboard, token, onSaved }) {
         <SelectField label={copy.sessionFormat} value={values.format} options={["online", "in_person", "either"]} onChange={(value) => updateValue("format", value)} />
         <SelectField label={copy.recurrence} value={values.recurrence_weeks} options={["1", "2", "3", "4"]} onChange={(value) => updateValue("recurrence_weeks", value)} />
       </div>
+
+      <label className="mt-3 block text-sm font-semibold text-white/84">
+        {copy.sessionPrice}
+        <Input
+          value={values.amount_cad}
+          onChange={(event) => updateValue("amount_cad", event.target.value)}
+          type="number"
+          min="0"
+          step="0.01"
+          placeholder={copy.sessionPriceDefault}
+          className="mt-2 h-12 rounded-2xl border-white/15 bg-white/5 text-white"
+        />
+        <span className="mt-2 block text-xs font-normal leading-5 text-white/50">{copy.sessionPriceHelp}</span>
+      </label>
 
       {eligiblePlanEnrollments.length ? (
         <label className="mt-3 block text-sm font-semibold text-white/84">
@@ -4953,6 +4979,8 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved }) {
       setStatus(
         outcome.kind === "plan_credit"
           ? copy.bookingCreditSuccess
+          : outcome.kind === "waived"
+            ? copy.bookingFreeSuccess
           : outcome.kind === "checkout_unavailable"
             ? copy.bookingPaymentSetupRequired
             : outcome.stripeMode === "test"
@@ -5726,12 +5754,13 @@ function SessionRow({ copy, session, role, token, recap, onSaved }) {
 function PaymentRow({ copy, locale, payment, token, onSaved }) {
   const [currentPayment, setCurrentPayment] = useState(payment)
   const isPaid = ["paid", "demo_paid", "waived"].includes(currentPayment.payment_status)
+  const isWaived = currentPayment.payment_status === "waived"
   const paymentUrl = getSafeHostedCheckoutUrl(currentPayment.checkout_url || currentPayment.payment_url)
   const isOverdue = currentPayment.payment_status === "overdue"
   const canReissue = isOverdue && Boolean(currentPayment.can_reissue)
   const isReleasedBooking = isOverdue && Boolean(currentPayment.session_id)
   const paymentLabel = locale === "en" ? currentPayment.display_name_en : currentPayment.display_name_fr
-  const paymentAmount = payment.amount_cad ? formatCadAmount(payment.amount_cad, locale) : "—"
+  const paymentAmount = isWaived ? copy.freeSession : payment.amount_cad ? formatCadAmount(payment.amount_cad, locale) : "—"
   const creditCount = Number(currentPayment.credit_unlock_count || 0)
   const creditText = creditCount > 0
     ? (locale === "en" ? `Unlocks ${creditCount} credits` : `Débloque ${creditCount} crédits`)
@@ -6545,7 +6574,7 @@ const portalLabels = {
     ready_to_match: "Prêt pour matching",
     demo_paid: "Paiement simulé",
     paid: "Payé",
-    waived: "Annulé",
+    waived: "Gratuit",
     awaiting_reply: "Réponse attendue",
     answered: "Répondu",
     overdue_alerted: "Équipe avisée",
@@ -6623,7 +6652,7 @@ const portalLabels = {
     ready_to_match: "Ready to match",
     demo_paid: "Simulated payment",
     paid: "Paid",
-    waived: "Waived",
+    waived: "Free",
     awaiting_reply: "Reply needed",
     answered: "Answered",
     overdue_alerted: "Team alerted",

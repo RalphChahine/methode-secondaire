@@ -16,6 +16,10 @@ export function getPortalBookingOutcome(result = {}) {
     return { kind: "plan_credit", checkoutUrl: "", stripeMode: "" }
   }
 
+  if (result.payment_mode === "waived") {
+    return { kind: "waived", checkoutUrl: "", stripeMode: "" }
+  }
+
   const checkoutUrl = getSafeHostedCheckoutUrl(result.checkout_url || result.payment_url)
   if (!checkoutUrl) {
     return { kind: "checkout_unavailable", checkoutUrl: "", stripeMode: "" }

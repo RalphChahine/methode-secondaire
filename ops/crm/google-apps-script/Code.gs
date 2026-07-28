@@ -480,7 +480,7 @@ const PARENT_UPDATE_STATUS_OPTIONS = ["draft", "ready_to_send", "sent", "not_nee
 const STUDENT_STATUS_OPTIONS = ["active", "paused", "archived"];
 // Keep simulated payments separate from real revenue until Stripe is enabled.
 const PAYMENT_STATUS_OPTIONS = ["not_requested", "payment_requested", "demo_paid", "paid", "overdue", "refunded", "waived"];
-const PAYMENT_METHOD_OPTIONS = ["stripe_checkout", "stripe_payment_link", "demo", "interac", "cash", "other"];
+const PAYMENT_METHOD_OPTIONS = ["stripe_checkout", "stripe_payment_link", "demo", "interac", "cash", "other", "waived"];
 const PAYOUT_STATUS_OPTIONS = ["not_due", "pending", "paid", "held"];
 const PAYMENT_LINK_STATUS_OPTIONS = ["active", "draft", "paused"];
 const PORTAL_ROLE_OPTIONS = ["parent", "tutor", "operator"];
@@ -903,6 +903,9 @@ function createPaymentRowsForScheduledSessions() {
           normalizeValue_(existingPayment.data.payment_method) === "stripe_checkout" &&
           !getCheckoutPaymentUrl_(existingPayment.data)) {
         const issued = issueCheckoutForPayment_(spreadsheet, existingPayment.data);
+        if (!issued.ok) {
+          recordPaymentCheckoutFailure_(spreadsheet, existingPayment.data, issued);
+        }
         if (issued.ok && normalizeEmail_(existingPayment.data.email)) {
           try {
             sendPaymentRequestEmail_({ ...existingPayment.data, checkout_url: issued.payment_url });
@@ -941,8 +944,8 @@ function createPaymentRowsForScheduledSessions() {
       email: row[sessionColumns.parent_email],
       offer: row[sessionColumns.session_type],
       amount_cad: paymentDetails.amount_cad,
-      payment_method: "stripe_checkout",
-      payment_status: Number(paymentDetails.amount_cad) > 0 ? "payment_requested" : "not_requested",
+      payment_method: Number(paymentDetails.amount_cad) > 0 ? "stripe_checkout" : "waived",
+      payment_status: Number(paymentDetails.amount_cad) > 0 ? "payment_requested" : "waived",
       payment_link: "",
       payout_status: "not_due",
       created_at: now,
@@ -960,6 +963,9 @@ function createPaymentRowsForScheduledSessions() {
     const issued = payment.payment_status === "payment_requested"
       ? issueCheckoutForPayment_(spreadsheet, payment)
       : { ok: false };
+    if (!issued.ok && payment.payment_status === "payment_requested") {
+      recordPaymentCheckoutFailure_(spreadsheet, payment, issued);
+    }
     if (issued.ok) {
       payment.checkout_url = issued.payment_url;
       payment.checkout_expires_at = issued.due_date;
@@ -2790,7 +2796,10 @@ function createPortalSession_(spreadsheet, payload) {
     return { ok: false, code: "SESSION_TIME_CONFLICT" };
   }
 
-  const paymentDetails = resolveSessionPaymentDetails_({ session_type: sessionType });
+  const paymentDetails = resolveSessionPaymentDetails_({
+    session_type: sessionType,
+    amount_cad: payload.amount_cad,
+  });
   const amountCad = paymentDetails.amount_cad || defaultSessionAmountCad_(sessionType);
   const now = new Date().toISOString();
   const record = {
@@ -2913,8 +2922,10 @@ function bookPortalSession_(spreadsheet, payload) {
   }
 
   const paymentDetails = resolveSessionPaymentDetails_({ session_type: sessionType });
-  const paymentMode = planBinding.requires_credit ? "plan_credit" : "stripe_checkout";
   const amountCad = paymentDetails.amount_cad || defaultSessionAmountCad_(sessionType);
+  const paymentMode = planBinding.requires_credit
+    ? "plan_credit"
+    : Number(amountCad) > 0 ? "stripe_checkout" : "waived";
 
   const now = new Date().toISOString();
   const record = {
@@ -2935,7 +2946,7 @@ function bookPortalSession_(spreadsheet, payload) {
     format: slot.format || "online",
     location: slot.location || "",
     google_calendar_event_id: "",
-    payment_status: planBinding.requires_credit ? "not_requested" : "payment_requested",
+    payment_status: planBinding.requires_credit ? "not_requested" : Number(amountCad) > 0 ? "payment_requested" : "waived",
     payment_link: "",
     amount_cad: planBinding.requires_credit ? "" : amountCad,
     notes: ["Booked by parent in portal.", planBinding.requires_credit ? "Pack credit reserved for this session." : ""].filter(Boolean).join(" | "),
@@ -4278,7 +4289,10 @@ function respondToPortalSession_(spreadsheet, payload) {
     }
 
     next.session_status = next.parent_confirmed_at && next.tutor_confirmed_at ? "confirmed" : "proposed";
-    next.payment_status = next.credit_reservation_id ? "not_requested" : "payment_requested";
+    const paymentDetails = resolveSessionPaymentDetails_(next);
+    next.payment_status = next.credit_reservation_id
+      ? "not_requested"
+      : Number(paymentDetails.amount_cad) > 0 ? "payment_requested" : "waived";
   } else if (["request_change", "decline"].includes(response)) {
     next.session_status = "requested";
     next.parent_confirmed_at = "";
@@ -7276,7 +7290,7 @@ function issueCheckoutForPayment_(spreadsheet, paymentRecord, options) {
   if (response.getResponseCode() < 200 || response.getResponseCode() >= 300 || !checkout.ok ||
       !normalizeValue_(checkout.checkout_session_id) || !normalizeValue_(checkout.checkout_url) ||
       !coerceDate_(checkout.expires_at)) {
-    return { ok: false, code: "PAYMENT_CHECKOUT_UNAVAILABLE" };
+    return { ok: false, code: resolveCheckoutFailureCode_(checkout.code) };
   }
 
   const dueDate = coerceDate_(checkout.expires_at).toISOString();
@@ -7303,6 +7317,40 @@ function issueCheckoutForPayment_(spreadsheet, paymentRecord, options) {
     due_date: dueDate,
     stripe_mode: normalizeAllowed_(checkout.stripe_mode, ["test", "live"], ""),
   };
+}
+
+function resolveCheckoutFailureCode_(value) {
+  return normalizeAllowed_(value, [
+    "PAYMENT_CHECKOUT_NOT_CONFIGURED",
+    "UNAUTHORIZED_PAYMENT_SESSION",
+    "PAYMENT_CHECKOUT_DETAILS_REQUIRED",
+    "STRIPE_CHECKOUT_FAILED",
+  ], "PAYMENT_CHECKOUT_UNAVAILABLE");
+}
+
+function recordPaymentCheckoutFailure_(spreadsheet, paymentRecord, issued) {
+  const paymentId = normalizeValue_(paymentRecord && paymentRecord.payment_id);
+  const failureCode = resolveCheckoutFailureCode_(issued && issued.code);
+  if (!paymentId) {
+    return;
+  }
+
+  const paymentSheet = getOrCreateSheet_(spreadsheet, CRM_PAYMENT_SHEET_NAME);
+  const currentPayment = findSheetRecordById_(paymentSheet, PAYMENT_COLUMNS, "payment_id", paymentId);
+  if (!currentPayment || normalizeValue_(currentPayment.data.payment_status) !== "payment_requested") {
+    return;
+  }
+
+  const marker = `Checkout pending: ${failureCode}`;
+  const currentNotes = normalizeValue_(currentPayment.data.notes);
+  if (currentNotes.indexOf(marker) >= 0) {
+    return;
+  }
+  writeRecord_(paymentSheet, PAYMENT_COLUMNS, currentPayment.rowNumber, {
+    ...currentPayment.data,
+    notes: [currentNotes, marker].filter(Boolean).join(" | "),
+    updated_at: new Date().toISOString(),
+  });
 }
 
 function sendParentSessionSummary_(sessionRecord, note) {

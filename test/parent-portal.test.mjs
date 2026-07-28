@@ -44,6 +44,9 @@ test("classifies a missing Checkout without calling it simulated", () => {
   assert.deepEqual(getPortalBookingOutcome({ payment_mode: "plan_credit" }), {
     kind: "plan_credit", checkoutUrl: "", stripeMode: "",
   })
+  assert.deepEqual(getPortalBookingOutcome({ payment_mode: "waived" }), {
+    kind: "waived", checkoutUrl: "", stripeMode: "",
+  })
   assert.deepEqual(getPortalBookingOutcome({
     payment_mode: "stripe_checkout",
     checkout_url: "https://checkout.stripe.com/c/pay/cs_test_123",
@@ -328,7 +331,8 @@ test("CRM protects confirmation and payment state for proposed sessions", async 
 
   assert.match(responder, /response === "confirm" && !isUpcomingDate_\(sessionRecord\.data\.start_at\)/)
   assert.match(responder, /already_confirmed: true/)
-  assert.match(responder, /next\.payment_status = next\.credit_reservation_id \? "not_requested" : "payment_requested"/)
+  assert.match(responder, /const paymentDetails = resolveSessionPaymentDetails_\(next\)/)
+  assert.match(responder, /Number\(paymentDetails\.amount_cad\) > 0 \? "payment_requested" : "waived"/)
   assert.match(responder, /next\.payment_status = "not_requested"/)
   assert.match(responder, /voidUnpaidSessionPayments_\(spreadsheet, sessionId, "Schedule change requested\."\)/)
   assert.match(creator, /payment_status: "not_requested"/)
@@ -355,6 +359,34 @@ test("CRM returns only the safe Stripe mode for a newly issued portal Checkout",
   assert.match(checkoutIssuer, /stripe_mode/)
   assert.match(booker, /finalization\.payments\.checkout_results/)
   assert.match(booker, /stripe_mode:/)
+})
+
+test("CRM waives a zero-dollar session and retains only safe Checkout diagnostics", async () => {
+  const source = await readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
+  const paymentCreator = source.slice(
+    source.indexOf("function createPaymentRowsForScheduledSessions()"),
+    source.indexOf("function ensureCrmReady_("),
+  )
+  const checkoutIssuer = source.slice(
+    source.indexOf("function issueCheckoutForPayment_("),
+    source.indexOf("function sendParentSessionSummary_("),
+  )
+
+  assert.match(paymentCreator, /payment_method: Number\(paymentDetails\.amount_cad\) > 0 \? "stripe_checkout" : "waived"/)
+  assert.match(paymentCreator, /payment_status: Number\(paymentDetails\.amount_cad\) > 0 \? "payment_requested" : "waived"/)
+  assert.match(paymentCreator, /recordPaymentCheckoutFailure_\(spreadsheet, existingPayment\.data, issued\)/)
+  assert.match(checkoutIssuer, /resolveCheckoutFailureCode_\(checkout\.code\)/)
+})
+
+test("the parent portal calls a zero-dollar payment free", async () => {
+  const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
+  const paymentRow = source.slice(
+    source.indexOf("function PaymentRow("),
+    source.indexOf("function NoteRow("),
+  )
+
+  assert.match(paymentRow, /const isWaived = currentPayment\.payment_status === "waived"/)
+  assert.match(paymentRow, /const paymentAmount = isWaived \? copy\.freeSession/)
 })
 
 test("the prepare action focuses the material panel already rendered on Today", async () => {
