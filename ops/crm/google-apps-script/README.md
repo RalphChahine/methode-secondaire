@@ -47,6 +47,15 @@ The portal appends a non-sensitive payment ID as Stripe's `client_reference_id`.
 
 Le formulaire confirme la demande uniquement après que la route `/api/lead-crm` a relayé le lead vers Google Sheets. Formspree reçoit ensuite une copie secondaire. Configurez seulement `CRM_WEBHOOK_URL` côté serveur Vercel.
 
+## Calendrier central Méthode Secondaire
+
+Les disponibilités des tuteurs sont entrées et maintenues dans le portail; elles ne viennent pas de leurs calendriers Google. Lorsqu'un parent réserve, Apps Script crée l'événement dans le calendrier central de Méthode Secondaire, génère le lien Google Meet pour une séance en ligne, puis invite le parent et le tuteur par leurs adresses courriel.
+
+- Aucun tuteur ne doit partager son calendrier Google ni fournir un ID de calendrier.
+- `calendar_email` sert uniquement à envoyer l'invitation au tuteur.
+- Facultatif: dans **Project Settings > Script properties**, définir `METHODE_SECONDAIRE_CALENDAR_ID` avec l'ID d'un calendrier dédié Méthode Secondaire. Sans cette propriété, le calendrier par défaut du compte qui a déployé Apps Script est utilisé immédiatement.
+- Pour les séances en ligne, l'invitation est envoyée seulement après que Google a fourni un lien Meet valide. Les séances en personne reçoivent l'invitation immédiatement.
+
 ## Onglets créés
 
 - `Parent Leads`: base complète.

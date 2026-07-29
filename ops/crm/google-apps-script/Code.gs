@@ -212,6 +212,8 @@ const SESSION_COLUMNS = [
   "calendar_conference_status",
   "payment_due_at",
   "stripe_checkout_session_id",
+  // Persisted when an event is created so calendar changes never orphan it.
+  "calendar_owner_id",
 ];
 
 const STUDENT_COLUMNS = [
@@ -522,6 +524,7 @@ const PAYMENT_CHECKOUT_ENDPOINT_PROPERTY = "PAYMENT_CHECKOUT_ENDPOINT";
 const PAYMENT_CHECKOUT_EXPIRE_ENDPOINT_PROPERTY = "PAYMENT_CHECKOUT_EXPIRE_ENDPOINT";
 const PAYMENT_CHECKOUT_EXPIRY_MS = 60 * 60 * 1000;
 const CRM_PORTAL_SECRET_PROPERTY = "CRM_PORTAL_SECRET";
+const METHODE_SECONDAIRE_CALENDAR_ID_PROPERTY = "METHODE_SECONDAIRE_CALENDAR_ID";
 const PORTAL_PUBLIC_URL = "https://methode-secondaire.vercel.app/portail";
 const SESSION_REMINDER_LEAD_HOURS = 24;
 const SESSION_REMINDER_MINIMUM_MINUTES = 45;
@@ -640,19 +643,18 @@ function createCalendarEventForConfirmedSession_(spreadsheet, sessionId) {
       return { error: "missing start_at or end_at" };
     }
 
-    let calendarId = "";
+    const calendarId = resolveManagedCalendarId_();
     let eventId = "";
     try {
+      if (!calendarId) {
+        throw new Error("le calendrier central Methode Secondaire n'est pas configure");
+      }
       if (normalizeValue_(session.format) === "online") {
         if (!normalizeValue_(session.tutor_id) || !normalizeEmail_(session.tutor_calendar_email) ||
             !normalizeEmail_(session.parent_email)) {
           throw new Error("les participants de la seance en ligne sont incomplets");
         }
-        calendarId = resolveTutorCalendarId_(spreadsheet, session);
-        if (!calendarId) {
-          throw new Error("le calendrier du tuteur n'est pas configure");
-        }
-        const event = Calendar.Events.insert(buildTutorHostedMeetEvent_(session), calendarId, {
+        const event = Calendar.Events.insert(buildManagedMeetEvent_(session), calendarId, {
           conferenceDataVersion: 1,
           sendUpdates: "none",
         });
@@ -661,6 +663,7 @@ function createCalendarEventForConfirmedSession_(spreadsheet, sessionId) {
         writeRecord_(sheet, SESSION_COLUMNS, record.rowNumber, {
           ...session,
           google_calendar_event_id: eventId,
+          calendar_owner_id: calendarId,
           session_status: "calendar_created",
           calendar_conference_status: "pending",
           updated_at: new Date().toISOString(),
@@ -668,20 +671,15 @@ function createCalendarEventForConfirmedSession_(spreadsheet, sessionId) {
         return { created: true };
       }
 
-      const calendar = resolveCalendarForTutor_(spreadsheet, session.tutor_id);
-      if (!calendar) throw new Error("le calendrier du tuteur n'est pas disponible a l'equipe");
-      const options = {
-        description: buildCalendarDescription_(SESSION_COLUMNS.map((column) => session[column]), indexColumns_(SESSION_COLUMNS)),
-        location: normalizeValue_(session.location),
-        sendInvites: true,
-      };
-      const guests = [session.tutor_calendar_email, session.parent_email].map(normalizeValue_).filter(Boolean).join(",");
-      if (guests) options.guests = guests;
-      const event = calendar.createEvent(buildSessionCalendarTitle_(session), startAt, endAt, options);
-      eventId = normalizeValue_(event.getId());
+      const event = Calendar.Events.insert(buildManagedCalendarEvent_(session), calendarId, {
+        sendUpdates: "all",
+      });
+      eventId = normalizeValue_(event.id);
+      if (!eventId) throw new Error("l'evenement Google Calendar n'a pas retourne d'identifiant");
       writeRecord_(sheet, SESSION_COLUMNS, record.rowNumber, {
         ...session,
         google_calendar_event_id: eventId,
+        calendar_owner_id: calendarId,
         session_status: "calendar_created",
         calendar_conference_status: "not_required",
         calendar_invites_sent_at: new Date().toISOString(),
@@ -766,7 +764,7 @@ function processPendingSessionConferences() {
 function processPendingSessionConference_(spreadsheet, sessionId) {
   const result = withMeetConferenceState_(spreadsheet, sessionId, ({ sheet, record }) => {
     if (!record) return { skipped: true };
-    const session = record.data;
+    let session = record.data;
     const conferenceStatus = normalizeValue_(session.calendar_conference_status);
     if (normalizeValue_(session.format) !== "online" ||
         !["pending", "failed_cleanup_pending", "failed_payment_cleanup_pending"].includes(conferenceStatus) ||
@@ -774,15 +772,25 @@ function processPendingSessionConference_(spreadsheet, sessionId) {
         ["cancelled", "no_show"].includes(normalizeValue_(session.session_status))) {
       return { skipped: true };
     }
-    const calendarId = resolveTutorCalendarId_(spreadsheet, session);
     const eventId = normalizeValue_(session.google_calendar_event_id);
+    let calendarId = "";
     let invitationSent = false;
     try {
       if (["failed_cleanup_pending", "failed_payment_cleanup_pending"].includes(conferenceStatus)) {
         throw new Error("nettoyage requis apres echec terminal Google Meet");
       }
-      if (!calendarId) throw new Error("le calendrier du tuteur n'est pas configure");
-      const event = Calendar.Events.get(calendarId, eventId, { conferenceDataVersion: 1 });
+      const calendarEvent = getAdvancedCalendarEventForSession_(spreadsheet, session, eventId);
+      if (!calendarEvent) throw new Error("l'evenement Calendar de la seance est introuvable");
+      calendarId = calendarEvent.calendarId;
+      const event = calendarEvent.event;
+      if (normalizeValue_(session.calendar_owner_id) !== calendarId) {
+        session = {
+          ...session,
+          calendar_owner_id: calendarId,
+          updated_at: new Date().toISOString(),
+        };
+        writeRecord_(sheet, SESSION_COLUMNS, record.rowNumber, session);
+      }
       const meetUrl = getGoogleMeetUrl_(event);
       if (!meetUrl) {
         if (isTerminalConferenceFailure_(event)) {
@@ -1704,8 +1712,6 @@ function handlePortalAction_(spreadsheet, payload) {
       return assignPortalTutor_(spreadsheet, payload);
     case "portal_create_tutor":
       return createPortalTutor_(spreadsheet, payload);
-    case "portal_update_tutor_calendar":
-      return updatePortalTutorCalendar_(spreadsheet, payload);
     case "portal_delete_tutor":
       return deletePortalTutor_(spreadsheet, payload);
     case "portal_invite_tutor":
@@ -3619,7 +3625,9 @@ function createPortalTutor_(spreadsheet, payload) {
     active_students: "0",
     new_students_this_week: "0",
     calendar_email: email,
-    calendar_id: normalizeValue_(payload.calendar_id).slice(0, 320),
+    // Personal calendar IDs are no longer part of tutor setup. New sessions
+    // are always created in the central Méthode Secondaire calendar.
+    calendar_id: "",
     booking_page_url: "",
     hourly_rate_cad: hourlyRateCad,
     payment_terms: "",
@@ -3638,28 +3646,6 @@ function createPortalTutor_(spreadsheet, payload) {
     tutor_id: tutor.tutor_id,
     tutor_name: tutor.tutor_name,
   };
-}
-
-function updatePortalTutorCalendar_(spreadsheet, payload) {
-  const portalSession = verifyPortalSession_(spreadsheet, payload.token, "operator");
-  if (!portalSession.ok) {
-    return portalSession;
-  }
-
-  const tutorId = normalizeValue_(payload.tutor_id);
-  const rosterSheet = getOrCreateSheet_(spreadsheet, CRM_TUTOR_SHEET_NAME);
-  const tutorRecord = findSheetRecordById_(rosterSheet, TUTOR_COLUMNS, "tutor_id", tutorId);
-  if (!tutorRecord) {
-    return { ok: false, code: "TUTOR_NOT_FOUND" };
-  }
-
-  const next = {
-    ...tutorRecord.data,
-    calendar_id: normalizeValue_(payload.calendar_id).slice(0, 320),
-    last_updated_at: new Date().toISOString(),
-  };
-  writeRecord_(rosterSheet, TUTOR_COLUMNS, tutorRecord.rowNumber, next);
-  return { ok: true, tutor_id: tutorId, calendar_id: next.calendar_id };
 }
 
 function invitePortalTutor_(spreadsheet, payload) {
@@ -4365,6 +4351,7 @@ function reschedulePortalSession_(spreadsheet, payload) {
       tutor_confirmed_at: "",
       payment_status: "not_requested",
       google_calendar_event_id: "",
+      calendar_owner_id: "",
       calendar_invites_sent_at: "",
       modification_deadline_at: normalizeValue_(sessionRecord.data.plan_enrollment_id)
         ? planModificationDeadlineForSession_(startAt, sessionRecord.data.cancellation_notice_hours)
@@ -4708,44 +4695,57 @@ function deleteCalendarEventForSession_(session) {
 }
 
 function isAdvancedCalendarEvent_(session) {
-  return ["pending", "ready", "failed", "failed_cleanup_pending", "failed_payment_cleanup_pending"]
-    .includes(normalizeValue_(session && session.calendar_conference_status));
+  return Boolean(normalizeValue_(session && session.calendar_owner_id)) ||
+    ["pending", "ready", "failed", "failed_cleanup_pending", "failed_payment_cleanup_pending"]
+      .includes(normalizeValue_(session && session.calendar_conference_status));
 }
 
 function deleteAdvancedCalendarEvent_(spreadsheet, session, eventId) {
-  const calendarId = resolveTutorCalendarId_(spreadsheet, session || {});
-  if (!calendarId) {
+  const calendarIds = resolveCalendarCandidateIds_(spreadsheet, session);
+  if (!calendarIds.length) {
     return { ok: false, code: "CALENDAR_UNAVAILABLE" };
   }
 
-  try {
-    Calendar.Events.remove(calendarId, eventId, {
-      sendUpdates: normalizeValue_(session && session.calendar_conference_status) === "ready" ? "all" : "none",
-    });
-    return { ok: true, deleted: true };
-  } catch (error) {
-    if (isCalendarNotFoundError_(error)) {
-      return { ok: true, already_deleted: true };
+  const shouldNotifyGuests = ["ready", "not_required"].includes(
+    normalizeValue_(session && session.calendar_conference_status));
+  for (const calendarId of calendarIds) {
+    try {
+      Calendar.Events.remove(calendarId, eventId, {
+        sendUpdates: shouldNotifyGuests ? "all" : "none",
+      });
+      return { ok: true, deleted: true };
+    } catch (error) {
+      if (isCalendarNotFoundError_(error)) {
+        continue;
+      }
+      return { ok: false, code: "CALENDAR_DELETE_FAILED" };
     }
-    return { ok: false, code: "CALENDAR_DELETE_FAILED" };
   }
+  return { ok: true, already_deleted: true };
 }
 
 function deleteLegacyCalendarEvent_(spreadsheet, session, eventId) {
-  try {
-    const calendar = resolveCalendarForTutor_(spreadsheet, session && session.tutor_id);
-    if (!calendar) {
-      return { ok: false, code: "CALENDAR_UNAVAILABLE" };
-    }
-    const event = calendar.getEventById(eventId);
-    if (!event) {
-      return { ok: false, code: "CALENDAR_EVENT_NOT_FOUND" };
-    }
-    event.deleteEvent();
-    return { ok: true, deleted: true };
-  } catch (error) {
-    return { ok: false, code: "CALENDAR_DELETE_FAILED" };
+  const calendarIds = resolveCalendarCandidateIds_(spreadsheet, session);
+  if (!calendarIds.length) {
+    return { ok: false, code: "CALENDAR_UNAVAILABLE" };
   }
+  for (const calendarId of calendarIds) {
+    try {
+      const calendar = CalendarApp.getCalendarById(calendarId);
+      if (!calendar) {
+        continue;
+      }
+      const event = calendar.getEventById(eventId);
+      if (!event) {
+        continue;
+      }
+      event.deleteEvent();
+      return { ok: true, deleted: true };
+    } catch (error) {
+      return { ok: false, code: "CALENDAR_DELETE_FAILED" };
+    }
+  }
+  return { ok: false, code: "CALENDAR_EVENT_NOT_FOUND" };
 }
 
 function isCalendarNotFoundError_(error) {
@@ -5065,7 +5065,7 @@ function expireLinkedSessionForPayment_(spreadsheet, payment, reason) {
     }
 
     // Preserve the calendar/session invariant: cancellation is durable only after
-    // the tutor-owned Calendar event has been removed. A missing event is safe
+    // the centrally owned Calendar event has been removed. A missing event is safe
     // (it has already been deleted); a Calendar failure must be retried later.
     const calendarDeletion = deleteCalendarEventForExpiredSession_(currentSession.data);
     if (!calendarDeletion.ok) {
@@ -7083,6 +7083,7 @@ function proposeNextRecurringSession_(spreadsheet, sourceRecord, note) {
     start_at: nextStart.toISOString(),
     end_at: new Date(nextStart.getTime() + duration).toISOString(),
     google_calendar_event_id: "",
+    calendar_owner_id: "",
     payment_status: coveredByCredit ? "not_requested" : "payment_requested",
     payment_link: "",
     amount_cad: coveredByCredit ? "" : (paymentDetails.amount_cad || defaultSessionAmountCad_(nextSessionType)),
@@ -8811,14 +8812,49 @@ function rowToRecord_(row, columns) {
   }, {});
 }
 
-function resolveTutorCalendarId_(spreadsheet, session) {
-  const tutor = getSheetRecords_(spreadsheet, CRM_TUTOR_SHEET_NAME, TUTOR_COLUMNS)
-    .find((record) => normalizeValue_(record.tutor_id) === normalizeValue_(session.tutor_id));
-  return normalizeValue_(tutor?.calendar_id) || normalizeEmail_(tutor?.calendar_email) ||
-    normalizeEmail_(session.tutor_calendar_email);
+function resolveManagedCalendarId_() {
+  const configuredCalendarId = normalizeValue_(PropertiesService.getScriptProperties()
+    .getProperty(METHODE_SECONDAIRE_CALENDAR_ID_PROPERTY));
+  return configuredCalendarId || CalendarApp.getDefaultCalendar().getId();
 }
 
-function buildTutorHostedMeetEvent_(session) {
+function resolveCalendarCandidateIds_(spreadsheet, session) {
+  const persistedCalendarId = normalizeValue_(session && session.calendar_owner_id);
+  const calendarIds = [persistedCalendarId, resolveManagedCalendarId_()];
+
+  // Sessions created before the central-calendar cutover have no persisted
+  // owner. Try their historic tutor calendar values once so their event can be
+  // read or removed, then persist the discovered owner on the session.
+  if (!persistedCalendarId) {
+    const tutor = getSheetRecords_(spreadsheet, CRM_TUTOR_SHEET_NAME, TUTOR_COLUMNS)
+      .find((record) => normalizeValue_(record.tutor_id) === normalizeValue_(session && session.tutor_id));
+    calendarIds.push(
+      normalizeValue_(tutor?.calendar_id),
+      normalizeEmail_(tutor?.calendar_email),
+      normalizeEmail_(session && session.tutor_calendar_email),
+    );
+  }
+  return [...new Set(calendarIds.filter(Boolean))];
+}
+
+function getAdvancedCalendarEventForSession_(spreadsheet, session, eventId) {
+  for (const calendarId of resolveCalendarCandidateIds_(spreadsheet, session)) {
+    try {
+      return {
+        calendarId,
+        event: Calendar.Events.get(calendarId, eventId, { conferenceDataVersion: 1 }),
+      };
+    } catch (error) {
+      if (isCalendarNotFoundError_(error)) {
+        continue;
+      }
+      throw error;
+    }
+  }
+  return null;
+}
+
+function buildManagedCalendarEvent_(session) {
   const attendees = [session.tutor_calendar_email, session.parent_email]
     .map(normalizeEmail_)
     .filter(Boolean)
@@ -8836,6 +8872,12 @@ function buildTutorHostedMeetEvent_(session) {
       timeZone: normalizeValue_(session.timezone) || "America/Toronto",
     },
     attendees,
+  };
+}
+
+function buildManagedMeetEvent_(session) {
+  return {
+    ...buildManagedCalendarEvent_(session),
     conferenceData: {
       createRequest: {
         requestId: `meet-${normalizeValue_(session.session_id)}`,
@@ -8945,24 +8987,8 @@ function appendMeetCalendarFailureRequest_(spreadsheet, session, errorMessage) {
     related_id: normalizeValue_(session.session_id),
     request_type: "technical_help",
     subject: `Google Meet a verifier - ${normalizeValue_(session.tutor_name) || "tuteur"}`,
-    message: `Le calendrier du tuteur ${normalizeValue_(session.tutor_name) || normalizeValue_(session.tutor_id) || "non assigne"} a empeche la creation du lien Google Meet pour la seance ${normalizeValue_(session.session_id)}. Probleme: ${normalizeValue_(errorMessage)}`,
+    message: `Le calendrier central Methode Secondaire a empeche la creation du lien Google Meet pour la seance ${normalizeValue_(session.session_id)}. Probleme: ${normalizeValue_(errorMessage)}`,
   });
-}
-
-function resolveCalendarForTutor_(spreadsheet, tutorId) {
-  const tutor = getSheetRecords_(spreadsheet, CRM_TUTOR_SHEET_NAME, TUTOR_COLUMNS)
-    .find((record) => normalizeValue_(record.tutor_id) === normalizeValue_(tutorId));
-  const calendarId = normalizeValue_(tutor?.calendar_id);
-
-  if (!calendarId) {
-    return CalendarApp.getDefaultCalendar();
-  }
-
-  try {
-    return CalendarApp.getCalendarById(calendarId);
-  } catch (error) {
-    return null;
-  }
 }
 
 function buildCalendarDescription_(row, columns) {

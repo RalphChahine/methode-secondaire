@@ -118,10 +118,12 @@ Apps Script actions:
 
 Stripe's signed webhook is handled separately by `/api/stripe-webhook`. It accepts only verified Stripe Checkout completion events and sends a second shared-secret request to Apps Script before a `Payments` row or session can become `paid`.
 
-## Tutor calendar and Meet ownership
+## Central calendar and Meet ownership
 
-- The assigned tutor owns the Calendar event and is the Google Meet host. Before enabling online booking, share each tutor calendar with the Apps Script account that creates events and conferences.
-- The system creates the event without invitations while the conference is pending. It sends parent and tutor invitations only after Google returns the ready `meet.google.com` URL.
+- Tutor availability is entered in the Méthode Secondaire portal and is the scheduling source of truth. Tutors do not share or connect personal Google Calendars.
+- The Apps Script owner creates and owns every Calendar event and Google Meet conference in the central Méthode Secondaire calendar. Set the optional `METHODE_SECONDAIRE_CALENDAR_ID` Script Property to use a dedicated calendar; without it, the deployed owner's default calendar is used.
+- A tutor's `calendar_email` is only an invitation address. The final Calendar event invites both the parent and the tutor.
+- The system creates an online event without invitations while the conference is pending. It sends parent and tutor invitations only after Google returns the ready `meet.google.com` URL.
 - If conference creation fails, the automation retries safely during the recovery window and never announces an online session without a working Meet link. At terminal failure it expires any open Checkout, holds a completed payment for reconciliation, completes Calendar cleanup, then cancels the unusable session and releases its reservation where applicable.
 - When an unpaid session Checkout expires, the system deletes the Calendar event, releases the slot/credit reservation where applicable, and tells the parent to choose a new slot. A parent cannot revive that released session by reissuing a Checkout link.
 - Reissue is parent-only and only for the owner-filtered, overdue package payment whose enrollment is still eligible. Tutors never see payment or reissue controls.

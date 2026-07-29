@@ -213,15 +213,6 @@ export async function createPortalTutor({ token, values }) {
   })
 }
 
-export async function updatePortalTutorCalendar({ token, tutorId, calendarId }) {
-  return portalRequest({
-    action: "portal_update_tutor_calendar",
-    token,
-    tutor_id: tutorId,
-    calendar_id: calendarId,
-  })
-}
-
 export async function deletePortalTutor({ token, tutorId, confirmationEmail }) {
   return portalRequest({
     action: "portal_delete_tutor",

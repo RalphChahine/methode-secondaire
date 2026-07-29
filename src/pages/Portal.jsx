@@ -91,7 +91,6 @@ import {
   submitPortalSessionNote,
   updatePortalLeadFollowUp,
   updatePortalParentProfile,
-  updatePortalTutorCalendar,
   updatePortalRequestStatus,
   upsertPortalParent,
   upsertPortalStudent,
@@ -463,9 +462,6 @@ const copyByLocale = {
     todayConfirmations: "Séances à confirmer",
     todaySessions: "Séances du jour",
     todayReminders: "Rappels à envoyer",
-    calendarId: "Calendrier Google partagé (facultatif)",
-    calendarIdHelp: "Ajoutez l'ID d'un calendrier partagé avec l'équipe. Sans ID, l'événement est créé dans le calendrier de l'équipe et les participants sont invités.",
-    calendarSaved: "Calendrier du tuteur mis à jour.",
     bookingSlotUnavailable: "Ce créneau vient d'être pris. Choisissez-en un autre.",
     parentUpdateSent: "Le résumé parent a été envoyé.",
     nextSessionProposed: "La prochaine séance a été proposée automatiquement.",
@@ -998,9 +994,6 @@ const copyByLocale = {
     todayConfirmations: "Sessions to confirm",
     todaySessions: "Today's sessions",
     todayReminders: "Reminders to send",
-    calendarId: "Shared Google Calendar (optional)",
-    calendarIdHelp: "Add a calendar ID shared with the team. Without one, the event is created in the team calendar and both people receive an invite.",
-    calendarSaved: "Tutor calendar updated.",
     bookingSlotUnavailable: "That time was just taken. Choose another one.",
     parentUpdateSent: "The parent summary was sent.",
     nextSessionProposed: "The next session was proposed automatically.",
@@ -3948,7 +3941,6 @@ function TutorAccessPanel({ copy, tutors = [], token, onSaved }) {
   const [status, setStatus] = useState("")
   const [isSaving, setIsSaving] = useState(false)
   const [confirmationEmail, setConfirmationEmail] = useState("")
-  const [calendarId, setCalendarId] = useState("")
   const [newTutor, setNewTutor] = useState({
     tutor_name: "",
     email: "",
@@ -3960,7 +3952,6 @@ function TutorAccessPanel({ copy, tutors = [], token, onSaved }) {
     zones: "",
     hourly_rate_cad: "28",
     notes: "",
-    calendar_id: "",
   })
   const selectedTutor = tutors.find((tutor) => tutor.tutor_id === tutorId)
 
@@ -3969,8 +3960,7 @@ function TutorAccessPanel({ copy, tutors = [], token, onSaved }) {
       setTutorId(tutors[0].tutor_id)
     }
     setConfirmationEmail("")
-    setCalendarId(selectedTutor?.calendar_id || "")
-  }, [selectedTutor?.calendar_id, tutorId, tutors])
+  }, [tutorId, tutors])
 
   function updateNewTutor(key, value) {
     setNewTutor((current) => ({ ...current, [key]: value }))
@@ -3996,7 +3986,6 @@ function TutorAccessPanel({ copy, tutors = [], token, onSaved }) {
         zones: "",
         hourly_rate_cad: "28",
         notes: "",
-        calendar_id: "",
       })
       setStatus(copy.tutorCreatedAndInvited)
       onSaved?.()
@@ -4023,22 +4012,6 @@ function TutorAccessPanel({ copy, tutors = [], token, onSaved }) {
     setIsSaving(false)
     if (result.ok) {
       setStatus(copy.tutorInvited)
-      onSaved?.()
-    } else {
-      setStatus(getPortalErrorMessage(copy, result.code))
-    }
-  }
-
-  async function saveTutorCalendar() {
-    if (!selectedTutor) {
-      return
-    }
-    setIsSaving(true)
-    setStatus("")
-    const result = await updatePortalTutorCalendar({ token, tutorId: selectedTutor.tutor_id, calendarId })
-    setIsSaving(false)
-    if (result.ok) {
-      setStatus(copy.calendarSaved)
       onSaved?.()
     } else {
       setStatus(getPortalErrorMessage(copy, result.code))
@@ -4110,10 +4083,6 @@ function TutorAccessPanel({ copy, tutors = [], token, onSaved }) {
             {copy.tutorZones}
             <Input value={newTutor.zones} onChange={(event) => updateNewTutor("zones", event.target.value)} placeholder="Montréal ou en ligne" className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
           </label>
-          <label className="block text-sm font-semibold text-white/84">
-            {copy.calendarId}
-            <Input value={newTutor.calendar_id} onChange={(event) => updateNewTutor("calendar_id", event.target.value)} className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
-          </label>
         </div>
         <div className="mt-3 grid gap-3 sm:grid-cols-2">
           <label className="block text-sm font-semibold text-white/84">
@@ -4156,17 +4125,6 @@ function TutorAccessPanel({ copy, tutors = [], token, onSaved }) {
             <div>{humanize(selectedTutor.formats || "online")} | {selectedTutor.zones || "-"} | {humanize(selectedTutor.languages || "fr")}</div>
             <div>{copy.tutorCapacity}: {selectedTutor.active_students || "0"}/{selectedTutor.weekly_capacity || "0"}</div>
             {selectedTutor.notes ? <div className="mt-2 text-white/58">{selectedTutor.notes}</div> : null}
-          </div>
-          <div className="mt-4 border-t border-white/10 pt-4">
-            <label className="block text-sm font-semibold text-white/84">
-              {copy.calendarId}
-              <Input value={calendarId} onChange={(event) => setCalendarId(event.target.value)} className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
-            </label>
-            <p className="mt-2 text-sm leading-6 text-white/58">{copy.calendarIdHelp}</p>
-            <Button type="button" disabled={isSaving} onClick={saveTutorCalendar} className="mt-3 rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
-              <CalendarCheck className="h-4 w-4" />
-              {copy.availabilitySave}
-            </Button>
           </div>
           {selectedTutor.status === "active" ? (
             <Button type="button" disabled={isSaving} onClick={inviteTutor} className="mt-4 w-full rounded-full bg-white/10 px-5 py-6 text-white hover:bg-white/15">

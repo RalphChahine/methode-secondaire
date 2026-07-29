@@ -378,6 +378,55 @@ test("CRM waives a zero-dollar session and retains only safe Checkout diagnostic
   assert.match(checkoutIssuer, /resolveCheckoutFailureCode_\(checkout\.code\)/)
 })
 
+test("CRM creates, follows, and removes bookings from the central Méthode Secondaire calendar", async () => {
+  const source = await readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
+  const creator = source.slice(
+    source.indexOf("function createCalendarEventForConfirmedSession_("),
+    source.indexOf("function withMeetConferenceState_("),
+  )
+  const pendingMeet = source.slice(
+    source.indexOf("function processPendingSessionConference_("),
+    source.indexOf("function reconcilePendingMeetFailure_("),
+  )
+  const advancedDeletion = source.slice(
+    source.indexOf("function deleteAdvancedCalendarEvent_("),
+    source.indexOf("function deleteLegacyCalendarEvent_("),
+  )
+  const legacyDeletion = source.slice(
+    source.indexOf("function deleteLegacyCalendarEvent_("),
+    source.indexOf("function isCalendarNotFoundError_("),
+  )
+
+  assert.match(source, /const METHODE_SECONDAIRE_CALENDAR_ID_PROPERTY = "METHODE_SECONDAIRE_CALENDAR_ID"/)
+  assert.match(source, /"calendar_owner_id"/)
+  assert.match(source, /function resolveManagedCalendarId_\(\)/)
+  assert.match(source, /function resolveCalendarCandidateIds_\(/)
+  assert.match(creator, /calendarId = resolveManagedCalendarId_\(\)/)
+  assert.match(creator, /calendar_owner_id: calendarId/)
+  assert.match(creator, /Calendar\.Events\.insert\(buildManagedCalendarEvent_\(session\), calendarId, \{\s*sendUpdates: "all"/)
+  assert.doesNotMatch(creator, /resolveTutorCalendarId_/)
+  assert.match(pendingMeet, /getAdvancedCalendarEventForSession_\(spreadsheet, session, eventId\)/)
+  assert.doesNotMatch(pendingMeet, /resolveTutorCalendarId_/)
+  assert.match(advancedDeletion, /resolveCalendarCandidateIds_\(spreadsheet, session\)/)
+  assert.match(advancedDeletion, /sendUpdates: shouldNotifyGuests \? "all" : "none"/)
+  assert.doesNotMatch(advancedDeletion, /resolveTutorCalendarId_/)
+  assert.match(legacyDeletion, /resolveCalendarCandidateIds_\(spreadsheet, session\)/)
+  assert.doesNotMatch(legacyDeletion, /resolveCalendarForTutor_/)
+  assert.doesNotMatch(source, /portal_update_tutor_calendar/)
+})
+
+test("operator tutor setup asks for email and portal availability, not a personal calendar", async () => {
+  const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
+  const tutorPanel = source.slice(
+    source.indexOf("function TutorAccessPanel("),
+    source.indexOf("function SessionMessagePanel("),
+  )
+
+  assert.doesNotMatch(tutorPanel, /calendar_id/)
+  assert.doesNotMatch(tutorPanel, /updatePortalTutorCalendar/)
+  assert.doesNotMatch(tutorPanel, /calendarIdHelp/)
+})
+
 test("the parent portal calls a zero-dollar payment free", async () => {
   const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
   const paymentRow = source.slice(
