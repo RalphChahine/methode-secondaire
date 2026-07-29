@@ -2379,22 +2379,24 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
               />
             )}
           />
-          <RecordList
-            icon={Clock3}
-            title={copy.followUpSessions}
-            empty={copy.empty}
-            records={sessionGroups.followUp}
-            render={(session) => (
-              <SessionRow
-                key={session.session_id}
-                copy={copy}
-                session={session}
-                role={role}
-                token={token}
-                onSaved={onSaved}
-              />
-            )}
-          />
+          {sessionGroups.followUp.length ? (
+            <RecordList
+              icon={Clock3}
+              title={copy.followUpSessions}
+              empty={copy.empty}
+              records={sessionGroups.followUp}
+              render={(session) => (
+                <SessionRow
+                  key={session.session_id}
+                  copy={copy}
+                  session={session}
+                  role={role}
+                  token={token}
+                  onSaved={onSaved}
+                />
+              )}
+            />
+          ) : null}
           <RecordList
             icon={ClipboardList}
             title={copy.pastSessions}

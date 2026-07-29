@@ -315,6 +315,7 @@ test("renders grouped parent session history and state-driven session actions", 
   assert.match(source, /copy\.pastSessions/)
   assert.match(source, /copy\.cancelledSessions/)
   assert.match(source, /sessionGroups\.followUp/)
+  assert.match(source, /sessionGroups\.followUp\.length \? \(/)
   assert.match(source, /presentation\.canConfirm/)
   assert.match(source, /presentation\.isWaitingForOther/)
   assert.match(source, /presentation\.isExpiredProposal/)
