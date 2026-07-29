@@ -315,6 +315,16 @@ test("renders grouped parent session history and state-driven session actions", 
   assert.match(source, /presentation\.isWaitingForOther/)
   assert.match(source, /presentation\.isExpiredProposal/)
   assert.match(source, /presentation\.canShowPayment/)
+  assert.match(source, /<RecordList[\s\S]*records=\{sessionGroups\.past\}[\s\S]*collapsible/)
+  assert.match(source, /<RecordList[\s\S]*records=\{sessionGroups\.cancelled\}[\s\S]*collapsible/)
+  assert.match(source, /function RecordList\(\{[\s\S]*collapsible = false/)
+  assert.match(source, /useState\(\(\) => !collapsible\)/)
+  assert.match(source, /aria-expanded=\{isOpen\}/)
+  assert.match(source, /aria-controls=\{contentId\}/)
+  assert.match(source, /role="region"/)
+  assert.match(source, /aria-labelledby=\{toggleId\}/)
+  assert.match(source, /<ChevronDown/)
+  assert.match(source, /collapsible && !records\.length/)
 })
 
 test("CRM protects confirmation and payment state for proposed sessions", async () => {

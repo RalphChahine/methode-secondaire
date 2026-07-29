@@ -1,12 +1,13 @@
 ﻿import { useEffect, useMemo, useState } from "react"
 import { Link, useLocation } from "react-router-dom"
-import { Component } from "react"
+import { Component, useId } from "react"
 import {
   ArrowRight,
   CalendarCheck,
   CalendarClock,
   CalendarDays,
   CalendarPlus,
+  ChevronDown,
   ClipboardList,
   CircleCheck,
   Clock3,
@@ -2381,6 +2382,7 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
             title={copy.pastSessions}
             empty={copy.empty}
             records={sessionGroups.past}
+            collapsible
             render={(session) => (
               <SessionRow
                 key={session.session_id}
@@ -2398,6 +2400,7 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
             title={copy.cancelledSessions}
             empty={copy.empty}
             records={sessionGroups.cancelled}
+            collapsible
             render={(session) => (
               <SessionRow
                 key={session.session_id}
@@ -5420,16 +5423,50 @@ function NextSessionCard({ copy, session, role, actionHref, onAction }) {
   )
 }
 
-function RecordList({ icon: Icon, title, empty, records = [], render }) {
+function RecordList({ icon: Icon, title, empty, records = [], render, collapsible = false }) {
+  const [isOpen, setIsOpen] = useState(() => !collapsible)
+  const contentId = useId()
+  const toggleId = useId()
+
+  if (collapsible && !records.length) {
+    return null
+  }
+
+  const content = records.length
+    ? records.map(render)
+    : <p className="text-sm leading-7 text-white/60">{empty}</p>
+
   return (
     <section className="panel-soft rounded-[24px] p-4 text-white sm:p-5">
-      <div className="flex items-center gap-3">
-        <Icon className="h-5 w-5 text-[#f5c977]" />
-        <h2 className="font-display text-2xl font-semibold sm:text-3xl">{title}</h2>
-      </div>
-      <div className="mt-5 space-y-3">
-        {records.length ? records.map(render) : <p className="text-sm leading-7 text-white/60">{empty}</p>}
-      </div>
+      {collapsible ? (
+        <h2 className="font-display text-2xl font-semibold sm:text-3xl">
+          <button
+            id={toggleId}
+            type="button"
+            aria-expanded={isOpen}
+            aria-controls={contentId}
+            onClick={() => setIsOpen((current) => !current)}
+            className="flex min-h-11 w-full items-center gap-3 rounded-xl text-left transition hover:text-[#f5c977] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5c977] focus-visible:ring-offset-2 focus-visible:ring-offset-[#0b1b3a]"
+          >
+            <Icon className="h-5 w-5 shrink-0 text-[#f5c977]" aria-hidden="true" />
+            <span className="min-w-0 flex-1">{title}</span>
+            <span className="rounded-full bg-white/10 px-2.5 py-1 text-sm font-semibold text-white/72">{records.length}</span>
+            <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`} aria-hidden="true" />
+          </button>
+        </h2>
+      ) : (
+        <div className="flex items-center gap-3">
+          <Icon className="h-5 w-5 text-[#f5c977]" />
+          <h2 className="font-display text-2xl font-semibold sm:text-3xl">{title}</h2>
+        </div>
+      )}
+      {collapsible ? (
+        <div id={contentId} role="region" aria-labelledby={toggleId} hidden={!isOpen} className="mt-5 space-y-3">
+          {isOpen ? content : null}
+        </div>
+      ) : (
+        <div className="mt-5 space-y-3">{content}</div>
+      )}
     </section>
   )
 }
