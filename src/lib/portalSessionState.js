@@ -5,6 +5,10 @@ function records(value) {
 }
 
 function timestamp(value) {
+  if (value === null || value === undefined || (typeof value === "string" && !value.trim())) {
+    return null
+  }
+
   const parsed = new Date(value).getTime()
   return Number.isFinite(parsed) ? parsed : null
 }
@@ -41,7 +45,7 @@ export function getPortalSessionState(session = {}, role = "", now = new Date())
   const startAt = timestamp(session.start_at)
   const nowAt = nowTimestamp(now)
   const isFuture = startAt !== null && startAt > nowAt
-  const isExpiredProposal = status === "proposed" && !isFuture
+  const isExpiredProposal = status === "proposed" && startAt !== null && !isFuture
   const ownConfirmed = role === "parent"
     ? Boolean(session.parent_confirmed_at)
     : role === "tutor"
@@ -60,7 +64,7 @@ export function getPortalSessionState(session = {}, role = "", now = new Date())
     isWaitingForOther: status === "proposed" && isFuture && ownConfirmed && !otherConfirmed,
     canConfirm: isParticipant && status === "proposed" && isFuture && !ownConfirmed,
     canRequestChange: isParticipant && (
-      status === "proposed" ||
+      (status === "proposed" && startAt !== null) ||
       (status === "confirmed" && isPortalSessionCurrentOrFuture(session, now))
     ),
     canShowPayment: Boolean(

@@ -30,6 +30,17 @@ test("does not let a parent confirm a proposal after its start time", () => {
   assert.equal(state.canRequestChange, true)
 })
 
+test("does not expire or expose adjustments for proposed sessions without a valid date", () => {
+  const now = new Date("2026-07-26T12:00:00.000Z")
+
+  for (const start_at of [null, undefined, "", "not-a-date"]) {
+    const state = getPortalSessionState({ session_status: "proposed", start_at }, "parent", now)
+
+    assert.equal(state.isExpiredProposal, false)
+    assert.equal(state.canRequestChange, false)
+  }
+})
+
 test("does not offer an adjustment after a confirmed session has ended", () => {
   const state = getPortalSessionState({
     session_status: "confirmed",
@@ -120,6 +131,19 @@ test("groups parent history and finds only the released recap for a completed se
     { session_id: "PAST", status: "draft", parent_summary: "Do not show" },
     { session_id: "PAST", status: "released", parent_summary: "Visible recap" },
   ], "PAST").parent_summary, "Visible recap")
+})
+
+test("keeps null-dated non-cancelled sessions upcoming", () => {
+  const groups = groupParentSessions([
+    { session_id: "NULL-COMPLETED", session_status: "completed", start_at: null },
+    { session_id: "NULL-CONFIRMED", session_status: "confirmed", start_at: null },
+    { session_id: "NULL-CANCELLED", session_status: "cancelled", start_at: null },
+  ], new Date("2026-07-26T12:00:00.000Z"))
+
+  assert.deepEqual(groups.upcoming.map((session) => session.session_id), ["NULL-COMPLETED", "NULL-CONFIRMED"])
+  assert.deepEqual(groups.followUp, [])
+  assert.deepEqual(groups.past, [])
+  assert.deepEqual(groups.cancelled.map((session) => session.session_id), ["NULL-CANCELLED"])
 })
 
 test("keeps only current or future non-terminal sessions in the parent action path", () => {
