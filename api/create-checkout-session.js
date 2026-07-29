@@ -50,6 +50,7 @@ export default async function handler(req, res) {
     })
 
     if (!stripeResponse.ok) {
+      console.warn("stripe_checkout_failed", { stage: "stripe_api", status: stripeResponse.status })
       return res.status(502).json({ ok: false, code: "STRIPE_CHECKOUT_FAILED" })
     }
 

@@ -221,6 +221,35 @@ test("labels a Checkout created with a live key without exposing that key", asyn
   assert.equal("stripe_secret_key" in response.payload, false)
 })
 
+test("logs only a safe Stripe response status when Checkout creation fails", async () => {
+  const originalFetch = globalThis.fetch
+  const originalWarn = console.warn
+  const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET
+  const originalStripeSecret = process.env.STRIPE_SECRET_KEY
+  const warnings = []
+  const response = makeResponse()
+
+  process.env.PAYMENT_SESSION_SECRET = "internal-secret"
+  process.env.STRIPE_SECRET_KEY = "sk_test_secret"
+  console.warn = (...args) => warnings.push(args)
+  globalThis.fetch = async () => ({ ok: false, status: 429 })
+
+  try {
+    await createCheckoutSession({
+      method: "POST",
+      body: makeCheckoutInput({ payment_session_secret: "internal-secret" }),
+    }, response)
+  } finally {
+    globalThis.fetch = originalFetch
+    console.warn = originalWarn
+    restoreEnvironment("PAYMENT_SESSION_SECRET", originalPaymentSecret)
+    restoreEnvironment("STRIPE_SECRET_KEY", originalStripeSecret)
+  }
+
+  assert.deepEqual(response.payload, { ok: false, code: "STRIPE_CHECKOUT_FAILED" })
+  assert.deepEqual(warnings, [["stripe_checkout_failed", { stage: "stripe_api", status: 429 }]])
+})
+
 test("rejects unauthenticated Checkout requests without calling Stripe", async () => {
   const originalPaymentSecret = process.env.PAYMENT_SESSION_SECRET
   const originalStripeSecret = process.env.STRIPE_SECRET_KEY
