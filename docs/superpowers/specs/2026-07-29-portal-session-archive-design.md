@@ -54,7 +54,7 @@ Le bouton d’en-tête utilise un élément `button`, `aria-expanded` et une ass
 ## Cas limites
 
 - Une archive vide disparaît entièrement : aucune carte vide ni message inutile.
-- Une date manquante ou invalide utilise l’ordre déterministe existant sans casser l’affichage.
+- Une séance terminée sans date valide conserve le classement existant dans « À venir »; une annulation sans date valide reste dans « Annulées » et suit les annulations datées sans casser l’affichage.
 - Les libellés français et anglais incluent les compteurs avec une formulation lisible par les lecteurs d’écran.
 - La fonction ne modifie ni la logique métier des statuts, ni les paiements, ni les permissions de séance.
 

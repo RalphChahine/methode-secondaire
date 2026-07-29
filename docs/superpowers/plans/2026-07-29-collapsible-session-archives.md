@@ -14,7 +14,7 @@
 - Keep French and English section labels from the existing `copy` object; the visible numeric count must remain part of the button’s accessible name.
 - “À venir” and every non-archive `RecordList` remain expanded and retain their current empty-state behavior.
 - “Passées” and “Annulées” are closed by default, are absent when empty, and render their rows only after opening.
-- Past and cancelled rows must display newest valid `start_at` first; sessions with no valid date follow dated sessions while retaining their source order relative to each other.
+- Past and cancelled rows must display newest valid `start_at` first. An undated cancelled row follows dated cancellations while retaining source order relative to other undated cancellations; an undated completed session retains the current `upcoming` classification.
 - Use semantic `button`, `aria-expanded`, `aria-controls`, and a labelled `region`; retain a visible keyboard focus ring and at least the current `min-h-11` touch target.
 
 ---
@@ -36,7 +36,7 @@
 
 **Interfaces:**
 - Consumes: `groupParentSessions(sessions, now)` where each session can provide `session_status` and `start_at`.
-- Produces: `groupParentSessions(sessions, now) -> { upcoming: Session[], past: Session[], cancelled: Session[] }`, with `past` and `cancelled` sorted by decreasing valid `start_at`.
+- Produces: `groupParentSessions(sessions, now) -> { upcoming: Session[], past: Session[], cancelled: Session[] }`, with `past` and `cancelled` sorted by decreasing valid `start_at` while an undated completed session keeps the existing `upcoming` classification.
 
 - [ ] **Step 1: Replace the current grouping assertion with a failing order test**
 
@@ -49,12 +49,12 @@
     { session_id: "CANCELLED-OLD", session_status: "cancelled", start_at: "2026-07-18T17:00:00.000Z" },
     { session_id: "PAST-NEW", session_status: "completed", start_at: "2026-07-24T17:00:00.000Z" },
     { session_id: "CANCELLED-NEW", session_status: "cancelled", start_at: "2026-07-22T17:00:00.000Z" },
-    { session_id: "PAST-UNDATED", session_status: "completed", start_at: "not-a-date" },
+    { session_id: "CANCELLED-UNDATED", session_status: "cancelled", start_at: "not-a-date" },
   ], now)
 
   assert.deepEqual(groups.upcoming.map((session) => session.session_id), ["UP"])
-  assert.deepEqual(groups.past.map((session) => session.session_id), ["PAST-NEW", "PAST-OLD", "PAST-UNDATED"])
-  assert.deepEqual(groups.cancelled.map((session) => session.session_id), ["CANCELLED-NEW", "CANCELLED-OLD"])
+  assert.deepEqual(groups.past.map((session) => session.session_id), ["PAST-NEW", "PAST-OLD"])
+  assert.deepEqual(groups.cancelled.map((session) => session.session_id), ["CANCELLED-NEW", "CANCELLED-OLD", "CANCELLED-UNDATED"])
   ```
 
 - [ ] **Step 2: Run the focused test to verify it fails**
@@ -97,7 +97,7 @@
 
   Run: `node --test --test-name-pattern "groups parent history" test/parent-portal.test.mjs`
 
-  Expected: PASS with the newest past and cancelled sessions first and the invalid date last.
+  Expected: PASS with the newest past and cancelled sessions first, and the undated cancellation last.
 
 - [ ] **Step 5: Commit the focused data behavior**
 
