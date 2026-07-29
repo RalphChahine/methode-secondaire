@@ -311,9 +311,9 @@
   In `src/lib/portalSessionState.js`, make `isExpiredProposal` apply only to `proposed` status. Preserve confirmation rules, but expose `canRequestChange` for any parent or tutor on a `proposed` session; retain the current-date guard for a `confirmed` session:
 
   ```js
-  const isExpiredProposal = status === "proposed" && !isFuture
+  const isExpiredProposal = status === "proposed" && startAt !== null && !isFuture
   const canRequestChange = isParticipant && (
-    status === "proposed" ||
+    (status === "proposed" && startAt !== null) ||
     (status === "confirmed" && isPortalSessionCurrentOrFuture(session, now))
   )
   ```
