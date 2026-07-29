@@ -27,7 +27,7 @@ test("does not let a parent confirm a proposal after its start time", () => {
   assert.equal(state.isExpiredProposal, true)
   assert.equal(state.canConfirm, false)
   assert.equal(state.canShowPayment, false)
-  assert.equal(state.canRequestChange, false)
+  assert.equal(state.canRequestChange, true)
 })
 
 test("does not offer an adjustment after a confirmed session has ended", () => {
@@ -109,9 +109,11 @@ test("groups parent history and finds only the released recap for a completed se
     { session_id: "PAST-NEW", session_status: "completed", start_at: "2026-07-24T17:00:00.000Z" },
     { session_id: "CANCELLED-NEW", session_status: "cancelled", start_at: "2026-07-22T17:00:00.000Z" },
     { session_id: "CANCELLED-UNDATED", session_status: "cancelled", start_at: "not-a-date" },
+    { session_id: "FOLLOW-UP", session_status: "calendar_created", start_at: "2026-07-22T17:00:00.000Z" },
   ], now)
 
   assert.deepEqual(groups.upcoming.map((session) => session.session_id), ["UP"])
+  assert.deepEqual(groups.followUp.map((session) => session.session_id), ["FOLLOW-UP"])
   assert.deepEqual(groups.past.map((session) => session.session_id), ["PAST-NEW", "PAST-OLD"])
   assert.deepEqual(groups.cancelled.map((session) => session.session_id), ["CANCELLED-NEW", "CANCELLED-OLD", "CANCELLED-UNDATED"])
   assert.equal(findReleasedParentRecap([
@@ -309,14 +311,17 @@ test("renders grouped parent session history and state-driven session actions", 
   assert.match(source, /groupParentSessions/)
   assert.match(source, /findReleasedParentRecap/)
   assert.match(source, /copy\.upcomingSessions/)
+  assert.match(source, /copy\.followUpSessions/)
   assert.match(source, /copy\.pastSessions/)
   assert.match(source, /copy\.cancelledSessions/)
+  assert.match(source, /sessionGroups\.followUp/)
   assert.match(source, /presentation\.canConfirm/)
   assert.match(source, /presentation\.isWaitingForOther/)
   assert.match(source, /presentation\.isExpiredProposal/)
   assert.match(source, /presentation\.canShowPayment/)
-  assert.match(source, /<RecordList[\s\S]*records=\{sessionGroups\.past\}[\s\S]*collapsible/)
-  assert.match(source, /<RecordList[\s\S]*records=\{sessionGroups\.cancelled\}[\s\S]*collapsible/)
+  assert.match(source, /records=\{sessionGroups\.past\}\s*\r?\n\s*collapsible/)
+  assert.match(source, /records=\{sessionGroups\.cancelled\}\s*\r?\n\s*collapsible/)
+  assert.doesNotMatch(source, /records=\{sessionGroups\.followUp\}\s*\r?\n\s*collapsible/)
   assert.match(source, /function RecordList\(\{[\s\S]*collapsible = false/)
   assert.match(source, /useState\(\(\) => !collapsible\)/)
   assert.match(source, /aria-expanded=\{isOpen\}/)

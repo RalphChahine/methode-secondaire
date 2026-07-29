@@ -1,5 +1,4 @@
 const TERMINAL_STATUSES = new Set(["cancelled", "no_show", "completed"])
-const PENDING_STATUSES = new Set(["requested", "proposed"])
 
 function records(value) {
   return Array.isArray(value) ? value : []
@@ -42,7 +41,7 @@ export function getPortalSessionState(session = {}, role = "", now = new Date())
   const startAt = timestamp(session.start_at)
   const nowAt = nowTimestamp(now)
   const isFuture = startAt !== null && startAt > nowAt
-  const isExpiredProposal = PENDING_STATUSES.has(status) && !isFuture
+  const isExpiredProposal = status === "proposed" && !isFuture
   const ownConfirmed = role === "parent"
     ? Boolean(session.parent_confirmed_at)
     : role === "tutor"
@@ -60,9 +59,10 @@ export function getPortalSessionState(session = {}, role = "", now = new Date())
     isExpiredProposal,
     isWaitingForOther: status === "proposed" && isFuture && ownConfirmed && !otherConfirmed,
     canConfirm: isParticipant && status === "proposed" && isFuture && !ownConfirmed,
-    canRequestChange: isParticipant &&
-      ["proposed", "confirmed"].includes(status) &&
-      isPortalSessionCurrentOrFuture(session, now),
+    canRequestChange: isParticipant && (
+      status === "proposed" ||
+      (status === "confirmed" && isPortalSessionCurrentOrFuture(session, now))
+    ),
     canShowPayment: Boolean(
       ["confirmed", "calendar_created", "completed"].includes(status) &&
       session.payment_status === "payment_requested" &&
@@ -81,17 +81,28 @@ export function groupParentSessions(sessions, now = new Date()) {
     }
 
     const startAt = timestamp(session.start_at)
-    if (startAt !== null && startAt <= nowAt) {
+    if (startAt === null) {
+      groups.upcoming.push(session)
+      return groups
+    }
+
+    if (status === "completed") {
       groups.past.push(session)
+      return groups
+    }
+
+    if (startAt <= nowAt) {
+      groups.followUp.push(session)
       return groups
     }
 
     groups.upcoming.push(session)
     return groups
-  }, { upcoming: [], past: [], cancelled: [] })
+  }, { upcoming: [], followUp: [], past: [], cancelled: [] })
 
   return {
     upcoming: groups.upcoming,
+    followUp: groups.followUp.sort(byMostRecentStart),
     past: groups.past.sort(byMostRecentStart),
     cancelled: groups.cancelled.sort(byMostRecentStart),
   }

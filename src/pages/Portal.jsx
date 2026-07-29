@@ -319,6 +319,7 @@ const copyByLocale = {
     noNextSession: "Aucune séance confirmée à venir.",
     sessions: "Séances",
     upcomingSessions: "À venir",
+    followUpSessions: "À régulariser",
     pastSessions: "Passées",
     cancelledSessions: "Annulées",
     scheduleSession: "Planifier une séance",
@@ -851,6 +852,7 @@ const copyByLocale = {
     noNextSession: "No confirmed upcoming session.",
     sessions: "Sessions",
     upcomingSessions: "Upcoming",
+    followUpSessions: "Needs follow-up",
     pastSessions: "Past",
     cancelledSessions: "Cancelled",
     scheduleSession: "Schedule a session",
@@ -2366,6 +2368,22 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
             title={copy.upcomingSessions}
             empty={copy.empty}
             records={sessionGroups.upcoming}
+            render={(session) => (
+              <SessionRow
+                key={session.session_id}
+                copy={copy}
+                session={session}
+                role={role}
+                token={token}
+                onSaved={onSaved}
+              />
+            )}
+          />
+          <RecordList
+            icon={Clock3}
+            title={copy.followUpSessions}
+            empty={copy.empty}
+            records={sessionGroups.followUp}
             render={(session) => (
               <SessionRow
                 key={session.session_id}
