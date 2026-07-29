@@ -21,8 +21,8 @@
 - Modify: `test/parent-portal.test.mjs`
 - Modify: `scripts/check-meet-checkout-contract.mjs`
 
-- [ ] Add a failing source contract proving that online creation, pending Meet polling, and deletion resolve the managed calendar rather than a tutor calendar.
-- [ ] Prove the contract fails before implementation with `npm.cmd run test:portal` and `npm.cmd run test:payments`.
+- [x] Add a failing source contract proving that online creation, pending Meet polling, and deletion resolve the managed calendar rather than a tutor calendar.
+- [x] Prove the contract fails before implementation with `npm.cmd run test:portal` and `npm.cmd run test:payments`.
 
 ### Task 2: Route all booking Calendar work through the managed calendar
 
@@ -31,14 +31,14 @@
 - Modify: `src/pages/Portal.jsx`
 - Modify: `src/lib/portalClient.js`
 
-- [ ] Add a single managed-calendar resolver using `METHODE_SECONDAIRE_CALENDAR_ID`, with the deployed owner's default calendar as the safe zero-configuration fallback.
-- [ ] Persist the exact calendar ID on every new session and use a legacy candidate fallback for sessions created before this cutover.
-- [ ] Create online Meet events in that calendar and retain both parent and tutor as attendees.
-- [ ] Keep invitations deferred until the Meet URL is ready, then send the finalized invitation to both attendees.
-- [ ] Route in-person creation and every cancellation/cleanup path to the same managed calendar, with explicit guest cancellation updates.
-- [ ] Update operational error wording so it describes the central calendar, not a tutor calendar.
-- [ ] Remove per-tutor Google Calendar fields from the operator portal; a tutor profile needs an email and site availability only.
-- [ ] Re-run focused portal and payment tests.
+- [x] Add a single managed-calendar resolver using `METHODE_SECONDAIRE_CALENDAR_ID`, with the deployed owner's default calendar as the safe zero-configuration fallback.
+- [x] Persist the exact calendar ID on every new session and use a legacy candidate fallback for sessions created before this cutover.
+- [x] Create online Meet events in that calendar and retain both parent and tutor as attendees.
+- [x] Keep invitations deferred until the Meet URL is ready, then send the finalized invitation to both attendees.
+- [x] Route in-person creation and every cancellation/cleanup path to the same managed calendar, with explicit guest cancellation updates.
+- [x] Update operational error wording so it describes the central calendar, not a tutor calendar.
+- [x] Remove per-tutor Google Calendar fields from the operator portal; a tutor profile needs an email and site availability only.
+- [x] Re-run focused portal and payment tests.
 
 ### Task 3: Document, publish, and prove the real flow
 
@@ -47,8 +47,8 @@
 - Modify: `ops/crm/parent-tutor-portal.md`
 - Modify: `README.md`
 
-- [ ] Document the one optional Script Property and the no-sharing tutor workflow.
-- [ ] Run `npm.cmd run test:portal`, `npm.cmd run test:payments`, and `npm.cmd run build`.
-- [ ] Push the reviewed source directly to `main` as explicitly authorized by Chahine.
-- [ ] Deploy the Apps Script version serving the production CRM URL.
-- [ ] Book one future test availability and verify that the central calendar produces a Meet event and sends the parent/tutor invitation without a tutor calendar setup.
+- [x] Document the one optional Script Property and the no-sharing tutor workflow.
+- [x] Run `npm.cmd run test:portal`, `npm.cmd run test:payments`, and `npm.cmd run build`.
+- [x] Push the reviewed source directly to `main` as explicitly authorized by Chahine.
+- [x] Deploy the Apps Script version serving the production CRM URL.
+- [x] Book one future test availability and verify that the central calendar produces a Meet event and sends the parent/tutor invitation without a tutor calendar setup.
