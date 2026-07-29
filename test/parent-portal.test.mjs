@@ -104,13 +104,16 @@ test("groups parent history and finds only the released recap for a completed se
   const now = new Date("2026-07-26T12:00:00.000Z")
   const groups = groupParentSessions([
     { session_id: "UP", session_status: "confirmed", start_at: "2026-08-01T17:00:00.000Z" },
-    { session_id: "PAST", session_status: "completed", start_at: "2026-07-14T17:00:00.000Z" },
-    { session_id: "CANCELLED", session_status: "cancelled", start_at: "2026-07-22T17:00:00.000Z" },
+    { session_id: "PAST-OLD", session_status: "completed", start_at: "2026-07-14T17:00:00.000Z" },
+    { session_id: "CANCELLED-OLD", session_status: "cancelled", start_at: "2026-07-18T17:00:00.000Z" },
+    { session_id: "PAST-NEW", session_status: "completed", start_at: "2026-07-24T17:00:00.000Z" },
+    { session_id: "CANCELLED-NEW", session_status: "cancelled", start_at: "2026-07-22T17:00:00.000Z" },
+    { session_id: "CANCELLED-UNDATED", session_status: "cancelled", start_at: "not-a-date" },
   ], now)
 
   assert.deepEqual(groups.upcoming.map((session) => session.session_id), ["UP"])
-  assert.deepEqual(groups.past.map((session) => session.session_id), ["PAST"])
-  assert.deepEqual(groups.cancelled.map((session) => session.session_id), ["CANCELLED"])
+  assert.deepEqual(groups.past.map((session) => session.session_id), ["PAST-NEW", "PAST-OLD"])
+  assert.deepEqual(groups.cancelled.map((session) => session.session_id), ["CANCELLED-NEW", "CANCELLED-OLD", "CANCELLED-UNDATED"])
   assert.equal(findReleasedParentRecap([
     { session_id: "PAST", status: "draft", parent_summary: "Do not show" },
     { session_id: "PAST", status: "released", parent_summary: "Visible recap" },

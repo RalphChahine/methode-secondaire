@@ -10,6 +10,16 @@ function timestamp(value) {
   return Number.isFinite(parsed) ? parsed : null
 }
 
+function byMostRecentStart(left, right) {
+  const leftAt = timestamp(left?.start_at)
+  const rightAt = timestamp(right?.start_at)
+
+  if (leftAt === null && rightAt === null) return 0
+  if (leftAt === null) return 1
+  if (rightAt === null) return -1
+  return rightAt - leftAt
+}
+
 function nowTimestamp(now) {
   const parsed = now instanceof Date ? now.getTime() : new Date(now).getTime()
   return Number.isFinite(parsed) ? parsed : Date.now()
@@ -63,7 +73,7 @@ export function getPortalSessionState(session = {}, role = "", now = new Date())
 
 export function groupParentSessions(sessions, now = new Date()) {
   const nowAt = nowTimestamp(now)
-  return records(sessions).reduce((groups, session) => {
+  const groups = records(sessions).reduce((groups, session) => {
     const status = String(session.session_status || "").toLowerCase()
     if (["cancelled", "no_show"].includes(status)) {
       groups.cancelled.push(session)
@@ -79,6 +89,12 @@ export function groupParentSessions(sessions, now = new Date()) {
     groups.upcoming.push(session)
     return groups
   }, { upcoming: [], past: [], cancelled: [] })
+
+  return {
+    upcoming: groups.upcoming,
+    past: groups.past.sort(byMostRecentStart),
+    cancelled: groups.cancelled.sort(byMostRecentStart),
+  }
 }
 
 export function findReleasedParentRecap(notes, sessionId) {
