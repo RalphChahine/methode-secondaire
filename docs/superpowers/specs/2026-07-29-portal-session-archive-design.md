@@ -58,9 +58,21 @@ Le bouton d’en-tête utilise un élément `button`, `aria-expanded` et une ass
 - Les libellés français et anglais incluent les compteurs avec une formulation lisible par les lecteurs d’écran.
 - La fonction ne modifie ni la logique métier des statuts, ni les paiements, ni les permissions de séance.
 
+## Ajustement validé — séances à régulariser et propositions expirées
+
+Une ligne datée dans le passé ne doit pas automatiquement être présentée comme une séance passée. Le portail utilisera désormais quatre groupes :
+
+- **À venir :** séances non terminales dont la date est future ou invalide, comme aujourd’hui.
+- **À régulariser :** séances non terminales dont la date est passée (`requested`, `proposed`, `confirmed` ou `calendar_created`) et qui nécessitent une clarification par la famille ou l’équipe.
+- **Passées :** séances explicitement marquées `completed` et ayant une date valide, avec leurs bilans et devoirs; cette archive reste repliée par défaut.
+- **Annulées :** séances `cancelled` ou `no_show`; cette archive reste repliée par défaut.
+
+« À régulariser » est visible seulement lorsqu’il contient une séance et reste ouvert afin de ne pas masquer un élément qui demande une décision. Une proposition expirée (`proposed`, date passée) conserve un bouton « Demander un ajustement » : le serveur accepte déjà cette demande et transmet alors la requête à l’équipe. En revanche, une séance confirmée ou terminée dont l’heure est passée ne propose pas ce bouton, car elle doit d’abord être régularisée par l’équipe.
+
 ## Vérification
 
 - Ajouter des tests unitaires pour l’ordre décroissant de l’historique sans changer le regroupement des statuts.
 - Mettre à jour le test d’interface statique du portail pour vérifier les deux sections archivées et les attributs d’accessibilité essentiels.
+- Vérifier qu’une proposition expirée permet une demande d’ajustement, qu’une séance confirmée terminée ne le permet toujours pas, et que les statuts passés non finalisés apparaissent dans « À régulariser » plutôt que dans « Passées ».
 - Lancer la suite de tests du portail ainsi que les vérifications de build/lint existantes.
 - Vérifier manuellement le portail parent en format mobile et bureau : ouverture/fermeture, compteur, navigation clavier, bilan d’une séance passée et liste avec beaucoup d’annulations.

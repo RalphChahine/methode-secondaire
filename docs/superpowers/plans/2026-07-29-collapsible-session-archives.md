@@ -248,3 +248,109 @@
 - [ ] **Step 4: Record verification in the delivery note**
 
   Report the exact passing commands and the manual viewport checks in the final handoff. Do not change the API, CRM script, payment logic, or session actions during verification.
+
+## Amendment: Separate sessions needing follow-up from completed history
+
+**Goal:** Keep only completed sessions in the collapsed history, expose past non-terminal sessions in an open follow-up section, and restore the adjustment action promised by an expired proposal.
+
+**Files:**
+- Modify: `src/lib/portalSessionState.js`
+- Modify: `src/pages/Portal.jsx`
+- Modify: `test/parent-portal.test.mjs`
+
+**Rules:**
+- `groupParentSessions` returns `{ upcoming, followUp, past, cancelled }`.
+- `cancelled` and `no_show` remain cancelled; a `completed` session with a valid date is the only past/history state; non-terminal sessions whose valid `start_at` is now or earlier enter `followUp`; other invalid dates keep the established upcoming behavior.
+- `followUp` is rendered as an open `RecordList` only when it has entries; `past` and `cancelled` remain collapsible archives.
+- A parent or tutor can request a change for an expired `proposed` session. A confirmed session whose time has ended remains non-adjustable.
+
+### Task 4: Route expired sessions to follow-up and restore their adjustment action
+
+**Files:**
+- Modify: `test/parent-portal.test.mjs:19-40,103-123,306-328`
+- Modify: `src/lib/portalSessionState.js:32-101`
+- Modify: `src/pages/Portal.jsx:321-323,853-855,2363-2410`
+
+**Interfaces:**
+- Consumes: `getPortalSessionState(session, role, now)` and `groupParentSessions(sessions, now)`.
+- Produces: `getPortalSessionState(...).canRequestChange === true` for an expired `proposed` session and `groupParentSessions(...) -> { upcoming, followUp, past, cancelled }` with completed sessions isolated in `past`.
+
+- [ ] **Step 1: Write failing behavior and source-contract tests**
+
+  In `test/parent-portal.test.mjs`:
+
+  ```js
+  assert.equal(state.isExpiredProposal, true)
+  assert.equal(state.canConfirm, false)
+  assert.equal(state.canRequestChange, true)
+  ```
+
+  Keep the existing test asserting that an ended `confirmed` session has `canRequestChange === false`. Extend the history fixture with:
+
+  ```js
+  { session_id: "FOLLOW-UP", session_status: "calendar_created", start_at: "2026-07-22T17:00:00.000Z" },
+  ```
+
+  Then assert:
+
+  ```js
+  assert.deepEqual(groups.followUp.map((session) => session.session_id), ["FOLLOW-UP"])
+  assert.deepEqual(groups.past.map((session) => session.session_id), ["PAST-NEW", "PAST-OLD"])
+  ```
+
+  In the existing portal source-contract test, add assertions for `copy.followUpSessions` and `sessionGroups.followUp` and assert that only the past and cancelled `RecordList` calls use `collapsible`.
+
+- [ ] **Step 2: Run the focused tests to verify they fail**
+
+  Run: `node --test --test-name-pattern "does not let a parent confirm|groups parent history|renders grouped parent session history" test/parent-portal.test.mjs`
+
+  Expected: FAIL because expired proposals currently hide `canRequestChange`, `followUp` does not exist, and the portal has no follow-up section.
+
+- [ ] **Step 3: Implement the minimal state and UI changes**
+
+  In `src/lib/portalSessionState.js`, make `isExpiredProposal` apply only to `proposed` status. Preserve confirmation rules, but expose `canRequestChange` for any parent or tutor on a `proposed` session; retain the current-date guard for a `confirmed` session:
+
+  ```js
+  const isExpiredProposal = status === "proposed" && !isFuture
+  const canRequestChange = isParticipant && (
+    status === "proposed" ||
+    (status === "confirmed" && isPortalSessionCurrentOrFuture(session, now))
+  )
+  ```
+
+  Remove `PENDING_STATUSES`, which is no longer used after narrowing the expired-proposal condition.
+
+  Rework `groupParentSessions` so cancellation states are classified first, invalid non-cancellation dates preserve their existing upcoming classification, and the reducer initializes four arrays:
+
+  ```js
+  if (["cancelled", "no_show"].includes(status)) {
+    groups.cancelled.push(session)
+  } else if (startAt === null) {
+    groups.upcoming.push(session)
+  } else if (status === "completed") {
+    groups.past.push(session)
+  } else if (startAt !== null && startAt <= nowAt) {
+    groups.followUp.push(session)
+  } else {
+    groups.upcoming.push(session)
+  }
+  ```
+
+  Return `followUp` sorted with `byMostRecentStart`, alongside the existing archive sorting. In `Portal.jsx`, add localised `followUpSessions` copy (`"À régulariser"` / `"Needs follow-up"`) and conditionally render a non-collapsible `RecordList` immediately after `À venir`, using `Clock3`, `sessionGroups.followUp`, and the existing `SessionRow`. Keep recap lookup only on `past`; do not pass `collapsible` to follow-up.
+
+- [ ] **Step 4: Run the focused tests to verify they pass**
+
+  Run: `node --test --test-name-pattern "does not let a parent confirm|groups parent history|renders grouped parent session history" test/parent-portal.test.mjs`
+
+  Expected: PASS; expired proposals expose an adjustment request, completed sessions are the only past records, and the portal includes the follow-up list.
+
+- [ ] **Step 5: Run the portal suite and commit**
+
+  Run: `npm.cmd run test:portal`
+
+  Expected: PASS with all portal tests green.
+
+  ```bash
+  git add test/parent-portal.test.mjs src/lib/portalSessionState.js src/pages/Portal.jsx
+  git commit -m "fix: surface expired sessions for follow-up"
+  ```
