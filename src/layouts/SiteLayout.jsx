@@ -40,6 +40,7 @@ export default function SiteLayout() {
           { type: "route", label: "Our approach", to: getLocalizedPath("approche", locale) },
           { type: "route", label: "Parent path", to: getLocalizedPath("temoignages", locale) },
           { type: "route", label: "Existing client? Sign in", to: getLocalizedPath("portal", locale) },
+          { type: "route", label: "Become a tutor", to: getLocalizedPath("devenirTuteur", locale) },
         ],
         sections: [
           { id: "processus", label: "How it works" },
@@ -77,6 +78,7 @@ export default function SiteLayout() {
           { type: "route", label: "Notre approche", to: getLocalizedPath("approche", locale) },
           { type: "route", label: "Parcours parent", to: getLocalizedPath("temoignages", locale) },
           { type: "route", label: "Déjà client ? Se connecter au portail", to: getLocalizedPath("portal", locale) },
+          { type: "route", label: "Devenir tuteur", to: getLocalizedPath("devenirTuteur", locale) },
         ],
         sections: [
           { id: "processus", label: "Étapes" },
@@ -211,12 +213,16 @@ export default function SiteLayout() {
                 </Button>
               </SheetTrigger>
 
-              <SheetContent side="right" className="border-white/10 bg-[#071631] text-white">
-                <SheetHeader>
+              <SheetContent
+                side="right"
+                className="flex h-[100dvh] max-h-[100dvh] flex-col gap-0 overflow-hidden border-white/10 bg-[#071631] text-white"
+              >
+                <SheetHeader className="shrink-0 pr-10">
                   <SheetTitle className="font-display text-xl text-white">{copy.menuTitle}</SheetTitle>
                 </SheetHeader>
 
-                <div className="mt-8 flex flex-col gap-2">
+                <div className="mt-8 min-h-0 flex-1 overflow-y-auto pb-[calc(1rem+env(safe-area-inset-bottom))] pr-1">
+                <div className="flex flex-col gap-2">
                   {copy.nav.map((item) => (
                     <SheetClose asChild key={item.to}>
                       <NavLink
@@ -270,6 +276,7 @@ export default function SiteLayout() {
                     </Button>
                   </SheetClose>
 
+                </div>
                 </div>
               </SheetContent>
             </Sheet>
@@ -326,7 +333,7 @@ export default function SiteLayout() {
         </div>
       </footer>
 
-      {!isPortalRoute ? <div className="fixed inset-x-0 bottom-0 z-50 border-t border-white/10 bg-[#071631]/95 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden">
+      {!isPortalRoute ? <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#071631]/95 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden">
         <div className="mx-auto w-full max-w-7xl">
           <Button
             asChild
