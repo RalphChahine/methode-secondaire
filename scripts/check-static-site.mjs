@@ -259,6 +259,17 @@ async function verifyFinalReviewSafetyContracts() {
   expect(bookingSource.includes("hasTutorSessionConflict_(spreadsheet, record.tutor_id"), "Apps Script: tutor availability conflict guard is missing")
   expect(portalSource.includes("student_tutor_assignment_id"), "Parent portal: selected tutor assignment is not sent with the booking")
 
+  const publicProfileSource = appsScriptSource.slice(
+    appsScriptSource.indexOf("function sanitizeTutorPublicProfileForPublic_("),
+    appsScriptSource.indexOf("function createPortalTutor_("),
+  )
+  expect(appsScriptSource.includes('const CRM_TUTOR_PUBLIC_PROFILE_SHEET_NAME = "Tutor Public Profiles"'), "Apps Script: public tutor profile sheet is missing")
+  expect(appsScriptSource.includes("function getPublishedTutorPublicProfiles_"), "Apps Script: published tutor profile filter is missing")
+  expect(publicProfileSource.includes("publication_consent_at"), "Apps Script: tutor profile publication consent is missing")
+  expect(!/calendar_email|hourly_rate_cad|payment_terms|notes/.test(publicProfileSource), "Apps Script: public tutor profile exposes private roster data")
+  expect(portalSource.includes("assigned_tutor_profiles"), "Parent portal: assigned tutor profiles are not rendered from the scoped dashboard")
+  expect(!portalSource.includes("bookPortalSession({ token, values: { tutor_id"), "Parent portal: tutor profile must not become a direct booking selector")
+
   const sandbox = {}
   vm.createContext(sandbox)
   vm.runInContext(`${appsScriptSource}\n;globalThis.__finalReview = {
