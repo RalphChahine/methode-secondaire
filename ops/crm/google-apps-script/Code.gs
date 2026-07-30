@@ -5454,17 +5454,49 @@ function buildEnrollmentCreditSummary_(spreadsheet, enrollmentId) {
 
 function resolvePlanSessionBinding_(spreadsheet, params) {
   const enrollmentId = normalizeValue_(params.plan_enrollment_id);
-  if (!enrollmentId) {
-    return { ok: true, enrollment: null, plan: null, requires_credit: false };
+  const sessionType = normalizeAllowed_(params.session_type, SESSION_TYPE_OPTIONS, "one_time");
+  let enrollmentRecord = null;
+  let plan = null;
+
+  if (enrollmentId) {
+    enrollmentRecord = findSheetRecordById_(getOrCreateSheet_(spreadsheet, CRM_PLAN_ENROLLMENT_SHEET_NAME),
+      PLAN_ENROLLMENT_COLUMNS, "enrollment_id", enrollmentId);
+    if (!enrollmentRecord || normalizeValue_(enrollmentRecord.data.status) !== "active") {
+      return { ok: false, code: "PLAN_ENROLLMENT_NOT_ACTIVE" };
+    }
+    plan = findActivePlan_(spreadsheet, enrollmentRecord.data.plan_id);
+  } else {
+    const matchingPackages = getSheetRecordsFromSheet_(
+      getOrCreateSheet_(spreadsheet, CRM_PLAN_ENROLLMENT_SHEET_NAME),
+      PLAN_ENROLLMENT_COLUMNS,
+    )
+      .filter((record) => normalizeValue_(record.data.status) === "active" &&
+        normalizeEmail_(record.data.parent_email) === normalizeEmail_(params.parent_email) &&
+        normalizeValue_(record.data.student_id) === normalizeValue_(params.student_id) &&
+        normalizeValue_(record.data.tutor_id) === normalizeValue_(params.tutor_id))
+      .map((record) => {
+        const matchingPlan = findActivePlan_(spreadsheet, record.data.plan_id);
+        const eligibleTypes = normalizePlanSessionTypes_(matchingPlan?.eligible_session_types, "").split(",").filter(Boolean);
+        if (!matchingPlan || normalizeValue_(matchingPlan.plan_type) !== "pack" ||
+            (eligibleTypes.length && !eligibleTypes.includes(sessionType))) {
+          return null;
+        }
+        return {
+          enrollmentRecord: record,
+          plan: matchingPlan,
+          creditsRemaining: buildEnrollmentCreditSummary_(spreadsheet, record.data.enrollment_id).credits_remaining,
+        };
+      })
+      .filter(Boolean);
+    const matchingPackage = matchingPackages.find((candidate) => candidate.creditsRemaining > 0) || matchingPackages[0];
+    if (!matchingPackage) {
+      return { ok: true, enrollment: null, plan: null, requires_credit: false };
+    }
+    enrollmentRecord = matchingPackage.enrollmentRecord;
+    plan = matchingPackage.plan;
   }
 
-  const enrollmentRecord = findSheetRecordById_(getOrCreateSheet_(spreadsheet, CRM_PLAN_ENROLLMENT_SHEET_NAME),
-    PLAN_ENROLLMENT_COLUMNS, "enrollment_id", enrollmentId);
-  if (!enrollmentRecord || normalizeValue_(enrollmentRecord.data.status) !== "active") {
-    return { ok: false, code: "PLAN_ENROLLMENT_NOT_ACTIVE" };
-  }
   const enrollment = enrollmentRecord.data;
-  const plan = findActivePlan_(spreadsheet, enrollment.plan_id);
   if (!plan) {
     return { ok: false, code: "PLAN_NOT_AVAILABLE" };
   }
@@ -5474,7 +5506,6 @@ function resolvePlanSessionBinding_(spreadsheet, params) {
     return { ok: false, code: "PLAN_ENROLLMENT_PARTICIPANT_MISMATCH" };
   }
 
-  const sessionType = normalizeAllowed_(params.session_type, SESSION_TYPE_OPTIONS, "one_time");
   const eligibleTypes = normalizePlanSessionTypes_(plan.eligible_session_types, "").split(",").filter(Boolean);
   if (eligibleTypes.length && !eligibleTypes.includes(sessionType)) {
     return { ok: false, code: "PLAN_SESSION_TYPE_NOT_ALLOWED" };

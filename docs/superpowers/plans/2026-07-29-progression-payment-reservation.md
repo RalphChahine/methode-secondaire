@@ -269,3 +269,43 @@ Expected: no whitespace errors; only planned payment/reservation changes plus de
 
     git add ops/crm/parent-tutor-portal.md docs/superpowers/specs/2026-07-29-progression-payment-reservation-design.md docs/superpowers/plans/2026-07-29-progression-payment-reservation.md
     git commit -m "docs: clarify progress block reservation payments"
+
+### Task 5: Enforce an active matching package at the booking authority
+
+**Files:**
+- Modify: `scripts/check-static-site.mjs`
+- Modify: `ops/crm/google-apps-script/Code.gs`
+- Modify: `ops/crm/parent-tutor-portal.md`
+- Modify: `docs/superpowers/specs/2026-07-29-progression-payment-reservation-design.md`
+
+**Interfaces:**
+- Produces: an inferred pack binding for a booking which omits `plan_enrollment_id` but otherwise matches an active parent, student, tutor, and eligible session type.
+- Guarantees: a direct booking request cannot bypass an exhausted matching Progress-block enrollment and turn into an ordinary per-session Checkout.
+
+- [ ] **Step 1: Write a failing Apps Script contract test**
+
+Expose `resolvePlanSessionBinding_` and its package-selection dependencies in the existing static-check VM. Add a fixture with an active matching `PLAN-PACK10-600`, no `plan_enrollment_id` in the booking parameters, and zero remaining credits. Assert that the resolved binding has `requires_credit === true` and keeps the matching enrollment identifier. The assertion must fail while a missing identifier immediately returns a non-credit binding.
+
+- [ ] **Step 2: Run the checker and verify RED**
+
+Run: `npm.cmd run check:site`
+Expected: FAIL because direct bookings without an enrollment identifier resolve as a non-credit session.
+
+- [ ] **Step 3: Infer the matching active package before a non-credit fallback**
+
+In `resolvePlanSessionBinding_`, when `plan_enrollment_id` is absent, look up active package enrollments matching `parent_email`, `student_id`, `tutor_id`, and the plan's eligible session types. Prefer an enrollment with available credits; otherwise retain the exhausted matching enrollment so `reservePlanCreditForSession_` returns `PLAN_CREDIT_BALANCE_INSUFFICIENT`. Only return a non-credit binding when no matching active package exists.
+
+- [ ] **Step 4: Run GREEN and full portal regression**
+
+Run: `npm.cmd run check:site`
+Expected: static checks pass.
+
+Run: `npm.cmd run test:portal`
+Expected: all portal tests pass.
+
+- [ ] **Step 5: Correct the documentation and commit**
+
+Keep the statement that a sixth booking is blocked server-side, now backed by the authority-layer inference. Update the design goal wording to say « réservés ou consommés », then commit the source/test/documentation changes:
+
+    git add ops/crm/google-apps-script/Code.gs scripts/check-static-site.mjs ops/crm/parent-tutor-portal.md docs/superpowers/specs/2026-07-29-progression-payment-reservation-design.md docs/superpowers/plans/2026-07-29-progression-payment-reservation.md
+    git commit -m "fix: enforce package credits for parent bookings"

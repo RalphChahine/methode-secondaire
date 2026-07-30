@@ -5,7 +5,7 @@
 
 ## Objectif
 
-Rendre le Bloc de progression (10 séances, 2 × 300 $) autonome et compréhensible pour le parent : chaque paiement vérifié débloque cinq crédits, les réservations consomment ces crédits de façon atomique, et le deuxième paiement devient proactivement accessible à la quatrième réservation.
+Rendre le Bloc de progression (10 séances, 2 × 300 $) autonome et compréhensible pour le parent : chaque paiement vérifié débloque cinq crédits, ces crédits sont réservés ou consommés de façon atomique selon le cycle de la séance, et le deuxième paiement devient proactivement accessible à la quatrième réservation.
 
 ## Règles métier
 
@@ -30,7 +30,7 @@ Les parents peuvent seulement ouvrir leur propre Checkout. L’opérateur conser
 
 ## Implémentation
 
-- `ops/crm/google-apps-script/Code.gs` autorise le rôle `parent` ou `operator` pour une demande de paiement de forfait, puis vérifie l’accès du parent à l’inscription ciblée avant toute lecture ou écriture. La condition `progression_midpoint` passe de cinq à quatre crédits réservés/utilisés.
+- `ops/crm/google-apps-script/Code.gs` autorise le rôle `parent` ou `operator` pour une demande de paiement de forfait, puis vérifie l’accès du parent à l’inscription ciblée avant toute lecture ou écriture. Pour une réservation sans `plan_enrollment_id`, l’autorité recherche aussi un forfait actif correspondant au parent, à l’élève, au tuteur et au type de séance admissible; elle préfère un solde disponible et conserve sinon le forfait épuisé afin de refuser le créneau. La condition `progression_midpoint` passe de cinq à quatre crédits réservés/utilisés.
 - `src/pages/Portal.jsx` ajoute une carte de paiement de mi-parcours au `ProgramProgressCard`. Elle n’est rendue que pour `PLAN-PACK10-600`, après quatre réservations/utilisations, et appelle le client existant `createPortalPlanPaymentRequest`.
 - Le panneau de réservation reçoit un état explicite de blocage au lieu d’essayer une réservation payante à la séance lorsque le Bloc de progression est à zéro crédit avant le deuxième paiement.
 - Les textes français et anglais de la nouvelle carte parent sont dérivés de `pricing.offers.progression_block.installmentPriceCad`; aucun montant 300 $ n’y est codé en dur.

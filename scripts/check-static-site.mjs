@@ -378,6 +378,7 @@ async function verifyPlanPaymentLifecycleSources() {
     markPortalPaymentPaidFromWebhook_,
     markPortalPaymentExpiredFromWebhook_,
     expireSessionCheckoutBeforeMeetCancellation_,
+    resolvePlanSessionBinding_,
     replaceDependencies(dependencies) {
       getOrCreateSheet_ = dependencies.getOrCreateSheet
       findSheetRecordById_ = dependencies.findSheetRecordById
@@ -403,6 +404,12 @@ async function verifyPlanPaymentLifecycleSources() {
       writeRecord_ = dependencies.writeRecord
       appendPortalRequestRecord_ = dependencies.appendPortalRequestRecord
     },
+    replacePlanBindingDependencies(dependencies) {
+      getOrCreateSheet_ = dependencies.getOrCreateSheet
+      getSheetRecordsFromSheet_ = dependencies.getSheetRecordsFromSheet
+      findActivePlan_ = dependencies.findActivePlan
+      buildEnrollmentCreditSummary_ = dependencies.buildEnrollmentCreditSummary
+    },
   }`, sandbox)
 
   const lifecycle = sandbox.__planPayments
@@ -420,6 +427,66 @@ async function verifyPlanPaymentLifecycleSources() {
   expect(
     midpoint?.offer === "progression_block_payment_2" && midpoint?.amount_cad === "300" && midpoint?.credit_grant_count === 5,
     "Apps Script: progression midpoint does not resolve to one $300/five-credit grant",
+  )
+
+  const planBindingEnrollments = [{
+    rowNumber: 2,
+    data: {
+      enrollment_id: "ENROLL-PROGRESSION-EXHAUSTED",
+      plan_id: "PLAN-PACK10-600",
+      parent_email: "parent@example.com",
+      student_id: "STUDENT-1",
+      tutor_id: "TUTOR-1",
+      status: "active",
+    },
+  }]
+  const planBindingCredits = {
+    "ENROLL-PROGRESSION-EXHAUSTED": 0,
+  }
+  lifecycle.replacePlanBindingDependencies({
+    getOrCreateSheet: (_spreadsheet, sheetName) => sheetName,
+    getSheetRecordsFromSheet: () => planBindingEnrollments,
+    findActivePlan: () => ({
+      plan_id: "PLAN-PACK10-600",
+      plan_type: "pack",
+      eligible_session_types: "weekly_follow_up",
+    }),
+    buildEnrollmentCreditSummary: (_spreadsheet, enrollmentId) => ({
+      credits_remaining: planBindingCredits[enrollmentId] || 0,
+    }),
+  })
+  const inferredExhaustedBinding = lifecycle.resolvePlanSessionBinding_(null, {
+    parent_email: "parent@example.com",
+    student_id: "STUDENT-1",
+    tutor_id: "TUTOR-1",
+    session_type: "weekly_follow_up",
+  })
+  expect(
+    inferredExhaustedBinding.requires_credit === true &&
+      inferredExhaustedBinding.enrollment?.enrollment_id === "ENROLL-PROGRESSION-EXHAUSTED",
+    "Apps Script: a direct parent booking must retain its exhausted matching package binding",
+  )
+  planBindingEnrollments.push({
+    rowNumber: 3,
+    data: {
+      enrollment_id: "ENROLL-PROGRESSION-AVAILABLE",
+      plan_id: "PLAN-PACK10-600",
+      parent_email: "parent@example.com",
+      student_id: "STUDENT-1",
+      tutor_id: "TUTOR-1",
+      status: "active",
+    },
+  })
+  planBindingCredits["ENROLL-PROGRESSION-AVAILABLE"] = 1
+  const inferredAvailableBinding = lifecycle.resolvePlanSessionBinding_(null, {
+    parent_email: "parent@example.com",
+    student_id: "STUDENT-1",
+    tutor_id: "TUTOR-1",
+    session_type: "weekly_follow_up",
+  })
+  expect(
+    inferredAvailableBinding.enrollment?.enrollment_id === "ENROLL-PROGRESSION-AVAILABLE",
+    "Apps Script: inferred package bindings must prefer an enrollment with available credits",
   )
 
   const ledgerEntries = []
