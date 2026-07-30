@@ -58,7 +58,10 @@ import {
   groupParentSessions,
 } from "@/lib/portalSessionState"
 import { getPortalBookingOutcome, getSafeHostedCheckoutUrl } from "@/lib/portalBookingOutcome"
-import { getProgressionPaymentState } from "@/lib/progressionPaymentState"
+import {
+  getProgressionPaymentState,
+  PROGRESSION_MIDPOINT_PAYMENT_RULE,
+} from "@/lib/progressionPaymentState"
 import {
   clearPortalSession,
   adjustPortalPlanCredits,
@@ -272,6 +275,10 @@ const copyByLocale = {
     programUsed: "séances utilisées",
     programAction: "Voir les séances du programme",
     programPending: "Programme à activer",
+    programMidpointPaymentIntro: "Crédits restants : {credits}. Réglez le deuxième versement de {amount} avant de réserver une sixième séance.",
+    programMidpointPaymentAction: "Préparer le deuxième paiement",
+    programMidpointPaymentOpen: "Ouvrir le paiement Stripe sécurisé",
+    programMidpointPaymentUnavailable: "Le paiement a été préparé, mais son lien Stripe sécurisé n’est pas encore disponible. Réessayez dans quelques instants.",
     materialsEyebrow: "Avant la séance",
     materialsTitle: "Préparer la séance",
     materialsDescription: "Une photo du devoir, du chapitre ou de l'examen aide le tuteur à cibler plus vite.",
@@ -419,6 +426,8 @@ const copyByLocale = {
     bookingProgramCredit: "1 crédit du programme",
     bookingPlanCredit: "1 crédit du programme sera réservé pour cette séance.",
     bookingProgramCreditNotice: "Le crédit est réservé maintenant, puis consommé seulement après la séance.",
+    bookingProgramPaymentRequired: "Les cinq premiers crédits sont déjà réservés ou utilisés. Accédez au paiement du bloc dans « Famille et compte » avant de réserver une autre séance.",
+    bookingProgramPaymentAction: "Accéder au paiement du bloc",
     matchingPendingTitle: "Nous préparons le bon jumelage",
     matchingPendingIntro: "Votre profil est reçu. L'équipe vous propose un tuteur avant de vous afficher ses créneaux.",
     matchingPendingCall: "Situation urgente ou besoin complexe? Appelez-nous.",
@@ -805,6 +814,10 @@ const copyByLocale = {
     programUsed: "sessions used",
     programAction: "See program sessions",
     programPending: "Program being activated",
+    programMidpointPaymentIntro: "Credits remaining: {credits}. Pay the second {amount} installment before booking a sixth session.",
+    programMidpointPaymentAction: "Prepare the second payment",
+    programMidpointPaymentOpen: "Open secure Stripe payment",
+    programMidpointPaymentUnavailable: "The payment was prepared, but its secure Stripe link is not available yet. Try again in a few moments.",
     materialsEyebrow: "Before the session",
     materialsTitle: "Prepare the session",
     materialsDescription: "A photo of homework, the chapter, or an exam helps the tutor focus faster.",
@@ -952,6 +965,8 @@ const copyByLocale = {
     bookingProgramCredit: "1 program credit",
     bookingPlanCredit: "1 program credit will be reserved for this session.",
     bookingProgramCreditNotice: "The credit is reserved now and used only after the session is completed.",
+    bookingProgramPaymentRequired: "The first five credits are already reserved or used. Go to the block payment under “Family & account” before booking another session.",
+    bookingProgramPaymentAction: "Go to block payment",
     matchingPendingTitle: "We are preparing the right match",
     matchingPendingIntro: "Your profile is in. The team will propose a tutor before showing that tutor's available times.",
     matchingPendingCall: "Urgent or complex situation? Call us.",
@@ -2362,7 +2377,14 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
 
       {activeDestination === "sessions" ? (
         <div className="min-w-0 space-y-6">
-          <BookingPanel copy={copy} dashboard={dashboard} locale={locale} token={token} onSaved={onSaved} />
+          <BookingPanel
+            copy={copy}
+            dashboard={dashboard}
+            locale={locale}
+            token={token}
+            onSaved={onSaved}
+            onOpenAccount={() => setActiveDestination("account")}
+          />
           <CalendarAgenda copy={copy} sessions={dashboard.sessions} />
           <RecordList
             icon={CalendarCheck}
@@ -2467,6 +2489,8 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
               copy={copy}
               locale={locale}
               snapshot={programSnapshot}
+              token={token}
+              onSaved={onSaved}
               onOpenSessions={() => setActiveDestination("sessions")}
             />
           </div>
@@ -2608,7 +2632,37 @@ function ParentRhythmCard({ copy, locale, snapshot, token, onSaved, onOpenSessio
   )
 }
 
-function ProgramProgressCard({ copy, locale, snapshot, onOpenSessions }) {
+function ProgramProgressCard({ copy, locale, snapshot, token, onSaved, onOpenSessions }) {
+  const paymentState = getProgressionPaymentState(snapshot)
+  const [paymentUrl, setPaymentUrl] = useState("")
+  const [status, setStatus] = useState("")
+  const [isSaving, setIsSaving] = useState(false)
+
+  async function requestMidpointPayment() {
+    setIsSaving(true)
+    setStatus("")
+    const result = await createPortalPlanPaymentRequest({
+      token,
+      enrollmentId: snapshot.enrollmentId,
+      paymentStage: PROGRESSION_MIDPOINT_PAYMENT_RULE.paymentStage,
+    })
+    setIsSaving(false)
+    if (!result.ok) {
+      setStatus(getPortalErrorMessage(copy, result.code))
+      return
+    }
+
+    const safePaymentUrl = getSafeHostedCheckoutUrl(
+      result.payment_url ||
+      result.checkout_url ||
+      result.payment?.payment_url ||
+      result.payment?.checkout_url,
+    )
+    setPaymentUrl(safePaymentUrl)
+    setStatus(safePaymentUrl ? copy.planPaymentRequestCreated : copy.programMidpointPaymentUnavailable)
+    onSaved?.()
+  }
+
   if (!snapshot.hasProgram) {
     return null
   }
@@ -2678,6 +2732,34 @@ function ProgramProgressCard({ copy, locale, snapshot, onOpenSessions }) {
       </div>
 
       <p className="mt-4 text-sm leading-6 text-white/68">{getProgramCreditText(snapshot.offer, locale)}</p>
+      {paymentState.canRequestMidpointPayment ? (
+        <div className="mt-4 rounded-2xl border border-[#f5c977]/25 bg-[#f5c977]/10 p-4">
+          <p className="text-sm leading-6 text-white/78">
+            {copy.programMidpointPaymentIntro
+              .replace("{credits}", String(remainingCredits))
+              .replace("{amount}", formatCadAmount(snapshot.offer?.installmentPriceCad, locale))}
+          </p>
+          {paymentUrl ? (
+            <Button asChild className="mt-3 rounded-full bg-[#f5c977] px-5 text-[#071631] hover:bg-[#f7d38f]">
+              <a href={paymentUrl} target="_blank" rel="noreferrer">
+                <CreditCard className="h-4 w-4" />
+                {copy.programMidpointPaymentOpen}
+              </a>
+            </Button>
+          ) : (
+            <Button
+              type="button"
+              onClick={requestMidpointPayment}
+              disabled={isSaving}
+              className="mt-3 rounded-full bg-[#f5c977] px-5 text-[#071631] hover:bg-[#f7d38f]"
+            >
+              {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+              {isSaving ? copy.bookingLoading : copy.programMidpointPaymentAction}
+            </Button>
+          )}
+          {status ? <p className="mt-3 text-sm leading-6 text-white/68">{status}</p> : null}
+        </div>
+      ) : null}
       <button type="button" onClick={onOpenSessions} className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm font-semibold text-white/88 transition hover:bg-white/14 hover:text-white">
         {copy.programAction}
         <ArrowRight className="h-4 w-4" />
@@ -4898,7 +4980,7 @@ function PlanEnrollmentPanel({ copy, dashboard, locale, token, onSaved }) {
   )
 }
 
-function BookingPanel({ copy, dashboard, locale, token, onSaved }) {
+function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }) {
   const slots = dashboard.bookable_slots || []
   const students = dashboard.students || []
   const matching = dashboard.matching || {}
@@ -4916,8 +4998,22 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved }) {
   const matchingTutorId = selectedStudent?.assigned_tutor_id || matching.tutor_id
   const visibleSlots = matchingTutorId ? slots.filter((slot) => slot.tutor_id === matchingTutorId) : []
   const selectedSlot = visibleSlots.find((slot) => slot.slot_id === slotId)
-  const linkedPlanEnrollment = findPlanEnrollmentForBooking(dashboard, studentId, sessionType, matchingTutorId)
+  const linkedPlanEnrollment = findPlanEnrollmentForBooking(
+    dashboard,
+    studentId,
+    sessionType,
+    matchingTutorId,
+    { includeExhaustedPack: true },
+  )
   const usesProgramCredit = linkedPlanEnrollment?.plan_type === "pack" && Number(linkedPlanEnrollment.credits_remaining) > 0
+  const paymentState = getProgressionPaymentState({
+    planId: linkedPlanEnrollment?.plan_id,
+    creditsGranted: linkedPlanEnrollment?.credits_total,
+    creditsReserved: linkedPlanEnrollment?.credits_reserved,
+    creditsUsed: linkedPlanEnrollment?.credits_used,
+    creditsRemaining: linkedPlanEnrollment?.credits_remaining,
+  })
+  const { bookingBlocked } = paymentState
 
   useEffect(() => {
     if (students.length && !students.some((student) => student.student_id === studentId)) {
@@ -4934,6 +5030,11 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved }) {
 
   async function handleSubmit(event) {
     event.preventDefault()
+    if (bookingBlocked) {
+      setStatus(copy.bookingProgramPaymentRequired)
+      return
+    }
+
     setIsSaving(true)
     setStatus("")
 
@@ -4987,7 +5088,13 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved }) {
             {matchingTutorId ? copy.bookingTitle : copy.matchingPendingTitle}
           </h2>
           <p className="mt-1 text-sm text-white/68">
-            {matchingTutorId ? (usesProgramCredit ? copy.bookingCreditIntro : copy.bookingIntro) : copy.matchingPendingIntro}
+            {matchingTutorId
+              ? bookingBlocked
+                ? copy.bookingProgramPaymentRequired
+                : usesProgramCredit
+                  ? copy.bookingCreditIntro
+                  : copy.bookingIntro
+              : copy.matchingPendingIntro}
           </p>
         </div>
       </div>
@@ -5028,38 +5135,54 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved }) {
               ))}
             </select>
           </label>
-          <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-[#f5c977]/18 bg-[#f5c977]/8 px-3 py-2.5 text-sm">
-            <span className="text-white/64">{copy.bookingPrice}</span>
-            <span className="font-semibold text-[#f8d58d]">
-              {usesProgramCredit
-                ? copy.bookingProgramCredit
-                : `${getPaymentLinkDefaultAmountCad(sessionType)} $ CAD`}
-            </span>
-          </div>
-          {usesProgramCredit ? (
-            <p className="mt-2 text-xs leading-5 text-[#f8d58d]">{copy.bookingPlanCredit}</p>
-          ) : null}
           {selectedSlot ? (
             <p className="mt-3 text-sm leading-6 text-white/68">
               {selectedSlot.tutor_name} | {humanize(selectedSlot.format || "online")}
               {selectedSlot.location ? ` | ${selectedSlot.location}` : ""}
             </p>
           ) : null}
-          <Button
-            type="submit"
-            disabled={isSaving || !slotId}
-            className="mt-4 w-full rounded-full bg-[#f5c977] px-5 py-6 text-[#071631] hover:bg-[#f7d38f]"
-          >
-            {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-            {isSaving ? copy.bookingLoading : (usesProgramCredit ? copy.bookWithProgramCredit : copy.bookSession)}
-          </Button>
-          <p className="mt-3 text-xs leading-5 text-white/58">{usesProgramCredit ? copy.bookingProgramCreditNotice : copy.bookingPaymentNotice}</p>
+          {bookingBlocked ? (
+            <div className="mt-4 rounded-2xl border border-[#f5c977]/25 bg-[#f5c977]/10 p-4">
+              <p className="text-sm leading-6 text-white/78">{copy.bookingProgramPaymentRequired}</p>
+              <Button
+                type="button"
+                onClick={onOpenAccount}
+                className="mt-3 w-full rounded-full bg-[#f5c977] px-5 py-6 text-[#071631] hover:bg-[#f7d38f]"
+              >
+                <CreditCard className="h-4 w-4" />
+                {copy.bookingProgramPaymentAction}
+              </Button>
+            </div>
+          ) : (
+            <>
+              <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-[#f5c977]/18 bg-[#f5c977]/8 px-3 py-2.5 text-sm">
+                <span className="text-white/64">{copy.bookingPrice}</span>
+                <span className="font-semibold text-[#f8d58d]">
+                  {usesProgramCredit
+                    ? copy.bookingProgramCredit
+                    : `${getPaymentLinkDefaultAmountCad(sessionType)} $ CAD`}
+                </span>
+              </div>
+              {usesProgramCredit ? (
+                <p className="mt-2 text-xs leading-5 text-[#f8d58d]">{copy.bookingPlanCredit}</p>
+              ) : null}
+              <Button
+                type="submit"
+                disabled={isSaving || !slotId}
+                className="mt-4 w-full rounded-full bg-[#f5c977] px-5 py-6 text-[#071631] hover:bg-[#f7d38f]"
+              >
+                {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+                {isSaving ? copy.bookingLoading : (usesProgramCredit ? copy.bookWithProgramCredit : copy.bookSession)}
+              </Button>
+              <p className="mt-3 text-xs leading-5 text-white/58">{usesProgramCredit ? copy.bookingProgramCreditNotice : copy.bookingPaymentNotice}</p>
+            </>
+          )}
         </>
       ) : (
         <p className="mt-5 text-sm leading-7 text-white/68">{copy.bookingNoSlots}</p>
       )}
 
-      {paymentUrl ? (
+      {!bookingBlocked && paymentUrl ? (
         <div className="mt-3">
           {paymentDeadline ? <p className="mb-2 text-xs leading-5 text-white/62">{copy.paymentDueOneHour} · {copy.paymentDueUntil} {formatDateTime(paymentDeadline)}</p> : null}
           <Button asChild className="w-full rounded-full bg-white text-[#071631] hover:bg-white/90">
@@ -6268,7 +6391,13 @@ function getProgramCreditText(offer, locale = "fr") {
   return `${grantText}${policyText}`
 }
 
-function findPlanEnrollmentForBooking(dashboard = {}, studentId = "", sessionType = "", tutorId = "") {
+function findPlanEnrollmentForBooking(
+  dashboard = {},
+  studentId = "",
+  sessionType = "",
+  tutorId = "",
+  { includeExhaustedPack = false } = {},
+) {
   const enrollments = Array.isArray(dashboard.plan_enrollments) ? dashboard.plan_enrollments : []
   const candidates = enrollments.filter((enrollment) => {
     if (!isPortalRecord(enrollment) || enrollment.status !== "active") {
@@ -6280,7 +6409,7 @@ function findPlanEnrollmentForBooking(dashboard = {}, studentId = "", sessionTyp
     if (tutorId && String(enrollment.tutor_id || "") !== String(tutorId)) {
       return false
     }
-    if (enrollment.plan_type === "pack" && Number(enrollment.credits_remaining) <= 0) {
+    if (enrollment.plan_type === "pack" && Number(enrollment.credits_remaining) <= 0 && !includeExhaustedPack) {
       return false
     }
 
@@ -6293,9 +6422,13 @@ function findPlanEnrollmentForBooking(dashboard = {}, studentId = "", sessionTyp
   })
 
   return candidates.sort((left, right) => {
-    const leftCanUseCredit = left.plan_type === "pack" && Number(left.credits_remaining) > 0
-    const rightCanUseCredit = right.plan_type === "pack" && Number(right.credits_remaining) > 0
-    return Number(rightCanUseCredit) - Number(leftCanUseCredit)
+    const rank = (enrollment) => {
+      if (enrollment.plan_type !== "pack") {
+        return 0
+      }
+      return Number(enrollment.credits_remaining) > 0 ? 2 : 1
+    }
+    return rank(right) - rank(left)
   })[0] || null
 }
 

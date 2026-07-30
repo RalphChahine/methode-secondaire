@@ -328,6 +328,15 @@ test("parent dashboard defaults to Today and gates secondary destinations", asyn
   }
 })
 
+test("offers the parent a progress-block payment before credit exhaustion", async () => {
+  const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
+  assert.match(source, /function ProgramProgressCard\([\s\S]*createPortalPlanPaymentRequest/)
+  assert.match(source, /paymentStage: PROGRESSION_MIDPOINT_PAYMENT_RULE.paymentStage/)
+  assert.match(source, /copy.programMidpointPaymentAction/)
+  assert.match(source, /bookingBlocked/)
+  assert.match(source, /copy.bookingProgramPaymentRequired/)
+})
+
 test("renders grouped parent session history and state-driven session actions", async () => {
   const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
 

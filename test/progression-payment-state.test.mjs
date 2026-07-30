@@ -7,6 +7,7 @@ const base = { planId: "PLAN-PACK10-600", creditsGranted: 5, creditsReserved: 0,
 test("opens the second Progress payment at the fourth engaged credit", () => {
   assert.equal(getProgressionPaymentState({ ...base, creditsReserved: 3, creditsRemaining: 2 }).canRequestMidpointPayment, false)
   assert.equal(getProgressionPaymentState({ ...base, creditsReserved: 4, creditsRemaining: 1 }).canRequestMidpointPayment, true)
+  assert.equal(getProgressionPaymentState({ ...base, creditsUsed: 4, creditsRemaining: 1 }).canRequestMidpointPayment, true)
 })
 
 test("blocks the next booking after all first-half credits are engaged", () => {
