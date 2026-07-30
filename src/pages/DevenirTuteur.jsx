@@ -69,12 +69,13 @@ const contentByLocale = {
         description: "On valide l'adéquation avec la mission, le niveau attendu et le style de communication.",
       },
       {
-        title: "Validation pédagogique",
-        description: "On cherche une explication claire, structurée et humaine, pas juste une expertise brute.",
+        title: "Validation et intégration",
+        description: "On valide l'approche pédagogique, puis l'équipe ajoute les profils retenus au roster et organise leurs disponibilités.",
       },
       {
-        title: "Intégration",
-        description: "Le bon profil peut ensuite entrer dans un cadre simple, cohérent et orienté résultats.",
+        title: "Profil public facultatif",
+        description:
+          "Seulement après l'ajout au roster et votre consentement explicite, l'équipe peut préparer un profil et un portrait publics.",
       },
     ],
     badge: "Recrutement • Devenir tuteur",
@@ -178,6 +179,11 @@ const contentByLocale = {
         answer:
           "Vous pouvez candidater directement via le formulaire de la page ou par email en présentant vos matières, votre disponibilité et votre approche pédagogique.",
       },
+      {
+        question: "Ma candidature crée-t-elle un profil public ?",
+        answer:
+          "Non. Un profil public est facultatif et peut seulement être préparé après validation dans le roster et votre consentement explicite à la publication du profil et de la photo.",
+      },
     ],
     finalBadge: "Rejoindre l'équipe",
     finalTitle: "Les bons tuteurs méritent une marque à la hauteur de leur pédagogie.",
@@ -266,12 +272,13 @@ const contentByLocale = {
         description: "We confirm alignment with the mission, the expected level and the communication style.",
       },
       {
-        title: "Teaching review",
-        description: "We look for clear, structured and human explanations, not just raw expertise.",
+        title: "Teaching review and roster",
+        description: "We confirm clear, structured and human teaching, then the team adds successful candidates to the roster and organizes availability.",
       },
       {
-        title: "Integration",
-        description: "The right profile can then join a simple, coherent and results-oriented environment.",
+        title: "Optional public profile",
+        description:
+          "Only after roster approval and your explicit consent can the team prepare a public profile and portrait.",
       },
     ],
     badge: "Hiring • Become a tutor",
@@ -374,6 +381,11 @@ const contentByLocale = {
         question: "How do I apply?",
         answer:
           "You can apply directly through the form on this page or by email with your subjects, availability and teaching approach.",
+      },
+      {
+        question: "Does my application create a public profile?",
+        answer:
+          "No. A public profile is optional and can only be prepared after roster approval and your explicit consent to publish the profile and photo.",
       },
     ],
     finalBadge: "Join the team",

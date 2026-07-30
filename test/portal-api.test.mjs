@@ -16,6 +16,11 @@ test("allowlists the two operator-only student tutor assignment actions", () => 
   assert.equal(PORTAL_ACTIONS.has("portal_deactivate_student_tutor_assignment"), true)
 })
 
+test("allowlists safe public tutor profile reads and operator profile writes", () => {
+  assert.equal(PORTAL_ACTIONS.has("portal_get_public_tutor_profiles"), true)
+  assert.equal(PORTAL_ACTIONS.has("portal_upsert_tutor_public_profile"), true)
+})
+
 test("keeps the portal request alive long enough for a managed booking", async () => {
   const [portalApi, portalClient] = await Promise.all([
     readFile(new URL("../api/portal.js", import.meta.url), "utf8"),

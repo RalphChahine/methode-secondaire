@@ -300,6 +300,18 @@ export async function upsertPortalTutorAvailability({ token, values }) {
   })
 }
 
+export async function getPublicTutorProfiles() {
+  return portalRequest({ action: "portal_get_public_tutor_profiles" })
+}
+
+export async function upsertPortalTutorPublicProfile({ token, values }) {
+  return portalRequest({
+    action: "portal_upsert_tutor_public_profile",
+    token,
+    ...values,
+  })
+}
+
 export async function reissuePortalPaymentCheckout({ token, paymentId }) {
   return portalRequest({
     action: "portal_reissue_payment_checkout",

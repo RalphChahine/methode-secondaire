@@ -1,12 +1,13 @@
 import { ClipboardList, Phone, ShieldCheck, Sparkles, Target } from "lucide-react"
+import { useEffect, useState } from "react"
 import { useLocation } from "react-router-dom"
 
-import { TutorRosterSection } from "@/components/ConversionSections"
 import Seo from "@/components/Seo"
 import {
   FinalCtaSection,
   HeroShowcase,
 } from "@/components/SimpleMarketingSections"
+import TutorProfileRoster from "@/components/tutors/TutorProfileRoster"
 import {
   buildAlternates,
   getAlternateOgLocale,
@@ -16,6 +17,7 @@ import {
   getOgLocale,
 } from "@/lib/i18n"
 import { getParentJourney } from "@/lib/parentJourney"
+import { getPublicTutorProfiles } from "@/lib/portalClient"
 import { siteConfig } from "@/lib/seo"
 
 const contentByLocale = {
@@ -68,6 +70,22 @@ const contentByLocale = {
     ctaTitle: "Besoin d'être orienté vers le bon profil rapidement ?",
     ctaDescription:
       "Remplissez le formulaire: on valide le besoin, la disponibilité et le meilleur premier départ avant de proposer un profil.",
+    profileRoster: {
+      loadingTitle: "Chargement des profils de tuteurs",
+      loadingText: "Les profils publiés par l'équipe arrivent dans un instant.",
+      emptyTitle: "Les profils arrivent bientôt",
+      emptyText: "L'équipe confirme toujours le jumelage selon la matière, le niveau et les disponibilités.",
+      errorTitle: "Les profils sont momentanément indisponibles",
+      errorText: "Vous pouvez quand même nous joindre : l'équipe vous orientera vers le bon tuteur.",
+      details: "Voir le profil",
+      portraitFallback: "Avatar temporaire du tuteur",
+      subjects: "Matières",
+      levels: "Niveaux",
+      formats: "Format",
+      languages: "Langues",
+      zones: "Zones",
+      teachingStyle: "Style d'accompagnement",
+    },
     seoTitle: "Tuteurs en maths et sciences au secondaire | Méthode Secondaire",
     seoDescription:
       "Découvrez nos profils de tuteurs en mathématiques et en sciences pour le secondaire au Québec, avec une approche claire et rassurante pour les familles.",
@@ -122,6 +140,22 @@ const contentByLocale = {
     ctaTitle: "Need help finding the right profile quickly?",
     ctaDescription:
       "Fill out the form: we confirm the need, availability and best starting point before suggesting a profile.",
+    profileRoster: {
+      loadingTitle: "Loading tutor profiles",
+      loadingText: "Team-published profiles will appear shortly.",
+      emptyTitle: "Profiles are coming soon",
+      emptyText: "The team always confirms the match based on subject, level and availability.",
+      errorTitle: "Profiles are temporarily unavailable",
+      errorText: "You can still contact us: the team will guide you to the right tutor.",
+      details: "View profile",
+      portraitFallback: "Tutor placeholder avatar",
+      subjects: "Subjects",
+      levels: "Levels",
+      formats: "Format",
+      languages: "Languages",
+      zones: "Areas",
+      teachingStyle: "Teaching style",
+    },
     seoTitle: "High school math and science tutors | Méthode Secondaire",
     seoDescription:
       "Explore our high school math and science tutor profiles in Quebec, with a clear and reassuring approach for families.",
@@ -134,6 +168,22 @@ export default function Tuteurs() {
   const locale = getLocaleFromPath(location.pathname)
   const copy = contentByLocale[locale]
   const path = getLocalizedPath("tuteurs", locale)
+  const [profiles, setProfiles] = useState([])
+  const [profileStatus, setProfileStatus] = useState("loading")
+
+  useEffect(() => {
+    let active = true
+
+    getPublicTutorProfiles().then((result) => {
+      if (!active) return
+      setProfiles(result.ok && Array.isArray(result.tutor_profiles) ? result.tutor_profiles : [])
+      setProfileStatus(result.ok ? "ready" : "error")
+    })
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   const schema = {
     "@context": "https://schema.org",
@@ -183,7 +233,9 @@ export default function Tuteurs() {
           journey={getParentJourney(locale)}
         />
 
-        <TutorRosterSection locale={locale} className="pt-20" limit={2} />
+        <section className="pt-20">
+          <TutorProfileRoster copy={copy.profileRoster} profiles={profiles} status={profileStatus} locale={locale} />
+        </section>
 
         <FinalCtaSection
           badge={copy.badge}

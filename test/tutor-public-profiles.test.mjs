@@ -1,4 +1,5 @@
 import assert from "node:assert/strict"
+import { readFile } from "node:fs/promises"
 import test from "node:test"
 import { renderToStaticMarkup } from "react-dom/server"
 import { createServer } from "vite"
@@ -52,4 +53,16 @@ test("renders public details, a truthful fallback, and no direct booking", async
   } finally {
     await vite.close()
   }
+})
+
+test("public tutor page loads CRM profiles without turning profiles into booking controls", async () => {
+  const source = await readFile(new URL("../src/pages/Tuteurs.jsx", import.meta.url), "utf8")
+  const recruitment = await readFile(new URL("../src/pages/DevenirTuteur.jsx", import.meta.url), "utf8")
+
+  assert.match(source, /getPublicTutorProfiles/)
+  assert.match(source, /TutorProfileRoster/)
+  assert.match(source, /status=\{profileStatus\}/)
+  assert.doesNotMatch(source, /bookPortalSession|BookableSlotCalendar/)
+  assert.match(recruitment, /profil public facultatif|optional public profile/i)
+  assert.match(recruitment, /consentement|consent/i)
 })
