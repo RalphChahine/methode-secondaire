@@ -28,6 +28,9 @@ export function getParentNextAction(dashboard = {}) {
   const metrics = dashboard.metrics || {}
   const hasTutor = Boolean(
     matching.tutor_id ||
+    records(dashboard.student_tutor_assignments).some((assignment) => (
+      assignment && assignment.status === "active" && assignment.tutor_id
+    )) ||
     records(dashboard.students).some((student) => student && student.assigned_tutor_id),
   )
 

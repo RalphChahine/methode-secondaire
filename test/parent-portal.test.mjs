@@ -256,6 +256,24 @@ test("treats a student's assigned tutor as completed matching", () => {
   assert.equal(action.destination, "sessions")
 })
 
+test("treats a dedicated student tutor assignment as completed matching", () => {
+  const action = getParentNextAction({
+    profile: { name: "Parent" },
+    students: [{ student_id: "STUDENT-1" }],
+    student_tutor_assignments: [{
+      assignment_id: "ASSIGN-DAVID",
+      student_id: "STUDENT-1",
+      tutor_id: "TUTOR-DAVID",
+      status: "active",
+    }],
+    matching: {},
+    sessions: [],
+    metrics: {},
+  })
+
+  assert.deepEqual(action, { key: "booking", destination: "sessions" })
+})
+
 test("keeps the legacy message counter in the next-action priority", () => {
   const action = getParentNextAction({
     profile: { name: "Parent" },
