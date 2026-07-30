@@ -369,6 +369,14 @@ async function verifyPlanPaymentLifecycleSources() {
     paymentWebhookFunction.includes('["cancelled", "completed", "expired"].includes'),
     "Apps Script: verified package payments must not reactivate terminal enrollments",
   )
+  const overdueReissueIndex = paymentRequestFunction.indexOf(
+    "issueCheckoutForPayment_(spreadsheet, existing.data, { authorizedReissue: true })",
+  )
+  const overdueReissueResponseIndex = paymentRequestFunction.indexOf("return {", overdueReissueIndex)
+  expect(
+    overdueReissueIndex >= 0 && overdueReissueIndex < overdueReissueResponseIndex,
+    "Apps Script: an overdue existing package payment must reissue its Checkout before returning the existing payment response",
+  )
   const bookingLockIndex = bookingFunction.indexOf("bookingLock.tryLock(5000)")
   const reservationIndex = bookingFunction.indexOf("reservePlanCreditForSession_")
   const lockedBindingIndex = bookingFunction.lastIndexOf("resolvePlanSessionBinding_")
@@ -425,6 +433,7 @@ async function verifyPlanPaymentLifecycleSources() {
     replacePlanBindingDependencies(dependencies) {
       getOrCreateSheet_ = dependencies.getOrCreateSheet
       getSheetRecordsFromSheet_ = dependencies.getSheetRecordsFromSheet
+      findSheetRecordById_ = dependencies.findSheetRecordById
       findActivePlan_ = dependencies.findActivePlan
       buildEnrollmentCreditSummary_ = dependencies.buildEnrollmentCreditSummary
     },
@@ -464,6 +473,8 @@ async function verifyPlanPaymentLifecycleSources() {
   lifecycle.replacePlanBindingDependencies({
     getOrCreateSheet: (_spreadsheet, sheetName) => sheetName,
     getSheetRecordsFromSheet: () => planBindingEnrollments,
+    findSheetRecordById: (_sheet, _columns, _idColumn, enrollmentId) =>
+      planBindingEnrollments.find((record) => record.data.enrollment_id === enrollmentId) || null,
     findActivePlan: () => ({
       plan_id: "PLAN-PACK10-600",
       plan_type: "pack",
@@ -505,6 +516,29 @@ async function verifyPlanPaymentLifecycleSources() {
   expect(
     inferredAvailableBinding.enrollment?.enrollment_id === "ENROLL-PROGRESSION-AVAILABLE",
     "Apps Script: inferred package bindings must prefer an enrollment with available credits",
+  )
+  const explicitExhaustedBinding = lifecycle.resolvePlanSessionBinding_(null, {
+    plan_enrollment_id: "ENROLL-PROGRESSION-EXHAUSTED",
+    parent_email: "parent@example.com",
+    student_id: "STUDENT-1",
+    tutor_id: "TUTOR-1",
+    session_type: "weekly_follow_up",
+  })
+  expect(
+    explicitExhaustedBinding.enrollment?.enrollment_id === "ENROLL-PROGRESSION-EXHAUSTED",
+    "Apps Script: explicit package selection must stay pinned without the internal credit-fallback flag",
+  )
+  const explicitFallbackBinding = lifecycle.resolvePlanSessionBinding_(null, {
+    plan_enrollment_id: "ENROLL-PROGRESSION-EXHAUSTED",
+    parent_email: "parent@example.com",
+    student_id: "STUDENT-1",
+    tutor_id: "TUTOR-1",
+    session_type: "weekly_follow_up",
+    allow_package_credit_fallback: true,
+  })
+  expect(
+    explicitFallbackBinding.enrollment?.enrollment_id === "ENROLL-PROGRESSION-AVAILABLE",
+    "Apps Script: parent booking may fall back from an exhausted explicit package to a matching package with credit",
   )
 
   const ledgerEntries = []

@@ -347,3 +347,42 @@ Update the booking documentation to say that an inferred package reserves a cred
 
     git add ops/crm/google-apps-script/Code.gs scripts/check-static-site.mjs ops/crm/parent-tutor-portal.md docs/superpowers/plans/2026-07-29-progression-payment-reservation.md
     git commit -m "fix: reselect package credits under booking lock"
+
+### Task 7: Fall back from an exhausted explicit package and reissue expired midpoint Checkout
+
+**Files:**
+- Modify: `scripts/check-static-site.mjs`
+- Modify: `ops/crm/google-apps-script/Code.gs`
+- Modify: `docs/superpowers/plans/2026-07-29-progression-payment-reservation.md`
+
+**Problems:** parent bookings normally provide a selected `plan_enrollment_id`, which currently pins lock-time re-selection to that package even if a different matching package retains credit. Separately, the midpoint payment action returns an expired existing payment without reissuing its Checkout.
+
+- [ ] **Step 1: Write failing authority contracts**
+
+Extend the existing VM resolver fixture with an explicit exhausted package ID, a second matching available package, and a server-only `allow_package_credit_fallback` parameter. Assert that the resolver returns the available package when that parameter is true. Extract `createPortalPlanPaymentRequest_` and assert its existing-payment branch reissues an overdue package payment with `authorizedReissue: true` before returning the existing payment response.
+
+- [ ] **Step 2: Verify RED**
+
+Run: `npm.cmd run check:site`
+Expected: FAIL because explicit IDs cannot yet fall back and overdue midpoint payments do not issue a new Checkout.
+
+- [ ] **Step 3: Make explicit enrollment selection a safe parent-booking hint**
+
+Pass `allow_package_credit_fallback: true` only from `bookPortalSession_` into both pre-lock and locked plan-binding resolution. In `resolvePlanSessionBinding_`, preserve all explicit-ID participant/session eligibility checks; when the explicit active package has no remaining credit and the server-only flag is true, use the existing matching-package selector to prefer another available package. If none has credit, retain the explicit exhausted binding so the standard credit-balance rejection remains authoritative.
+
+- [ ] **Step 4: Transparently reissue an overdue midpoint payment**
+
+Within the already owner-scoped and locked `createPortalPlanPaymentRequest_` existing-payment branch, detect an overdue Stripe package payment and call `issueCheckoutForPayment_` with `authorizedReissue: true`. Return its fresh URL and sanitized payment data. Keep paid payments idempotent and do not create a second payment row.
+
+- [ ] **Step 5: Verify GREEN and full regression**
+
+Run: `npm.cmd run check:site`
+Expected: static checks pass.
+
+Run: `npm.cmd run test:portal`
+Expected: all portal tests pass.
+
+- [ ] **Step 6: Commit**
+
+    git add ops/crm/google-apps-script/Code.gs scripts/check-static-site.mjs docs/superpowers/plans/2026-07-29-progression-payment-reservation.md
+    git commit -m "fix: recover package booking and payment retries"
