@@ -2914,20 +2914,21 @@ function bookPortalSession_(spreadsheet, payload) {
   if (!slot) {
     return { ok: false, code: "BOOKING_SLOT_UNAVAILABLE" };
   }
-  const planBinding = resolvePlanSessionBinding_(spreadsheet, {
+  const planBindingParams = {
     plan_enrollment_id: payload.plan_enrollment_id,
     parent_email: portalSession.access.email,
     student_id: student?.student_id || "",
     tutor_id: slot.tutor_id,
     session_type: sessionType,
-  });
+  };
+  let planBinding = resolvePlanSessionBinding_(spreadsheet, planBindingParams);
   if (!planBinding.ok) {
     return planBinding;
   }
 
   const paymentDetails = resolveSessionPaymentDetails_({ session_type: sessionType });
   const amountCad = paymentDetails.amount_cad || defaultSessionAmountCad_(sessionType);
-  const paymentMode = planBinding.requires_credit
+  let paymentMode = planBinding.requires_credit
     ? "plan_credit"
     : Number(amountCad) > 0 ? "stripe_checkout" : "waived";
 
@@ -2977,6 +2978,24 @@ function bookPortalSession_(spreadsheet, payload) {
     if (hasTutorSessionConflict_(spreadsheet, record.tutor_id, new Date(record.start_at), new Date(record.end_at))) {
       return { ok: false, code: "BOOKING_SLOT_UNAVAILABLE" };
     }
+
+    planBinding = resolvePlanSessionBinding_(spreadsheet, planBindingParams);
+    if (!planBinding.ok) {
+      return planBinding;
+    }
+    paymentMode = planBinding.requires_credit
+      ? "plan_credit"
+      : Number(amountCad) > 0 ? "stripe_checkout" : "waived";
+    record.payment_status = planBinding.requires_credit ? "not_requested" : Number(amountCad) > 0 ? "payment_requested" : "waived";
+    record.amount_cad = planBinding.requires_credit ? "" : amountCad;
+    record.notes = ["Booked by parent in portal.", planBinding.requires_credit ? "Pack credit reserved for this session." : ""].filter(Boolean).join(" | ");
+    record.plan_enrollment_id = planBinding.enrollment ? planBinding.enrollment.enrollment_id : "";
+    record.modification_deadline_at = planBinding.enrollment
+      ? planModificationDeadlineForSession_(slot.start_at, planBinding.cancellation_notice_hours)
+      : "";
+    record.cancellation_notice_hours = String(planBinding.enrollment
+      ? planBinding.cancellation_notice_hours
+      : SESSION_CANCELLATION_NOTICE_HOURS);
 
     const reservation = reservePlanCreditForSession_(spreadsheet, planBinding, record);
     if (reservation && !reservation.ok) {

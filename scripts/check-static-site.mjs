@@ -307,6 +307,7 @@ async function verifyPlanPaymentLifecycleSources() {
   const creditLedgerColumns = appsScriptSource.match(/const CREDIT_LEDGER_COLUMNS = \[([\s\S]*?)\n\];/)?.[1] || ""
   const paymentRequestFunction = appsScriptSource.match(/function createPortalPlanPaymentRequest_\([\s\S]*?\n}\n\nfunction updatePortalPlanEnrollment_/)?.[0] || ""
   const paymentWebhookFunction = appsScriptSource.match(/function markPortalPaymentPaidFromWebhook_\([\s\S]*?\n}\n\n(?=function )/)?.[0] || ""
+  const bookingFunction = appsScriptSource.match(/function bookPortalSession_\([\s\S]*?\n}\n\nfunction submitParentFeedback_/)?.[0] || ""
 
   expect(
     /"created_at",\s*"updated_at",\s*"plan_enrollment_id",\s*"credit_grant_count",\s*"stripe_checkout_session_id",\s*"checkout_expires_at",\s*"checkout_url",\s*$/.test(paymentColumns),
@@ -367,6 +368,23 @@ async function verifyPlanPaymentLifecycleSources() {
   expect(
     paymentWebhookFunction.includes('["cancelled", "completed", "expired"].includes'),
     "Apps Script: verified package payments must not reactivate terminal enrollments",
+  )
+  const bookingLockIndex = bookingFunction.indexOf("bookingLock.tryLock(5000)")
+  const reservationIndex = bookingFunction.indexOf("reservePlanCreditForSession_")
+  const lockedBindingIndex = bookingFunction.lastIndexOf("resolvePlanSessionBinding_")
+  const lockedBindingRefreshSource = bookingFunction.slice(lockedBindingIndex, reservationIndex)
+  expect(
+    bookingLockIndex >= 0 && lockedBindingIndex > bookingLockIndex && lockedBindingIndex < reservationIndex,
+    "Apps Script: parent booking must re-resolve its package binding after acquiring the booking lock and before reserving credit",
+  )
+  expect(
+    lockedBindingRefreshSource.includes("record.payment_status =") &&
+      lockedBindingRefreshSource.includes("record.amount_cad =") &&
+      lockedBindingRefreshSource.includes("record.notes =") &&
+      lockedBindingRefreshSource.includes("record.plan_enrollment_id =") &&
+      lockedBindingRefreshSource.includes("record.modification_deadline_at =") &&
+      lockedBindingRefreshSource.includes("record.cancellation_notice_hours ="),
+    "Apps Script: parent booking must refresh payment and plan-linkage fields from the locked package binding",
   )
 
   const sandbox = {}

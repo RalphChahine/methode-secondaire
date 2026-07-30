@@ -309,3 +309,41 @@ Keep the statement that a sixth booking is blocked server-side, now backed by th
 
     git add ops/crm/google-apps-script/Code.gs scripts/check-static-site.mjs ops/crm/parent-tutor-portal.md docs/superpowers/specs/2026-07-29-progression-payment-reservation-design.md docs/superpowers/plans/2026-07-29-progression-payment-reservation.md
     git commit -m "fix: enforce package credits for parent bookings"
+
+### Task 6: Re-select package credit inside the booking lock
+
+**Files:**
+- Modify: `scripts/check-static-site.mjs`
+- Modify: `ops/crm/google-apps-script/Code.gs`
+- Modify: `ops/crm/parent-tutor-portal.md`
+- Modify: `docs/superpowers/plans/2026-07-29-progression-payment-reservation.md`
+
+**Problem:** package inference initially runs before the booking lock. Two concurrent requests can select the same final credit, after which the later request fails even if a second matching package still has credit.
+
+- [ ] **Step 1: Write a failing lock-order contract**
+
+Extract `bookPortalSession_` in `scripts/check-static-site.mjs` and assert that the final call to `resolvePlanSessionBinding_` occurs after `bookingLock.tryLock(5000)`, before `reservePlanCreditForSession_`. Also assert that the session record’s plan linkage and credit/payment fields are refreshed from that locked binding.
+
+- [ ] **Step 2: Verify RED**
+
+Run: `npm.cmd run check:site`
+Expected: FAIL because the only plan-binding resolution occurs before the lock.
+
+- [ ] **Step 3: Re-resolve and refresh the session record inside the lock**
+
+Keep the initial validation binding, but retain its parameter object and use a mutable `planBinding`. After the slot conflict recheck and while holding `bookingLock`, call `resolvePlanSessionBinding_` again with the same parent/student/tutor/session parameters. If it fails, return that error. Refresh the record’s amount, note, plan enrollment ID, modification deadline, and cancellation notice from the locked binding before reserving its credit. This ensures the reservation uses the currently available matching package, or returns the existing insufficient-credit code when none remains.
+
+- [ ] **Step 4: Verify GREEN and regression**
+
+Run: `npm.cmd run check:site`
+Expected: static checks pass.
+
+Run: `npm.cmd run test:portal`
+Expected: all portal tests pass.
+
+- [ ] **Step 5: Clarify operational wording and commit**
+
+Update the booking documentation to say that an inferred package reserves a credit when one is available and otherwise the server rejects the booking; retain the 72-hour release policy. Commit only source, contract, and document/plan updates:
+
+    git add ops/crm/google-apps-script/Code.gs scripts/check-static-site.mjs ops/crm/parent-tutor-portal.md docs/superpowers/plans/2026-07-29-progression-payment-reservation.md
+    git commit -m "fix: reselect package credits under booking lock"
