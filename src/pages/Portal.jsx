@@ -59,8 +59,11 @@ import {
 } from "@/lib/portalSessionState"
 import { getPortalBookingOutcome, getSafeHostedCheckoutUrl } from "@/lib/portalBookingOutcome"
 import {
+  getProgressionEnrollmentPaymentState,
   getProgressionPaymentState,
   PROGRESSION_MIDPOINT_PAYMENT_RULE,
+  selectBlockedProgressionEnrollmentForBooking,
+  selectReadyProgressionEnrollment,
 } from "@/lib/progressionPaymentState"
 import {
   clearPortalSession,
@@ -4998,21 +5001,23 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }
   const matchingTutorId = selectedStudent?.assigned_tutor_id || matching.tutor_id
   const visibleSlots = matchingTutorId ? slots.filter((slot) => slot.tutor_id === matchingTutorId) : []
   const selectedSlot = visibleSlots.find((slot) => slot.slot_id === slotId)
-  const linkedPlanEnrollment = findPlanEnrollmentForBooking(
+  const generalPlanEnrollment = findPlanEnrollmentForBooking(
     dashboard,
     studentId,
     sessionType,
     matchingTutorId,
-    { includeExhaustedPack: true },
   )
+  const blockedProgressionEnrollment = selectBlockedProgressionEnrollmentForBooking(
+    dashboard.plan_enrollments,
+    { studentId, sessionType, tutorId: matchingTutorId },
+  )
+  const generalPlanUsesCredit = generalPlanEnrollment?.plan_type === "pack" &&
+    Number(generalPlanEnrollment.credits_remaining) > 0
+  const linkedPlanEnrollment = generalPlanUsesCredit
+    ? generalPlanEnrollment
+    : blockedProgressionEnrollment || generalPlanEnrollment
   const usesProgramCredit = linkedPlanEnrollment?.plan_type === "pack" && Number(linkedPlanEnrollment.credits_remaining) > 0
-  const paymentState = getProgressionPaymentState({
-    planId: linkedPlanEnrollment?.plan_id,
-    creditsGranted: linkedPlanEnrollment?.credits_total,
-    creditsReserved: linkedPlanEnrollment?.credits_reserved,
-    creditsUsed: linkedPlanEnrollment?.credits_used,
-    creditsRemaining: linkedPlanEnrollment?.credits_remaining,
-  })
+  const paymentState = getProgressionEnrollmentPaymentState(linkedPlanEnrollment)
   const { bookingBlocked } = paymentState
 
   useEffect(() => {
@@ -6445,7 +6450,11 @@ function getParentOfferSnapshot(dashboard = {}, preferredPlanType = "") {
     dashboard.parent_plan?.plan_enrollment,
     ...(Array.isArray(dashboard.plan_enrollments) ? dashboard.plan_enrollments : []),
   ].filter(isCurrentPlan)
+  const readyProgressionEnrollment = preferredPlanType === "pack"
+    ? selectReadyProgressionEnrollment(enrollmentCandidates)
+    : null
   const plan = (
+    readyProgressionEnrollment ||
     (preferredPlanType
       ? enrollmentCandidates.find((candidate) => candidate.plan_type === preferredPlanType)
       : null) ||
