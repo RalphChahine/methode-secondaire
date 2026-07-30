@@ -2359,6 +2359,9 @@ function createPortalPlanPaymentRequest_(spreadsheet, payload) {
         !getCheckoutPaymentUrl_(existing.data);
       const requiresOverdueReissue = existingPaymentStatus === "overdue" &&
         normalizeValue_(existing.data.payment_method) === "stripe_checkout";
+      if (requiresOverdueReissue && !isPlanEnrollmentEligibleForPaymentReissue_(currentEnrollment.data)) {
+        return { ok: false, code: "PAYMENT_REISSUE_NOT_AVAILABLE" };
+      }
       if (requiresInitialCheckout || requiresOverdueReissue) {
         const issued = requiresOverdueReissue
           ? issueCheckoutForPayment_(spreadsheet, existing.data, { authorizedReissue: true })
@@ -5546,10 +5549,12 @@ function resolvePlanSessionBinding_(spreadsheet, params) {
   if (eligibleTypes.length && !eligibleTypes.includes(sessionType)) {
     return { ok: false, code: "PLAN_SESSION_TYPE_NOT_ALLOWED" };
   }
-  if (enrollmentId && params.allow_package_credit_fallback && normalizeValue_(plan.plan_type) === "pack" &&
-      buildEnrollmentCreditSummary_(spreadsheet, enrollment.enrollment_id).credits_remaining < 1) {
+  const explicitPlanIsPack = normalizeValue_(plan.plan_type) === "pack";
+  const explicitPackIsExhausted = explicitPlanIsPack &&
+    buildEnrollmentCreditSummary_(spreadsheet, enrollment.enrollment_id).credits_remaining < 1;
+  if (enrollmentId && params.allow_package_credit_fallback && (!explicitPlanIsPack || explicitPackIsExhausted)) {
     const matchingPackage = findMatchingPlanPackageBinding_(spreadsheet, params, sessionType);
-    if (matchingPackage && matchingPackage.creditsRemaining > 0) {
+    if (matchingPackage && (!explicitPlanIsPack || matchingPackage.creditsRemaining > 0)) {
       enrollmentRecord = matchingPackage.enrollmentRecord;
       enrollment = enrollmentRecord.data;
       plan = matchingPackage.plan;

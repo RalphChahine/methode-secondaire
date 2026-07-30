@@ -377,6 +377,13 @@ async function verifyPlanPaymentLifecycleSources() {
     overdueReissueIndex >= 0 && overdueReissueIndex < overdueReissueResponseIndex,
     "Apps Script: an overdue existing package payment must reissue its Checkout before returning the existing payment response",
   )
+  const overdueEligibilityIndex = paymentRequestFunction.indexOf(
+    "isPlanEnrollmentEligibleForPaymentReissue_(currentEnrollment.data)",
+  )
+  expect(
+    overdueEligibilityIndex >= 0 && overdueEligibilityIndex < overdueReissueIndex,
+    "Apps Script: overdue package Checkout reissue must require current enrollment eligibility",
+  )
   const bookingLockIndex = bookingFunction.indexOf("bookingLock.tryLock(5000)")
   const reservationIndex = bookingFunction.indexOf("reservePlanCreditForSession_")
   const lockedBindingIndex = bookingFunction.lastIndexOf("resolvePlanSessionBinding_")
@@ -475,11 +482,17 @@ async function verifyPlanPaymentLifecycleSources() {
     getSheetRecordsFromSheet: () => planBindingEnrollments,
     findSheetRecordById: (_sheet, _columns, _idColumn, enrollmentId) =>
       planBindingEnrollments.find((record) => record.data.enrollment_id === enrollmentId) || null,
-    findActivePlan: () => ({
-      plan_id: "PLAN-PACK10-600",
-      plan_type: "pack",
-      eligible_session_types: "weekly_follow_up",
-    }),
+    findActivePlan: (_spreadsheet, planId) => planId === "PLAN-ONE-TIME-MANUAL"
+      ? {
+          plan_id: "PLAN-ONE-TIME-MANUAL",
+          plan_type: "one_time",
+          eligible_session_types: "weekly_follow_up",
+        }
+      : {
+          plan_id: "PLAN-PACK10-600",
+          plan_type: "pack",
+          eligible_session_types: "weekly_follow_up",
+        },
     buildEnrollmentCreditSummary: (_spreadsheet, enrollmentId) => ({
       credits_remaining: planBindingCredits[enrollmentId] || 0,
     }),
@@ -539,6 +552,31 @@ async function verifyPlanPaymentLifecycleSources() {
   expect(
     explicitFallbackBinding.enrollment?.enrollment_id === "ENROLL-PROGRESSION-AVAILABLE",
     "Apps Script: parent booking may fall back from an exhausted explicit package to a matching package with credit",
+  )
+  planBindingCredits["ENROLL-PROGRESSION-AVAILABLE"] = 0
+  planBindingEnrollments.push({
+    rowNumber: 4,
+    data: {
+      enrollment_id: "ENROLL-ONE-TIME-MANUAL",
+      plan_id: "PLAN-ONE-TIME-MANUAL",
+      parent_email: "parent@example.com",
+      student_id: "STUDENT-1",
+      tutor_id: "TUTOR-1",
+      status: "active",
+    },
+  })
+  const explicitNonPackFallbackBinding = lifecycle.resolvePlanSessionBinding_(null, {
+    plan_enrollment_id: "ENROLL-ONE-TIME-MANUAL",
+    parent_email: "parent@example.com",
+    student_id: "STUDENT-1",
+    tutor_id: "TUTOR-1",
+    session_type: "weekly_follow_up",
+    allow_package_credit_fallback: true,
+  })
+  expect(
+    explicitNonPackFallbackBinding.requires_credit === true &&
+      explicitNonPackFallbackBinding.enrollment?.enrollment_id === "ENROLL-PROGRESSION-EXHAUSTED",
+    "Apps Script: parent booking fallback must retain a matching exhausted package before accepting an explicit non-pack enrollment",
   )
 
   const ledgerEntries = []

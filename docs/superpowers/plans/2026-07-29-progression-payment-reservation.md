@@ -386,3 +386,38 @@ Expected: all portal tests pass.
 
     git add ops/crm/google-apps-script/Code.gs scripts/check-static-site.mjs docs/superpowers/plans/2026-07-29-progression-payment-reservation.md
     git commit -m "fix: recover package booking and payment retries"
+
+### Task 8: Keep fallback and Checkout recovery within enrollment eligibility
+
+**Files:**
+- Modify: `scripts/check-static-site.mjs`
+- Modify: `ops/crm/google-apps-script/Code.gs`
+- Modify: `docs/superpowers/plans/2026-07-29-progression-payment-reservation.md`
+
+**Problems:** the integrated overdue-reissue branch omits the existing enrollment eligibility predicate. Also, a parent can select an explicit matching non-pack enrollment to bypass an exhausted matching package, because package fallback currently runs only when the explicit enrollment is itself a pack.
+
+- [ ] **Step 1: Write failing contracts**
+
+Add a payment-request source contract requiring `isPlanEnrollmentEligibleForPaymentReissue_(currentEnrollment.data)` before an overdue Checkout is reissued. Extend the resolver VM fixture with a matching explicit active non-pack enrollment plus an exhausted matching Progress package; with `allow_package_credit_fallback: true`, assert that the credit-required Progress package is returned rather than the non-pack binding.
+
+- [ ] **Step 2: Verify RED**
+
+Run: `npm.cmd run check:site`
+Expected: FAIL because the reissue lacks enrollment eligibility and the resolver accepts the non-pack binding.
+
+- [ ] **Step 3: Apply only the eligibility and package-precedence fixes**
+
+Before reissuing an overdue existing package payment, require `isPlanEnrollmentEligibleForPaymentReissue_(currentEnrollment.data)` and return the established reissue-not-available code if it fails. In the explicit-ID resolver path, preserve explicit participant/session validation; when the internal parent-booking fallback flag is true, check for a matching active package before accepting an explicit non-pack binding. Prefer a package with available credit and otherwise retain the exhausted package so normal credit reservation rejects it.
+
+- [ ] **Step 4: Verify GREEN and full regression**
+
+Run: `npm.cmd run check:site`
+Expected: static checks pass.
+
+Run: `npm.cmd run test:portal`
+Expected: all portal tests pass.
+
+- [ ] **Step 5: Commit**
+
+    git add ops/crm/google-apps-script/Code.gs scripts/check-static-site.mjs docs/superpowers/plans/2026-07-29-progression-payment-reservation.md
+    git commit -m "fix: preserve package eligibility safeguards"
