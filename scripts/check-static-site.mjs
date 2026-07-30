@@ -145,7 +145,8 @@ async function verifyParentEntryPoint() {
 }
 
 function extractPortalActions(source) {
-  return new Set([...source.matchAll(/"(portal_[a-z_]+)"/g)].map((match) => match[1]))
+  const actionSet = source.match(/(?:export\s+)?const PORTAL_ACTIONS = new Set\(\[([\s\S]*?)\]\)/)
+  return new Set([...(actionSet?.[1] || "").matchAll(/"(portal_[a-z_]+)"/g)].map((match) => match[1]))
 }
 
 async function verifyPortalActionParity() {
