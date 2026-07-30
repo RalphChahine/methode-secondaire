@@ -1,5 +1,7 @@
 import assert from "node:assert/strict"
 import test from "node:test"
+import { renderToStaticMarkup } from "react-dom/server"
+import { createServer } from "vite"
 
 import {
   filterBookableSlotsForAssignment,
@@ -64,4 +66,27 @@ test("falls back to the historical student assignment only when no dedicated ass
     subjects: "Secondary 4",
     is_legacy: true,
   }])
+})
+
+test("renders every assigned tutor with their subjects before slot selection", async () => {
+  const vite = await createServer({ server: { middlewareMode: true }, appType: "custom" })
+  try {
+    const { default: TutorAssignmentPicker } = await vite.ssrLoadModule("/src/components/portal/TutorAssignmentPicker.jsx")
+    const html = renderToStaticMarkup(TutorAssignmentPicker({
+      copy: { bookingTutorAndSubjects: "Tutor and subjects", bookingTutorAssignmentRequired: "Choose a tutor first" },
+      assignments: [
+        { assignment_id: "ASSIGN-DAVID", tutor_name: "David", subjects: "Mathematics, Science" },
+        { assignment_id: "ASSIGN-JOANIE", tutor_name: "Joanie", subjects: "Science" },
+      ],
+      selectedAssignmentId: "ASSIGN-DAVID",
+      onSelect: () => {},
+    }))
+    assert.match(html, /Tutor and subjects/)
+    assert.match(html, /David/)
+    assert.match(html, /Mathematics, Science/)
+    assert.match(html, /Joanie/)
+    assert.match(html, /aria-pressed="true"/)
+  } finally {
+    await vite.close()
+  }
 })

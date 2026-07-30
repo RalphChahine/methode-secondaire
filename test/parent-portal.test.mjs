@@ -410,6 +410,21 @@ test("CRM protects confirmation and payment state for proposed sessions", async 
   assert.match(rescheduler, /voidUnpaidSessionPayments_\(spreadsheet, sessionId, "Session rescheduled by the team\."\)/)
 })
 
+test("parent booking requires an explicit assignment and repeats its tutor subjects", async () => {
+  const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
+  const bookingPanel = source.slice(
+    source.indexOf("function BookingPanel("),
+    source.indexOf("function BookableSlotCalendar("),
+  )
+
+  assert.match(source, /import TutorAssignmentPicker from "@\/components\/portal\/TutorAssignmentPicker"/)
+  assert.match(bookingPanel, /getStudentBookingAssignments/)
+  assert.match(bookingPanel, /filterBookableSlotsForAssignment/)
+  assert.match(bookingPanel, /student_tutor_assignment_id/)
+  assert.match(bookingPanel, /copy\.bookingTutorAssignmentSummary/)
+  assert.match(bookingPanel, /<TutorAssignmentPicker/)
+})
+
 test("CRM stores owner-filtered assignments and revalidates them inside the booking lock", async () => {
   const source = await readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
   const booker = source.slice(

@@ -132,6 +132,22 @@ export async function assignPortalStudentTutor({ token, studentId, tutorId }) {
   })
 }
 
+export async function upsertPortalStudentTutorAssignment({ token, values }) {
+  return portalRequest({
+    action: "portal_upsert_student_tutor_assignment",
+    token,
+    ...values,
+  })
+}
+
+export async function deactivatePortalStudentTutorAssignment({ token, assignmentId }) {
+  return portalRequest({
+    action: "portal_deactivate_student_tutor_assignment",
+    token,
+    assignment_id: assignmentId,
+  })
+}
+
 export async function deletePortalTestRecord({ token, recordType, recordId }) {
   return portalRequest({
     action: "portal_delete_test_record",

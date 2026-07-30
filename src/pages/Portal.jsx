@@ -36,6 +36,7 @@ import Seo from "@/components/Seo"
 import ParentPortalNavigation from "@/components/portal/ParentPortalNavigation"
 import SessionMaterialsPanel from "@/components/portal/SessionMaterialsPanel"
 import TutorSessionMaterialsPanel from "@/components/portal/TutorSessionMaterialsPanel"
+import TutorAssignmentPicker from "@/components/portal/TutorAssignmentPicker"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -53,6 +54,10 @@ import {
   getParentTodaySession,
 } from "@/lib/parentPortal"
 import {
+  filterBookableSlotsForAssignment,
+  getStudentBookingAssignments,
+} from "@/lib/studentTutorAssignments"
+import {
   findReleasedParentRecap,
   getPortalSessionState,
   groupParentSessions,
@@ -69,7 +74,6 @@ import {
   clearPortalSession,
   adjustPortalPlanCredits,
   assignPortalTutor,
-  assignPortalStudentTutor,
   bookPortalSession,
   cancelPortalSession,
   createPortalAccount,
@@ -83,6 +87,7 @@ import {
   deletePortalTestRecord,
   deletePortalTestRecords,
   deletePortalTutor,
+  deactivatePortalStudentTutorAssignment,
   getPortalDashboard,
   invitePortalTutor,
   loadPortalSession,
@@ -102,6 +107,7 @@ import {
   updatePortalRequestStatus,
   upsertPortalParent,
   upsertPortalStudent,
+  upsertPortalStudentTutorAssignment,
   upsertPortalTutorAvailability,
   verifyPortalCode,
 } from "@/lib/portalClient"
@@ -422,6 +428,9 @@ const copyByLocale = {
     paymentDemoNotAvailable: "Cette séance utilise déjà le paiement par carte ou ne peut plus être simulée.",
     bookingTitle: "Réserver une séance",
     bookingIntro: "Choisissez un créneau. Un lien de paiement Stripe sécurisé sera créé pour votre réservation.",
+    bookingTutorAndSubjects: "Tuteur et matières",
+    bookingTutorAssignmentRequired: "Choisissez d’abord le tuteur qui accompagnera cette séance.",
+    bookingTutorAssignmentSummary: "Tuteur choisi : {tutor} — Matières assignées : {subjects}",
     bookingPaymentNotice: "Le paiement par carte s’ouvre uniquement dans la page Stripe sécurisée.",
     bookingCreditIntro: "Choisissez un créneau : un crédit du programme sera réservé pour cette séance.",
     bookingNoSlots: "Aucun créneau n'est ouvert pour l'instant.",
@@ -453,6 +462,13 @@ const copyByLocale = {
     childLevelSubject: "Niveau et matières",
     childLearningNotes: "Contexte utile pour le tuteur",
     childTutor: "Tuteur de l'élève",
+    childTutorAssignments: "Tuteurs et matières assignées",
+    childTutorAssignmentSubjects: "Matières attribuées",
+    childTutorAssignmentAdd: "Ajouter cette attribution",
+    childTutorAssignmentSave: "Enregistrer l’attribution",
+    childTutorAssignmentDeactivate: "Retirer cette attribution",
+    childTutorAssignmentSaved: "Attribution tuteur et matières enregistrée.",
+    childTutorAssignmentDeactivated: "Attribution retirée.",
     chooseStudent: "Choisir un élève",
     addChild: "Ajouter un élève",
     saveChild: "Enregistrer l'élève",
@@ -461,6 +477,10 @@ const copyByLocale = {
     childNotFound: "Cette fiche élève n'est plus disponible.",
     childTutorAssigned: "Tuteur assigné à cet élève.",
     childTutorAssignmentRequired: "Choisissez un élève et un tuteur actif.",
+    studentTutorAssignmentDetailsRequired: "Choisissez un tuteur actif et indiquez au moins une matière.",
+    studentTutorAssignmentRequired: "Choisissez le tuteur et les matières avant de sélectionner un créneau.",
+    studentTutorAssignmentNotAvailable: "Cette attribution n’est plus disponible. Actualisez le portail et choisissez de nouveau.",
+    studentTutorAssignmentExists: "Ce tuteur est déjà attribué à cet élève. Modifiez ses matières dans l’attribution existante.",
     noChildren: "Aucun élève n'est encore ajouté.",
     calendarTitle: "Calendrier",
     calendarIntro: "Séances, confirmations et rappels restent visibles au même endroit.",
@@ -961,6 +981,9 @@ const copyByLocale = {
     paymentDemoNotAvailable: "This session already uses card payment or can no longer be simulated.",
     bookingTitle: "Book a session",
     bookingIntro: "Choose a time. A secure Stripe payment link will be created for your booking.",
+    bookingTutorAndSubjects: "Tutor and subjects",
+    bookingTutorAssignmentRequired: "Choose the tutor for this session first.",
+    bookingTutorAssignmentSummary: "Selected tutor: {tutor} — Assigned subjects: {subjects}",
     bookingPaymentNotice: "Card payment opens only on Stripe’s secure page.",
     bookingCreditIntro: "Choose a time: one program credit will be reserved for this session.",
     bookingNoSlots: "No time is open right now.",
@@ -992,6 +1015,13 @@ const copyByLocale = {
     childLevelSubject: "Grade and subjects",
     childLearningNotes: "Useful context for the tutor",
     childTutor: "Student tutor",
+    childTutorAssignments: "Assigned tutors and subjects",
+    childTutorAssignmentSubjects: "Assigned subjects",
+    childTutorAssignmentAdd: "Add this assignment",
+    childTutorAssignmentSave: "Save assignment",
+    childTutorAssignmentDeactivate: "Remove this assignment",
+    childTutorAssignmentSaved: "Tutor and subject assignment saved.",
+    childTutorAssignmentDeactivated: "Assignment removed.",
     chooseStudent: "Choose a student",
     addChild: "Add a student",
     saveChild: "Save student",
@@ -1000,6 +1030,10 @@ const copyByLocale = {
     childNotFound: "This student profile is no longer available.",
     childTutorAssigned: "Tutor assigned to this student.",
     childTutorAssignmentRequired: "Choose a student and an active tutor.",
+    studentTutorAssignmentDetailsRequired: "Choose an active tutor and enter at least one subject.",
+    studentTutorAssignmentRequired: "Choose the tutor and subjects before selecting a time.",
+    studentTutorAssignmentNotAvailable: "This assignment is no longer available. Refresh the portal and choose again.",
+    studentTutorAssignmentExists: "This tutor is already assigned to this student. Edit the existing assignment subjects.",
     noChildren: "No students have been added yet.",
     calendarTitle: "Calendar",
     calendarIntro: "Sessions, confirmations and reminders stay visible in one place.",
@@ -1749,6 +1783,22 @@ function getPortalErrorMessage(copy, code) {
     return copy.bookingDetailsRequired
   }
 
+  if (code === "STUDENT_TUTOR_ASSIGNMENT_DETAILS_REQUIRED") {
+    return copy.studentTutorAssignmentDetailsRequired
+  }
+
+  if (code === "STUDENT_TUTOR_ASSIGNMENT_REQUIRED") {
+    return copy.studentTutorAssignmentRequired
+  }
+
+  if (code === "STUDENT_TUTOR_ASSIGNMENT_NOT_AVAILABLE") {
+    return copy.studentTutorAssignmentNotAvailable
+  }
+
+  if (code === "STUDENT_TUTOR_ASSIGNMENT_EXISTS") {
+    return copy.studentTutorAssignmentExists
+  }
+
   if (code === "MATCHING_PENDING") {
     return copy.matchingPendingIntro
   }
@@ -2478,7 +2528,14 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
       {activeDestination === "account" ? (
         <div className="grid min-w-0 gap-6 lg:grid-cols-2">
           <div className="min-w-0 space-y-6">
-            <FamilyStudentsPanel copy={copy} students={dashboard.students} role={role} token={token} onSaved={onSaved} />
+            <FamilyStudentsPanel
+              copy={copy}
+              students={dashboard.students}
+              tutorAssignments={dashboard.student_tutor_assignments}
+              role={role}
+              token={token}
+              onSaved={onSaved}
+            />
             <ParentProfilePanel copy={copy} profile={dashboard.profile} token={token} onSaved={onSaved} />
             <ParentRhythmCard
               copy={copy}
@@ -2771,7 +2828,98 @@ function ProgramProgressCard({ copy, locale, snapshot, token, onSaved, onOpenSes
   )
 }
 
-function FamilyStudentsPanel({ copy, students = [], role, token, parentEmail = "", tutors = [], onSaved, embedded = false }) {
+function StudentTutorAssignmentEditor({ copy, student, assignments = [], tutors = [], token, onSaved }) {
+  const emptyValues = { assignment_id: "", tutor_id: "", subjects: "" }
+  const [values, setValues] = useState(emptyValues)
+  const [status, setStatus] = useState("")
+  const [isSaving, setIsSaving] = useState(false)
+
+  function startEditing(assignment) {
+    setValues({
+      assignment_id: assignment.assignment_id,
+      tutor_id: assignment.tutor_id,
+      subjects: assignment.subjects || "",
+    })
+    setStatus("")
+  }
+
+  async function saveAssignment(event) {
+    event.preventDefault()
+    setIsSaving(true)
+    setStatus("")
+    const result = await upsertPortalStudentTutorAssignment({
+      token,
+      values: { ...values, student_id: student.student_id },
+    })
+    setIsSaving(false)
+    if (!result.ok) {
+      setStatus(getPortalErrorMessage(copy, result.code))
+      return
+    }
+    setValues(emptyValues)
+    setStatus(copy.childTutorAssignmentSaved)
+    onSaved?.()
+  }
+
+  async function deactivateAssignment(assignmentId) {
+    setIsSaving(true)
+    setStatus("")
+    const result = await deactivatePortalStudentTutorAssignment({ token, assignmentId })
+    setIsSaving(false)
+    if (!result.ok) {
+      setStatus(getPortalErrorMessage(copy, result.code))
+      return
+    }
+    if (values.assignment_id === assignmentId) {
+      setValues(emptyValues)
+    }
+    setStatus(copy.childTutorAssignmentDeactivated)
+    onSaved?.()
+  }
+
+  return (
+    <div className="mt-4 border-t border-white/10 pt-4">
+      <div className="text-sm font-semibold text-white/84">{copy.childTutorAssignments}</div>
+      <div className="mt-3 space-y-2">
+        {assignments.map((assignment) => (
+          <div key={assignment.assignment_id} className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/5 px-3 py-2">
+            <button type="button" onClick={() => startEditing(assignment)} className="text-left text-sm text-white/82 transition hover:text-[#f5c977]">
+              {assignment.tutor_name} — {assignment.subjects}
+            </button>
+            <Button type="button" variant="outline" disabled={isSaving} onClick={() => deactivateAssignment(assignment.assignment_id)} className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white">
+              {copy.childTutorAssignmentDeactivate}
+            </Button>
+          </div>
+        ))}
+      </div>
+      <form onSubmit={saveAssignment} className="mt-3 grid gap-3 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
+        <select
+          value={values.tutor_id}
+          onChange={(event) => setValues((current) => ({ ...current, tutor_id: event.target.value }))}
+          required
+          className="h-11 min-w-0 rounded-2xl border border-white/15 bg-[#0b1b3a] px-3 text-sm text-white"
+        >
+          <option value="">{copy.chooseTutor}</option>
+          {tutors.map((tutor) => <option key={tutor.tutor_id} value={tutor.tutor_id}>{tutor.tutor_name}</option>)}
+        </select>
+        <Input
+          value={values.subjects}
+          onChange={(event) => setValues((current) => ({ ...current, subjects: event.target.value }))}
+          required
+          placeholder={copy.childTutorAssignmentSubjects}
+          className="h-11 min-w-0 rounded-2xl border-white/15 bg-white/5 text-white"
+        />
+        <Button type="submit" disabled={isSaving} className="rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
+          {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <UserPlus className="h-4 w-4" />}
+          {values.assignment_id ? copy.childTutorAssignmentSave : copy.childTutorAssignmentAdd}
+        </Button>
+      </form>
+      {status ? <p className="mt-3 text-sm leading-6 text-white/68">{status}</p> : null}
+    </div>
+  )
+}
+
+function FamilyStudentsPanel({ copy, students = [], tutorAssignments = [], role, token, parentEmail = "", tutors = [], onSaved, embedded = false }) {
   const emptyValues = {
     student_id: "",
     student_name: "",
@@ -2779,12 +2927,10 @@ function FamilyStudentsPanel({ copy, students = [], role, token, parentEmail = "
     learning_notes: "",
   }
   const [values, setValues] = useState(emptyValues)
-  const [assignments, setAssignments] = useState({})
   const [status, setStatus] = useState("")
   const [isSaving, setIsSaving] = useState(false)
 
   useEffect(() => {
-    setAssignments(Object.fromEntries(students.map((student) => [student.student_id, student.assigned_tutor_id || ""])))
     if (values.student_id && !students.some((student) => student.student_id === values.student_id)) {
       setValues(emptyValues)
     }
@@ -2826,24 +2972,6 @@ function FamilyStudentsPanel({ copy, students = [], role, token, parentEmail = "
     setStatus(getPortalErrorMessage(copy, result.code))
   }
 
-  async function assignTutor(studentId) {
-    const tutorId = assignments[studentId]
-    if (!tutorId) {
-      setStatus(copy.childTutorAssignmentRequired)
-      return
-    }
-    setIsSaving(true)
-    setStatus("")
-    const result = await assignPortalStudentTutor({ token, studentId, tutorId })
-    setIsSaving(false)
-    if (result.ok) {
-      setStatus(copy.childTutorAssigned)
-      onSaved?.()
-      return
-    }
-    setStatus(getPortalErrorMessage(copy, result.code))
-  }
-
   if (role === "operator" && !parentEmail) {
     return null
   }
@@ -2859,37 +2987,39 @@ function FamilyStudentsPanel({ copy, students = [], role, token, parentEmail = "
       </div>
 
       <div className="mt-5 space-y-3">
-        {students.length ? students.map((student) => (
-          <div key={student.student_id} className="rounded-[18px] border border-white/10 bg-white/5 p-3 sm:p-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <div className="font-semibold text-white">{student.student_name}</div>
-                <div className="mt-1 text-sm text-white/60">{student.student_level_subject || "-"}</div>
-                {student.assigned_tutor_name ? <div className="mt-2 text-sm text-[#f5c977]">{copy.childTutor}: {student.assigned_tutor_name}</div> : null}
-              </div>
-              <Button type="button" size="icon" variant="outline" title={copy.availabilityEdit} aria-label={copy.availabilityEdit} onClick={() => editStudent(student)} className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white">
-                <Pencil className="h-4 w-4" />
-              </Button>
-            </div>
-            {student.learning_notes ? <p className="mt-3 text-sm leading-6 text-white/60">{student.learning_notes}</p> : null}
-            {role === "operator" ? (
-              <div className="mt-4 flex flex-col gap-2 border-t border-white/10 pt-4 sm:flex-row">
-                <select
-                  value={assignments[student.student_id] || ""}
-                  onChange={(event) => setAssignments((current) => ({ ...current, [student.student_id]: event.target.value }))}
-                  className="h-11 min-w-0 flex-1 rounded-2xl border border-white/15 bg-[#0b1b3a] px-3 text-sm text-white"
-                >
-                  <option value="">{copy.chooseTutor}</option>
-                  {tutors.map((tutor) => <option key={tutor.tutor_id} value={tutor.tutor_id}>{tutor.tutor_name}</option>)}
-                </select>
-                <Button type="button" disabled={isSaving} onClick={() => assignTutor(student.student_id)} className="rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
-                  <UserPlus className="h-4 w-4" />
-                  {copy.assignTutor}
+        {students.length ? students.map((student) => {
+          const studentAssignments = tutorAssignments.filter((assignment) => assignment.student_id === student.student_id)
+          return (
+            <div key={student.student_id} className="rounded-[18px] border border-white/10 bg-white/5 p-3 sm:p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <div className="font-semibold text-white">{student.student_name}</div>
+                  <div className="mt-1 text-sm text-white/60">{student.student_level_subject || "-"}</div>
+                  {!studentAssignments.length && student.assigned_tutor_name ? <div className="mt-2 text-sm text-[#f5c977]">{copy.childTutor}: {student.assigned_tutor_name}</div> : null}
+                  {role !== "operator" && studentAssignments.length ? (
+                    <div className="mt-2 text-sm leading-6 text-[#f5c977]">
+                      {copy.childTutorAssignments}: {studentAssignments.map((assignment) => `${assignment.tutor_name} — ${assignment.subjects}`).join(" | ")}
+                    </div>
+                  ) : null}
+                </div>
+                <Button type="button" size="icon" variant="outline" title={copy.availabilityEdit} aria-label={copy.availabilityEdit} onClick={() => editStudent(student)} className="rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white">
+                  <Pencil className="h-4 w-4" />
                 </Button>
               </div>
-            ) : null}
-          </div>
-        )) : <p className="text-sm leading-7 text-white/60">{copy.noChildren}</p>}
+              {student.learning_notes ? <p className="mt-3 text-sm leading-6 text-white/60">{student.learning_notes}</p> : null}
+              {role === "operator" ? (
+                <StudentTutorAssignmentEditor
+                  copy={copy}
+                  student={student}
+                  assignments={studentAssignments}
+                  tutors={tutors}
+                  token={token}
+                  onSaved={onSaved}
+                />
+              ) : null}
+            </div>
+          )
+        }) : <p className="text-sm leading-7 text-white/60">{copy.noChildren}</p>}
       </div>
 
       <form onSubmit={saveStudent} className="mt-5 border-t border-white/10 pt-5">
@@ -4021,6 +4151,7 @@ function ParentManagementPanel({ copy, dashboard, token, onSaved }) {
       <FamilyStudentsPanel
         copy={copy}
         students={selectedParent.students || []}
+        tutorAssignments={selectedParent.student_tutor_assignments || []}
         role="operator"
         token={token}
         parentEmail={selectedParent.email}
@@ -4991,6 +5122,7 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }
   const [studentName, setStudentName] = useState(dashboard.sessions?.[0]?.student_name || "")
   const [sessionType, setSessionType] = useState(dashboard.sessions?.length ? "weekly_follow_up" : "first_session")
   const [slotId, setSlotId] = useState("")
+  const [selectedAssignmentId, setSelectedAssignmentId] = useState("")
   const [paymentUrl, setPaymentUrl] = useState("")
   const [paymentAmount, setPaymentAmount] = useState("")
   const [paymentDeadline, setPaymentDeadline] = useState("")
@@ -4998,8 +5130,15 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }
   const [isSaving, setIsSaving] = useState(false)
 
   const selectedStudent = students.find((student) => student.student_id === studentId)
-  const matchingTutorId = selectedStudent?.assigned_tutor_id || matching.tutor_id
-  const visibleSlots = matchingTutorId ? slots.filter((slot) => slot.tutor_id === matchingTutorId) : []
+  const bookingAssignments = getStudentBookingAssignments({
+    student: selectedStudent || {},
+    assignments: dashboard.student_tutor_assignments,
+    matching,
+  })
+  const bookingAssignmentIds = bookingAssignments.map((assignment) => assignment.assignment_id || `legacy:${assignment.tutor_id}`).join("|")
+  const selectedAssignment = bookingAssignments.find((assignment) => assignment.assignment_id === selectedAssignmentId) || null
+  const matchingTutorId = selectedAssignment?.tutor_id || ""
+  const visibleSlots = filterBookableSlotsForAssignment(slots, selectedAssignment)
   const selectedSlot = visibleSlots.find((slot) => slot.slot_id === slotId)
   const generalPlanEnrollment = findPlanEnrollmentForBooking(
     dashboard,
@@ -5033,8 +5172,21 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }
     setSlotId("")
   }, [selectedStudent?.student_id])
 
+  useEffect(() => {
+    if (bookingAssignments.length === 1) {
+      setSelectedAssignmentId(bookingAssignments[0].assignment_id)
+    } else if (!bookingAssignments.some((assignment) => assignment.assignment_id === selectedAssignmentId)) {
+      setSelectedAssignmentId("")
+    }
+    setSlotId("")
+  }, [bookingAssignmentIds])
+
   async function handleSubmit(event) {
     event.preventDefault()
+    if (!selectedAssignment) {
+      setStatus(copy.studentTutorAssignmentRequired)
+      return
+    }
     if (bookingBlocked) {
       setStatus(copy.bookingProgramPaymentRequired)
       return
@@ -5050,6 +5202,7 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }
         student_id: studentId,
         student_name: studentName,
         session_type: sessionType,
+        student_tutor_assignment_id: selectedAssignment.is_legacy ? "" : selectedAssignment.assignment_id,
         ...(linkedPlanEnrollment ? { plan_enrollment_id: linkedPlanEnrollment.enrollment_id } : {}),
       },
     })
@@ -5090,10 +5243,10 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }
         <CalendarDays className="mt-0.5 h-5 w-5 shrink-0 text-[#f5c977]" />
         <div className="min-w-0">
           <h2 className="font-display text-3xl font-semibold">
-            {matchingTutorId ? copy.bookingTitle : copy.matchingPendingTitle}
+            {bookingAssignments.length ? copy.bookingTitle : copy.matchingPendingTitle}
           </h2>
           <p className="mt-1 text-sm text-white/68">
-            {matchingTutorId
+            {bookingAssignments.length
               ? bookingBlocked
                 ? copy.bookingProgramPaymentRequired
                 : usesProgramCredit
@@ -5104,7 +5257,7 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }
         </div>
       </div>
 
-      {!matchingTutorId ? (
+      {!bookingAssignments.length ? (
         <div className="mt-5 space-y-3">
           <p className="text-sm leading-7 text-white/68">{students.length ? copy.matchingPendingIntro : copy.bookingAddChild}</p>
           <a href={`tel:${siteConfig.phone}`} className="inline-flex items-center gap-2 text-sm font-semibold text-[#f5c977] hover:text-white">
@@ -5112,7 +5265,7 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }
             {copy.matchingPendingCall}
           </a>
         </div>
-      ) : visibleSlots.length ? (
+      ) : (
         <>
           {students.length ? (
             <label className="mt-5 block text-sm font-semibold text-white/84">
@@ -5127,64 +5280,84 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }
               <Input value={studentName} onChange={(event) => setStudentName(event.target.value)} required className="mt-2 h-12 rounded-2xl border-white/15 bg-white/5 text-white" />
             </label>
           )}
-          <BookableSlotCalendar copy={copy} slots={visibleSlots} selectedSlotId={slotId} onSelect={setSlotId} />
-          <label className="mt-3 block text-sm font-semibold text-white/84">
-            {copy.sessionType}
-            <select
-              value={sessionType}
-              onChange={(event) => setSessionType(event.target.value)}
-              className="mt-2 h-12 w-full rounded-2xl border border-white/15 bg-[#0b1b3a] px-3 text-sm text-white"
-            >
-              {["first_session", "weekly_follow_up", "exam_sprint", "catch_up", "one_time"].map((option) => (
-                <option key={option} value={option}>{humanize(option)}</option>
-              ))}
-            </select>
-          </label>
-          {selectedSlot ? (
-            <p className="mt-3 text-sm leading-6 text-white/68">
-              {selectedSlot.tutor_name} | {humanize(selectedSlot.format || "online")}
-              {selectedSlot.location ? ` | ${selectedSlot.location}` : ""}
-            </p>
-          ) : null}
-          {bookingBlocked ? (
-            <div className="mt-4 rounded-2xl border border-[#f5c977]/25 bg-[#f5c977]/10 p-4">
-              <p className="text-sm leading-6 text-white/78">{copy.bookingProgramPaymentRequired}</p>
-              <Button
-                type="button"
-                onClick={onOpenAccount}
-                className="mt-3 w-full rounded-full bg-[#f5c977] px-5 py-6 text-[#071631] hover:bg-[#f7d38f]"
-              >
-                <CreditCard className="h-4 w-4" />
-                {copy.bookingProgramPaymentAction}
-              </Button>
-            </div>
+          <TutorAssignmentPicker
+            copy={copy}
+            assignments={bookingAssignments}
+            selectedAssignmentId={selectedAssignmentId}
+            onSelect={(assignmentId) => {
+              setSelectedAssignmentId(assignmentId)
+              setSlotId("")
+            }}
+          />
+          {!selectedAssignment ? (
+            <p className="mt-4 text-sm leading-7 text-white/68">{copy.bookingTutorAssignmentRequired}</p>
+          ) : !visibleSlots.length ? (
+            <p className="mt-5 text-sm leading-7 text-white/68">{copy.bookingNoSlots}</p>
           ) : (
             <>
-              <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-[#f5c977]/18 bg-[#f5c977]/8 px-3 py-2.5 text-sm">
-                <span className="text-white/64">{copy.bookingPrice}</span>
-                <span className="font-semibold text-[#f8d58d]">
-                  {usesProgramCredit
-                    ? copy.bookingProgramCredit
-                    : `${getPaymentLinkDefaultAmountCad(sessionType)} $ CAD`}
-                </span>
-              </div>
-              {usesProgramCredit ? (
-                <p className="mt-2 text-xs leading-5 text-[#f8d58d]">{copy.bookingPlanCredit}</p>
+              <p className="mt-3 text-sm leading-6 text-[#f8d58d]">
+                {copy.bookingTutorAssignmentSummary
+                  .replace("{tutor}", selectedAssignment.tutor_name)
+                  .replace("{subjects}", selectedAssignment.subjects)}
+              </p>
+              <BookableSlotCalendar copy={copy} slots={visibleSlots} selectedSlotId={slotId} onSelect={setSlotId} />
+              <label className="mt-3 block text-sm font-semibold text-white/84">
+                {copy.sessionType}
+                <select
+                  value={sessionType}
+                  onChange={(event) => setSessionType(event.target.value)}
+                  className="mt-2 h-12 w-full rounded-2xl border border-white/15 bg-[#0b1b3a] px-3 text-sm text-white"
+                >
+                  {["first_session", "weekly_follow_up", "exam_sprint", "catch_up", "one_time"].map((option) => (
+                    <option key={option} value={option}>{humanize(option)}</option>
+                  ))}
+                </select>
+              </label>
+              {selectedSlot ? (
+                <p className="mt-3 text-sm leading-6 text-white/68">
+                  {selectedSlot.tutor_name} | {humanize(selectedSlot.format || "online")}
+                  {selectedSlot.location ? ` | ${selectedSlot.location}` : ""}
+                </p>
               ) : null}
-              <Button
-                type="submit"
-                disabled={isSaving || !slotId}
-                className="mt-4 w-full rounded-full bg-[#f5c977] px-5 py-6 text-[#071631] hover:bg-[#f7d38f]"
-              >
-                {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
-                {isSaving ? copy.bookingLoading : (usesProgramCredit ? copy.bookWithProgramCredit : copy.bookSession)}
-              </Button>
-              <p className="mt-3 text-xs leading-5 text-white/58">{usesProgramCredit ? copy.bookingProgramCreditNotice : copy.bookingPaymentNotice}</p>
+              {bookingBlocked ? (
+                <div className="mt-4 rounded-2xl border border-[#f5c977]/25 bg-[#f5c977]/10 p-4">
+                  <p className="text-sm leading-6 text-white/78">{copy.bookingProgramPaymentRequired}</p>
+                  <Button
+                    type="button"
+                    onClick={onOpenAccount}
+                    className="mt-3 w-full rounded-full bg-[#f5c977] px-5 py-6 text-[#071631] hover:bg-[#f7d38f]"
+                  >
+                    <CreditCard className="h-4 w-4" />
+                    {copy.bookingProgramPaymentAction}
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className="mt-3 flex items-center justify-between gap-3 rounded-2xl border border-[#f5c977]/18 bg-[#f5c977]/8 px-3 py-2.5 text-sm">
+                    <span className="text-white/64">{copy.bookingPrice}</span>
+                    <span className="font-semibold text-[#f8d58d]">
+                      {usesProgramCredit
+                        ? copy.bookingProgramCredit
+                        : `${getPaymentLinkDefaultAmountCad(sessionType)} $ CAD`}
+                    </span>
+                  </div>
+                  {usesProgramCredit ? (
+                    <p className="mt-2 text-xs leading-5 text-[#f8d58d]">{copy.bookingPlanCredit}</p>
+                  ) : null}
+                  <Button
+                    type="submit"
+                    disabled={isSaving || !slotId}
+                    className="mt-4 w-full rounded-full bg-[#f5c977] px-5 py-6 text-[#071631] hover:bg-[#f7d38f]"
+                  >
+                    {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <CreditCard className="h-4 w-4" />}
+                    {isSaving ? copy.bookingLoading : (usesProgramCredit ? copy.bookWithProgramCredit : copy.bookSession)}
+                  </Button>
+                  <p className="mt-3 text-xs leading-5 text-white/58">{usesProgramCredit ? copy.bookingProgramCreditNotice : copy.bookingPaymentNotice}</p>
+                </>
+              )}
             </>
           )}
         </>
-      ) : (
-        <p className="mt-5 text-sm leading-7 text-white/68">{copy.bookingNoSlots}</p>
       )}
 
       {!bookingBlocked && paymentUrl ? (
