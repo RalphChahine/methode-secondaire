@@ -33,6 +33,7 @@ import {
 
 import MotionCard from "@/components/MotionCard"
 import Seo from "@/components/Seo"
+import TutorProfileCard from "@/components/tutors/TutorProfileCard"
 import ParentPortalNavigation from "@/components/portal/ParentPortalNavigation"
 import SessionMaterialsPanel from "@/components/portal/SessionMaterialsPanel"
 import TutorSessionMaterialsPanel from "@/components/portal/TutorSessionMaterialsPanel"
@@ -63,6 +64,7 @@ import {
   groupParentSessions,
 } from "@/lib/portalSessionState"
 import { getPortalBookingOutcome, getSafeHostedCheckoutUrl } from "@/lib/portalBookingOutcome"
+import { findTutorPublicProfile } from "@/lib/tutorPublicProfiles"
 import {
   getProgressionEnrollmentPaymentState,
   getProgressionPaymentState,
@@ -109,6 +111,7 @@ import {
   upsertPortalStudent,
   upsertPortalStudentTutorAssignment,
   upsertPortalTutorAvailability,
+  upsertPortalTutorPublicProfile,
   verifyPortalCode,
 } from "@/lib/portalClient"
 import {
@@ -552,6 +555,26 @@ const copyByLocale = {
     tutorDeleteConfirmationRequired: "L'email de confirmation ne correspond pas.",
     tutorDeleted: "Tuteur et données associées supprimés.",
     tutorNotFound: "Ce tuteur n'est plus disponible.",
+    tutorPublicProfileTitle: "Profil public du tuteur",
+    tutorPublicProfileIntro: "Visible seulement après validation de l'équipe et consentement du tuteur.",
+    tutorPublicProfileDisplayName: "Nom affiché",
+    tutorPublicProfilePhotoUrl: "URL HTTPS de la photo (facultative)",
+    tutorPublicProfilePhotoAltFr: "Texte alternatif photo (FR)",
+    tutorPublicProfilePhotoAltEn: "Texte alternatif photo (EN)",
+    tutorPublicProfileHeadlineFr: "Titre court (FR)",
+    tutorPublicProfileHeadlineEn: "Titre court (EN)",
+    tutorPublicProfileBioFr: "Présentation (FR)",
+    tutorPublicProfileBioEn: "Présentation (EN)",
+    tutorPublicProfileStyleFr: "Style d'accompagnement (FR)",
+    tutorPublicProfileStyleEn: "Style d'accompagnement (EN)",
+    tutorPublicProfileVisibility: "Visibilité",
+    tutorPublicProfileDraft: "Brouillon",
+    tutorPublicProfilePublished: "Publié",
+    tutorPublicProfileHidden: "Masqué",
+    tutorPublicProfileConsent: "Le tuteur a consenti à la publication de ce profil et de sa photo.",
+    tutorPublicProfilePublicationRequired: "Pour publier, ajoutez le contenu français et anglais requis et confirmez le consentement.",
+    tutorPublicProfileSave: "Enregistrer le profil public",
+    tutorPublicProfileSaved: "Profil public enregistré.",
     messagesTitle: "Messages de séance",
     messageSession: "Séance concernée",
     messagePlaceholder: "Écrire un message",
@@ -1105,6 +1128,26 @@ const copyByLocale = {
     tutorDeleteConfirmationRequired: "The confirmation email does not match.",
     tutorDeleted: "Tutor and related data deleted.",
     tutorNotFound: "This tutor is no longer available.",
+    tutorPublicProfileTitle: "Tutor public profile",
+    tutorPublicProfileIntro: "Visible only after team approval and the tutor's consent.",
+    tutorPublicProfileDisplayName: "Display name",
+    tutorPublicProfilePhotoUrl: "HTTPS photo URL (optional)",
+    tutorPublicProfilePhotoAltFr: "Photo alt text (FR)",
+    tutorPublicProfilePhotoAltEn: "Photo alt text (EN)",
+    tutorPublicProfileHeadlineFr: "Short headline (FR)",
+    tutorPublicProfileHeadlineEn: "Short headline (EN)",
+    tutorPublicProfileBioFr: "Introduction (FR)",
+    tutorPublicProfileBioEn: "Introduction (EN)",
+    tutorPublicProfileStyleFr: "Teaching style (FR)",
+    tutorPublicProfileStyleEn: "Teaching style (EN)",
+    tutorPublicProfileVisibility: "Visibility",
+    tutorPublicProfileDraft: "Draft",
+    tutorPublicProfilePublished: "Published",
+    tutorPublicProfileHidden: "Hidden",
+    tutorPublicProfileConsent: "The tutor has consented to publishing this profile and photo.",
+    tutorPublicProfilePublicationRequired: "To publish, add the required French and English content and confirm consent.",
+    tutorPublicProfileSave: "Save public profile",
+    tutorPublicProfileSaved: "Public profile saved.",
     messagesTitle: "Session messages",
     messageSession: "Session",
     messagePlaceholder: "Write a message",
@@ -1875,6 +1918,18 @@ function getPortalErrorMessage(copy, code) {
     return copy.tutorNotFound
   }
 
+  if (code === "TUTOR_PUBLIC_PROFILE_NOT_AVAILABLE") {
+    return copy.tutorNotFound
+  }
+
+  if (code === "TUTOR_PUBLIC_PROFILE_PHOTO_INVALID") {
+    return copy.tutorPublicProfilePhotoUrl
+  }
+
+  if (code === "TUTOR_PUBLIC_PROFILE_PUBLICATION_REQUIRED") {
+    return copy.tutorPublicProfilePublicationRequired
+  }
+
   if (code === "TUTOR_DELETE_CONFIRMATION_REQUIRED") {
     return copy.tutorDeleteConfirmationRequired
   }
@@ -2532,6 +2587,8 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved }) {
               copy={copy}
               students={dashboard.students}
               tutorAssignments={dashboard.student_tutor_assignments}
+              tutorProfiles={dashboard.assigned_tutor_profiles || []}
+              locale={locale}
               role={role}
               token={token}
               onSaved={onSaved}
@@ -2919,7 +2976,7 @@ function StudentTutorAssignmentEditor({ copy, student, assignments = [], tutors 
   )
 }
 
-function FamilyStudentsPanel({ copy, students = [], tutorAssignments = [], role, token, parentEmail = "", tutors = [], onSaved, embedded = false }) {
+function FamilyStudentsPanel({ copy, students = [], tutorAssignments = [], tutorProfiles = [], locale = "fr", role, token, parentEmail = "", tutors = [], onSaved, embedded = false }) {
   const emptyValues = {
     student_id: "",
     student_name: "",
@@ -2989,6 +3046,13 @@ function FamilyStudentsPanel({ copy, students = [], tutorAssignments = [], role,
       <div className="mt-5 space-y-3">
         {students.length ? students.map((student) => {
           const studentAssignments = tutorAssignments.filter((assignment) => assignment.student_id === student.student_id)
+          const profiledAssignments = role !== "operator"
+            ? studentAssignments.map((assignment) => ({
+              assignment,
+              profile: findTutorPublicProfile(tutorProfiles, assignment.tutor_id),
+            }))
+            : []
+          const assignmentsWithoutProfile = profiledAssignments.filter(({ profile }) => !profile)
           return (
             <div key={student.student_id} className="rounded-[18px] border border-white/10 bg-white/5 p-3 sm:p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -2996,9 +3060,9 @@ function FamilyStudentsPanel({ copy, students = [], tutorAssignments = [], role,
                   <div className="font-semibold text-white">{student.student_name}</div>
                   <div className="mt-1 text-sm text-white/60">{student.student_level_subject || "-"}</div>
                   {!studentAssignments.length && student.assigned_tutor_name ? <div className="mt-2 text-sm text-[#f5c977]">{copy.childTutor}: {student.assigned_tutor_name}</div> : null}
-                  {role !== "operator" && studentAssignments.length ? (
+                  {role !== "operator" && assignmentsWithoutProfile.length ? (
                     <div className="mt-2 text-sm leading-6 text-[#f5c977]">
-                      {copy.childTutorAssignments}: {studentAssignments.map((assignment) => `${assignment.tutor_name} — ${assignment.subjects}`).join(" | ")}
+                      {copy.childTutorAssignments}: {assignmentsWithoutProfile.map(({ assignment }) => `${assignment.tutor_name} — ${assignment.subjects}`).join(" | ")}
                     </div>
                   ) : null}
                 </div>
@@ -3007,6 +3071,11 @@ function FamilyStudentsPanel({ copy, students = [], tutorAssignments = [], role,
                 </Button>
               </div>
               {student.learning_notes ? <p className="mt-3 text-sm leading-6 text-white/60">{student.learning_notes}</p> : null}
+              {profiledAssignments.map(({ assignment, profile }) => profile ? (
+                <div key={assignment.assignment_id || assignment.tutor_id} className="mt-4">
+                  <TutorProfileCard profile={profile} locale={locale} variant="compact" />
+                </div>
+              ) : null)}
               {role === "operator" ? (
                 <StudentTutorAssignmentEditor
                   copy={copy}
@@ -3578,7 +3647,13 @@ function OperatorDashboard({ copy, dashboard, locale, token, onSaved }) {
           <MetricStrip metrics={safeDashboard.metrics} />
           <ParentCreationPanel copy={copy} token={token} onSaved={onSaved} />
           <ParentManagementPanel copy={copy} dashboard={safeDashboard} token={token} onSaved={onSaved} />
-          <TutorAccessPanel copy={copy} tutors={safeDashboard.tutor_records || safeDashboard.tutors} token={token} onSaved={onSaved} />
+          <TutorAccessPanel
+            copy={copy}
+            tutors={safeDashboard.tutor_records || safeDashboard.tutors}
+            profiles={safeDashboard.tutor_public_profiles || []}
+            token={token}
+            onSaved={onSaved}
+          />
           <PlanEnrollmentPanel copy={copy} dashboard={safeDashboard} locale={locale} token={token} onSaved={onSaved} />
           <ScheduleSessionForm copy={copy} dashboard={safeDashboard} token={token} onSaved={onSaved} />
           <TestDataCleanupPanel copy={copy} records={safeDashboard.test_data} token={token} onSaved={onSaved} />
@@ -4176,7 +4251,156 @@ function ParentManagementPanel({ copy, dashboard, token, onSaved }) {
   )
 }
 
-function TutorAccessPanel({ copy, tutors = [], token, onSaved }) {
+function getTutorPublicProfileValues(tutor, profile) {
+  return {
+    profile_id: profile?.profile_id || "",
+    display_name: profile?.display_name || tutor?.tutor_name || "",
+    photo_url: profile?.photo_url || "",
+    photo_alt_fr: profile?.photo_alt_fr || "",
+    photo_alt_en: profile?.photo_alt_en || "",
+    headline_fr: profile?.headline_fr || "",
+    headline_en: profile?.headline_en || "",
+    bio_fr: profile?.bio_fr || "",
+    bio_en: profile?.bio_en || "",
+    teaching_style_fr: profile?.teaching_style_fr || "",
+    teaching_style_en: profile?.teaching_style_en || "",
+    subjects: profile?.subjects || tutor?.subjects || "",
+    levels: profile?.levels || tutor?.levels || "",
+    languages: profile?.languages || tutor?.languages || "",
+    formats: profile?.formats || tutor?.formats || "",
+    zones: profile?.zones || tutor?.zones || "",
+    visibility: profile?.visibility || "draft",
+    publication_consent: Boolean(profile?.publication_consent_at),
+  }
+}
+
+function TutorPublicProfileEditor({ copy, tutor, profile, token, onSaved }) {
+  const [values, setValues] = useState(() => getTutorPublicProfileValues(tutor, profile))
+  const [status, setStatus] = useState("")
+  const [isSaving, setIsSaving] = useState(false)
+
+  useEffect(() => {
+    setValues(getTutorPublicProfileValues(tutor, profile))
+    setStatus("")
+  }, [tutor?.tutor_id, profile?.profile_id])
+
+  function updateValue(key, value) {
+    setValues((current) => ({ ...current, [key]: value }))
+  }
+
+  async function saveProfile(event) {
+    event.preventDefault()
+    setIsSaving(true)
+    setStatus("")
+    const result = await upsertPortalTutorPublicProfile({
+      token,
+      values: { ...values, tutor_id: tutor.tutor_id },
+    })
+    setIsSaving(false)
+
+    if (!result.ok) {
+      setStatus(getPortalErrorMessage(copy, result.code))
+      return
+    }
+
+    setStatus(copy.tutorPublicProfileSaved)
+    onSaved?.()
+  }
+
+  return (
+    <section className="mt-5 border-t border-white/10 pt-5">
+      <h3 className="text-base font-semibold text-white">{copy.tutorPublicProfileTitle}</h3>
+      <p className="mt-1 text-sm leading-6 text-white/58">{copy.tutorPublicProfileIntro}</p>
+      <form onSubmit={saveProfile} className="mt-4 space-y-3">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorPublicProfileDisplayName}
+            <Input value={values.display_name} onChange={(event) => updateValue("display_name", event.target.value)} required className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorPublicProfilePhotoUrl}
+            <Input value={values.photo_url} onChange={(event) => updateValue("photo_url", event.target.value)} type="url" inputMode="url" placeholder="https://" className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorPublicProfilePhotoAltFr}
+            <Input value={values.photo_alt_fr} onChange={(event) => updateValue("photo_alt_fr", event.target.value)} className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorPublicProfilePhotoAltEn}
+            <Input value={values.photo_alt_en} onChange={(event) => updateValue("photo_alt_en", event.target.value)} className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorPublicProfileHeadlineFr}
+            <Input value={values.headline_fr} onChange={(event) => updateValue("headline_fr", event.target.value)} className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorPublicProfileHeadlineEn}
+            <Input value={values.headline_en} onChange={(event) => updateValue("headline_en", event.target.value)} className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorPublicProfileBioFr}
+            <Textarea value={values.bio_fr} onChange={(event) => updateValue("bio_fr", event.target.value)} className="mt-2 min-h-24 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorPublicProfileBioEn}
+            <Textarea value={values.bio_en} onChange={(event) => updateValue("bio_en", event.target.value)} className="mt-2 min-h-24 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorPublicProfileStyleFr}
+            <Textarea value={values.teaching_style_fr} onChange={(event) => updateValue("teaching_style_fr", event.target.value)} className="mt-2 min-h-20 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorPublicProfileStyleEn}
+            <Textarea value={values.teaching_style_en} onChange={(event) => updateValue("teaching_style_en", event.target.value)} className="mt-2 min-h-20 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorSubjects}
+            <Input value={values.subjects} onChange={(event) => updateValue("subjects", event.target.value)} className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorLevels}
+            <Input value={values.levels} onChange={(event) => updateValue("levels", event.target.value)} className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorLanguage}
+            <Input value={values.languages} onChange={(event) => updateValue("languages", event.target.value)} className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.sessionFormat}
+            <Input value={values.formats} onChange={(event) => updateValue("formats", event.target.value)} className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorZones}
+            <Input value={values.zones} onChange={(event) => updateValue("zones", event.target.value)} className="mt-2 h-11 rounded-2xl border-white/15 bg-white/5 text-white" />
+          </label>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.tutorPublicProfileVisibility}
+            <select value={values.visibility} onChange={(event) => updateValue("visibility", event.target.value)} className="mt-2 h-11 w-full rounded-2xl border border-white/15 bg-[#0b1b3a] px-3 text-sm text-white">
+              <option value="draft">{copy.tutorPublicProfileDraft}</option>
+              <option value="published">{copy.tutorPublicProfilePublished}</option>
+              <option value="hidden">{copy.tutorPublicProfileHidden}</option>
+            </select>
+          </label>
+        </div>
+        <label className="flex items-start gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-3 text-sm leading-6 text-white/78">
+          <input type="checkbox" checked={values.publication_consent} onChange={(event) => updateValue("publication_consent", event.target.checked)} className="mt-1 h-4 w-4 rounded border-white/30" />
+          <span>{copy.tutorPublicProfileConsent}</span>
+        </label>
+        <Button type="submit" disabled={isSaving} className="rounded-full bg-[#f5c977] px-5 text-[#071631] hover:bg-[#f7d38f]">
+          {isSaving ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Pencil className="h-4 w-4" />}
+          {copy.tutorPublicProfileSave}
+        </Button>
+      </form>
+      {status ? <p className="mt-3 text-sm leading-6 text-white/68">{status}</p> : null}
+    </section>
+  )
+}
+
+function TutorAccessPanel({ copy, tutors = [], profiles = [], token, onSaved }) {
   const [tutorId, setTutorId] = useState(tutors[0]?.tutor_id || "")
   const [status, setStatus] = useState("")
   const [isSaving, setIsSaving] = useState(false)
@@ -4194,6 +4418,7 @@ function TutorAccessPanel({ copy, tutors = [], token, onSaved }) {
     notes: "",
   })
   const selectedTutor = tutors.find((tutor) => tutor.tutor_id === tutorId)
+  const selectedTutorProfile = profiles.find((profile) => profile.tutor_id === tutorId) || null
 
   useEffect(() => {
     if (!tutors.some((tutor) => tutor.tutor_id === tutorId) && tutors[0]?.tutor_id) {
@@ -4366,6 +4591,13 @@ function TutorAccessPanel({ copy, tutors = [], token, onSaved }) {
             <div>{copy.tutorCapacity}: {selectedTutor.active_students || "0"}/{selectedTutor.weekly_capacity || "0"}</div>
             {selectedTutor.notes ? <div className="mt-2 text-white/58">{selectedTutor.notes}</div> : null}
           </div>
+          <TutorPublicProfileEditor
+            copy={copy}
+            tutor={selectedTutor}
+            profile={selectedTutorProfile}
+            token={token}
+            onSaved={onSaved}
+          />
           {selectedTutor.status === "active" ? (
             <Button type="button" disabled={isSaving} onClick={inviteTutor} className="mt-4 w-full rounded-full bg-white/10 px-5 py-6 text-white hover:bg-white/15">
               <Mail className="h-4 w-4" />
@@ -5137,6 +5369,10 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }
   })
   const bookingAssignmentIds = bookingAssignments.map((assignment) => assignment.assignment_id || `legacy:${assignment.tutor_id}`).join("|")
   const selectedAssignment = bookingAssignments.find((assignment) => assignment.assignment_id === selectedAssignmentId) || null
+  const selectedTutorProfile = findTutorPublicProfile(
+    dashboard.assigned_tutor_profiles,
+    selectedAssignment?.tutor_id,
+  )
   const matchingTutorId = selectedAssignment?.tutor_id || ""
   const visibleSlots = filterBookableSlotsForAssignment(slots, selectedAssignment)
   const selectedSlot = visibleSlots.find((slot) => slot.slot_id === slotId)
@@ -5291,8 +5527,6 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }
           />
           {!selectedAssignment ? (
             <p className="mt-4 text-sm leading-7 text-white/68">{copy.bookingTutorAssignmentRequired}</p>
-          ) : !visibleSlots.length ? (
-            <p className="mt-5 text-sm leading-7 text-white/68">{copy.bookingNoSlots}</p>
           ) : (
             <>
               <p className="mt-3 text-sm leading-6 text-[#f8d58d]">
@@ -5300,7 +5534,16 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }
                   .replace("{tutor}", selectedAssignment.tutor_name)
                   .replace("{subjects}", selectedAssignment.subjects)}
               </p>
-              <BookableSlotCalendar copy={copy} slots={visibleSlots} selectedSlotId={slotId} onSelect={setSlotId} />
+              {selectedTutorProfile ? (
+                <div className="mt-4">
+                  <TutorProfileCard profile={selectedTutorProfile} locale={locale} variant="compact" />
+                </div>
+              ) : null}
+              {!visibleSlots.length ? (
+                <p className="mt-5 text-sm leading-7 text-white/68">{copy.bookingNoSlots}</p>
+              ) : (
+                <>
+                  <BookableSlotCalendar copy={copy} slots={visibleSlots} selectedSlotId={slotId} onSelect={setSlotId} />
               <label className="mt-3 block text-sm font-semibold text-white/84">
                 {copy.sessionType}
                 <select
@@ -5353,6 +5596,8 @@ function BookingPanel({ copy, dashboard, locale, token, onSaved, onOpenAccount }
                     {isSaving ? copy.bookingLoading : (usesProgramCredit ? copy.bookWithProgramCredit : copy.bookSession)}
                   </Button>
                   <p className="mt-3 text-xs leading-5 text-white/58">{usesProgramCredit ? copy.bookingProgramCreditNotice : copy.bookingPaymentNotice}</p>
+                </>
+              )}
                 </>
               )}
             </>

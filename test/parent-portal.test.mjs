@@ -444,6 +444,43 @@ test("CRM stores owner-filtered assignments and revalidates them inside the book
   assert.match(booker, /hasTutorSessionConflict_\(spreadsheet, record\.tutor_id/)
 })
 
+test("CRM publishes only consented active tutor profiles and scopes them to assigned parents", async () => {
+  const source = await readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
+  const parentDashboard = source.slice(
+    source.indexOf("function buildParentPortalDashboard_("),
+    source.indexOf("function buildTutorPortalDashboard_("),
+  )
+  const publicSanitizer = source.slice(
+    source.indexOf("function sanitizeTutorPublicProfileForPublic_("),
+    source.indexOf("function sanitizeTutorPublicProfileForOperator_("),
+  )
+
+  assert.match(source, /const CRM_TUTOR_PUBLIC_PROFILE_SHEET_NAME = "Tutor Public Profiles"/)
+  assert.match(source, /const TUTOR_PUBLIC_PROFILE_COLUMNS = \[/)
+  assert.match(source, /function getPublicTutorProfiles_\(/)
+  assert.match(source, /function upsertPortalTutorPublicProfile_\(/)
+  assert.match(source, /publication_consent_at/)
+  assert.match(parentDashboard, /assigned_tutor_profiles:/)
+  assert.match(parentDashboard, /eligibleTutorIds/)
+  assert.doesNotMatch(publicSanitizer, /calendar_email|hourly_rate_cad|payment_terms|notes/)
+})
+
+test("operator edits public tutor profiles while parents see only an assigned tutor profile", async () => {
+  const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
+  const booking = source.slice(
+    source.indexOf("function BookingPanel("),
+    source.indexOf("function BookableSlotCalendar("),
+  )
+
+  assert.match(source, /function TutorPublicProfileEditor\(/)
+  assert.match(source, /upsertPortalTutorPublicProfile/)
+  assert.match(source, /tutor_public_profiles/)
+  assert.match(booking, /assigned_tutor_profiles/)
+  assert.match(booking, /findTutorPublicProfile/)
+  assert.match(booking, /TutorProfileCard/)
+  assert.doesNotMatch(booking, /getPublicTutorProfiles/)
+})
+
 test("CRM returns only the safe Stripe mode for a newly issued portal Checkout", async () => {
   const source = await readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
   const paymentCreator = source.slice(
