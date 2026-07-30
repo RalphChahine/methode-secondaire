@@ -236,6 +236,28 @@ const basePageSeo = {
       ogType: "website",
     },
   },
+  tuteurs: {
+    fr: {
+      title: "Nos tuteurs de maths et sciences | Méthode Secondaire",
+      description:
+        "Découvrez les profils publics de tuteurs en mathématiques et sciences au secondaire. Méthode Secondaire confirme toujours le bon jumelage et le bon créneau avec le parent.",
+      keywords:
+        "tuteurs maths secondaire, tuteurs sciences secondaire, profil tuteur québec, jumelage tuteur parent, tutorat secondaire québec",
+      name: "Nos tuteurs de maths et sciences",
+      schemaType: "CollectionPage",
+      ogType: "website",
+    },
+    en: {
+      title: "Our math and science tutors | Méthode Secondaire",
+      description:
+        "Explore public profiles for high school math and science tutors. Méthode Secondaire always confirms the right tutor match and time with each parent.",
+      keywords:
+        "high school math tutors, high school science tutors, tutor profiles quebec, parent tutor matching, quebec tutoring",
+      name: "Our math and science tutors",
+      schemaType: "CollectionPage",
+      ogType: "website",
+    },
+  },
   devenirTuteur: {
     fr: {
       title: "Devenir tuteur | Emploi tuteur maths et sciences au Québec | Méthode Secondaire",

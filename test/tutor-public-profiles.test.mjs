@@ -4,6 +4,7 @@ import test from "node:test"
 import { renderToStaticMarkup } from "react-dom/server"
 import { createServer } from "vite"
 
+import { getPrerenderPageEntries } from "../src/lib/prerenderSeoData.js"
 import { findTutorPublicProfile, getTutorPhotoUrl } from "../src/lib/tutorPublicProfiles.js"
 
 const david = {
@@ -69,4 +70,11 @@ test("public tutor page loads CRM profiles without turning profiles into booking
   assert.doesNotMatch(source, /bookPortalSession|BookableSlotCalendar/)
   assert.match(recruitment, /profil public facultatif|optional public profile/i)
   assert.match(recruitment, /consentement|consent/i)
+})
+
+test("prerenders both public tutor directory routes", () => {
+  const paths = new Set(getPrerenderPageEntries().map((entry) => entry.path))
+
+  assert.ok(paths.has("/tuteurs"))
+  assert.ok(paths.has("/en/tutors"))
 })
