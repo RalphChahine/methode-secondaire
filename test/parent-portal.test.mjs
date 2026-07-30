@@ -256,6 +256,24 @@ test("treats a student's assigned tutor as completed matching", () => {
   assert.equal(action.destination, "sessions")
 })
 
+test("treats a dedicated student tutor assignment as completed matching", () => {
+  const action = getParentNextAction({
+    profile: { name: "Parent" },
+    students: [{ student_id: "STUDENT-1" }],
+    student_tutor_assignments: [{
+      assignment_id: "ASSIGN-DAVID",
+      student_id: "STUDENT-1",
+      tutor_id: "TUTOR-DAVID",
+      status: "active",
+    }],
+    matching: {},
+    sessions: [],
+    metrics: {},
+  })
+
+  assert.deepEqual(action, { key: "booking", destination: "sessions" })
+})
+
 test("keeps the legacy message counter in the next-action priority", () => {
   const action = getParentNextAction({
     profile: { name: "Parent" },
@@ -390,6 +408,40 @@ test("CRM protects confirmation and payment state for proposed sessions", async 
   assert.match(creator, /payment_status: "not_requested"/)
   assert.match(rescheduler, /payment_status: "not_requested"/)
   assert.match(rescheduler, /voidUnpaidSessionPayments_\(spreadsheet, sessionId, "Session rescheduled by the team\."\)/)
+})
+
+test("parent booking requires an explicit assignment and repeats its tutor subjects", async () => {
+  const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
+  const bookingPanel = source.slice(
+    source.indexOf("function BookingPanel("),
+    source.indexOf("function BookableSlotCalendar("),
+  )
+
+  assert.match(source, /import TutorAssignmentPicker from "@\/components\/portal\/TutorAssignmentPicker"/)
+  assert.match(bookingPanel, /getStudentBookingAssignments/)
+  assert.match(bookingPanel, /filterBookableSlotsForAssignment/)
+  assert.match(bookingPanel, /student_tutor_assignment_id/)
+  assert.match(bookingPanel, /copy\.bookingTutorAssignmentSummary/)
+  assert.match(bookingPanel, /<TutorAssignmentPicker/)
+})
+
+test("CRM stores owner-filtered assignments and revalidates them inside the booking lock", async () => {
+  const source = await readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
+  const booker = source.slice(
+    source.indexOf("function bookPortalSession_("),
+    source.indexOf("function submitParentFeedback_("),
+  )
+
+  assert.match(source, /const CRM_STUDENT_TUTOR_ASSIGNMENT_SHEET_NAME = "Student Tutor Assignments"/)
+  assert.match(source, /const STUDENT_TUTOR_ASSIGNMENT_COLUMNS = \[/)
+  assert.match(source, /function upsertPortalStudentTutorAssignment_\(/)
+  assert.match(source, /function deactivatePortalStudentTutorAssignment_\(/)
+  assert.match(source, /student_tutor_assignments: studentTutorAssignments/)
+  assert.match(booker, /student_tutor_assignment_id/)
+  assert.match(booker, /resolveStudentTutorAssignmentForBooking_\(spreadsheet, \{/)
+  assert.match(booker, /const bookingLock = LockService\.getScriptLock\(\)/)
+  assert.match(booker, /buildBookableSlots_\(spreadsheet, 21\)/)
+  assert.match(booker, /hasTutorSessionConflict_\(spreadsheet, record\.tutor_id/)
 })
 
 test("CRM returns only the safe Stripe mode for a newly issued portal Checkout", async () => {

@@ -21,6 +21,7 @@ const CRM_PARENT_FEEDBACK_SHEET_NAME = "Parent Feedback";
 const CRM_PORTAL_MESSAGE_SHEET_NAME = "Portal Messages";
 const CRM_SESSION_MATERIAL_SHEET_NAME = "Session Materials";
 const CRM_STUDENT_SHEET_NAME = "Students";
+const CRM_STUDENT_TUTOR_ASSIGNMENT_SHEET_NAME = "Student Tutor Assignments";
 const CRM_PLAN_SHEET_NAME = "Plans";
 const CRM_PLAN_ENROLLMENT_SHEET_NAME = "Plan Enrollments";
 const CRM_CREDIT_LEDGER_SHEET_NAME = "Credit Ledger";
@@ -56,6 +57,7 @@ const CRM_REQUIRED_SHEET_NAMES = [
   CRM_PORTAL_MESSAGE_SHEET_NAME,
   CRM_SESSION_MATERIAL_SHEET_NAME,
   CRM_STUDENT_SHEET_NAME,
+  CRM_STUDENT_TUTOR_ASSIGNMENT_SHEET_NAME,
   CRM_PLAN_SHEET_NAME,
   CRM_PLAN_ENROLLMENT_SHEET_NAME,
   CRM_CREDIT_LEDGER_SHEET_NAME,
@@ -214,6 +216,9 @@ const SESSION_COLUMNS = [
   "stripe_checkout_session_id",
   // Persisted when an event is created so calendar changes never orphan it.
   "calendar_owner_id",
+  // Appended so existing session sheets keep their historic columns intact.
+  "student_tutor_assignment_id",
+  "assigned_tutor_subjects",
 ];
 
 const STUDENT_COLUMNS = [
@@ -229,6 +234,21 @@ const STUDENT_COLUMNS = [
   "created_at",
   "updated_at",
 ];
+
+const STUDENT_TUTOR_ASSIGNMENT_COLUMNS = [
+  "assignment_id",
+  "lead_id",
+  "parent_email",
+  "student_id",
+  "student_name",
+  "tutor_id",
+  "tutor_name",
+  "subjects",
+  "status",
+  "created_at",
+  "updated_at",
+];
+const STUDENT_TUTOR_ASSIGNMENT_STATUS_OPTIONS = ["active", "inactive"];
 
 const SESSION_NOTE_COLUMNS = [
   "note_id",
@@ -549,6 +569,7 @@ function setupCrm() {
   setupPortalMessagesSheet_(getOrCreateSheet_(spreadsheet, CRM_PORTAL_MESSAGE_SHEET_NAME));
   setupSessionMaterialsSheet_(getOrCreateSheet_(spreadsheet, CRM_SESSION_MATERIAL_SHEET_NAME));
   setupStudentsSheet_(getOrCreateSheet_(spreadsheet, CRM_STUDENT_SHEET_NAME));
+  setupStudentTutorAssignmentsSheet_(getOrCreateSheet_(spreadsheet, CRM_STUDENT_TUTOR_ASSIGNMENT_SHEET_NAME));
   setupPlansSheet_(getOrCreateSheet_(spreadsheet, CRM_PLAN_SHEET_NAME));
   setupPlanEnrollmentsSheet_(getOrCreateSheet_(spreadsheet, CRM_PLAN_ENROLLMENT_SHEET_NAME));
   setupCreditLedgerSheet_(getOrCreateSheet_(spreadsheet, CRM_CREDIT_LEDGER_SHEET_NAME));
@@ -1194,6 +1215,11 @@ function setupStudentsSheet_(sheet) {
   applyStructuredValidation_(sheet, STUDENT_COLUMNS, "status", STUDENT_STATUS_OPTIONS);
 }
 
+function setupStudentTutorAssignmentsSheet_(sheet) {
+  setupStructuredSheet_(sheet, STUDENT_TUTOR_ASSIGNMENT_COLUMNS, "#1f4662");
+  applyStructuredValidation_(sheet, STUDENT_TUTOR_ASSIGNMENT_COLUMNS, "status", STUDENT_TUTOR_ASSIGNMENT_STATUS_OPTIONS);
+}
+
 function setupPortalMessagesSheet_(sheet) {
   setupStructuredSheet_(sheet, PORTAL_MESSAGE_COLUMNS, "#21405f");
   applyStructuredValidation_(sheet, PORTAL_MESSAGE_COLUMNS, "sender_role", ["parent", "tutor"]);
@@ -1694,6 +1720,10 @@ function handlePortalAction_(spreadsheet, payload) {
       return upsertPortalStudent_(spreadsheet, payload);
     case "portal_assign_student_tutor":
       return assignPortalStudentTutor_(spreadsheet, payload);
+    case "portal_upsert_student_tutor_assignment":
+      return upsertPortalStudentTutorAssignment_(spreadsheet, payload);
+    case "portal_deactivate_student_tutor_assignment":
+      return deactivatePortalStudentTutorAssignment_(spreadsheet, payload);
     case "portal_delete_test_record":
       return deletePortalTestRecord_(spreadsheet, payload);
     case "portal_delete_test_records":
@@ -2919,71 +2949,10 @@ function bookPortalSession_(spreadsheet, payload) {
     return { ok: false, code: "BOOKING_DETAILS_REQUIRED" };
   }
 
-  const assignedTutorId = assignedTutorIdForStudent_(student) || assignedTutorIdForLead_(parent);
-  if (!assignedTutorId) {
-    return { ok: false, code: "MATCHING_PENDING" };
-  }
-
-  const slot = buildBookableSlots_(spreadsheet, 21)
-    .find((candidate) => candidate.slot_id === selectedSlotId && candidate.tutor_id === assignedTutorId);
-  if (!slot) {
-    return { ok: false, code: "BOOKING_SLOT_UNAVAILABLE" };
-  }
-  const planBindingParams = {
-    plan_enrollment_id: payload.plan_enrollment_id,
-    parent_email: portalSession.access.email,
-    student_id: student?.student_id || "",
-    tutor_id: slot.tutor_id,
-    session_type: sessionType,
-    allow_package_credit_fallback: true,
-  };
-  let planBinding = resolvePlanSessionBinding_(spreadsheet, planBindingParams);
-  if (!planBinding.ok) {
-    return planBinding;
-  }
-
   const paymentDetails = resolveSessionPaymentDetails_({ session_type: sessionType });
   const amountCad = paymentDetails.amount_cad || defaultSessionAmountCad_(sessionType);
-  let paymentMode = planBinding.requires_credit
-    ? "plan_credit"
-    : Number(amountCad) > 0 ? "stripe_checkout" : "waived";
-
-  const now = new Date().toISOString();
-  const record = {
-    session_id: createRecordId_("SESSION"),
-    lead_id: parent.lead_id,
-    parent_name: parent.parent_name || portalSession.access.display_name || portalSession.access.email,
-    student_name: studentName,
-    student_level_subject: normalizeValue_(student?.student_level_subject || payload.student_level_subject).slice(0, 300) || parent.student_level_subject,
-    tutor_id: slot.tutor_id,
-    tutor_name: slot.tutor_name,
-    tutor_calendar_email: slot.tutor_calendar_email,
-    parent_email: normalizeEmail_(portalSession.access.email),
-    session_status: "confirmed",
-    session_type: sessionType,
-    start_at: slot.start_at,
-    end_at: slot.end_at,
-    timezone: slot.timezone || "America/Toronto",
-    format: slot.format || "online",
-    location: slot.location || "",
-    google_calendar_event_id: "",
-    payment_status: planBinding.requires_credit ? "not_requested" : Number(amountCad) > 0 ? "payment_requested" : "waived",
-    payment_link: "",
-    amount_cad: planBinding.requires_credit ? "" : amountCad,
-    notes: ["Booked by parent in portal.", planBinding.requires_credit ? "Pack credit reserved for this session." : ""].filter(Boolean).join(" | "),
-    created_at: now,
-    updated_at: now,
-    parent_confirmed_at: now,
-    tutor_confirmed_at: now,
-    calendar_invites_sent_at: "",
-    recurrence_weeks: "1",
-    recurring_from_session_id: "",
-    student_id: normalizeValue_(student?.student_id),
-    plan_enrollment_id: planBinding.enrollment ? planBinding.enrollment.enrollment_id : "",
-    modification_deadline_at: planBinding.enrollment ? planModificationDeadlineForSession_(slot.start_at, planBinding.cancellation_notice_hours) : "",
-    cancellation_notice_hours: String(planBinding.enrollment ? planBinding.cancellation_notice_hours : SESSION_CANCELLATION_NOTICE_HOURS),
-    credit_reservation_id: "",
-  };
+  let paymentMode = Number(amountCad) > 0 ? "stripe_checkout" : "waived";
+  let record = null;
 
   const bookingLock = LockService.getScriptLock();
   if (!bookingLock.tryLock(5000)) {
@@ -2991,27 +2960,77 @@ function bookPortalSession_(spreadsheet, payload) {
   }
 
   try {
-    if (hasTutorSessionConflict_(spreadsheet, record.tutor_id, new Date(record.start_at), new Date(record.end_at))) {
+    const assignmentResult = resolveStudentTutorAssignmentForBooking_(spreadsheet, {
+      parent_email: portalSession.access.email,
+      parent,
+      student,
+      assignment_id: payload.student_tutor_assignment_id,
+    });
+    if (!assignmentResult.ok) {
+      return assignmentResult;
+    }
+    const assignment = assignmentResult.assignment;
+    const slot = buildBookableSlots_(spreadsheet, 21)
+      .find((candidate) => candidate.slot_id === selectedSlotId && candidate.tutor_id === assignment.tutor_id);
+    if (!slot) {
       return { ok: false, code: "BOOKING_SLOT_UNAVAILABLE" };
     }
-
-    planBinding = resolvePlanSessionBinding_(spreadsheet, planBindingParams);
+    const planBindingParams = {
+      plan_enrollment_id: payload.plan_enrollment_id,
+      parent_email: portalSession.access.email,
+      student_id: student?.student_id || "",
+      tutor_id: assignment.tutor_id,
+      session_type: sessionType,
+      allow_package_credit_fallback: true,
+    };
+    const planBinding = resolvePlanSessionBinding_(spreadsheet, planBindingParams);
     if (!planBinding.ok) {
       return planBinding;
     }
     paymentMode = planBinding.requires_credit
       ? "plan_credit"
       : Number(amountCad) > 0 ? "stripe_checkout" : "waived";
-    record.payment_status = planBinding.requires_credit ? "not_requested" : Number(amountCad) > 0 ? "payment_requested" : "waived";
-    record.amount_cad = planBinding.requires_credit ? "" : amountCad;
-    record.notes = ["Booked by parent in portal.", planBinding.requires_credit ? "Pack credit reserved for this session." : ""].filter(Boolean).join(" | ");
-    record.plan_enrollment_id = planBinding.enrollment ? planBinding.enrollment.enrollment_id : "";
-    record.modification_deadline_at = planBinding.enrollment
-      ? planModificationDeadlineForSession_(slot.start_at, planBinding.cancellation_notice_hours)
-      : "";
-    record.cancellation_notice_hours = String(planBinding.enrollment
-      ? planBinding.cancellation_notice_hours
-      : SESSION_CANCELLATION_NOTICE_HOURS);
+    const now = new Date().toISOString();
+    record = {
+      session_id: createRecordId_("SESSION"),
+      lead_id: parent.lead_id,
+      parent_name: parent.parent_name || portalSession.access.display_name || portalSession.access.email,
+      student_name: studentName,
+      student_level_subject: normalizeValue_(student?.student_level_subject || payload.student_level_subject).slice(0, 300) || parent.student_level_subject,
+      tutor_id: assignment.tutor_id,
+      tutor_name: assignment.tutor_name,
+      tutor_calendar_email: slot.tutor_calendar_email,
+      parent_email: normalizeEmail_(portalSession.access.email),
+      session_status: "confirmed",
+      session_type: sessionType,
+      start_at: slot.start_at,
+      end_at: slot.end_at,
+      timezone: slot.timezone || "America/Toronto",
+      format: slot.format || "online",
+      location: slot.location || "",
+      google_calendar_event_id: "",
+      payment_status: planBinding.requires_credit ? "not_requested" : Number(amountCad) > 0 ? "payment_requested" : "waived",
+      payment_link: "",
+      amount_cad: planBinding.requires_credit ? "" : amountCad,
+      notes: ["Booked by parent in portal.", planBinding.requires_credit ? "Pack credit reserved for this session." : ""].filter(Boolean).join(" | "),
+      created_at: now,
+      updated_at: now,
+      parent_confirmed_at: now,
+      tutor_confirmed_at: now,
+      calendar_invites_sent_at: "",
+      recurrence_weeks: "1",
+      recurring_from_session_id: "",
+      student_id: normalizeValue_(student?.student_id),
+      plan_enrollment_id: planBinding.enrollment ? planBinding.enrollment.enrollment_id : "",
+      modification_deadline_at: planBinding.enrollment ? planModificationDeadlineForSession_(slot.start_at, planBinding.cancellation_notice_hours) : "",
+      cancellation_notice_hours: String(planBinding.enrollment ? planBinding.cancellation_notice_hours : SESSION_CANCELLATION_NOTICE_HOURS),
+      credit_reservation_id: "",
+      student_tutor_assignment_id: assignment.assignment_id,
+      assigned_tutor_subjects: assignment.subjects,
+    };
+    if (hasTutorSessionConflict_(spreadsheet, record.tutor_id, new Date(record.start_at), new Date(record.end_at))) {
+      return { ok: false, code: "BOOKING_SLOT_UNAVAILABLE" };
+    }
 
     const reservation = reservePlanCreditForSession_(spreadsheet, planBinding, record);
     if (reservation && !reservation.ok) {
@@ -3030,7 +3049,8 @@ function bookPortalSession_(spreadsheet, payload) {
       }
       throw error;
     }
-    if (student?.assigned_tutor_id && normalizeValue_(student.assigned_tutor_id) !== normalizeValue_(assignedTutorIdForLead_(parent))) {
+    if (assignment.assignment_id ||
+      (student?.assigned_tutor_id && normalizeValue_(student.assigned_tutor_id) !== normalizeValue_(assignedTutorIdForLead_(parent)))) {
       markParentLeadSessionBooked_(spreadsheet, parent.lead_id, record.start_at);
     } else {
       assignTutorToParentLead_(spreadsheet, parent.lead_id, {
@@ -3264,6 +3284,136 @@ function assignPortalStudentTutor_(spreadsheet, payload) {
   };
   writeRecord_(sheet, STUDENT_COLUMNS, studentRecord.rowNumber, next);
   return { ok: true, student_id: next.student_id, tutor_id: tutor.tutor_id, tutor_name: tutor.tutor_name };
+}
+
+function normalizeStudentTutorAssignmentSubjects_(value) {
+  return [...new Set(normalizeValue_(value)
+    .split(/[;,\n]+/)
+    .map((subject) => subject.trim())
+    .filter(Boolean))]
+    .join(", ")
+    .slice(0, 500);
+}
+
+function sanitizeStudentTutorAssignmentForPortal_(record) {
+  return {
+    assignment_id: normalizeValue_(record.assignment_id),
+    student_id: normalizeValue_(record.student_id),
+    tutor_id: normalizeValue_(record.tutor_id),
+    tutor_name: normalizeValue_(record.tutor_name),
+    subjects: normalizeValue_(record.subjects),
+    status: normalizeValue_(record.status),
+  };
+}
+
+function getActiveStudentTutorAssignmentsForParent_(spreadsheet, parentEmail, studentId) {
+  return getSheetRecords_(spreadsheet, CRM_STUDENT_TUTOR_ASSIGNMENT_SHEET_NAME, STUDENT_TUTOR_ASSIGNMENT_COLUMNS)
+    .filter((assignment) => normalizeEmail_(assignment.parent_email) === normalizeEmail_(parentEmail))
+    .filter((assignment) => !studentId || normalizeValue_(assignment.student_id) === normalizeValue_(studentId))
+    .filter((assignment) => normalizeValue_(assignment.status) === "active")
+    .map(sanitizeStudentTutorAssignmentForPortal_)
+    .sort((left, right) => String(left.tutor_name).localeCompare(String(right.tutor_name)) ||
+      String(left.assignment_id).localeCompare(String(right.assignment_id)));
+}
+
+function resolveStudentTutorAssignmentForBooking_(spreadsheet, params) {
+  const student = params.student || {};
+  const assignments = normalizeValue_(student.student_id)
+    ? getActiveStudentTutorAssignmentsForParent_(spreadsheet, params.parent_email, student.student_id)
+    : [];
+  const assignmentId = normalizeValue_(params.assignment_id);
+  if (assignments.length) {
+    const assignment = assignments.find((candidate) => candidate.assignment_id === assignmentId);
+    if (!assignment || !findActiveTutorById_(spreadsheet, assignment.tutor_id)) {
+      return { ok: false, code: assignmentId ? "STUDENT_TUTOR_ASSIGNMENT_NOT_AVAILABLE" : "STUDENT_TUTOR_ASSIGNMENT_REQUIRED" };
+    }
+    return { ok: true, assignment };
+  }
+
+  if (assignmentId) {
+    return { ok: false, code: "STUDENT_TUTOR_ASSIGNMENT_NOT_AVAILABLE" };
+  }
+  const tutorId = assignedTutorIdForStudent_(student) || assignedTutorIdForLead_(params.parent);
+  if (!tutorId) {
+    return { ok: false, code: "MATCHING_PENDING" };
+  }
+  const tutor = findActiveTutorById_(spreadsheet, tutorId);
+  return tutor
+    ? { ok: true, assignment: {
+      assignment_id: "",
+      student_id: normalizeValue_(student.student_id),
+      tutor_id: tutor.tutor_id,
+      tutor_name: tutor.tutor_name,
+      subjects: normalizeValue_(student.student_level_subject),
+      status: "active",
+    } }
+    : { ok: false, code: "MATCHING_PENDING" };
+}
+
+function upsertPortalStudentTutorAssignment_(spreadsheet, payload) {
+  const portalSession = verifyPortalSession_(spreadsheet, payload.token, "operator");
+  if (!portalSession.ok) {
+    return portalSession;
+  }
+
+  const assignmentId = normalizeValue_(payload.assignment_id);
+  const studentSheet = getOrCreateSheet_(spreadsheet, CRM_STUDENT_SHEET_NAME);
+  const studentRecord = findSheetRecordById_(studentSheet, STUDENT_COLUMNS, "student_id", normalizeValue_(payload.student_id));
+  const tutor = findActiveTutorById_(spreadsheet, payload.tutor_id);
+  const subjects = normalizeStudentTutorAssignmentSubjects_(payload.subjects);
+  if (!studentRecord || normalizeValue_(studentRecord.data.status) !== "active" || !tutor || !subjects) {
+    return { ok: false, code: "STUDENT_TUTOR_ASSIGNMENT_DETAILS_REQUIRED" };
+  }
+
+  const sheet = getOrCreateSheet_(spreadsheet, CRM_STUDENT_TUTOR_ASSIGNMENT_SHEET_NAME);
+  setupStudentTutorAssignmentsSheet_(sheet);
+  const existing = assignmentId
+    ? findSheetRecordById_(sheet, STUDENT_TUTOR_ASSIGNMENT_COLUMNS, "assignment_id", assignmentId)
+    : null;
+  if (assignmentId && (!existing || normalizeValue_(existing.data.student_id) !== normalizeValue_(studentRecord.data.student_id))) {
+    return { ok: false, code: "STUDENT_TUTOR_ASSIGNMENT_NOT_AVAILABLE" };
+  }
+  const duplicate = getSheetRecordsFromSheet_(sheet, STUDENT_TUTOR_ASSIGNMENT_COLUMNS)
+    .find((record) => normalizeValue_(record.data.status) === "active" &&
+      normalizeValue_(record.data.student_id) === normalizeValue_(studentRecord.data.student_id) &&
+      normalizeValue_(record.data.tutor_id) === normalizeValue_(tutor.tutor_id) &&
+      normalizeValue_(record.data.assignment_id) !== assignmentId);
+  if (duplicate) {
+    return { ok: false, code: "STUDENT_TUTOR_ASSIGNMENT_EXISTS" };
+  }
+
+  const now = new Date().toISOString();
+  const assignment = {
+    assignment_id: existing ? existing.data.assignment_id : createRecordId_("ASSIGN"),
+    lead_id: studentRecord.data.lead_id,
+    parent_email: normalizeEmail_(studentRecord.data.parent_email),
+    student_id: studentRecord.data.student_id,
+    student_name: studentRecord.data.student_name,
+    tutor_id: tutor.tutor_id,
+    tutor_name: tutor.tutor_name,
+    subjects,
+    status: "active",
+    created_at: existing ? existing.data.created_at : now,
+    updated_at: now,
+  };
+  writeRecord_(sheet, STUDENT_TUTOR_ASSIGNMENT_COLUMNS, existing ? existing.rowNumber : null, assignment);
+  return { ok: true, assignment: sanitizeStudentTutorAssignmentForPortal_(assignment) };
+}
+
+function deactivatePortalStudentTutorAssignment_(spreadsheet, payload) {
+  const portalSession = verifyPortalSession_(spreadsheet, payload.token, "operator");
+  if (!portalSession.ok) {
+    return portalSession;
+  }
+
+  const sheet = getOrCreateSheet_(spreadsheet, CRM_STUDENT_TUTOR_ASSIGNMENT_SHEET_NAME);
+  const record = findSheetRecordById_(sheet, STUDENT_TUTOR_ASSIGNMENT_COLUMNS, "assignment_id", normalizeValue_(payload.assignment_id));
+  if (!record || normalizeValue_(record.data.status) !== "active") {
+    return { ok: false, code: "STUDENT_TUTOR_ASSIGNMENT_NOT_AVAILABLE" };
+  }
+  const next = { ...record.data, status: "inactive", updated_at: new Date().toISOString() };
+  writeRecord_(sheet, STUDENT_TUTOR_ASSIGNMENT_COLUMNS, record.rowNumber, next);
+  return { ok: true, assignment_id: next.assignment_id };
 }
 
 function deletePortalTestRecord_(spreadsheet, payload) {
@@ -5920,6 +6070,7 @@ function buildParentPortalDashboard_(spreadsheet, access) {
     .filter((record) => normalizeValue_(record.status) === "active")
     .sort((a, b) => String(a.student_name).localeCompare(String(b.student_name)))
     .map(sanitizeStudentForPortal_);
+  const studentTutorAssignments = getActiveStudentTutorAssignmentsForParent_(spreadsheet, email);
   const enrollmentsById = new Map(
     getSheetRecords_(spreadsheet, CRM_PLAN_ENROLLMENT_SHEET_NAME, PLAN_ENROLLMENT_COLUMNS)
       .map((record) => [normalizeValue_(record.enrollment_id), record])
@@ -5948,6 +6099,7 @@ function buildParentPortalDashboard_(spreadsheet, access) {
   const eligibleTutorIds = new Set([
     assignedTutorId,
     ...students.map((student) => normalizeValue_(student.assigned_tutor_id)),
+    ...studentTutorAssignments.map((assignment) => normalizeValue_(assignment.tutor_id)),
   ].filter(Boolean));
   const bookableSlots = eligibleTutorIds.size
     ? buildBookableSlots_(spreadsheet, 21)
@@ -5978,6 +6130,7 @@ function buildParentPortalDashboard_(spreadsheet, access) {
     next_session: nextSession,
     leads,
     students,
+    student_tutor_assignments: studentTutorAssignments,
     sessions,
     session_materials: sessionMaterials,
     notes,
@@ -6088,6 +6241,7 @@ function buildOperatorPortalDashboard_(spreadsheet, access) {
   const paymentRecords = getSheetRecords_(spreadsheet, CRM_PAYMENT_SHEET_NAME, PAYMENT_COLUMNS);
   const sessionNoteRecords = getSheetRecords_(spreadsheet, CRM_SESSION_NOTE_SHEET_NAME, SESSION_NOTE_COLUMNS);
   const studentSourceRecords = getSheetRecords_(spreadsheet, CRM_STUDENT_SHEET_NAME, STUDENT_COLUMNS);
+  const studentTutorAssignmentSourceRecords = getSheetRecords_(spreadsheet, CRM_STUDENT_TUTOR_ASSIGNMENT_SHEET_NAME, STUDENT_TUTOR_ASSIGNMENT_COLUMNS);
   const parentAccessByLead = accessRecords
     .filter((record) => normalizeValue_(record.role) === "parent")
     .reduce((all, record) => {
@@ -6114,6 +6268,7 @@ function buildOperatorPortalDashboard_(spreadsheet, access) {
   const liveMessageRecords = messageRecords.filter((record) => !isTestRecord_(record));
   const livePaymentRecords = paymentRecords.filter((record) => !isTestRecord_(record));
   const liveStudentRecords = studentSourceRecords.filter((record) => !isTestRecord_(record));
+  const liveStudentTutorAssignmentRecords = studentTutorAssignmentSourceRecords.filter((record) => !isTestRecord_(record));
   const parentCandidates = liveLeadRecords
     .filter((record) => normalizeEmail_(record.email) || normalizeValue_(record.phone))
     .map((record) => ({
@@ -6138,6 +6293,11 @@ function buildOperatorPortalDashboard_(spreadsheet, access) {
           normalizeEmail_(student.parent_email) === normalizeEmail_(record.email))
         .filter((student) => normalizeValue_(student.status) === "active")
         .map(sanitizeStudentForPortal_),
+      student_tutor_assignments: liveStudentTutorAssignmentRecords
+        .filter((assignment) => normalizeEmail_(assignment.parent_email) === normalizeEmail_(record.email) ||
+          normalizeValue_(assignment.lead_id) === normalizeValue_(record.lead_id))
+        .filter((assignment) => normalizeValue_(assignment.status) === "active")
+        .map(sanitizeStudentTutorAssignmentForPortal_),
       relationship_history: buildParentRelationshipHistory_(record, {
         sessions: liveSessionRecords,
         notes: sessionNoteRecords,

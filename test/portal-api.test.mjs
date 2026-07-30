@@ -11,6 +11,11 @@ test("allowlists the material actions at the bounded upload limit", () => {
   assert.equal(MAX_PORTAL_BODY_BYTES, 4 * 1024 * 1024)
 })
 
+test("allowlists the two operator-only student tutor assignment actions", () => {
+  assert.equal(PORTAL_ACTIONS.has("portal_upsert_student_tutor_assignment"), true)
+  assert.equal(PORTAL_ACTIONS.has("portal_deactivate_student_tutor_assignment"), true)
+})
+
 test("keeps the portal request alive long enough for a managed booking", async () => {
   const [portalApi, portalClient] = await Promise.all([
     readFile(new URL("../api/portal.js", import.meta.url), "utf8"),

@@ -249,6 +249,16 @@ async function verifyFinalReviewSafetyContracts() {
   expect(operatorLedgerSanitizer.includes("source_payment_id"), "operator credit ledger: source_payment_id must remain available")
   expect(!portalSource.includes("getParentPaymentPresentation(payment.offer"), "parent portal: payment rendering still depends on a raw offer code")
 
+  const bookingSource = appsScriptSource.slice(
+    appsScriptSource.indexOf("function bookPortalSession_("),
+    appsScriptSource.indexOf("function submitParentFeedback_("),
+  )
+  expect(appsScriptSource.includes("CRM_STUDENT_TUTOR_ASSIGNMENT_SHEET_NAME"), "Apps Script: student tutor assignment sheet is missing")
+  expect(bookingSource.includes("resolveStudentTutorAssignmentForBooking_"), "Apps Script: booking does not authorize the selected student tutor assignment")
+  expect(bookingSource.indexOf("const bookingLock = LockService.getScriptLock()") < bookingSource.indexOf("buildBookableSlots_(spreadsheet, 21)"), "Apps Script: booking must rebuild tutor slots after it holds the scheduling lock")
+  expect(bookingSource.includes("hasTutorSessionConflict_(spreadsheet, record.tutor_id"), "Apps Script: tutor availability conflict guard is missing")
+  expect(portalSource.includes("student_tutor_assignment_id"), "Parent portal: selected tutor assignment is not sent with the booking")
+
   const sandbox = {}
   vm.createContext(sandbox)
   vm.runInContext(`${appsScriptSource}\n;globalThis.__finalReview = {
@@ -393,12 +403,12 @@ async function verifyPlanPaymentLifecycleSources() {
     "Apps Script: parent booking must re-resolve its package binding after acquiring the booking lock and before reserving credit",
   )
   expect(
-    lockedBindingRefreshSource.includes("record.payment_status =") &&
-      lockedBindingRefreshSource.includes("record.amount_cad =") &&
-      lockedBindingRefreshSource.includes("record.notes =") &&
-      lockedBindingRefreshSource.includes("record.plan_enrollment_id =") &&
-      lockedBindingRefreshSource.includes("record.modification_deadline_at =") &&
-      lockedBindingRefreshSource.includes("record.cancellation_notice_hours ="),
+    lockedBindingRefreshSource.includes("payment_status:") &&
+      lockedBindingRefreshSource.includes("amount_cad:") &&
+      lockedBindingRefreshSource.includes("notes:") &&
+      lockedBindingRefreshSource.includes("plan_enrollment_id:") &&
+      lockedBindingRefreshSource.includes("modification_deadline_at:") &&
+      lockedBindingRefreshSource.includes("cancellation_notice_hours:"),
     "Apps Script: parent booking must refresh payment and plan-linkage fields from the locked package binding",
   )
 
