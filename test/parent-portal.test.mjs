@@ -465,6 +465,22 @@ test("CRM publishes only consented active tutor profiles and scopes them to assi
   assert.doesNotMatch(publicSanitizer, /calendar_email|hourly_rate_cad|payment_terms|notes/)
 })
 
+test("operator edits public tutor profiles while parents see only an assigned tutor profile", async () => {
+  const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
+  const booking = source.slice(
+    source.indexOf("function BookingPanel("),
+    source.indexOf("function BookableSlotCalendar("),
+  )
+
+  assert.match(source, /function TutorPublicProfileEditor\(/)
+  assert.match(source, /upsertPortalTutorPublicProfile/)
+  assert.match(source, /tutor_public_profiles/)
+  assert.match(booking, /assigned_tutor_profiles/)
+  assert.match(booking, /findTutorPublicProfile/)
+  assert.match(booking, /TutorProfileCard/)
+  assert.doesNotMatch(booking, /getPublicTutorProfiles/)
+})
+
 test("CRM returns only the safe Stripe mode for a newly issued portal Checkout", async () => {
   const source = await readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
   const paymentCreator = source.slice(

@@ -57,7 +57,7 @@ export default function TutorProfileCard({ profile, locale = "fr", variant = "pu
     <article className={`overflow-hidden rounded-[28px] border border-[#cfddf3] bg-white text-[#15315a] shadow-[0_16px_45px_rgba(21,49,90,0.1)] ${isCompact ? "p-4" : "p-6"}`}>
       <div className={`flex gap-4 ${isCompact ? "items-center" : "items-start"}`}>
         <div className={`shrink-0 overflow-hidden rounded-2xl ${isCompact ? "h-14 w-14" : "h-20 w-20"}`}>
-          <TutorProfilePortrait profile={profile} locale={locale} />
+          <TutorProfilePortrait profile={profile} locale={locale} fallbackLabel={labels.portraitFallback} />
         </div>
         <div className="min-w-0">
           <h3 className={isCompact ? "font-display text-xl font-semibold" : "font-display text-2xl font-semibold"}>{profile?.display_name}</h3>

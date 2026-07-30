@@ -7,7 +7,7 @@ const fallbackLabelByLocale = {
   en: "Tutor placeholder avatar",
 }
 
-export default function TutorProfilePortrait({ profile, locale = "fr", className = "" }) {
+export default function TutorProfilePortrait({ profile, locale = "fr", fallbackLabel, className = "" }) {
   const [hasImageError, setHasImageError] = useState(false)
   const photoUrl = getTutorPhotoUrl(profile)
   const alt = profile?.[`photo_alt_${locale}`]?.trim() || profile?.display_name?.trim() || fallbackLabelByLocale[locale]
@@ -26,7 +26,7 @@ export default function TutorProfilePortrait({ profile, locale = "fr", className
   return (
     <div
       role="img"
-      aria-label={fallbackLabelByLocale[locale] || fallbackLabelByLocale.fr}
+      aria-label={fallbackLabel || fallbackLabelByLocale[locale] || fallbackLabelByLocale.fr}
       className={`grid h-full w-full place-items-center bg-[#dce9ff] font-display text-lg font-semibold text-[#15315a] ${className}`}
     >
       {tutorInitials(profile)}

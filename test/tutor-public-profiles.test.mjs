@@ -35,6 +35,7 @@ test("renders public details, a truthful fallback, and no direct booking", async
     const { default: TutorProfileCard } = await vite.ssrLoadModule("/src/components/tutors/TutorProfileCard.jsx")
     const { default: TutorProfileRoster } = await vite.ssrLoadModule("/src/components/tutors/TutorProfileRoster.jsx")
     const card = renderToStaticMarkup(TutorProfileCard({ profile: david, locale: "fr", variant: "public" }))
+    const compact = renderToStaticMarkup(TutorProfileCard({ profile: david, locale: "fr", variant: "compact" }))
     const empty = renderToStaticMarkup(TutorProfileRoster({
       copy: {
         emptyTitle: "Les profils arrivent bientôt",
@@ -49,6 +50,9 @@ test("renders public details, a truthful fallback, and no direct booking", async
     assert.match(card, /Mathématiques et sciences/)
     assert.match(card, /Voir le profil/)
     assert.doesNotMatch(card, /Réserver|Book/)
+    assert.match(compact, /David/)
+    assert.match(compact, /Mathématiques, Sciences/)
+    assert.doesNotMatch(compact, /calendar_email|hourly_rate_cad/)
     assert.match(empty, /Les profils arrivent bientôt/)
   } finally {
     await vite.close()
