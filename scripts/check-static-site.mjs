@@ -361,6 +361,10 @@ async function verifyPlanPaymentLifecycleSources() {
     "Apps Script: package payment requests must reject terminal enrollments",
   )
   expect(
+    paymentRequestFunction.includes('findPlanEnrollmentForPortalAccess_(spreadsheet, portalSession.access, enrollmentId)'),
+    "Apps Script: parent package payment requests must be scoped to their enrollment",
+  )
+  expect(
     paymentWebhookFunction.includes('["cancelled", "completed", "expired"].includes'),
     "Apps Script: verified package payments must not reactivate terminal enrollments",
   )
@@ -369,6 +373,7 @@ async function verifyPlanPaymentLifecycleSources() {
   vm.createContext(sandbox)
   vm.runInContext(`${appsScriptSource}\n;globalThis.__planPayments = {
     getPlanPaymentStage_,
+    isProgressionMidpointPaymentReady_,
     grantCreditsForPaidPlanPayment_,
     markPortalPaymentPaidFromWebhook_,
     markPortalPaymentExpiredFromWebhook_,
@@ -401,6 +406,11 @@ async function verifyPlanPaymentLifecycleSources() {
   }`, sandbox)
 
   const lifecycle = sandbox.__planPayments
+  expect(
+    lifecycle.isProgressionMidpointPaymentReady_({ credits_total: 5, credits_reserved: 4, credits_used: 0 }) === true &&
+      lifecycle.isProgressionMidpointPaymentReady_({ credits_total: 5, credits_reserved: 3, credits_used: 0 }) === false,
+    "Apps Script: Progress payment must open after four, not three, reserved or used credits",
+  )
   const momentum = lifecycle.getPlanPaymentStage_("PLAN-PACK4-250", "momentum_initial")
   const midpoint = lifecycle.getPlanPaymentStage_("PLAN-PACK10-600", "progression_midpoint")
   expect(

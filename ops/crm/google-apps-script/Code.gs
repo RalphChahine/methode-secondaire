@@ -2294,21 +2294,24 @@ function getPlanPaymentStage_(planId, paymentStage) {
   return stages[normalizeValue_(planId)]?.[normalizeValue_(paymentStage)] || null;
 }
 
+const PROGRESSION_MIDPOINT_PAYMENT_READY_AFTER_CREDITS = 4;
+
+function isProgressionMidpointPaymentReady_(summary) {
+  const creditsTotal = normalizeCreditAmount_(summary?.credits_total);
+  const creditsEngaged = normalizeCreditAmount_(summary?.credits_reserved) + normalizeCreditAmount_(summary?.credits_used);
+  return creditsTotal >= 5 && creditsEngaged >= PROGRESSION_MIDPOINT_PAYMENT_READY_AFTER_CREDITS;
+}
+
 function createPortalPlanPaymentRequest_(spreadsheet, payload) {
-  const portalSession = verifyPortalSession_(spreadsheet, payload.token, "operator");
-  if (!portalSession.ok) {
-    return portalSession;
+  const portalSession = verifyPortalSession_(spreadsheet, payload.token);
+  if (!portalSession.ok || !["parent", "operator"].includes(portalSession.access.role)) {
+    return portalSession.ok ? { ok: false, code: "PLAN_ENROLLMENT_NOT_ALLOWED" } : portalSession;
   }
 
   const enrollmentId = normalizeValue_(payload.enrollment_id);
   const enrollmentSheet = getOrCreateSheet_(spreadsheet, CRM_PLAN_ENROLLMENT_SHEET_NAME);
   setupPlanEnrollmentsSheet_(enrollmentSheet);
-  const enrollmentRecord = findSheetRecordById_(
-    enrollmentSheet,
-    PLAN_ENROLLMENT_COLUMNS,
-    "enrollment_id",
-    enrollmentId,
-  );
+  const enrollmentRecord = findPlanEnrollmentForPortalAccess_(spreadsheet, portalSession.access, enrollmentId);
   if (!enrollmentRecord) {
     return { ok: false, code: "PLAN_ENROLLMENT_NOT_FOUND" };
   }
@@ -2328,12 +2331,7 @@ function createPortalPlanPaymentRequest_(spreadsheet, payload) {
   }
 
   try {
-    const currentEnrollment = findSheetRecordById_(
-      enrollmentSheet,
-      PLAN_ENROLLMENT_COLUMNS,
-      "enrollment_id",
-      enrollmentId,
-    );
+    const currentEnrollment = findPlanEnrollmentForPortalAccess_(spreadsheet, portalSession.access, enrollmentId);
     if (!currentEnrollment) {
       return { ok: false, code: "PLAN_ENROLLMENT_NOT_FOUND" };
     }
@@ -2394,7 +2392,7 @@ function createPortalPlanPaymentRequest_(spreadsheet, payload) {
 
     if (normalizeValue_(payload.payment_stage) === "progression_midpoint") {
       const summary = buildEnrollmentCreditSummary_(spreadsheet, enrollmentId);
-      if (summary.credits_total < 5 || summary.credits_reserved + summary.credits_used < 5) {
+      if (!isProgressionMidpointPaymentReady_(summary)) {
         return { ok: false, code: "PLAN_PAYMENT_STAGE_NOT_READY" };
       }
     }
