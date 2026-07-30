@@ -58,6 +58,7 @@ import {
   groupParentSessions,
 } from "@/lib/portalSessionState"
 import { getPortalBookingOutcome, getSafeHostedCheckoutUrl } from "@/lib/portalBookingOutcome"
+import { getProgressionPaymentState } from "@/lib/progressionPaymentState"
 import {
   clearPortalSession,
   adjustPortalPlanCredits,
@@ -6392,6 +6393,11 @@ function getParentOfferSnapshot(dashboard = {}, preferredPlanType = "") {
     dashboard.credits_used,
     dashboard.program_credits_used,
   )
+  const recordedCreditsReserved = firstPortalNumber(
+    plan.credits_reserved,
+    dashboard.credits_reserved,
+    dashboard.program_credits_reserved,
+  )
 
   return {
     nextSession,
@@ -6400,6 +6406,8 @@ function getParentOfferSnapshot(dashboard = {}, preferredPlanType = "") {
     hasProgram,
     creditsReady,
     creditsTotal: creditsReady ? Math.max(0, Math.round(catalogueCreditsTotal)) : null,
+    creditsGranted: creditsReady ? Math.max(0, Math.round(recordedCreditsTotal)) : null,
+    creditsReserved: creditsReady ? Math.max(0, Math.round(recordedCreditsReserved || 0)) : null,
     creditsRemaining: creditsReady && creditsRemaining !== null ? Math.max(0, Math.round(creditsRemaining)) : null,
     creditsUsed: creditsReady
       ? Math.max(0, Math.round(recordedCreditsUsed ?? Math.max(0, recordedCreditsTotal - (creditsRemaining ?? recordedCreditsTotal))))
