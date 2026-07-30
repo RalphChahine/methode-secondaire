@@ -8,6 +8,7 @@ const CRM_SCHEDULE_VIEW_NAME = "Schedule Queue";
 const CRM_PAYMENT_VIEW_NAME = "Payment Queue";
 const CRM_SESSION_NOTE_VIEW_NAME = "Session Notes Queue";
 const CRM_TUTOR_SHEET_NAME = "Tutor Roster";
+const CRM_TUTOR_PUBLIC_PROFILE_SHEET_NAME = "Tutor Public Profiles";
 const TUTOR_BASE_HOURLY_RATE_CAD = 28;
 const CRM_TUTOR_AVAILABILITY_SHEET_NAME = "Tutor Availability";
 const CRM_SESSION_SHEET_NAME = "Sessions";
@@ -45,6 +46,7 @@ const CRM_REQUIRED_SHEET_NAMES = [
   CRM_PAYMENT_VIEW_NAME,
   CRM_SESSION_NOTE_VIEW_NAME,
   CRM_TUTOR_SHEET_NAME,
+  CRM_TUTOR_PUBLIC_PROFILE_SHEET_NAME,
   CRM_TUTOR_AVAILABILITY_SHEET_NAME,
   CRM_SESSION_SHEET_NAME,
   CRM_SESSION_NOTE_SHEET_NAME,
@@ -151,6 +153,33 @@ const TUTOR_COLUMNS = [
 const TUTOR_STATUS_OPTIONS = ["active", "paused", "backup", "inactive"];
 const TUTOR_FORMAT_OPTIONS = ["online", "in_person", "either"];
 const TUTOR_LANGUAGE_OPTIONS = ["fr", "en", "bilingual"];
+
+const TUTOR_PUBLIC_PROFILE_COLUMNS = [
+  "profile_id",
+  "tutor_id",
+  "slug",
+  "display_name",
+  "photo_url",
+  "photo_alt_fr",
+  "photo_alt_en",
+  "headline_fr",
+  "headline_en",
+  "bio_fr",
+  "bio_en",
+  "teaching_style_fr",
+  "teaching_style_en",
+  "subjects",
+  "levels",
+  "languages",
+  "formats",
+  "zones",
+  "visibility",
+  "publication_consent_at",
+  "published_at",
+  "created_at",
+  "updated_at",
+];
+const TUTOR_PUBLIC_PROFILE_VISIBILITY_OPTIONS = ["draft", "published", "hidden"];
 
 const AVAILABILITY_COLUMNS = [
   "availability_id",
@@ -558,6 +587,7 @@ function setupCrm() {
   const sheet = getOrCreateSheet_(spreadsheet, CRM_SHEET_NAME);
   setupLeadSheet_(sheet);
   setupTutorRosterSheet_(getOrCreateSheet_(spreadsheet, CRM_TUTOR_SHEET_NAME));
+  setupTutorPublicProfilesSheet_(getOrCreateSheet_(spreadsheet, CRM_TUTOR_PUBLIC_PROFILE_SHEET_NAME));
   setupTutorAvailabilitySheet_(getOrCreateSheet_(spreadsheet, CRM_TUTOR_AVAILABILITY_SHEET_NAME));
   setupSessionsSheet_(getOrCreateSheet_(spreadsheet, CRM_SESSION_SHEET_NAME));
   setupSessionNotesSheet_(getOrCreateSheet_(spreadsheet, CRM_SESSION_NOTE_SHEET_NAME));
@@ -1164,6 +1194,11 @@ function setupTutorAvailabilitySheet_(sheet) {
   applyStructuredValidation_(sheet, AVAILABILITY_COLUMNS, "status", AVAILABILITY_STATUS_OPTIONS);
 }
 
+function setupTutorPublicProfilesSheet_(sheet) {
+  setupStructuredSheet_(sheet, TUTOR_PUBLIC_PROFILE_COLUMNS, "#1f4662");
+  applyStructuredValidation_(sheet, TUTOR_PUBLIC_PROFILE_COLUMNS, "visibility", TUTOR_PUBLIC_PROFILE_VISIBILITY_OPTIONS);
+}
+
 function setupSessionsSheet_(sheet) {
   setupStructuredSheet_(sheet, SESSION_COLUMNS, "#17305a");
   applyStructuredValidation_(sheet, SESSION_COLUMNS, "session_status", SESSION_STATUS_OPTIONS);
@@ -1704,6 +1739,8 @@ function handlePortalAction_(spreadsheet, payload) {
       return verifyPortalCode_(spreadsheet, payload);
     case "portal_get_dashboard":
       return getPortalDashboard_(spreadsheet, payload);
+    case "portal_get_public_tutor_profiles":
+      return getPublicTutorProfiles_(spreadsheet);
     case "portal_create_session":
       return createPortalSession_(spreadsheet, payload);
     case "portal_respond_to_session":
@@ -1742,6 +1779,8 @@ function handlePortalAction_(spreadsheet, payload) {
       return assignPortalTutor_(spreadsheet, payload);
     case "portal_create_tutor":
       return createPortalTutor_(spreadsheet, payload);
+    case "portal_upsert_tutor_public_profile":
+      return upsertPortalTutorPublicProfile_(spreadsheet, payload);
     case "portal_delete_tutor":
       return deletePortalTutor_(spreadsheet, payload);
     case "portal_invite_tutor":
@@ -3756,6 +3795,162 @@ function assignPortalTutor_(spreadsheet, payload) {
     next_action: "book_first_session",
   });
   return { ok: true, lead_id: leadId, tutor_id: tutorId, tutor_name: tutor.tutor_name };
+}
+
+function normalizeTutorPublicPhotoUrl_(value) {
+  const url = normalizeValue_(value).trim().slice(0, 2000);
+  return !url || /^https:\/\/[^\s]+$/i.test(url) ? url : "";
+}
+
+function sanitizeTutorPublicProfileForPublic_(record) {
+  return {
+    tutor_id: normalizeValue_(record.tutor_id),
+    slug: normalizeValue_(record.slug),
+    display_name: normalizeValue_(record.display_name),
+    photo_url: normalizeTutorPublicPhotoUrl_(record.photo_url),
+    photo_alt_fr: normalizeValue_(record.photo_alt_fr),
+    photo_alt_en: normalizeValue_(record.photo_alt_en),
+    headline_fr: normalizeValue_(record.headline_fr),
+    headline_en: normalizeValue_(record.headline_en),
+    bio_fr: normalizeValue_(record.bio_fr),
+    bio_en: normalizeValue_(record.bio_en),
+    teaching_style_fr: normalizeValue_(record.teaching_style_fr),
+    teaching_style_en: normalizeValue_(record.teaching_style_en),
+    subjects: normalizeValue_(record.subjects),
+    levels: normalizeValue_(record.levels),
+    languages: normalizeValue_(record.languages),
+    formats: normalizeValue_(record.formats),
+    zones: normalizeValue_(record.zones),
+  };
+}
+
+function sanitizeTutorPublicProfileForOperator_(record) {
+  return TUTOR_PUBLIC_PROFILE_COLUMNS.reduce((profile, column) => {
+    profile[column] = normalizeValue_(record[column]);
+    return profile;
+  }, {});
+}
+
+function hasCompleteTutorPublicProfileContent_(record) {
+  return [
+    "display_name",
+    "headline_fr",
+    "headline_en",
+    "bio_fr",
+    "bio_en",
+    "teaching_style_fr",
+    "teaching_style_en",
+    "subjects",
+    "levels",
+  ].every((field) => Boolean(normalizeValue_(record[field]).trim()));
+}
+
+function createTutorPublicProfileSlug_(displayName, tutorId) {
+  const normalizeSlugPart = (value) => normalizeValue_(value)
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 80);
+  const name = normalizeSlugPart(displayName) || "tuteur";
+  const id = normalizeSlugPart(tutorId);
+  return id ? `${name}-${id}` : name;
+}
+
+function getPublishedTutorPublicProfiles_(spreadsheet, allowedTutorIds) {
+  const allowed = allowedTutorIds
+    ? new Set(Array.from(allowedTutorIds).map(normalizeValue_).filter(Boolean))
+    : null;
+
+  return getSheetRecords_(spreadsheet, CRM_TUTOR_PUBLIC_PROFILE_SHEET_NAME, TUTOR_PUBLIC_PROFILE_COLUMNS)
+    .filter((record) => normalizeValue_(record.visibility) === "published")
+    .filter((record) => Boolean(normalizeValue_(record.publication_consent_at)))
+    .filter(hasCompleteTutorPublicProfileContent_)
+    .filter((record) => !allowed || allowed.has(normalizeValue_(record.tutor_id)))
+    .filter((record) => Boolean(findActiveTutorById_(spreadsheet, record.tutor_id)))
+    .map(sanitizeTutorPublicProfileForPublic_)
+    .sort((left, right) => String(left.display_name).localeCompare(String(right.display_name)));
+}
+
+function getPublicTutorProfiles_(spreadsheet) {
+  return { ok: true, tutor_profiles: getPublishedTutorPublicProfiles_(spreadsheet) };
+}
+
+function upsertPortalTutorPublicProfile_(spreadsheet, payload) {
+  const portalSession = verifyPortalSession_(spreadsheet, payload.token, "operator");
+  if (!portalSession.ok) {
+    return portalSession;
+  }
+
+  const sheet = getOrCreateSheet_(spreadsheet, CRM_TUTOR_PUBLIC_PROFILE_SHEET_NAME);
+  setupTutorPublicProfilesSheet_(sheet);
+  const profileId = normalizeValue_(payload.profile_id);
+  const existing = profileId
+    ? findSheetRecordById_(sheet, TUTOR_PUBLIC_PROFILE_COLUMNS, "profile_id", profileId)
+    : null;
+  if (profileId && !existing) {
+    return { ok: false, code: "TUTOR_PUBLIC_PROFILE_NOT_AVAILABLE" };
+  }
+
+  const tutorId = normalizeValue_(payload.tutor_id || existing?.data.tutor_id);
+  const tutor = findActiveTutorById_(spreadsheet, tutorId);
+  if (!tutor || (existing && normalizeValue_(existing.data.tutor_id) !== tutorId)) {
+    return { ok: false, code: "TUTOR_PUBLIC_PROFILE_NOT_AVAILABLE" };
+  }
+
+  const profiles = getSheetRecordsFromSheet_(sheet, TUTOR_PUBLIC_PROFILE_COLUMNS);
+  const anotherProfileForTutor = profiles.find((record) =>
+    normalizeValue_(record.data.tutor_id) === tutorId &&
+    normalizeValue_(record.data.profile_id) !== normalizeValue_(existing?.data.profile_id));
+  if (anotherProfileForTutor) {
+    return { ok: false, code: "TUTOR_PUBLIC_PROFILE_NOT_AVAILABLE" };
+  }
+
+  const photoUrl = normalizeValue_(payload.photo_url).trim();
+  if (photoUrl && !normalizeTutorPublicPhotoUrl_(photoUrl)) {
+    return { ok: false, code: "TUTOR_PUBLIC_PROFILE_PHOTO_INVALID" };
+  }
+
+  const now = new Date().toISOString();
+  const visibility = normalizeAllowed_(payload.visibility, TUTOR_PUBLIC_PROFILE_VISIBILITY_OPTIONS,
+    normalizeAllowed_(existing?.data.visibility, TUTOR_PUBLIC_PROFILE_VISIBILITY_OPTIONS, "draft"));
+  const publicationConsent = payload.publication_consent === true;
+  const nextRecord = {
+    profile_id: existing?.data.profile_id || createRecordId_("TPROFILE"),
+    tutor_id: tutorId,
+    slug: createTutorPublicProfileSlug_(payload.display_name, tutorId),
+    display_name: normalizeValue_(payload.display_name).trim().slice(0, 180),
+    photo_url: normalizeTutorPublicPhotoUrl_(photoUrl),
+    photo_alt_fr: normalizeValue_(payload.photo_alt_fr).trim().slice(0, 280),
+    photo_alt_en: normalizeValue_(payload.photo_alt_en).trim().slice(0, 280),
+    headline_fr: normalizeValue_(payload.headline_fr).trim().slice(0, 280),
+    headline_en: normalizeValue_(payload.headline_en).trim().slice(0, 280),
+    bio_fr: normalizeValue_(payload.bio_fr).trim().slice(0, 3000),
+    bio_en: normalizeValue_(payload.bio_en).trim().slice(0, 3000),
+    teaching_style_fr: normalizeValue_(payload.teaching_style_fr).trim().slice(0, 700),
+    teaching_style_en: normalizeValue_(payload.teaching_style_en).trim().slice(0, 700),
+    subjects: normalizeValue_(payload.subjects).trim().slice(0, 500),
+    levels: normalizeValue_(payload.levels).trim().slice(0, 500),
+    languages: normalizeValue_(payload.languages).trim().slice(0, 120),
+    formats: normalizeValue_(payload.formats).trim().slice(0, 120),
+    zones: normalizeValue_(payload.zones).trim().slice(0, 300),
+    visibility,
+    publication_consent_at: publicationConsent ? normalizeValue_(existing?.data.publication_consent_at) || now : "",
+    published_at: visibility === "published" ? normalizeValue_(existing?.data.published_at) || now : "",
+    created_at: normalizeValue_(existing?.data.created_at) || now,
+    updated_at: now,
+  };
+
+  if (visibility === "published" && (!publicationConsent || !hasCompleteTutorPublicProfileContent_(nextRecord))) {
+    return { ok: false, code: "TUTOR_PUBLIC_PROFILE_PUBLICATION_REQUIRED" };
+  }
+
+  writeRecord_(sheet, TUTOR_PUBLIC_PROFILE_COLUMNS, existing?.rowNumber, nextRecord);
+  return {
+    ok: true,
+    tutor_public_profile: sanitizeTutorPublicProfileForOperator_(nextRecord),
+  };
 }
 
 function createPortalTutor_(spreadsheet, payload) {
@@ -6101,6 +6296,7 @@ function buildParentPortalDashboard_(spreadsheet, access) {
     ...students.map((student) => normalizeValue_(student.assigned_tutor_id)),
     ...studentTutorAssignments.map((assignment) => normalizeValue_(assignment.tutor_id)),
   ].filter(Boolean));
+  const assignedTutorProfiles = getPublishedTutorPublicProfiles_(spreadsheet, eligibleTutorIds);
   const bookableSlots = eligibleTutorIds.size
     ? buildBookableSlots_(spreadsheet, 21)
       .filter((slot) => eligibleTutorIds.has(normalizeValue_(slot.tutor_id)))
@@ -6131,6 +6327,7 @@ function buildParentPortalDashboard_(spreadsheet, access) {
     leads,
     students,
     student_tutor_assignments: studentTutorAssignments,
+    assigned_tutor_profiles: assignedTutorProfiles,
     sessions,
     session_materials: sessionMaterials,
     notes,
@@ -6231,6 +6428,7 @@ function buildOperatorPortalDashboard_(spreadsheet, access) {
   const accessRecords = getSheetRecords_(spreadsheet, CRM_PORTAL_ACCESS_SHEET_NAME, PORTAL_ACCESS_COLUMNS);
   const leadRecords = getSheetRecords_(spreadsheet, CRM_SHEET_NAME, CRM_COLUMNS);
   const tutorSourceRecords = getSheetRecords_(spreadsheet, CRM_TUTOR_SHEET_NAME, TUTOR_COLUMNS);
+  const tutorPublicProfileSourceRecords = getSheetRecords_(spreadsheet, CRM_TUTOR_PUBLIC_PROFILE_SHEET_NAME, TUTOR_PUBLIC_PROFILE_COLUMNS);
   const sessionRecords = getSheetRecords_(spreadsheet, CRM_SESSION_SHEET_NAME, SESSION_COLUMNS);
   const planSourceRecords = getSheetRecords_(spreadsheet, CRM_PLAN_SHEET_NAME, PLAN_COLUMNS);
   const planEnrollmentSourceRecords = getSheetRecords_(spreadsheet, CRM_PLAN_ENROLLMENT_SHEET_NAME, PLAN_ENROLLMENT_COLUMNS);
@@ -6399,6 +6597,7 @@ function buildOperatorPortalDashboard_(spreadsheet, access) {
     parent_candidates: parentCandidates,
     tutors,
     tutor_records: tutorRecords,
+    tutor_public_profiles: tutorPublicProfileSourceRecords.map(sanitizeTutorPublicProfileForOperator_),
     plans,
     plan_enrollments: planEnrollments,
     credit_ledger: creditLedger,
