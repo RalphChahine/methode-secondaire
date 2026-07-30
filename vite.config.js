@@ -19,6 +19,8 @@ const PORTAL_ACTIONS = new Set([
   "portal_update_parent_profile",
   "portal_upsert_student",
   "portal_assign_student_tutor",
+  "portal_upsert_student_tutor_assignment",
+  "portal_deactivate_student_tutor_assignment",
   "portal_delete_test_record",
   "portal_delete_test_records",
   "portal_create_parent",

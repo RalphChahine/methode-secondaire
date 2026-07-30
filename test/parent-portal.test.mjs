@@ -410,6 +410,25 @@ test("CRM protects confirmation and payment state for proposed sessions", async 
   assert.match(rescheduler, /voidUnpaidSessionPayments_\(spreadsheet, sessionId, "Session rescheduled by the team\."\)/)
 })
 
+test("CRM stores owner-filtered assignments and revalidates them inside the booking lock", async () => {
+  const source = await readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
+  const booker = source.slice(
+    source.indexOf("function bookPortalSession_("),
+    source.indexOf("function submitParentFeedback_("),
+  )
+
+  assert.match(source, /const CRM_STUDENT_TUTOR_ASSIGNMENT_SHEET_NAME = "Student Tutor Assignments"/)
+  assert.match(source, /const STUDENT_TUTOR_ASSIGNMENT_COLUMNS = \[/)
+  assert.match(source, /function upsertPortalStudentTutorAssignment_\(/)
+  assert.match(source, /function deactivatePortalStudentTutorAssignment_\(/)
+  assert.match(source, /student_tutor_assignments: studentTutorAssignments/)
+  assert.match(booker, /student_tutor_assignment_id/)
+  assert.match(booker, /resolveStudentTutorAssignmentForBooking_\(spreadsheet, \{/)
+  assert.match(booker, /const bookingLock = LockService\.getScriptLock\(\)/)
+  assert.match(booker, /buildBookableSlots_\(spreadsheet, 21\)/)
+  assert.match(booker, /hasTutorSessionConflict_\(spreadsheet, record\.tutor_id/)
+})
+
 test("CRM returns only the safe Stripe mode for a newly issued portal Checkout", async () => {
   const source = await readFile(new URL("../ops/crm/google-apps-script/Code.gs", import.meta.url), "utf8")
   const paymentCreator = source.slice(
