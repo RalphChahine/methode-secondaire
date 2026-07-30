@@ -208,9 +208,10 @@ For an operator-created proposal, no payment is requested until both the parent 
 1. The team verifies the payment; the verified workflow activates the enrollment and grants four credits for the Momentum block or five credits for the relevant Progress-block instalment, with a reason in `Credit Ledger`.
 2. Booking an eligible session against an active block atomically reserves one credit. If the session cannot be written, that reservation is released.
 3. Completing the session consumes the already reserved credit. The ledger preserves the grant, reservation and consumption trail instead of overwriting a balance.
-4. For the Progress block, at or before the midpoint, the team verifies the second $300 instalment; the verified workflow grants the remaining five credits with a recorded reason.
-5. A reschedule request made at least 72 hours before the session is guaranteed and releases the reservation. A late request is merely recorded for the team; the credit remains unchanged until an operator makes the decision.
-6. Only the verified payment workflow may grant payment-linked credits. Only the operator may remove or otherwise adjust credits, and every adjustment needs a reason. Parents can see their balance but cannot issue credits to themselves.
+4. For the Progress block, the parent can request the second $300 Checkout after four of the first five credits are reserved or used. The verified workflow grants the remaining five credits with a recorded reason; requesting, expiring, or failing Checkout does not grant credits.
+5. After all first five credits are reserved or used, a sixth booking remains unavailable until the second payment is verified and grants those remaining five credits.
+6. A reschedule request made at least 72 hours before the session is guaranteed and releases the reservation. A late request is merely recorded for the team; the credit remains unchanged until an operator makes the decision.
+7. Only the verified payment workflow may grant payment-linked credits. Only the operator may remove or otherwise adjust credits, and every adjustment needs a reason. Parents can see their balance but cannot issue credits to themselves.
 
 ### Cancellation policy
 
