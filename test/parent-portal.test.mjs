@@ -378,7 +378,7 @@ test("parent dashboard uses the focused home, sessions, messages, and more desti
     assert.match(source, new RegExp(`activeDestination === "${destination}"`))
   }
   assert.doesNotMatch(source, /function PortalQuickNav/)
-  assert.match(source, /destinations=\{session\.role === "parent" \? getPortalDestinations\("parent", locale\) : \[\]\}/)
+  assert.match(source, /destinations=\{session\.role === "parent"\s*\? getPortalDestinations\("parent", locale\)\s*:/)
 })
 
 test("offers the parent a progress-block payment before credit exhaustion", async () => {

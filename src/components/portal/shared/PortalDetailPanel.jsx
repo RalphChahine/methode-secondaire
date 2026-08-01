@@ -2,7 +2,7 @@ import { ArrowLeft } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 
-export default function PortalDetailPanel({ title, description = "", onBack, children }) {
+export default function PortalDetailPanel({ title, description = "", onBack, backLabel = "Retour", children }) {
   return (
     <section className="min-w-0 rounded-[24px] border border-white/10 bg-white/[0.04] p-4 text-white sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
@@ -13,7 +13,7 @@ export default function PortalDetailPanel({ title, description = "", onBack, chi
         {onBack ? (
           <Button type="button" variant="ghost" onClick={onBack} className="min-h-11 rounded-full text-white/75 hover:bg-white/10 hover:text-white">
             <ArrowLeft className="h-4 w-4" />
-            Retour
+            {backLabel}
           </Button>
         ) : null}
       </div>

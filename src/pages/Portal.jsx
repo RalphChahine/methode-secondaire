@@ -45,6 +45,12 @@ import ParentSessions from "@/components/portal/parent/ParentSessions"
 import SessionMaterialsPanel from "@/components/portal/SessionMaterialsPanel"
 import TutorSessionMaterialsPanel from "@/components/portal/TutorSessionMaterialsPanel"
 import TutorAssignmentPicker from "@/components/portal/TutorAssignmentPicker"
+import TutorMessages from "@/components/portal/tutor/TutorMessages"
+import TutorSchedule from "@/components/portal/tutor/TutorSchedule"
+import TutorSessionDetail from "@/components/portal/tutor/TutorSessionDetail"
+import TutorStudents from "@/components/portal/tutor/TutorStudents"
+import TutorToday from "@/components/portal/tutor/TutorToday"
+import PortalDetailPanel from "@/components/portal/shared/PortalDetailPanel"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -64,6 +70,7 @@ import {
   getParentTodaySession,
 } from "@/lib/parentPortal"
 import { getPortalDestinations } from "@/lib/portalNavigation"
+import { getTutorTodayModel, groupTutorSessionsByStudent } from "@/lib/tutorPortal"
 import {
   filterBookableSlotsForAssignment,
   getStudentBookingAssignments,
@@ -245,6 +252,7 @@ export default function Portal({ entryRole = "client" }) {
   ))
   const [authStep, setAuthStep] = useState("request_code")
   const [parentDestination, setParentDestination] = useState("home")
+  const [tutorDestination, setTutorDestination] = useState("today")
   const [email, setEmail] = useState("")
   const [code, setCode] = useState("")
   const [session, setSession] = useState(null)
@@ -411,6 +419,7 @@ export default function Portal({ entryRole = "client" }) {
     setCode("")
     setAuthStep("request_code")
     setParentDestination("home")
+    setTutorDestination("today")
     setNotice("")
     setError("")
   }
@@ -516,9 +525,13 @@ export default function Portal({ entryRole = "client" }) {
           <PortalShell
             role={session.role}
             locale={locale}
-            destinations={session.role === "parent" ? getPortalDestinations("parent", locale) : []}
-            active={session.role === "parent" ? parentDestination : undefined}
-            onChange={session.role === "parent" ? setParentDestination : undefined}
+            destinations={session.role === "parent"
+              ? getPortalDestinations("parent", locale)
+              : session.role === "tutor"
+                ? getPortalDestinations("tutor", locale)
+                : []}
+            active={session.role === "parent" ? parentDestination : session.role === "tutor" ? tutorDestination : undefined}
+            onChange={session.role === "parent" ? setParentDestination : session.role === "tutor" ? setTutorDestination : undefined}
             profileName={dashboard?.profile?.name ? `${copy.welcome}, ${dashboard.profile.name}` : ""}
             email={session.email}
             copy={copy}
@@ -539,6 +552,8 @@ export default function Portal({ entryRole = "client" }) {
                     dashboard={dashboard}
                     token={session.token}
                     onSaved={(options) => refreshDashboard(session, options)}
+                    activeDestination={tutorDestination}
+                    onDestinationChange={setTutorDestination}
                   />
                 ) : (
                   <ParentDashboard
@@ -2211,82 +2226,112 @@ function ParentSessionProgressPanel({ copy, session, materials, notes }) {
   )
 }
 
-function TutorDashboard({ copy, dashboard, token, onSaved }) {
-  return (
-    <div className="mt-6 grid min-w-0 gap-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
-      <div className="min-w-0 space-y-6">
-        <MetricStrip metrics={dashboard.metrics} />
-        <NextSessionCard copy={copy} session={dashboard.next_session} role="tutor" />
-        <TutorSessionMaterialsPanel
+function TutorDashboard({ copy, dashboard, locale, token, onSaved, activeDestination = "today", onDestinationChange }) {
+  const model = getTutorTodayModel(dashboard)
+  const studentGroups = groupTutorSessionsByStudent(dashboard.sessions)
+  const [selectedSession, setSelectedSession] = useState(null)
+  const [selectedStudent, setSelectedStudent] = useState(null)
+  const [selectedNoteSessionId, setSelectedNoteSessionId] = useState("")
+  const allSessions = Array.isArray(dashboard.sessions) ? dashboard.sessions : []
+  const allNotes = Array.isArray(dashboard.notes) ? dashboard.notes : []
+
+  function findSession(session) {
+    if (!session) return null
+    return allSessions.find((entry) => entry.session_id === session.session_id) || session
+  }
+
+  function openSession(session) {
+    setSelectedSession(findSession(session))
+    setSelectedStudent(null)
+    setSelectedNoteSessionId("")
+    onDestinationChange("today")
+  }
+
+  function openAttention(item) {
+    if (item.kind === "note_due") {
+      const session = findSession(item.session)
+      setSelectedNoteSessionId(session?.session_id || "")
+      setSelectedSession(session)
+      onDestinationChange("today")
+      return
+    }
+
+    onDestinationChange("messages")
+  }
+
+  function openStudent(group) {
+    setSelectedStudent(group)
+    setSelectedSession(null)
+    setSelectedNoteSessionId("")
+    onDestinationChange("students")
+  }
+
+  const selectedSessionNeedsNote = Boolean(
+    selectedSession
+    && (dashboard.sessions_needing_notes || []).some((session) => session.session_id === selectedSession.session_id),
+  )
+
+  const sessionDetail = selectedSession ? (
+    <TutorSessionDetail copy={copy} session={selectedSession} onBack={() => setSelectedSession(null)}>
+      <SessionRow copy={copy} session={selectedSession} role="tutor" token={token} onSaved={onSaved} />
+      <TutorSessionMaterialsPanel copy={copy} sessions={[selectedSession]} materials={dashboard.session_materials} />
+      {selectedSessionNeedsNote ? (
+        <TutorNoteForm
           copy={copy}
-          sessions={dashboard.sessions}
-          materials={dashboard.session_materials}
+          token={token}
+          dashboard={dashboard}
+          selectedSessionId={selectedNoteSessionId || selectedSession.session_id}
+          onSaved={onSaved}
         />
-        <div className="lg:hidden">
-          <RecordList
-            icon={ClipboardList}
-            title={copy.sessions}
-            empty={copy.empty}
-            records={dashboard.sessions}
-            render={(session) => (
-              <SessionRow
-                key={session.session_id}
-                copy={copy}
-                session={session}
-                role="tutor"
-                token={token}
-                onSaved={onSaved}
-              />
-            )}
-          />
-        </div>
-        <CalendarAgenda copy={copy} sessions={dashboard.sessions} />
-        <TutorAvailabilityPanel copy={copy} availability={dashboard.availability} token={token} onSaved={onSaved} />
-        <TutorNoteForm copy={copy} token={token} dashboard={dashboard} onSaved={onSaved} />
-        <SessionMessagePanel copy={copy} sessions={dashboard.sessions} messages={dashboard.messages} token={token} onSaved={onSaved} />
-        <ParentRequestForm copy={copy} role="tutor" requestType="tutor_note" token={token} onSaved={onSaved} />
-      </div>
-      <div className="min-w-0 space-y-6">
-        <div className="hidden lg:block">
-          <RecordList
-            icon={ClipboardList}
-            title={copy.sessions}
-            empty={copy.empty}
-            records={dashboard.sessions}
-            render={(session) => (
-              <SessionRow
-                key={session.session_id}
-                copy={copy}
-                session={session}
-                role="tutor"
-                token={token}
-                onSaved={onSaved}
-              />
-            )}
-          />
-        </div>
-        <RecordList
-          icon={FileText}
-          title={copy.notes}
-          empty={copy.empty}
-          records={dashboard.notes}
-          render={(note) => <NoteRow key={note.note_id} note={note} />}
+      ) : null}
+    </TutorSessionDetail>
+  ) : null
+
+  const studentDetail = selectedStudent ? (
+    <PortalDetailPanel
+      title={selectedStudent.studentName}
+      description={copy.tutorStudentsIntro}
+      onBack={() => setSelectedStudent(null)}
+      backLabel={copy.back}
+    >
+      <RecordList
+        icon={CalendarClock}
+        title={copy.sessions}
+        empty={copy.empty}
+        records={selectedStudent.sessions}
+        render={(session) => (
+          <SessionRow key={session.session_id} copy={copy} session={session} role="tutor" token={token} onSaved={onSaved} />
+        )}
+      />
+      <TutorSessionMaterialsPanel copy={copy} sessions={selectedStudent.sessions} materials={dashboard.session_materials} />
+      <RecordList
+        icon={FileText}
+        title={copy.notes}
+        empty={copy.empty}
+        records={allNotes.filter((note) => note.student_id === selectedStudent.key || note.student_name === selectedStudent.studentName)}
+        render={(note) => <NoteRow key={note.note_id} note={note} />}
+      />
+    </PortalDetailPanel>
+  ) : null
+
+  const availabilityPanel = <TutorAvailabilityPanel copy={copy} availability={dashboard.availability} token={token} onSaved={onSaved} />
+
+  return (
+    <div className="min-w-0 space-y-5">
+      {activeDestination === "today" ? (
+        <TutorToday
+          copy={copy}
+          locale={locale}
+          model={model}
+          onOpenSession={openSession}
+          onOpenAttention={openAttention}
+          sessionDetail={sessionDetail}
+          nextSessionCard={sessionDetail ? null : <NextSessionCard copy={copy} session={model.nextSession} role="tutor" actionLabel={copy.tutorPrepareSession} onAction={() => openSession(model.nextSession)} />}
         />
-        <RecordList
-          icon={Star}
-          title={copy.parentFeedback}
-          empty={copy.empty}
-          records={dashboard.parent_feedback}
-          render={(feedback) => <FeedbackRow key={feedback.feedback_id} feedback={feedback} />}
-        />
-        <RecordList
-          icon={ClipboardList}
-          title={copy.requestHistory}
-          empty={copy.empty}
-          records={dashboard.requests}
-          render={(request) => <RequestRow key={request.request_id} request={request} />}
-        />
-      </div>
+      ) : null}
+      {activeDestination === "schedule" ? <TutorSchedule copy={copy} calendar={<CalendarAgenda copy={copy} sessions={dashboard.sessions} />} availabilityPanel={availabilityPanel} /> : null}
+      {activeDestination === "students" ? <TutorStudents copy={copy} groups={studentGroups} onSelect={openStudent} detail={studentDetail} /> : null}
+      {activeDestination === "messages" ? <TutorMessages copy={copy} messages={dashboard.messages} messagePanel={<SessionMessagePanel copy={copy} sessions={dashboard.sessions} messages={dashboard.messages} token={token} onSaved={onSaved} />} /> : null}
     </div>
   )
 }
@@ -2305,6 +2350,7 @@ function TutorAvailabilityPanel({ copy, availability = [], token, onSaved }) {
   const [values, setValues] = useState(emptyValues)
   const [status, setStatus] = useState("")
   const [savingId, setSavingId] = useState("")
+  const [isFormOpen, setIsFormOpen] = useState(false)
 
   function updateValue(key, value) {
     setValues((current) => ({ ...current, [key]: value }))
@@ -2353,16 +2399,20 @@ function TutorAvailabilityPanel({ copy, availability = [], token, onSaved }) {
       notes: record.notes || "",
     })
     setStatus("")
+    setIsFormOpen(true)
   }
 
   return (
     <section className="panel-soft rounded-[24px] p-5 text-white">
-      <div className="flex items-center gap-3">
-        <CalendarClock className="h-5 w-5 text-[#f5c977]" />
-        <div>
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-start gap-3">
+          <CalendarClock className="mt-1 h-5 w-5 shrink-0 text-[#f5c977]" />
+          <div>
           <h2 className="font-display text-3xl font-semibold">{copy.availabilityTitle}</h2>
           <p className="mt-1 text-sm leading-6 text-white/58">{copy.availabilityIntro}</p>
+          </div>
         </div>
+        {!isFormOpen ? <Button type="button" onClick={() => setIsFormOpen(true)} className="min-h-11 shrink-0 rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]"><CalendarPlus className="h-4 w-4" />{copy.availabilityAdd}</Button> : null}
       </div>
 
       <div className="mt-5 space-y-2">
@@ -2394,7 +2444,7 @@ function TutorAvailabilityPanel({ copy, availability = [], token, onSaved }) {
         )) : <p className="text-sm leading-7 text-white/60">{copy.availabilityEmpty}</p>}
       </div>
 
-      <form onSubmit={handleSubmit} className="mt-5 border-t border-white/10 pt-5">
+      {isFormOpen ? <form onSubmit={handleSubmit} className="mt-5 border-t border-white/10 pt-5">
         <div className="grid gap-3 sm:grid-cols-3">
           <SelectField label={copy.availabilityDay} value={values.weekday} options={["monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"]} onChange={(value) => updateValue("weekday", value)} />
           <label className="block text-xs font-semibold uppercase tracking-[0.14em] text-white/45">
@@ -2418,7 +2468,7 @@ function TutorAvailabilityPanel({ copy, availability = [], token, onSaved }) {
           <CalendarPlus className="h-4 w-4" />
           {values.availability_id ? copy.availabilitySave : copy.availabilityAdd}
         </Button>
-      </form>
+      </form> : null}
       {status ? <p className="mt-4 text-sm leading-6 text-white/68">{status}</p> : null}
     </section>
   )
@@ -4735,7 +4785,7 @@ function MetricStrip({ metrics = {}, compact = false }) {
   )
 }
 
-function NextSessionCard({ copy, session, role, actionHref, onAction }) {
+function NextSessionCard({ copy, session, role, actionHref, onAction, actionLabel }) {
   const participant = role === "tutor"
     ? session?.student_name || session?.parent_name || session?.student_level_subject
     : session?.tutor_name || session?.format
@@ -4762,12 +4812,12 @@ function NextSessionCard({ copy, session, role, actionHref, onAction }) {
           ) : null}
           {onAction ? (
             <button type="button" onClick={onAction} className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm font-semibold text-white/88 transition hover:bg-white/14 hover:text-white">
-              {copy.manageSession}
+              {actionLabel || copy.manageSession}
               <ArrowRight className="h-4 w-4" />
             </button>
           ) : actionHref ? (
             <a href={actionHref} className="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm font-semibold text-white/88 transition hover:bg-white/14 hover:text-white">
-              {copy.manageSession}
+              {actionLabel || copy.manageSession}
               <ArrowRight className="h-4 w-4" />
             </a>
           ) : null}
@@ -5389,8 +5439,8 @@ function ParentRequestForm({ copy, role, requestType = "parent_question", token,
   )
 }
 
-function TutorNoteForm({ copy, token, dashboard, onSaved }) {
-  const defaultSessionId = dashboard.sessions_needing_notes?.[0]?.session_id || dashboard.sessions?.[0]?.session_id || ""
+function TutorNoteForm({ copy, token, dashboard, selectedSessionId = "", onSaved }) {
+  const defaultSessionId = selectedSessionId || dashboard.sessions_needing_notes?.[0]?.session_id || dashboard.sessions?.[0]?.session_id || ""
   const [values, setValues] = useState({
     session_id: defaultSessionId,
     attendance: "present",
@@ -5413,10 +5463,12 @@ function TutorNoteForm({ copy, token, dashboard, onSaved }) {
   }, [dashboard.sessions, dashboard.sessions_needing_notes])
 
   useEffect(() => {
-    if (!values.session_id && defaultSessionId) {
+    if (selectedSessionId && values.session_id !== selectedSessionId) {
+      setValues((current) => ({ ...current, session_id: selectedSessionId }))
+    } else if (!values.session_id && defaultSessionId) {
       setValues((current) => ({ ...current, session_id: defaultSessionId }))
     }
-  }, [defaultSessionId, values.session_id])
+  }, [defaultSessionId, selectedSessionId, values.session_id])
 
   function updateValue(key, value) {
     setValues((current) => ({ ...current, [key]: value }))
@@ -5461,6 +5513,7 @@ function TutorNoteForm({ copy, token, dashboard, onSaved }) {
       <select
         value={values.session_id}
         onChange={(event) => updateValue("session_id", event.target.value)}
+        disabled={Boolean(selectedSessionId)}
         required
         className="mt-5 h-12 w-full rounded-2xl border border-white/15 bg-[#0b1b3a] px-3 text-sm text-white"
       >
