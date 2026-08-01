@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&family=Syne:wght@500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,14 +6,21 @@
 
 @layer base {
   :root {
+    --color-ink: #071a33;
+    --color-paper: #f6f1e7;
+    --color-cobalt: #315cff;
+    --color-sun: #ffd166;
+    --color-coral: #ff6b57;
+    --color-mint: #bfefd2;
+    --color-cloud: #e7edff;
     --background: 219 75% 10%;
     --foreground: 210 40% 98%;
     --card: 221 56% 15%;
     --card-foreground: 210 40% 98%;
     --popover: 221 56% 15%;
     --popover-foreground: 210 40% 98%;
-    --primary: 43 89% 68%;
-    --primary-foreground: 220 69% 12%;
+    --primary: 45 100% 70%;
+    --primary-foreground: 215 77% 11%;
     --secondary: 214 41% 21%;
     --secondary-foreground: 210 40% 98%;
     --muted: 219 37% 20%;
@@ -24,17 +31,19 @@
     --destructive-foreground: 210 40% 98%;
     --border: 215 28% 24%;
     --input: 215 28% 24%;
-    --ring: 43 89% 68%;
+    --ring: 45 100% 70%;
     --radius: 1.25rem;
     --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
-    --font-display: "Syne", "Trebuchet MS", sans-serif;
+    --font-display: "Bricolage Grotesque", "Trebuchet MS", sans-serif;
     --font-editorial: "Instrument Serif", Georgia, serif;
     --motion-instant: 120ms;
     --motion-quick: 180ms;
     --motion-standard: 240ms;
     --motion-emphasis: 300ms;
+    --motion-signature: 900ms;
     --ease-out-product: cubic-bezier(0.22, 1, 0.36, 1);
     --ease-in-out-product: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-notebook: cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   * {
@@ -43,7 +52,7 @@
 
   html {
     scroll-behavior: smooth;
-    background: #031026;
+    background: var(--color-ink);
   }
 
   body {
@@ -51,10 +60,9 @@
     font-family: var(--font-sans);
     color: hsl(var(--foreground));
     background:
-      radial-gradient(circle at 10% -4%, rgba(106, 163, 255, 0.24), transparent 32%),
-      radial-gradient(circle at 92% 4%, rgba(245, 201, 119, 0.15), transparent 24%),
-      radial-gradient(circle at 54% 76%, rgba(61, 118, 214, 0.14), transparent 38%),
-      linear-gradient(180deg, #07152e 0%, #0a1b3a 42%, #06142d 100%);
+      radial-gradient(circle at 10% -4%, rgba(49, 92, 255, 0.2), transparent 32%),
+      radial-gradient(circle at 92% 4%, rgba(255, 209, 102, 0.12), transparent 24%),
+      linear-gradient(180deg, var(--color-ink) 0%, #0a2040 42%, #06142d 100%);
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -86,6 +94,119 @@
     font-family: var(--font-editorial);
     letter-spacing: -0.03em;
     font-weight: 400;
+  }
+
+  .notebook-paper {
+    color: var(--color-ink);
+    background:
+      radial-gradient(circle at 12% 0%, rgba(49, 92, 255, 0.08), transparent 32%),
+      linear-gradient(135deg, rgba(255, 255, 255, 0.72), transparent 54%),
+      var(--color-paper);
+  }
+
+  .notebook-ink {
+    color: white;
+    background:
+      radial-gradient(circle at 86% 0%, rgba(255, 209, 102, 0.12), transparent 30%),
+      linear-gradient(160deg, #0d254a 0%, var(--color-ink) 58%, #041126 100%);
+  }
+
+  .notebook-grid {
+    background-image:
+      linear-gradient(to right, rgba(7, 26, 51, 0.08) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(7, 26, 51, 0.08) 1px, transparent 1px);
+    background-size: 42px 42px;
+    mask-image: linear-gradient(115deg, rgba(0, 0, 0, 0.92), transparent 78%);
+  }
+
+  .editorial-label {
+    color: var(--color-cobalt);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+
+  .annotation-line {
+    position: relative;
+    display: inline-block;
+  }
+
+  .annotation-line::after {
+    content: "";
+    position: absolute;
+    right: -0.08em;
+    bottom: -0.08em;
+    left: -0.08em;
+    height: 0.18em;
+    border-radius: 9999px;
+    background: var(--color-sun);
+    transform: rotate(-1.5deg);
+    transform-origin: left center;
+  }
+
+  .notebook-reveal {
+    opacity: 0;
+    transform: translateY(18px);
+    transition: opacity 600ms var(--ease-notebook), transform 600ms var(--ease-notebook);
+  }
+
+  .notebook-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .notebook-button-primary,
+  .notebook-button-secondary,
+  .notebook-button-ghost {
+    min-height: 3.25rem;
+    border-radius: 1rem;
+    transition:
+      background-color var(--motion-quick) var(--ease-notebook),
+      border-color var(--motion-quick) var(--ease-notebook),
+      box-shadow var(--motion-quick) var(--ease-notebook),
+      color var(--motion-quick) var(--ease-notebook),
+      transform var(--motion-instant) var(--ease-notebook);
+  }
+
+  .notebook-button-primary {
+    color: var(--color-ink);
+    background: var(--color-sun);
+    box-shadow: 0 5px 0 #c78e2d, 0 16px 28px rgba(255, 209, 102, 0.2);
+  }
+
+  .notebook-button-primary:hover {
+    background: #ffe08a;
+    box-shadow: 0 7px 0 #c78e2d, 0 20px 34px rgba(255, 209, 102, 0.26);
+    transform: translateY(-2px);
+  }
+
+  .notebook-button-primary:active {
+    box-shadow: 0 1px 0 #c78e2d, 0 8px 18px rgba(255, 209, 102, 0.18);
+    transform: translateY(3px);
+  }
+
+  .notebook-button-secondary {
+    color: var(--color-ink);
+    border: 1.5px solid rgba(7, 26, 51, 0.24);
+    background: rgba(255, 255, 255, 0.56);
+  }
+
+  .notebook-button-secondary:hover {
+    border-color: var(--color-cobalt);
+    background: rgba(231, 237, 255, 0.92);
+    transform: translateY(-2px);
+  }
+
+  .notebook-button-ghost {
+    color: inherit;
+    border: 1px solid currentColor;
+    background: transparent;
+  }
+
+  .notebook-button-ghost:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-1px);
   }
 
   .glass-panel {
@@ -352,5 +473,11 @@
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+
+  .notebook-reveal,
+  .notebook-reveal.is-visible {
+    opacity: 1 !important;
+    transform: none !important;
   }
 }
