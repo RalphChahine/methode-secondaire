@@ -19,6 +19,7 @@ import {
 import { getParentJourney } from "@/lib/parentJourney"
 import { getPublicTutorProfiles } from "@/lib/portalClient"
 import { siteConfig } from "@/lib/seo"
+import { getTutorProfileFallback } from "@/lib/tutorPublicProfiles"
 
 const contentByLocale = {
   fr: {
@@ -234,7 +235,7 @@ export default function Tuteurs() {
         />
 
         <section className="pt-20">
-          <TutorProfileRoster copy={copy.profileRoster} profiles={profiles} status={profileStatus} locale={locale} />
+          <TutorProfileRoster copy={copy.profileRoster} profiles={profiles} status={profileStatus} locale={locale} fallback={getTutorProfileFallback(locale)} />
         </section>
 
         <FinalCtaSection

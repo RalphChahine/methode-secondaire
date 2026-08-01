@@ -87,6 +87,7 @@ const contentByLocale = {
       "Présentiel possible à Montréal et Laval selon le secteur",
       "Maths, sciences, physique et chimie",
     ],
+    compensation: "À partir de 28 $ CA/h, ajusté selon l'expérience et le rôle.",
     ctaPrimary: "Postuler maintenant",
     ctaSecondary: "Lire les témoignages",
     standardsEyebrow: "Ce qu'on veut protéger",
@@ -290,6 +291,7 @@ const contentByLocale = {
       "In person in Montreal and Laval depending on area",
       "Math, science, physics and chemistry",
     ],
+    compensation: "Starting at 28 CAD/hour, adjusted for experience and role.",
     ctaPrimary: "Apply now",
     ctaSecondary: "Read testimonials",
     standardsEyebrow: "What we protect",
@@ -476,6 +478,15 @@ const routeVariantOverrides = {
   },
 }
 
+const recruitmentSections = [
+  { key: "facts" },
+  { key: "work" },
+  { key: "requirements" },
+  { key: "process" },
+  { key: "application" },
+  { key: "faq" },
+]
+
 export default function DevenirTuteur({ forcedRouteKey }) {
   const location = useLocation()
   const locale = getLocaleFromPath(location.pathname)
@@ -615,22 +626,18 @@ export default function DevenirTuteur({ forcedRouteKey }) {
                 <Link to={getLocalizedPath("temoignages", locale)}>{copy.ctaSecondary}</Link>
               </Button>
             </div>
+
+            <p className="mt-5 max-w-2xl rounded-2xl border border-[#f5c977]/20 bg-[#f5c977]/8 px-4 py-3 text-sm font-semibold leading-6 text-[#f8deb0]">{copy.compensation}</p>
           </div>
 
-          <div id="candidature" className="scroll-mt-28 lg:sticky lg:top-28">
-            <MotionCard className="glass-panel rounded-[28px] border-white/10 bg-white/[0.06] p-5 text-white shadow-[0_20px_70px_rgba(3,11,31,0.24)] sm:rounded-[32px] sm:p-7">
-              <div className="flex items-center justify-between gap-3 text-sm uppercase tracking-[0.2em] text-white/45">
-                <span>{copy.formCandidate}</span>
-                <span className="rounded-full border border-[#f5c977]/25 bg-[#f5c977]/10 px-3 py-1 text-[0.65rem] tracking-[0.16em] text-[#f5c977]">
-                  {locale === "en" ? "Step 1 of 4" : "\u00C9tape 1 sur 4"}
-                </span>
-              </div>
-              <h2 className="mt-3 font-display text-3xl font-semibold">{copy.formTitle}</h2>
-              <p className="mt-3 text-sm leading-7 text-white/72">{copy.applicationDescription}</p>
-              <div className="mt-6">
-                <TutorApplicationForm copy={copy} />
-              </div>
-            </MotionCard>
+          <div className="rounded-[28px] border border-white/10 bg-white/[0.045] p-5 text-white sm:p-7">
+            <div className="text-sm uppercase tracking-[0.2em] text-[#f5c977]">{locale === "en" ? "Practical facts" : "Repères pratiques"}</div>
+            <h2 className="mt-3 font-display text-3xl font-semibold">{locale === "en" ? "What the role looks like" : "À quoi ressemble le rôle"}</h2>
+            <ul className="mt-5 space-y-3 text-sm leading-6 text-white/72">
+              <li>• {copy.heroSignals[0]}</li>
+              <li>• {copy.heroSignals[1]}</li>
+              <li>• {copy.compensation}</li>
+            </ul>
           </div>
         </section>
 
@@ -657,7 +664,7 @@ export default function DevenirTuteur({ forcedRouteKey }) {
           </div>
         </section>
 
-        <section className="pt-16 sm:pt-20">
+        <section id="candidature" className="scroll-mt-28 pt-16 sm:pt-20">
             <SectionHeader
               eyebrow={copy.profilesEyebrow}
             title={copy.profilesTitle}
@@ -704,7 +711,7 @@ export default function DevenirTuteur({ forcedRouteKey }) {
           <ApplicationJourney steps={copy.processSteps} locale={locale} />
         </section>
 
-        <section className="pt-16 sm:pt-20">
+        <section id="candidature" className="scroll-mt-28 pt-16 sm:pt-20">
           <SectionHeader
             eyebrow={copy.applicationEyebrow}
             title={copy.applicationTitle}
