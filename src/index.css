@@ -29,6 +29,12 @@
     --font-sans: "Manrope", ui-sans-serif, system-ui, sans-serif;
     --font-display: "Syne", "Trebuchet MS", sans-serif;
     --font-editorial: "Instrument Serif", Georgia, serif;
+    --motion-instant: 120ms;
+    --motion-quick: 180ms;
+    --motion-standard: 240ms;
+    --motion-emphasis: 300ms;
+    --ease-out-product: cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-in-out-product: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   * {
@@ -316,8 +322,20 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
+  .motion-card-interactive {
+    transition: transform var(--motion-instant) var(--ease-out-product), box-shadow var(--motion-quick) var(--ease-out-product);
+  }
+
+  .motion-card-interactive:hover {
+    transform: translateY(-2px);
+  }
+
+  .motion-card-interactive:active {
+    transform: translateY(0);
+  }
+
   .journey-step {
-    transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+    transition: border-color var(--motion-quick) var(--ease-in-out-product), background var(--motion-quick) var(--ease-in-out-product), transform var(--motion-quick) var(--ease-out-product);
   }
 
   .journey-step:hover {

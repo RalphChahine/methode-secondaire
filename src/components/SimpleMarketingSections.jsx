@@ -782,6 +782,7 @@ function ActionButton({ action, variant = "default", fullWidth = false }) {
         className={className}
         variant={variant === "outline" ? "outline" : "default"}
         onClick={action.onClick}
+        data-primary-action={variant === "outline" ? undefined : "true"}
       >
         {content}
       </Button>
@@ -791,7 +792,7 @@ function ActionButton({ action, variant = "default", fullWidth = false }) {
   if (action.to) {
     return (
       <Button asChild className={className} variant={variant === "outline" ? "outline" : "default"}>
-        <Link to={action.to}>{content}</Link>
+        <Link to={action.to} data-primary-action={variant === "outline" ? undefined : "true"}>{content}</Link>
       </Button>
     )
   }
@@ -800,6 +801,7 @@ function ActionButton({ action, variant = "default", fullWidth = false }) {
     <Button asChild className={className} variant={variant === "outline" ? "outline" : "default"}>
       <a
         href={action.href}
+        data-primary-action={variant === "outline" ? undefined : "true"}
         target={action.external ? "_blank" : undefined}
         rel={action.external ? "noreferrer" : undefined}
       >

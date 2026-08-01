@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom"
 import { ArrowRight, CalendarDays, Menu, Phone } from "lucide-react"
 
@@ -27,6 +27,8 @@ export default function SiteLayout() {
   const routeKey = getRouteKeyFromPath(location.pathname)
   const isPortalRoute = ["portal", "team"].includes(routeKey)
   const suppressMobileAction = ["request", "thankYou", "portal", "team"].includes(routeKey)
+  const primaryActionRef = useRef(null)
+  const [isStickyActionVisible, setIsStickyActionVisible] = useState(false)
   const isTutorRoute = ["devenirTuteur", "employmentTutorSecondary"].includes(routeKey)
   const requestUrl = isEnglish ? DECLIC_REQUEST_URL_EN : DECLIC_REQUEST_URL
 
@@ -146,8 +148,27 @@ export default function SiteLayout() {
       }
   const MobileActionIcon = mobileAction.icon
 
+  useEffect(() => {
+    if (suppressMobileAction || typeof window === "undefined" || typeof IntersectionObserver === "undefined") {
+      setIsStickyActionVisible(false)
+      return undefined
+    }
+
+    primaryActionRef.current = document.querySelector("[data-primary-action]")
+    if (!primaryActionRef.current) {
+      setIsStickyActionVisible(false)
+      return undefined
+    }
+
+    const observer = new IntersectionObserver(([entry]) => {
+      setIsStickyActionVisible(!entry.isIntersecting)
+    }, { threshold: 0.1 })
+    observer.observe(primaryActionRef.current)
+    return () => observer.disconnect()
+  }, [location.pathname, suppressMobileAction])
+
   return (
-    <div className={`min-h-screen overflow-x-hidden ${suppressMobileAction ? "pb-0" : "pb-24 lg:pb-0"}`}>
+    <div className={`min-h-screen overflow-x-hidden ${suppressMobileAction || !isStickyActionVisible ? "pb-0" : "pb-24 lg:pb-0"}`}>
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#071631]/80 backdrop-blur-xl">
         <div className={`mx-auto flex w-full max-w-7xl items-center justify-between lg:px-8 ${isPortalRoute ? "min-h-16 gap-2 px-3 py-2 sm:gap-3 sm:px-6" : "min-h-[4.75rem] gap-3 px-4 py-3 sm:px-6"}`}>
           <Link to={getLocalizedPath("home", locale)} className={`flex min-w-0 items-center gap-3 ${isPortalRoute ? "flex-1 gap-2" : ""}`}>
@@ -334,17 +355,19 @@ export default function SiteLayout() {
         </div>
       </footer> : null}
 
-      {!suppressMobileAction ? <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#071631]/95 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden">
-        <div className="mx-auto w-full max-w-7xl">
-          <Button
-            asChild
-            className="min-h-12 w-full rounded-full bg-[#f5c977] px-4 text-sm text-[#071631] hover:bg-[#f7d38f]"
-          >
-            <a href={mobileAction.href} aria-label={mobileAction.label}>
-              <MobileActionIcon className="h-4 w-4" />
-              {mobileAction.label}
-            </a>
-          </Button>
+      {!suppressMobileAction ? <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#071631]/95 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden" aria-hidden={!isStickyActionVisible}>
+        <div className={`transition-[transform,opacity] duration-[180ms] ease-out ${isStickyActionVisible ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"}`}>
+          <div className="mx-auto w-full max-w-7xl">
+            <Button
+              asChild
+              className="min-h-12 w-full rounded-full bg-[#f5c977] px-4 text-sm text-[#071631] hover:bg-[#f7d38f]"
+            >
+              <a href={mobileAction.href} aria-label={mobileAction.label}>
+                <MobileActionIcon className="h-4 w-4" />
+                {mobileAction.label}
+              </a>
+            </Button>
+          </div>
         </div>
       </div> : null}
 
