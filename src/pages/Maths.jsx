@@ -278,6 +278,7 @@ export default function Maths() {
           panelTitle={copy.panelTitle}
           panelItems={copy.panelItems}
           panelNote={copy.panelNote}
+          artVariant="math"
           journey={getParentJourney(locale)}
         />
 

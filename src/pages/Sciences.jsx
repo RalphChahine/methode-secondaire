@@ -282,6 +282,7 @@ export default function Sciences() {
           panelTitle={copy.panelTitle}
           panelItems={copy.panelItems}
           panelNote={copy.panelNote}
+          artVariant="science"
           journey={getParentJourney(locale)}
         />
 

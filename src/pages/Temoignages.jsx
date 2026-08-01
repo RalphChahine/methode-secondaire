@@ -103,18 +103,18 @@ export default function Temoignages() {
       </div>
 
       <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
-        <section className="grid gap-6 lg:grid-cols-[1.02fr,0.98fr] lg:items-center">
+        <section className="notebook-paper notebook-grid grid gap-6 rounded-[32px] p-5 sm:p-7 lg:grid-cols-[1.02fr,0.98fr] lg:items-center">
           <div className="max-w-3xl">
-            <div className="inline-flex rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-sm text-white/85">
+            <div className="editorial-label inline-flex rounded-full border border-ink/15 bg-white/70 px-4 py-1.5 text-sm text-ink/75">
               {testimonialBadge}
             </div>
-            <h1 className="balanced-copy mt-6 font-display text-5xl font-semibold leading-[0.96] text-white sm:text-6xl">
+            <h1 className="balanced-copy mt-6 font-display text-5xl font-semibold leading-[0.96] text-ink sm:text-6xl">
               {copy.title}
             </h1>
-            <p className="mt-5 max-w-2xl text-base leading-8 text-white/72 sm:text-lg">{copy.description}</p>
+            <p className="mt-5 max-w-2xl text-base leading-8 text-ink/72 sm:text-lg">{copy.description}</p>
 
             <div className="mt-7 flex flex-wrap gap-3">
-              <Button asChild className="rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f]">
+              <Button asChild className="notebook-button-primary px-6 py-6 text-base">
                 <a href={requestUrl}>
                   <CalendarDays className="h-4 w-4" />
                   {copy.bookingLabel}
@@ -123,7 +123,7 @@ export default function Temoignages() {
               <Button
                 asChild
                 variant="outline"
-                className="rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white"
+                className="notebook-button-secondary px-6 py-6 text-base"
               >
                 <a href={"tel:" + siteConfig.phone}>
                   <Phone className="h-4 w-4" />
@@ -132,7 +132,7 @@ export default function Temoignages() {
               </Button>
             </div>
 
-            <p className="mt-6 max-w-2xl border-l-2 border-[#f5c977] pl-4 text-sm leading-7 text-[#f8deb0]">{journey.text}</p>
+            <p className="mt-6 max-w-2xl border-l-2 border-cobalt pl-4 text-sm leading-7 text-ink/72">{journey.text}</p>
           </div>
 
           <ProgressJourney

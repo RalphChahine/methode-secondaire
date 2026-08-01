@@ -12,6 +12,7 @@ import {
 } from "lucide-react"
 
 import MotionCard from "@/components/MotionCard"
+import NotebookIllustration from "@/components/art/NotebookIllustration"
 import Seo from "@/components/Seo"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -610,7 +611,7 @@ export default function DevenirTuteur({ forcedRouteKey }) {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
               <Button
                 asChild
-                className="w-full justify-center rounded-full bg-[#f5c977] px-6 py-6 text-base text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
+                className="notebook-button-primary w-full justify-center px-6 py-6 text-base sm:w-auto"
               >
                 <a href="#candidature">
                   {copy.ctaPrimary}
@@ -621,7 +622,7 @@ export default function DevenirTuteur({ forcedRouteKey }) {
               <Button
                 asChild
                 variant="outline"
-                className="w-full justify-center rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white sm:w-auto"
+                className="notebook-button-ghost w-full justify-center border-white/15 px-6 py-6 text-base text-white hover:text-white sm:w-auto"
               >
                 <Link to={getLocalizedPath("temoignages", locale)}>{copy.ctaSecondary}</Link>
               </Button>
@@ -630,7 +631,9 @@ export default function DevenirTuteur({ forcedRouteKey }) {
             <p className="mt-5 max-w-2xl rounded-2xl border border-[#f5c977]/20 bg-[#f5c977]/8 px-4 py-3 text-sm font-semibold leading-6 text-[#f8deb0]">{copy.compensation}</p>
           </div>
 
-          <div className="rounded-[28px] border border-white/10 bg-white/[0.045] p-5 text-white sm:p-7">
+          <div className="notebook-paper rounded-[28px] border border-ink/10 p-4 text-ink sm:p-6">
+            <NotebookIllustration variant="clarity" className="w-full" />
+            <div className="notebook-facts">
             <div className="text-sm uppercase tracking-[0.2em] text-[#f5c977]">{locale === "en" ? "Practical facts" : "Repères pratiques"}</div>
             <h2 className="mt-3 font-display text-3xl font-semibold">{locale === "en" ? "What the role looks like" : "À quoi ressemble le rôle"}</h2>
             <ul className="mt-5 space-y-3 text-sm leading-6 text-white/72">
@@ -638,6 +641,7 @@ export default function DevenirTuteur({ forcedRouteKey }) {
               <li>• {copy.heroSignals[1]}</li>
               <li>• {copy.compensation}</li>
             </ul>
+            </div>
           </div>
         </section>
 
