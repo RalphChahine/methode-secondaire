@@ -224,7 +224,7 @@ export default function Tuteurs() {
           }}
           secondaryAction={{
             label: locale === "en" ? "Fill out the form" : "Remplir le formulaire",
-            to: `${getLocalizedPath("home", locale)}#demande`,
+            to: getLocalizedPath("request", locale),
             icon: ClipboardList,
           }}
           panelEyebrow={copy.panelEyebrow}
@@ -248,7 +248,7 @@ export default function Tuteurs() {
           }}
           secondaryAction={{
             label: locale === "en" ? "Fill out the request" : "Remplir la demande",
-            to: `${getLocalizedPath("home", locale)}#demande`,
+            to: getLocalizedPath("request", locale),
             icon: ClipboardList,
           }}
         />

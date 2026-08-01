@@ -12,7 +12,7 @@
     "check:pricing": "node scripts/check-pricing-packages.mjs",
     "test:payments": "node --test test/stripe-checkout.test.mjs",
     "test:portal": "node --test test/portal-api.test.mjs test/portal-materials.test.mjs test/parent-portal.test.mjs test/student-tutor-assignments.test.mjs test/tutor-public-profiles.test.mjs",
-    "test:site": "node --test test/site-layout.test.mjs && npm run check:pricing && npm run build && npm run check:site"
+    "test:site": "node --test test/conversion-links.test.mjs && node --test test/site-layout.test.mjs && npm run check:pricing && npm run build && npm run check:site"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.15",

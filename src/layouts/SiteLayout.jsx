@@ -26,6 +26,7 @@ export default function SiteLayout() {
   const homePath = getLocalizedPath("home", locale)
   const isPortalRoute = location.pathname === getLocalizedPath("portal", locale)
   const routeKey = getRouteKeyFromPath(location.pathname)
+  const suppressMobileAction = ["request", "thankYou", "portal"].includes(routeKey)
   const isTutorRoute = ["devenirTuteur", "employmentTutorSecondary"].includes(routeKey)
   const requestUrl = isEnglish ? DECLIC_REQUEST_URL_EN : DECLIC_REQUEST_URL
 
@@ -146,7 +147,7 @@ export default function SiteLayout() {
   const MobileActionIcon = mobileAction.icon
 
   return (
-    <div className={`min-h-screen overflow-x-hidden ${isPortalRoute ? "pb-0" : "pb-24 lg:pb-0"}`}>
+    <div className={`min-h-screen overflow-x-hidden ${suppressMobileAction ? "pb-0" : "pb-24 lg:pb-0"}`}>
       <header className="sticky top-0 z-50 border-b border-white/10 bg-[#071631]/80 backdrop-blur-xl">
         <div className={`mx-auto flex w-full max-w-7xl items-center justify-between lg:px-8 ${isPortalRoute ? "min-h-16 gap-2 px-3 py-2 sm:gap-3 sm:px-6" : "min-h-[4.75rem] gap-3 px-4 py-3 sm:px-6"}`}>
           <Link to={getLocalizedPath("home", locale)} className={`flex min-w-0 items-center gap-3 ${isPortalRoute ? "flex-1 gap-2" : ""}`}>
@@ -333,7 +334,7 @@ export default function SiteLayout() {
         </div>
       </footer>
 
-      {!isPortalRoute ? <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#071631]/95 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden">
+      {!suppressMobileAction ? <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#071631]/95 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden">
         <div className="mx-auto w-full max-w-7xl">
           <Button
             asChild

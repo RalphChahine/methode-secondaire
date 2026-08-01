@@ -411,7 +411,7 @@ export default function CaseStudies() {
                 asChild
                 className="mt-5 w-full rounded-full bg-[#f5c977] px-5 py-5 text-sm text-[#071631] hover:bg-[#f7d38f] sm:w-auto"
               >
-                <Link to={`${getLocalizedPath("home", locale)}#demande`}>
+                <Link to={getLocalizedPath("request", locale)}>
                   {journey.actionButton}
                   <ArrowRight className="h-4 w-4" />
                 </Link>
@@ -552,7 +552,7 @@ export default function CaseStudies() {
                   variant="outline"
                   className="w-full rounded-full border-white/15 bg-white/5 px-6 py-6 text-base text-white hover:bg-white/10 hover:text-white sm:w-auto"
                 >
-                  <Link to={`${getLocalizedPath("home", locale)}#demande`}>
+                  <Link to={getLocalizedPath("request", locale)}>
                     {copy.tertiary}
                     <ArrowRight className="h-4 w-4" />
                   </Link>
