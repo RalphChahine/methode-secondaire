@@ -4,6 +4,9 @@ import test from "node:test"
 import { renderToStaticMarkup } from "react-dom/server"
 import { createServer } from "vite"
 import {
+  findLatestReleasedParentRecap,
+  getParentHomeModel,
+  getParentMoreItems,
   getParentNextAction,
   getParentSessionProgress,
   getParentTodaySession,
@@ -286,6 +289,50 @@ test("keeps the legacy message counter in the next-action priority", () => {
   assert.equal(action.destination, "messages")
 })
 
+test("parent home exposes only action, next session, and latest released recap", () => {
+  const dashboard = {
+    profile: { name: "Parent" },
+    matching: { tutor_id: "T-1" },
+    next_session: {
+      session_id: "S-NEXT",
+      session_status: "confirmed",
+      start_at: "2099-08-01T17:00:00.000Z",
+    },
+    sessions: [
+      {
+        session_id: "S-NEXT",
+        session_status: "confirmed",
+        start_at: "2099-08-01T17:00:00.000Z",
+      },
+      {
+        session_id: "S-PAST",
+        session_status: "completed",
+        start_at: "2099-07-01T17:00:00.000Z",
+        end_at: "2099-07-01T18:00:00.000Z",
+      },
+    ],
+    notes: [
+      { session_id: "S-PAST", status: "released", parent_summary: "Released recap" },
+      { session_id: "S-NEXT", status: "draft", parent_summary: "Draft recap" },
+    ],
+  }
+
+  const model = getParentHomeModel(dashboard)
+  assert.deepEqual(Object.keys(model).sort(), ["action", "latestRecap", "nextSession"])
+  assert.equal(model.nextSession.session_id, "S-NEXT")
+  assert.equal(model.latestRecap.parent_summary, "Released recap")
+  assert.equal(model.latestRecap.session_id, "S-PAST")
+})
+
+test("parent more uses focused rows instead of dashboard panels", () => {
+  assert.deepEqual(getParentMoreItems("fr").map(({ key }) => key), [
+    "student_tutor", "plan", "billing", "family", "help",
+  ])
+  assert.deepEqual(getParentMoreItems("en").map(({ key }) => key), [
+    "student_tutor", "plan", "billing", "family", "help",
+  ])
+})
+
 test("renders four accessible parent destinations with a non-colour active state", async () => {
   const vite = await createServer({ server: { middlewareMode: true }, appType: "custom" })
   try {
@@ -317,33 +364,21 @@ test("renders four accessible parent destinations with a non-colour active state
   }
 })
 
-test("parent dashboard defaults to Today and gates secondary destinations", async () => {
+test("parent dashboard uses the focused home, sessions, messages, and more destinations", async () => {
   const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
 
-  assert.match(source, /import ParentPortalNavigation from "@\/components\/portal\/ParentPortalNavigation"/)
+  assert.match(source, /import ParentHome from "@\/components\/portal\/parent\/ParentHome"/)
+  assert.match(source, /import ParentSessions from "@\/components\/portal\/parent\/ParentSessions"/)
+  assert.match(source, /import ParentMessages from "@\/components\/portal\/parent\/ParentMessages"/)
+  assert.match(source, /import ParentMore from "@\/components\/portal\/parent\/ParentMore"/)
+  assert.match(source, /getParentHomeModel/)
   assert.match(source, /getParentNextAction/)
-  assert.match(source, /getParentSessionProgress/)
-  assert.match(source, /useState\("today"\)/)
-  for (const destination of ["today", "sessions", "messages", "account"]) {
+  assert.match(source, /useState\("home"\)/)
+  for (const destination of ["home", "sessions", "messages", "more"]) {
     assert.match(source, new RegExp(`activeDestination === "${destination}"`))
   }
   assert.doesNotMatch(source, /function PortalQuickNav/)
-  for (const label of [
-    "Aujourd’hui",
-    "Séances",
-    "Famille et compte",
-    "Préparer la séance",
-    "Séance avec le tuteur",
-    "Lire le bilan",
-    "Today",
-    "Sessions",
-    "Family & account",
-    "Prepare the session",
-    "Meet with the tutor",
-    "Read the recap",
-  ]) {
-    assert.match(source, new RegExp(label))
-  }
+  assert.match(source, /destinations=\{session\.role === "parent" \? getPortalDestinations\("parent", locale\) : \[\]\}/)
 })
 
 test("offers the parent a progress-block payment before credit exhaustion", async () => {
@@ -357,31 +392,20 @@ test("offers the parent a progress-block payment before credit exhaustion", asyn
 
 test("renders grouped parent session history and state-driven session actions", async () => {
   const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
+  const sessionsSource = await readFile(new URL("../src/components/portal/parent/ParentSessions.jsx", import.meta.url), "utf8")
 
-  assert.match(source, /getPortalSessionState/)
+  assert.match(source, /import ParentSessions from "@\/components\/portal\/parent\/ParentSessions"/)
   assert.match(source, /groupParentSessions/)
   assert.match(source, /findReleasedParentRecap/)
-  assert.match(source, /copy\.upcomingSessions/)
-  assert.match(source, /copy\.followUpSessions/)
-  assert.match(source, /copy\.pastSessions/)
-  assert.match(source, /copy\.cancelledSessions/)
-  assert.match(source, /sessionGroups\.followUp/)
-  assert.match(source, /sessionGroups\.followUp\.length \? \(/)
+  assert.match(sessionsSource, /useState\("upcoming"\)/)
+  assert.match(sessionsSource, /bookingPanel/)
+  assert.match(sessionsSource, /sessionGroups\.past/)
+  assert.match(sessionsSource, /sessionGroups\.cancelled/)
+  assert.match(sessionsSource, /onSelectSession/)
   assert.match(source, /presentation\.canConfirm/)
   assert.match(source, /presentation\.isWaitingForOther/)
   assert.match(source, /presentation\.isExpiredProposal/)
   assert.match(source, /presentation\.canShowPayment/)
-  assert.match(source, /records=\{sessionGroups\.past\}\s*\r?\n\s*collapsible/)
-  assert.match(source, /records=\{sessionGroups\.cancelled\}\s*\r?\n\s*collapsible/)
-  assert.doesNotMatch(source, /records=\{sessionGroups\.followUp\}\s*\r?\n\s*collapsible/)
-  assert.match(source, /function RecordList\(\{[\s\S]*collapsible = false/)
-  assert.match(source, /useState\(\(\) => !collapsible\)/)
-  assert.match(source, /aria-expanded=\{isOpen\}/)
-  assert.match(source, /aria-controls=\{contentId\}/)
-  assert.match(source, /role="region"/)
-  assert.match(source, /aria-labelledby=\{toggleId\}/)
-  assert.match(source, /<ChevronDown/)
-  assert.match(source, /collapsible && !records\.length/)
 })
 
 test("CRM protects confirmation and payment state for proposed sessions", async () => {
@@ -582,13 +606,10 @@ test("the parent portal calls a zero-dollar payment free", async () => {
 test("the prepare action focuses the material panel already rendered on Today", async () => {
   const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
 
-  assert.match(source, /function openParentDestination\(destination, actionKey\)/)
-  assert.match(source, /actionKey !== "prepare"/)
-  assert.match(source, /getElementById\("portal-preparation-focus-target"\)/)
-  assert.match(source, /scrollIntoView/)
-  assert.match(source, /preparation\?\.focus/)
-  assert.match(source, /id="portal-preparation-focus-target"/)
-  assert.match(source, /tabIndex=\{-1\}/)
+  assert.match(source, /function openParentAction\(action\)/)
+  assert.match(source, /action\?\.key === "prepare"/)
+  assert.match(source, /setSelectedSession\(model\.nextSession\)/)
+  assert.match(source, /onDestinationChange\("sessions"\)/)
 })
 
 test("uses an unprepared canonical next session before an earlier array session", () => {
@@ -657,7 +678,8 @@ test("moves Today to the earliest unprepared session when the canonical next ses
   assert.equal(getParentTodaySession(dashboard, action)?.session_id, action.sessionId)
 
   const source = await readFile(new URL("../src/pages/Portal.jsx", import.meta.url), "utf8")
-  assert.equal((source.match(/session=\{todaySession\}/g) || []).length, 3)
+  assert.match(source, /const model = getParentHomeModel\(dashboard\)/)
+  assert.match(source, /setSelectedSession\(model\.nextSession\)/)
 })
 
 test("keeps recap current until a released note exists", () => {

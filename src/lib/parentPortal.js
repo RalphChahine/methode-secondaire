@@ -1,4 +1,7 @@
-import { isPortalSessionCurrentOrFuture } from "./portalSessionState.js"
+import {
+  findReleasedParentRecap,
+  isPortalSessionCurrentOrFuture,
+} from "./portalSessionState.js"
 
 function records(value) {
   return Array.isArray(value) ? value : []
@@ -80,6 +83,55 @@ export function getParentTodaySession(dashboard = {}, action = getParentNextActi
   return sessions
     .filter(isCurrentOrFutureOrUndated)
     .sort((left, right) => String(left.start_at || "").localeCompare(String(right.start_at || "")))[0] || null
+}
+
+export function findLatestReleasedParentRecap(notes = [], sessions = []) {
+  const releasedRecaps = records(sessions)
+    .filter((session) => session && String(session.session_status || "").toLowerCase() === "completed")
+    .map((session) => {
+      const recap = findReleasedParentRecap(notes, session.session_id)
+      return recap ? { ...recap, session } : null
+    })
+    .filter(Boolean)
+    .sort((left, right) => {
+      const leftDate = new Date(left.session.end_at || left.session.start_at || 0).getTime()
+      const rightDate = new Date(right.session.end_at || right.session.start_at || 0).getTime()
+      return rightDate - leftDate
+    })
+
+  return releasedRecaps[0] || null
+}
+
+export function getParentHomeModel(dashboard = {}) {
+  const action = getParentNextAction(dashboard)
+  return {
+    action,
+    nextSession: getParentTodaySession(dashboard, action),
+    latestRecap: findLatestReleasedParentRecap(dashboard.notes, dashboard.sessions),
+  }
+}
+
+export function getParentMoreItems(locale = "fr") {
+  const labels = locale === "en"
+    ? {
+        student_tutor: "Student and tutor",
+        plan: "Plan and sessions remaining",
+        billing: "Billing",
+        family: "Family details",
+        help: "Help and feedback",
+      }
+    : {
+        student_tutor: "Élève et tuteur",
+        plan: "Plan et séances restantes",
+        billing: "Facturation",
+        family: "Détails de la famille",
+        help: "Aide et commentaires",
+      }
+
+  return ["student_tutor", "plan", "billing", "family", "help"].map((key) => ({
+    key,
+    label: labels[key],
+  }))
 }
 
 function hasSharedMaterial(materials, sessionId) {
