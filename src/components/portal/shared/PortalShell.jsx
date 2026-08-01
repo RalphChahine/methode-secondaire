@@ -27,6 +27,8 @@ export default function PortalShell({
   role,
   locale = "fr",
   destinations = [],
+  desktopDestinations,
+  mobileDestinations,
   active,
   onChange,
   profileName,
@@ -44,6 +46,8 @@ export default function PortalShell({
     [active, destinations],
   )
   const hasNavigation = destinations.length > 0
+  const desktopItems = desktopDestinations || destinations
+  const mobileItems = mobileDestinations || destinations
 
   return (
     <div className={`min-w-0 ${hasNavigation ? "lg:grid lg:grid-cols-[15rem,minmax(0,1fr)] lg:items-start lg:gap-6" : ""}`}>
@@ -54,7 +58,7 @@ export default function PortalShell({
               {role === "operator" ? copy.operatorDashboard : role === "tutor" ? copy.tutorDashboard : copy.parentDashboard}
             </div>
             <nav aria-label={copy.portalNavLabel || copy.parentNavLabel || "Portal navigation"} className="space-y-1">
-              {destinations.map((destination) => (
+              {desktopItems.map((destination) => (
                 <PortalDestinationButton
                   key={destination.key}
                   destination={destination}
@@ -90,9 +94,9 @@ export default function PortalShell({
         <nav
           aria-label={copy.portalNavLabel || copy.parentNavLabel || "Portal navigation"}
           className="fixed inset-x-0 bottom-0 z-40 grid gap-1 border-t border-white/10 bg-[#071631]/95 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur lg:hidden"
-          style={{ gridTemplateColumns: `repeat(${destinations.length}, minmax(0, 1fr))` }}
+          style={{ gridTemplateColumns: `repeat(${mobileItems.length}, minmax(0, 1fr))` }}
         >
-          {destinations.map((destination) => (
+          {mobileItems.map((destination) => (
             <PortalDestinationButton
               key={destination.key}
               destination={destination}

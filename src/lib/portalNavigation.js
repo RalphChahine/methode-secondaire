@@ -1,11 +1,13 @@
 import {
   CalendarCheck,
   CalendarDays,
+  CreditCard,
   Clock3,
   Home,
   Inbox,
   MessageSquareText,
   MoreHorizontal,
+  Settings2,
   UsersRound,
 } from "lucide-react"
 
@@ -64,4 +66,22 @@ export function getPortalDestinations(role, locale = "fr") {
 
 export function getDefaultPortalDestination(role) {
   return role === "parent" ? "home" : "today"
+}
+
+export function getPortalDesktopDestinations(role, locale = "fr") {
+  const destinations = getPortalDestinations(role, locale)
+  if (role !== "operator") return destinations
+  const moreIndex = destinations.findIndex((destination) => destination.key === "more")
+  const extras = locale === "en"
+    ? [
+      { key: "tutors", label: "Tutors", icon: UsersRound },
+      { key: "payments", label: "Payments", icon: CreditCard },
+      { key: "settings", label: "Settings", icon: Settings2 },
+    ]
+    : [
+      { key: "tutors", label: "Tuteurs", icon: UsersRound },
+      { key: "payments", label: "Paiements", icon: CreditCard },
+      { key: "settings", label: "Réglages", icon: Settings2 },
+    ]
+  return [...destinations.slice(0, moreIndex), ...extras, ...destinations.slice(moreIndex)]
 }

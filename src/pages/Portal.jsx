@@ -51,6 +51,14 @@ import TutorSessionDetail from "@/components/portal/tutor/TutorSessionDetail"
 import TutorStudents from "@/components/portal/tutor/TutorStudents"
 import TutorToday from "@/components/portal/tutor/TutorToday"
 import PortalDetailPanel from "@/components/portal/shared/PortalDetailPanel"
+import OperatorCalendar from "@/components/portal/operator/OperatorCalendar"
+import OperatorFamilies from "@/components/portal/operator/OperatorFamilies"
+import OperatorInbox from "@/components/portal/operator/OperatorInbox"
+import OperatorMore from "@/components/portal/operator/OperatorMore"
+import OperatorPayments from "@/components/portal/operator/OperatorPayments"
+import OperatorSettings from "@/components/portal/operator/OperatorSettings"
+import OperatorToday from "@/components/portal/operator/OperatorToday"
+import OperatorTutors from "@/components/portal/operator/OperatorTutors"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
@@ -69,8 +77,9 @@ import {
   getParentSessionProgress,
   getParentTodaySession,
 } from "@/lib/parentPortal"
-import { getPortalDestinations } from "@/lib/portalNavigation"
+import { getPortalDestinations, getPortalDesktopDestinations } from "@/lib/portalNavigation"
 import { getTutorTodayModel, groupTutorSessionsByStudent } from "@/lib/tutorPortal"
+import { buildOperatorPriorityQueue } from "@/lib/operatorPortal"
 import {
   filterBookableSlotsForAssignment,
   getStudentBookingAssignments,
@@ -253,6 +262,7 @@ export default function Portal({ entryRole = "client" }) {
   const [authStep, setAuthStep] = useState("request_code")
   const [parentDestination, setParentDestination] = useState("home")
   const [tutorDestination, setTutorDestination] = useState("today")
+  const [operatorDestination, setOperatorDestination] = useState("today")
   const [email, setEmail] = useState("")
   const [code, setCode] = useState("")
   const [session, setSession] = useState(null)
@@ -420,6 +430,7 @@ export default function Portal({ entryRole = "client" }) {
     setAuthStep("request_code")
     setParentDestination("home")
     setTutorDestination("today")
+    setOperatorDestination("today")
     setNotice("")
     setError("")
   }
@@ -529,9 +540,10 @@ export default function Portal({ entryRole = "client" }) {
               ? getPortalDestinations("parent", locale)
               : session.role === "tutor"
                 ? getPortalDestinations("tutor", locale)
-                : []}
-            active={session.role === "parent" ? parentDestination : session.role === "tutor" ? tutorDestination : undefined}
-            onChange={session.role === "parent" ? setParentDestination : session.role === "tutor" ? setTutorDestination : undefined}
+                : getPortalDestinations("operator", locale)}
+            desktopDestinations={session.role === "operator" ? getPortalDesktopDestinations("operator", locale) : undefined}
+            active={session.role === "parent" ? parentDestination : session.role === "tutor" ? tutorDestination : operatorDestination}
+            onChange={session.role === "parent" ? setParentDestination : session.role === "tutor" ? setTutorDestination : setOperatorDestination}
             profileName={dashboard?.profile?.name ? `${copy.welcome}, ${dashboard.profile.name}` : ""}
             email={session.email}
             copy={copy}
@@ -545,7 +557,7 @@ export default function Portal({ entryRole = "client" }) {
             {session && dashboard ? (
               <PortalDashboardBoundary copy={copy} onRetry={retryDashboard}>
                 {session.role === "operator" ? (
-                  <OperatorDashboard copy={copy} dashboard={dashboard} locale={locale} token={session.token} onSaved={(options) => refreshDashboard(session, options)} />
+                  <OperatorDashboard copy={copy} dashboard={dashboard} locale={locale} token={session.token} activeDestination={operatorDestination} onDestinationChange={setOperatorDestination} onSaved={(options) => refreshDashboard(session, options)} />
                 ) : session.role === "tutor" ? (
                   <TutorDashboard
                     copy={copy}
@@ -2474,60 +2486,66 @@ function TutorAvailabilityPanel({ copy, availability = [], token, onSaved }) {
   )
 }
 
-function OperatorDashboard({ copy, dashboard, locale, token, onSaved }) {
+function OperatorDashboard({ copy, dashboard, locale, token, onSaved, activeDestination = "today", onDestinationChange }) {
   const safeDashboard = normalizeOperatorDashboard(dashboard)
+  const queue = buildOperatorPriorityQueue(safeDashboard)
+  const families = safeDashboard.parent_candidates
+  const tutors = safeDashboard.tutor_records.length ? safeDashboard.tutor_records : safeDashboard.tutors
+  const [selectedFamily, setSelectedFamily] = useState(null)
+  const [selectedTutor, setSelectedTutor] = useState(null)
+  const [showScheduleForm, setShowScheduleForm] = useState(false)
+
+  function openQueueItem(item) {
+    if (item.entityKey.startsWith("lead:") || item.entityKey.startsWith("family:")) {
+      const family = families.find((entry) => entry.lead_id === item.lead_id || entry.parent_id === item.parent_id || entry.email === item.email)
+      if (family) {
+        setSelectedFamily(family)
+        onDestinationChange("families")
+        return
+      }
+    }
+    if (item.entityKey.startsWith("tutor:")) {
+      const tutor = tutors.find((entry) => entry.tutor_id === item.tutor_id)
+      if (tutor) {
+        setSelectedTutor(tutor)
+        onDestinationChange("tutors")
+        return
+      }
+    }
+    if (item.entityKey.startsWith("payment:")) {
+      onDestinationChange("payments")
+      return
+    }
+    if (item.entityKey.startsWith("message:") || item.entityKey.startsWith("request:")) {
+      onDestinationChange("inbox")
+      return
+    }
+    onDestinationChange("calendar")
+  }
+
+  const familyDetail = selectedFamily ? (
+    <>
+      <ParentManagementPanel copy={copy} dashboard={{ ...safeDashboard, parent_candidates: [selectedFamily] }} token={token} onSaved={onSaved} />
+      {selectedFamily.students?.length ? <RecordList icon={UsersRound} title={copy.childrenTitle} empty={copy.empty} records={selectedFamily.students} render={(student) => <div key={student.student_id || student.student_name} className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white/72">{student.student_name || student.student_id}</div>} /> : null}
+    </>
+  ) : null
+
+  const tutorDetail = selectedTutor ? (
+    <TutorAccessPanel copy={copy} tutors={[selectedTutor]} profiles={safeDashboard.tutor_public_profiles || []} token={token} onSaved={onSaved} />
+  ) : null
+
+  const familyForView = selectedFamily ? { ...selectedFamily, detail: familyDetail } : null
 
   return (
-    <div className="mt-6 space-y-6">
-      <TodayBoard copy={copy} today={safeDashboard.today} />
-      <TeamPriorityBoard copy={copy} queues={safeDashboard.work_queues} automation={safeDashboard.automation} />
-      <div className="grid min-w-0 gap-6 xl:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-        <div className="min-w-0 space-y-6">
-          <MetricStrip metrics={safeDashboard.metrics} />
-          <ParentCreationPanel copy={copy} token={token} onSaved={onSaved} />
-          <ParentManagementPanel copy={copy} dashboard={safeDashboard} token={token} onSaved={onSaved} />
-          <TutorAccessPanel
-            copy={copy}
-            tutors={safeDashboard.tutor_records || safeDashboard.tutors}
-            profiles={safeDashboard.tutor_public_profiles || []}
-            token={token}
-            onSaved={onSaved}
-          />
-          <PlanEnrollmentPanel copy={copy} dashboard={safeDashboard} locale={locale} token={token} onSaved={onSaved} />
-          <ScheduleSessionForm copy={copy} dashboard={safeDashboard} token={token} onSaved={onSaved} />
-          <TestDataCleanupPanel copy={copy} records={safeDashboard.test_data} token={token} onSaved={onSaved} />
-        </div>
-        <div className="min-w-0 space-y-6">
-          <RecordList
-            icon={CalendarClock}
-            title={copy.sessions}
-            empty={copy.empty}
-            records={safeDashboard.sessions}
-            render={(session) => <SessionRow key={session.session_id} copy={copy} session={session} role="operator" token={token} onSaved={onSaved} />}
-          />
-          <RecordList
-            icon={Star}
-            title={copy.parentFeedback}
-            empty={copy.empty}
-            records={safeDashboard.parent_feedback}
-            render={(feedback) => <FeedbackRow key={feedback.feedback_id} feedback={feedback} />}
-          />
-          <RecordList
-            icon={MessageSquareText}
-            title={copy.messagesTitle}
-            empty={copy.empty}
-            records={safeDashboard.messages}
-            render={(message) => <MessageRow key={message.message_id} message={message} />}
-          />
-          <RecordList
-            icon={MessageSquareText}
-            title={copy.requestQueue}
-            empty={copy.empty}
-            records={safeDashboard.requests}
-            render={(request) => <OperatorRequestRow key={request.request_id} copy={copy} request={request} token={token} onSaved={onSaved} />}
-          />
-        </div>
-      </div>
+    <div className="min-w-0">
+      {activeDestination === "today" ? <OperatorToday copy={copy} queue={queue} today={safeDashboard.today} onOpen={openQueueItem} /> : null}
+      {activeDestination === "families" ? <OperatorFamilies copy={copy} families={families} selectedFamily={familyForView} onSelect={(family) => { setSelectedFamily(family); if (!family) onDestinationChange("families") }} createPanel={<ParentCreationPanel copy={copy} token={token} onSaved={onSaved} />} /> : null}
+      {activeDestination === "tutors" ? <OperatorTutors copy={copy} tutors={tutors} selectedTutor={selectedTutor} onSelect={(tutor) => { setSelectedTutor(tutor); if (!tutor) onDestinationChange("tutors") }} createPanel={<TutorAccessPanel copy={copy} tutors={tutors} profiles={safeDashboard.tutor_public_profiles || []} token={token} onSaved={onSaved} />} detail={tutorDetail} /> : null}
+      {activeDestination === "calendar" ? <OperatorCalendar copy={copy} sessions={safeDashboard.sessions} onOpen={(item) => { if (item.kind === "schedule") setShowScheduleForm(true) }} schedulePanel={showScheduleForm ? <PortalDetailPanel title={copy.scheduleSession} onBack={() => setShowScheduleForm(false)} backLabel={copy.back || "Back"}><ScheduleSessionForm copy={copy} dashboard={safeDashboard} token={token} onSaved={onSaved} /></PortalDetailPanel> : null} /> : null}
+      {activeDestination === "payments" ? <OperatorPayments copy={copy} payments={safeDashboard.payments} enrollments={safeDashboard.plan_enrollments} ledger={safeDashboard.credit_ledger} detail={<PlanEnrollmentPanel copy={copy} dashboard={safeDashboard} locale={locale} token={token} onSaved={onSaved} />} /> : null}
+      {activeDestination === "inbox" ? <OperatorInbox copy={copy} messages={safeDashboard.messages} requests={safeDashboard.requests} messagePanel={<RecordList icon={MessageSquareText} title={copy.messagesTitle} empty={copy.empty} records={safeDashboard.messages} render={(message) => <MessageRow key={message.message_id} message={message} />} />} requestPanel={<RecordList icon={MessageSquareText} title={copy.requestQueue} empty={copy.empty} records={safeDashboard.requests} render={(request) => <OperatorRequestRow key={request.request_id} copy={copy} request={request} token={token} onSaved={onSaved} />} />} /> : null}
+      {activeDestination === "settings" ? <OperatorSettings copy={copy} profile={safeDashboard.profile} automation={safeDashboard.automation} accessPanel={<TutorAccessPanel copy={copy} tutors={tutors} profiles={safeDashboard.tutor_public_profiles || []} token={token} onSaved={onSaved} />} cleanupPanel={<TestDataCleanupPanel copy={copy} records={safeDashboard.test_data} token={token} onSaved={onSaved} />} /> : null}
+      {activeDestination === "more" ? <OperatorMore copy={copy} onSelect={onDestinationChange} /> : null}
     </div>
   )
 }
@@ -2543,9 +2561,12 @@ function normalizeOperatorDashboard(dashboard) {
     "parent_feedback",
     "test_data",
     "messages",
+    "payments",
     "plans",
     "plan_enrollments",
     "credit_ledger",
+    "tutor_public_profiles",
+    "test_data",
   ]
 
   return arrayKeys.reduce(
@@ -2559,117 +2580,6 @@ function normalizeOperatorDashboard(dashboard) {
       work_queues: source.work_queues && typeof source.work_queues === "object" ? source.work_queues : {},
       automation: source.automation && typeof source.automation === "object" ? source.automation : {},
     },
-  )
-}
-
-function TodayBoard({ copy, today = {} }) {
-  const sections = [
-    { key: "calls", title: copy.todayCalls, icon: Phone, records: today.calls || [] },
-    { key: "confirmations", title: copy.todayConfirmations, icon: CalendarCheck, records: today.confirmations || [] },
-    { key: "sessions_today", title: copy.todaySessions, icon: CalendarDays, records: today.sessions_today || [] },
-    { key: "reminders", title: copy.todayReminders, icon: RefreshCw, records: today.reminders || [] },
-  ]
-
-  return (
-    <section className="border-y border-white/10 bg-[#061735]/75 py-6 text-white">
-      <div className="flex items-center gap-3">
-        <CalendarClock className="h-5 w-5 text-[#f5c977]" />
-        <div>
-          <h2 className="font-display text-3xl font-semibold">{copy.todayTitle}</h2>
-          <p className="mt-1 text-sm leading-6 text-white/58">{copy.todayIntro}</p>
-        </div>
-      </div>
-      <div className="mt-5 grid gap-x-6 gap-y-5 md:grid-cols-2 xl:grid-cols-4">
-        {sections.map(({ key, title, icon: Icon, records }) => (
-          <div key={key} className="border-l-2 border-white/10 pl-4">
-            <div className="flex items-center gap-2 text-sm font-semibold text-white/88">
-              <Icon className="h-4 w-4 text-[#f5c977]" />
-              {title}
-              <span className="text-white/45">{records.length}</span>
-            </div>
-            <div className="mt-3 space-y-2">
-              {records.length ? records.slice(0, 4).map((record) => {
-                const titleValue = record.parent_name || record.student_name || record.title || record.email || "-"
-                const detail = record.start_at ? `${formatDateTime(record.start_at)} | ${record.tutor_name || ""}` : (record.student_level_subject || record.detail || "")
-                return record.phone ? (
-                  <a key={record.session_id || record.lead_id || titleValue} href={`tel:${record.phone}`} className="block rounded-xl bg-white/5 px-3 py-2 hover:bg-white/10">
-                    <div className="truncate text-sm font-semibold text-white/82">{titleValue}</div>
-                    <div className="mt-1 line-clamp-2 text-xs leading-5 text-white/55">{detail}</div>
-                  </a>
-                ) : (
-                  <div key={record.session_id || record.lead_id || titleValue} className="rounded-xl bg-white/5 px-3 py-2">
-                    <div className="truncate text-sm font-semibold text-white/82">{titleValue}</div>
-                    <div className="mt-1 line-clamp-2 text-xs leading-5 text-white/55">{detail}</div>
-                  </div>
-                )
-              }) : <p className="text-sm leading-6 text-white/52">{copy.queueEmpty}</p>}
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-function TeamPriorityBoard({ copy, queues = {}, automation = {} }) {
-  const queueDefinitions = [
-    { key: "callbacks", title: copy.queueCallbacks, icon: Phone },
-    { key: "matching", title: copy.queueMatching, icon: UsersRound },
-    { key: "confirmations", title: copy.queueConfirmations, icon: CalendarCheck },
-    { key: "calendar", title: copy.queueCalendar, icon: CalendarClock },
-    { key: "notes", title: copy.queueNotes, icon: FileText },
-    { key: "payments", title: copy.queuePayments, icon: CreditCard },
-    { key: "messages", title: copy.queueMessages, icon: MessageSquareText },
-  ]
-
-  return (
-    <section className="panel-soft rounded-[24px] p-5 text-white">
-      <div>
-        <h2 className="font-display text-3xl font-semibold">{copy.priorityTitle}</h2>
-        <p className="mt-2 text-sm leading-6 text-white/58">{copy.priorityIntro}</p>
-      </div>
-      <div className="mt-5 grid gap-x-6 gap-y-5 md:grid-cols-2 xl:grid-cols-3">
-        {queueDefinitions.map(({ key, title, icon: Icon }) => {
-          const records = Array.isArray(queues[key]) ? queues[key] : []
-          return (
-            <div key={key} className="border-l-2 border-white/10 pl-4">
-              <div className="flex items-center gap-2 text-sm font-semibold text-white/88">
-                <Icon className="h-4 w-4 text-[#f5c977]" />
-                {title}
-                <span className="text-white/45">{records.length}</span>
-              </div>
-              <div className="mt-3 space-y-2">
-                {records.length ? records.map((record) => {
-                  const content = (
-                    <>
-                      <div className="truncate text-sm font-semibold text-white/82">{record.title}</div>
-                      {record.detail ? <div className="mt-1 line-clamp-2 text-xs leading-5 text-white/55">{record.detail}</div> : null}
-                      {record.status ? <div className="mt-2"><StatusPill value={record.status} /></div> : null}
-                    </>
-                  )
-
-                  return record.href ? (
-                    <a key={record.id} href={record.href} className="block rounded-xl bg-white/5 px-3 py-2 hover:bg-white/10">
-                      {content}
-                    </a>
-                  ) : (
-                    <div key={record.id} className="rounded-xl bg-white/5 px-3 py-2">
-                      {content}
-                    </div>
-                  )
-                }) : <p className="text-sm leading-6 text-white/52">{copy.queueEmpty}</p>}
-              </div>
-            </div>
-          )
-        })}
-      </div>
-      <div className="mt-6 grid gap-3 border-t border-white/10 pt-4 text-sm text-white/64 sm:grid-cols-2 xl:grid-cols-4">
-        <div><span className="font-semibold text-white/84">{copy.automationReminders}:</span> {automation.reminder_cadence_minutes || 15} min, {copy.automationReminderDetail}</div>
-        <div><span className="font-semibold text-white/84">{copy.automationCalendar}:</span> {copy.automationCalendarDetail}</div>
-        <div><span className="font-semibold text-white/84">{copy.automationDigest}:</span> {automation.daily_digest_hour || "07:30"}, {copy.automationDigestDetail}</div>
-        <div><span className="font-semibold text-white/84">{copy.automationPayments}:</span> {automation.payment_mode === "stripe_checkout" ? copy.paymentModeCheckout : copy.paymentModeUnavailable}</div>
-      </div>
-    </section>
   )
 }
 
