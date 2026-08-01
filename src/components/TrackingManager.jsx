@@ -17,6 +17,7 @@ import {
   trackPageView,
   trackSessionConfirmed,
   trackSessionRequestCreated,
+  trackTaskEvent,
 } from "@/lib/tracking"
 
 function getAnchorFromEvent(event) {
@@ -112,6 +113,11 @@ export default function TrackingManager() {
       trackPlanEnrollmentCreated(event.detail || {})
     }
 
+    function handleTaskEvent(event) {
+      const detail = event.detail || {}
+      trackTaskEvent(detail.name, detail.payload)
+    }
+
     document.addEventListener("click", handleDocumentClick, true)
     window.addEventListener("methode:lead-submit", handleLeadSubmit)
     window.addEventListener("methode:first-session-request-created", handleFirstSessionRequestCreated)
@@ -122,6 +128,7 @@ export default function TrackingManager() {
     window.addEventListener("methode:session-request-created", handleSessionRequestCreated)
     window.addEventListener("methode:session-confirmed", handleSessionConfirmed)
     window.addEventListener("methode:plan-enrollment-created", handlePlanEnrollmentCreated)
+    window.addEventListener("methode:task-event", handleTaskEvent)
 
     return () => {
       document.removeEventListener("click", handleDocumentClick, true)
@@ -134,6 +141,7 @@ export default function TrackingManager() {
       window.removeEventListener("methode:session-request-created", handleSessionRequestCreated)
       window.removeEventListener("methode:session-confirmed", handleSessionConfirmed)
       window.removeEventListener("methode:plan-enrollment-created", handlePlanEnrollmentCreated)
+      window.removeEventListener("methode:task-event", handleTaskEvent)
     }
   }, [])
 

@@ -91,6 +91,7 @@ import {
 } from "@/lib/portalSessionState"
 import { getPortalBookingOutcome, getSafeHostedCheckoutUrl } from "@/lib/portalBookingOutcome"
 import { findTutorPublicProfile } from "@/lib/tutorPublicProfiles"
+import { emitTaskEvent } from "@/lib/tracking"
 import {
   getProgressionEnrollmentPaymentState,
   getProgressionPaymentState,
@@ -329,6 +330,15 @@ export default function Portal({ entryRole = "client" }) {
       return
     }
 
+    emitTaskEvent("portal_code_requested", {
+      role,
+      locale,
+      action_kind: "requested",
+      route_key: isTeamEntry ? "team" : "portal",
+      status: "success",
+      timing_bucket: "standard",
+    })
+
     setAuthStep("verify_code")
     setCode("")
     setNotice(copy.codeSent)
@@ -392,6 +402,15 @@ export default function Portal({ entryRole = "client" }) {
       setError(getPortalErrorMessage(copy, result.code))
       return
     }
+
+    emitTaskEvent("portal_signed_in", {
+      role: result.role || role,
+      locale,
+      action_kind: "signed_in",
+      route_key: isTeamEntry ? "team" : "portal",
+      status: "success",
+      timing_bucket: "standard",
+    })
 
     const nextSession = {
       role: result.role,
@@ -562,6 +581,7 @@ export default function Portal({ entryRole = "client" }) {
                   <TutorDashboard
                     copy={copy}
                     dashboard={dashboard}
+                    locale={locale}
                     token={session.token}
                     onSaved={(options) => refreshDashboard(session, options)}
                     activeDestination={tutorDestination}
@@ -1382,8 +1402,22 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved, active
   const sessionGroups = groupParentSessions(dashboard.sessions)
   const [selectedSession, setSelectedSession] = useState(null)
   const [selectedMore, setSelectedMore] = useState("")
+  const [pendingTaskAction, setPendingTaskAction] = useState("")
 
   function openParentAction(action) {
+    const actionKey = action?.key || ""
+    if (actionKey) {
+      setPendingTaskAction(actionKey)
+      emitTaskEvent("parent_next_action_opened", {
+        role: "parent",
+        locale,
+        action_kind: "opened",
+        route_key: action?.destination || actionKey,
+        status: "opened",
+        timing_bucket: "fast",
+      })
+    }
+
     if (action?.key === "prepare" && model.nextSession) {
       setSelectedSession(model.nextSession)
       onDestinationChange("sessions")
@@ -1397,6 +1431,21 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved, active
     }
 
     onDestinationChange(action?.destination === "today" ? "home" : action?.destination || "home")
+  }
+
+  function handleParentSaved(options) {
+    if (pendingTaskAction) {
+      emitTaskEvent("parent_next_action_completed", {
+        role: "parent",
+        locale,
+        action_kind: "completed",
+        route_key: pendingTaskAction,
+        status: "success",
+        timing_bucket: "standard",
+      })
+      setPendingTaskAction("")
+    }
+    onSaved?.(options)
   }
 
   function openSession(session) {
@@ -1416,14 +1465,14 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved, active
         role={role}
         token={token}
         recap={findReleasedParentRecap(dashboard.notes, selectedSession.session_id)}
-        onSaved={onSaved}
+        onSaved={handleParentSaved}
       />
       <SessionMaterialsPanel
         copy={copy}
         session={selectedSession}
         materials={dashboard.session_materials}
         token={token}
-        onSaved={onSaved}
+        onSaved={handleParentSaved}
         formatDateTime={formatDateTime}
         getErrorMessage={getPortalErrorMessage}
       />
@@ -1438,22 +1487,22 @@ function ParentDashboard({ copy, dashboard, locale, role, token, onSaved, active
 
   let moreDetail = null
   if (selectedMore === "student_tutor") {
-    moreDetail = <ParentMoreDetail title={copy.childrenTitle} description={copy.childrenIntro} onBack={() => setSelectedMore("")}><FamilyStudentsPanel copy={copy} students={dashboard.students} tutorAssignments={dashboard.student_tutor_assignments} tutorProfiles={dashboard.assigned_tutor_profiles || []} locale={locale} role={role} token={token} onSaved={onSaved} /></ParentMoreDetail>
+    moreDetail = <ParentMoreDetail title={copy.childrenTitle} description={copy.childrenIntro} onBack={() => setSelectedMore("")}><FamilyStudentsPanel copy={copy} students={dashboard.students} tutorAssignments={dashboard.student_tutor_assignments} tutorProfiles={dashboard.assigned_tutor_profiles || []} locale={locale} role={role} token={token} onSaved={handleParentSaved} /></ParentMoreDetail>
   } else if (selectedMore === "plan") {
-    moreDetail = <ParentMoreDetail title={copy.planSetupTitle} description={copy.planSetupIntro} onBack={() => setSelectedMore("")}><ParentRhythmCard copy={copy} locale={locale} snapshot={getParentOfferSnapshot(dashboard, "weekly")} token={token} onSaved={onSaved} onOpenSessions={() => { setSelectedMore(""); onDestinationChange("sessions") }} /><ProgramProgressCard copy={copy} locale={locale} snapshot={getParentOfferSnapshot(dashboard, "pack")} token={token} onSaved={onSaved} onOpenSessions={() => { setSelectedMore(""); onDestinationChange("sessions") }} /></ParentMoreDetail>
+    moreDetail = <ParentMoreDetail title={copy.planSetupTitle} description={copy.planSetupIntro} onBack={() => setSelectedMore("")}><ParentRhythmCard copy={copy} locale={locale} snapshot={getParentOfferSnapshot(dashboard, "weekly")} token={token} onSaved={handleParentSaved} onOpenSessions={() => { setSelectedMore(""); onDestinationChange("sessions") }} /><ProgramProgressCard copy={copy} locale={locale} snapshot={getParentOfferSnapshot(dashboard, "pack")} token={token} onSaved={handleParentSaved} onOpenSessions={() => { setSelectedMore(""); onDestinationChange("sessions") }} /></ParentMoreDetail>
   } else if (selectedMore === "billing") {
-    moreDetail = <ParentMoreDetail title={copy.payments} description={copy.planSetupIntro} onBack={() => setSelectedMore("")}><RecordList icon={CreditCard} title={copy.payments} empty={copy.empty} records={dashboard.payments} render={(payment) => <PaymentRow key={`${payment.session_id || "package"}-${payment.created_at || payment.due_date || payment.amount_cad}`} copy={copy} locale={locale} payment={payment} token={token} onSaved={onSaved} />} /></ParentMoreDetail>
+    moreDetail = <ParentMoreDetail title={copy.payments} description={copy.planSetupIntro} onBack={() => setSelectedMore("")}><RecordList icon={CreditCard} title={copy.payments} empty={copy.empty} records={dashboard.payments} render={(payment) => <PaymentRow key={`${payment.session_id || "package"}-${payment.created_at || payment.due_date || payment.amount_cad}`} copy={copy} locale={locale} payment={payment} token={token} onSaved={handleParentSaved} />} /></ParentMoreDetail>
   } else if (selectedMore === "family") {
-    moreDetail = <ParentMoreDetail title={copy.profileTitle} description={copy.profileIntro} onBack={() => setSelectedMore("")}><ParentProfilePanel copy={copy} profile={dashboard.profile} token={token} onSaved={onSaved} /></ParentMoreDetail>
+    moreDetail = <ParentMoreDetail title={copy.profileTitle} description={copy.profileIntro} onBack={() => setSelectedMore("")}><ParentProfilePanel copy={copy} profile={dashboard.profile} token={token} onSaved={handleParentSaved} /></ParentMoreDetail>
   } else if (selectedMore === "help") {
-    moreDetail = <ParentMoreDetail title={copy.feedbackTitle} description={copy.feedbackComment} onBack={() => setSelectedMore("")}><ParentSessionNoteForm copy={copy} dashboard={dashboard} token={token} onSaved={onSaved} /><ParentFeedbackForm copy={copy} dashboard={dashboard} token={token} onSaved={onSaved} /><RecordList icon={ClipboardList} title={copy.requestHistory} empty={copy.empty} records={dashboard.requests} render={(request) => <RequestRow key={request.request_id} copy={copy} request={request} token={token} onSaved={onSaved} />} /></ParentMoreDetail>
+    moreDetail = <ParentMoreDetail title={copy.feedbackTitle} description={copy.feedbackComment} onBack={() => setSelectedMore("")}><ParentSessionNoteForm copy={copy} dashboard={dashboard} token={token} onSaved={handleParentSaved} /><ParentFeedbackForm copy={copy} dashboard={dashboard} token={token} onSaved={handleParentSaved} /><RecordList icon={ClipboardList} title={copy.requestHistory} empty={copy.empty} records={dashboard.requests} render={(request) => <RequestRow key={request.request_id} copy={copy} request={request} token={token} onSaved={handleParentSaved} />} /></ParentMoreDetail>
   }
 
   return (
     <div className="min-w-0">
       {activeDestination === "home" ? <ParentHome copy={copy} locale={locale} model={model} onOpenAction={openParentAction} onOpenSession={openSession} /> : null}
-      {activeDestination === "sessions" ? <ParentSessions copy={copy} locale={locale} sessionGroups={sessionGroups} bookingPanel={<BookingPanel copy={copy} dashboard={dashboard} locale={locale} token={token} onSaved={onSaved} onOpenAccount={() => { setSelectedMore("plan"); onDestinationChange("more") }} />} detail={sessionDetail} onSelectSession={openSession} /> : null}
-      {activeDestination === "messages" ? <ParentMessages copy={copy} messages={dashboard.messages} messagePanel={<SessionMessagePanel copy={copy} sessions={dashboard.sessions} messages={dashboard.messages} token={token} onSaved={onSaved} />} /> : null}
+      {activeDestination === "sessions" ? <ParentSessions copy={copy} locale={locale} sessionGroups={sessionGroups} bookingPanel={<BookingPanel copy={copy} dashboard={dashboard} locale={locale} token={token} onSaved={handleParentSaved} onOpenAccount={() => { setSelectedMore("plan"); onDestinationChange("more") }} />} detail={sessionDetail} onSelectSession={openSession} /> : null}
+      {activeDestination === "messages" ? <ParentMessages copy={copy} messages={dashboard.messages} messagePanel={<SessionMessagePanel copy={copy} sessions={dashboard.sessions} messages={dashboard.messages} token={token} onSaved={handleParentSaved} />} /> : null}
       {activeDestination === "more" ? <ParentMore copy={copy} locale={locale} selectedKey={selectedMore} onSelect={openMore} detail={moreDetail} /> : null}
     </div>
   )
@@ -2253,7 +2302,18 @@ function TutorDashboard({ copy, dashboard, locale, token, onSaved, activeDestina
   }
 
   function openSession(session) {
-    setSelectedSession(findSession(session))
+    const nextSession = findSession(session)
+    if ((dashboard.sessions_needing_notes || []).some((entry) => entry.session_id === nextSession?.session_id)) {
+      emitTaskEvent("tutor_note_opened", {
+        role: "tutor",
+        locale,
+        action_kind: "opened",
+        route_key: "today",
+        status: "opened",
+        timing_bucket: "fast",
+      })
+    }
+    setSelectedSession(nextSession)
     setSelectedStudent(null)
     setSelectedNoteSessionId("")
     onDestinationChange("today")
@@ -2262,6 +2322,14 @@ function TutorDashboard({ copy, dashboard, locale, token, onSaved, activeDestina
   function openAttention(item) {
     if (item.kind === "note_due") {
       const session = findSession(item.session)
+      emitTaskEvent("tutor_note_opened", {
+        role: "tutor",
+        locale,
+        action_kind: "opened",
+        route_key: "today",
+        status: "opened",
+        timing_bucket: "fast",
+      })
       setSelectedNoteSessionId(session?.session_id || "")
       setSelectedSession(session)
       onDestinationChange("today")
@@ -2290,6 +2358,7 @@ function TutorDashboard({ copy, dashboard, locale, token, onSaved, activeDestina
       {selectedSessionNeedsNote ? (
         <TutorNoteForm
           copy={copy}
+          locale={locale}
           token={token}
           dashboard={dashboard}
           selectedSessionId={selectedNoteSessionId || selectedSession.session_id}
@@ -2496,6 +2565,25 @@ function OperatorDashboard({ copy, dashboard, locale, token, onSaved, activeDest
   const [showScheduleForm, setShowScheduleForm] = useState(false)
 
   function openQueueItem(item) {
+    const entityKind = String(item?.entityKey || "").split(":")[0]
+    const routeKey = entityKind === "lead" || entityKind === "family"
+      ? "families"
+      : entityKind === "tutor"
+        ? "tutors"
+        : entityKind === "payment"
+          ? "payments"
+          : entityKind === "message" || entityKind === "request"
+            ? "inbox"
+            : "calendar"
+    emitTaskEvent("operator_priority_opened", {
+      role: "operator",
+      locale,
+      action_kind: "opened",
+      route_key: routeKey,
+      status: "opened",
+      timing_bucket: "fast",
+    })
+
     if (item.entityKey.startsWith("lead:") || item.entityKey.startsWith("family:")) {
       const family = families.find((entry) => entry.lead_id === item.lead_id || entry.parent_id === item.parent_id || entry.email === item.email)
       if (family) {
@@ -2543,7 +2631,7 @@ function OperatorDashboard({ copy, dashboard, locale, token, onSaved, activeDest
       {activeDestination === "tutors" ? <OperatorTutors copy={copy} tutors={tutors} token={token} selectedTutor={selectedTutor} onSelect={(tutor) => { setSelectedTutor(tutor); if (!tutor) onDestinationChange("tutors") }} createPanel={<TutorAccessPanel copy={copy} tutors={tutors} profiles={safeDashboard.tutor_public_profiles || []} token={token} onSaved={onSaved} />} detail={tutorDetail} /> : null}
       {activeDestination === "calendar" ? <OperatorCalendar copy={copy} sessions={safeDashboard.sessions} token={token} onOpen={(item) => { if (item.kind === "schedule") setShowScheduleForm(true) }} schedulePanel={showScheduleForm ? <PortalDetailPanel title={copy.scheduleSession} onBack={() => setShowScheduleForm(false)} backLabel={copy.back || "Back"}><ScheduleSessionForm copy={copy} dashboard={safeDashboard} token={token} onSaved={onSaved} /></PortalDetailPanel> : null} /> : null}
       {activeDestination === "payments" ? <OperatorPayments copy={copy} payments={safeDashboard.payments} token={token} enrollments={safeDashboard.plan_enrollments} ledger={safeDashboard.credit_ledger} detail={<PlanEnrollmentPanel copy={copy} dashboard={safeDashboard} locale={locale} token={token} onSaved={onSaved} />} /> : null}
-      {activeDestination === "inbox" ? <OperatorInbox copy={copy} messages={safeDashboard.messages} requests={safeDashboard.requests} token={token} messagePanel={<RecordList icon={MessageSquareText} title={copy.messagesTitle} empty={copy.empty} records={safeDashboard.messages} render={(message) => <MessageRow key={message.message_id} message={message} />} />} requestPanel={<RecordList icon={MessageSquareText} title={copy.requestQueue} empty={copy.empty} records={safeDashboard.requests} render={(request) => <OperatorRequestRow key={request.request_id} copy={copy} request={request} token={token} onSaved={onSaved} />} />} /> : null}
+      {activeDestination === "inbox" ? <OperatorInbox copy={copy} messages={safeDashboard.messages} requests={safeDashboard.requests} token={token} messagePanel={<RecordList icon={MessageSquareText} title={copy.messagesTitle} empty={copy.empty} records={safeDashboard.messages} render={(message) => <MessageRow key={message.message_id} message={message} />} />} requestPanel={<RecordList icon={MessageSquareText} title={copy.requestQueue} empty={copy.empty} records={safeDashboard.requests} render={(request) => <OperatorRequestRow key={request.request_id} copy={copy} locale={locale} request={request} token={token} onSaved={onSaved} />} />} /> : null}
       {activeDestination === "settings" ? <OperatorSettings copy={copy} profile={safeDashboard.profile} automation={safeDashboard.automation} accessPanel={<TutorAccessPanel copy={copy} tutors={tutors} profiles={safeDashboard.tutor_public_profiles || []} token={token} onSaved={onSaved} />} cleanupPanel={<TestDataCleanupPanel copy={copy} records={safeDashboard.test_data} token={token} onSaved={onSaved} />} /> : null}
       {activeDestination === "more" ? <OperatorMore copy={copy} onSelect={onDestinationChange} /> : null}
     </div>
@@ -5234,7 +5322,7 @@ function RequestRow({ request }) {
   )
 }
 
-function OperatorRequestRow({ copy, request, token, onSaved }) {
+function OperatorRequestRow({ copy, locale = "fr", request, token, onSaved }) {
   const [nextStatus, setNextStatus] = useState(request.status || "new")
   const [status, setStatus] = useState("")
   const [isSaving, setIsSaving] = useState(false)
@@ -5246,6 +5334,14 @@ function OperatorRequestRow({ copy, request, token, onSaved }) {
     setIsSaving(false)
 
     if (result.ok) {
+      emitTaskEvent("operator_priority_resolved", {
+        role: "operator",
+        locale,
+        action_kind: "resolved",
+        route_key: "inbox",
+        status: "success",
+        timing_bucket: "standard",
+      })
       setStatus(copy.requestUpdated)
       onSaved?.()
     } else {
@@ -5349,7 +5445,7 @@ function ParentRequestForm({ copy, role, requestType = "parent_question", token,
   )
 }
 
-function TutorNoteForm({ copy, token, dashboard, selectedSessionId = "", onSaved }) {
+function TutorNoteForm({ copy, locale = "fr", token, dashboard, selectedSessionId = "", onSaved }) {
   const defaultSessionId = selectedSessionId || dashboard.sessions_needing_notes?.[0]?.session_id || dashboard.sessions?.[0]?.session_id || ""
   const [values, setValues] = useState({
     session_id: defaultSessionId,
@@ -5393,6 +5489,14 @@ function TutorNoteForm({ copy, token, dashboard, selectedSessionId = "", onSaved
     setIsSaving(false)
 
     if (result.ok) {
+      emitTaskEvent("tutor_note_submitted", {
+        role: "tutor",
+        locale,
+        action_kind: "submitted",
+        route_key: "today",
+        status: "success",
+        timing_bucket: "standard",
+      })
       setStatus([
         copy.noteSent,
         result.parent_update_sent ? copy.parentUpdateSent : "",

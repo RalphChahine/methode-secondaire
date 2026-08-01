@@ -2,13 +2,70 @@ function cleanEnvValue(value = "") {
   return String(value || "").trim()
 }
 
+export const TASK_EVENTS = new Set([
+  "request_started",
+  "request_submitted",
+  "request_succeeded",
+  "portal_code_requested",
+  "portal_signed_in",
+  "parent_next_action_opened",
+  "parent_next_action_completed",
+  "tutor_note_opened",
+  "tutor_note_submitted",
+  "operator_priority_opened",
+  "operator_priority_resolved",
+])
+
+const TASK_EVENT_FIELDS = ["role", "locale", "action_kind", "route_key", "status", "timing_bucket"]
+
+function normalizeTaskField(value) {
+  if (typeof value !== "string" && typeof value !== "number") {
+    return ""
+  }
+
+  const normalized = String(value).trim().toLowerCase().slice(0, 48)
+  return /^[a-z0-9_-]+$/.test(normalized) ? normalized : ""
+}
+
+export function sanitizeTaskEventPayload(detail = {}) {
+  const source = detail && typeof detail === "object" ? detail : {}
+  return TASK_EVENT_FIELDS.reduce((payload, field) => {
+    const value = normalizeTaskField(source[field])
+    if (value) {
+      payload[field] = value
+    }
+    return payload
+  }, {})
+}
+
+export function getTaskTimingBucket(elapsedMs = 0) {
+  const duration = Number(elapsedMs)
+  if (!Number.isFinite(duration) || duration < 1000) {
+    return "fast"
+  }
+  return duration < 5000 ? "standard" : "slow"
+}
+
+export function emitTaskEvent(name, detail = {}) {
+  if (typeof window === "undefined" || !TASK_EVENTS.has(name)) {
+    return
+  }
+
+  window.dispatchEvent(new CustomEvent("methode:task-event", {
+    detail: {
+      name,
+      payload: sanitizeTaskEventPayload(detail),
+    },
+  }))
+}
+
 export const trackingConfig = {
-  googleTagId: cleanEnvValue(import.meta.env.VITE_GOOGLE_TAG_ID),
-  gaMeasurementId: cleanEnvValue(import.meta.env.VITE_GA_MEASUREMENT_ID),
-  googleAdsId: cleanEnvValue(import.meta.env.VITE_GOOGLE_ADS_ID),
-  googleAdsLeadLabel: cleanEnvValue(import.meta.env.VITE_GOOGLE_ADS_LEAD_LABEL),
-  googleAdsBookingLabel: cleanEnvValue(import.meta.env.VITE_GOOGLE_ADS_BOOKING_LABEL),
-  googleAdsCallLabel: cleanEnvValue(import.meta.env.VITE_GOOGLE_ADS_CALL_LABEL),
+  googleTagId: cleanEnvValue((import.meta.env || {}).VITE_GOOGLE_TAG_ID),
+  gaMeasurementId: cleanEnvValue((import.meta.env || {}).VITE_GA_MEASUREMENT_ID),
+  googleAdsId: cleanEnvValue((import.meta.env || {}).VITE_GOOGLE_ADS_ID),
+  googleAdsLeadLabel: cleanEnvValue((import.meta.env || {}).VITE_GOOGLE_ADS_LEAD_LABEL),
+  googleAdsBookingLabel: cleanEnvValue((import.meta.env || {}).VITE_GOOGLE_ADS_BOOKING_LABEL),
+  googleAdsCallLabel: cleanEnvValue((import.meta.env || {}).VITE_GOOGLE_ADS_CALL_LABEL),
 }
 
 export const configuredTagIds = Array.from(
@@ -84,6 +141,14 @@ export function trackEvent(name, params = {}) {
   }
 
   window.gtag("event", name, params)
+}
+
+export function trackTaskEvent(name, detail = {}) {
+  if (!TASK_EVENTS.has(name)) {
+    return
+  }
+
+  trackEvent(name, sanitizeTaskEventPayload(detail))
 }
 
 export function trackPageView(pathname = "/", search = "") {

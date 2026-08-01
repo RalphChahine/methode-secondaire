@@ -1,4 +1,4 @@
-import { useId, useState } from "react"
+import { useId, useRef, useState } from "react"
 import { CalendarCheck, Check, Clock3, Phone } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -8,6 +8,7 @@ import { buildLeadCrmMetadata, buildLeadCrmPayload, sendLeadToCrmWebhook } from 
 import { clearRememberedParentIntent, getRememberedParentIntent } from "@/lib/parentIntent"
 import { resolveRequestedOffer } from "@/lib/pricing"
 import { siteConfig } from "@/lib/seo"
+import { emitTaskEvent } from "@/lib/tracking"
 
 const copyByLocale = {
   fr: {
@@ -305,13 +306,32 @@ export default function FirstSessionRequestForm({
     subject: normalizeInitialSubject(initialSubject) || prefill.values.subject || "",
   }))
   const [status, setStatus] = useState("idle")
+  const requestStartedRef = useRef(false)
+
+  function markRequestStarted() {
+    if (requestStartedRef.current) {
+      return
+    }
+
+    requestStartedRef.current = true
+    emitTaskEvent("request_started", {
+      role: "parent",
+      locale,
+      action_kind: "started",
+      route_key: "request",
+      status: "started",
+      timing_bucket: "fast",
+    })
+  }
 
   function updateValue(key, value) {
+    markRequestStarted()
     setValues((current) => ({ ...current, [key]: value }))
   }
 
   async function handleSubmit(event) {
     event.preventDefault()
+    markRequestStarted()
 
     // A hidden field stops ordinary form bots without exposing a CRM webhook
     // or changing the parent-facing result.
@@ -362,12 +382,30 @@ export default function FirstSessionRequestForm({
       privacy_consent_version: "first-session-request-v1",
     }
 
+    emitTaskEvent("request_submitted", {
+      role: "parent",
+      locale,
+      action_kind: "submitted",
+      route_key: "request",
+      status: "submitted",
+      timing_bucket: "standard",
+    })
+
     try {
       const result = await sendLeadToCrmWebhook(crmPayload, CRM_PROXY_URL)
 
       if (!result.sent) {
         throw new Error(result.code || "CRM_REQUEST_FAILED")
       }
+
+      emitTaskEvent("request_succeeded", {
+        role: "parent",
+        locale,
+        action_kind: "succeeded",
+        route_key: "request",
+        status: "success",
+        timing_bucket: "standard",
+      })
 
       if (typeof window !== "undefined") {
         window.dispatchEvent(
