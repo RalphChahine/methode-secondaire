@@ -61,7 +61,7 @@ test("the global mobile request action is absent on focused routes", async () =>
 
 - [ ] **Step 2: Run the test to verify red**
 
-Run: `node --test test/conversion-links.test.mjs`  
+Run: `node --test test/conversion-links.test.mjs`
 Expected: FAIL because `Tuteurs.jsx` and `CaseStudies.jsx` contain `#demande` and the layout only checks the portal pathname.
 
 - [ ] **Step 3: Replace stale anchors with localized request routes**
@@ -88,10 +88,10 @@ Render the fixed mobile action only when `!suppressMobileAction`. Use the same b
 
 Add `node --test test/conversion-links.test.mjs &&` to the start of `test:site` in `package.json`.
 
-Run: `node --test test/conversion-links.test.mjs`  
+Run: `node --test test/conversion-links.test.mjs`
 Expected: 2 passing tests.
 
-Run: `npm.cmd run test:site`  
+Run: `npm.cmd run test:site`
 Expected: existing site tests, pricing checks, build, and static-site checks pass.
 
 - [ ] **Step 6: Commit**
@@ -144,7 +144,7 @@ test("keeps English and French keys identical", () => {
 
 - [ ] **Step 2: Run the test to verify red**
 
-Run: `node --test test/portal-shell.test.mjs`  
+Run: `node --test test/portal-shell.test.mjs`
 Expected: FAIL because `portalNavigation.js` does not exist.
 
 - [ ] **Step 3: Implement the destination contract**
@@ -209,10 +209,10 @@ Replace the current authenticated hero plus role dashboard wrapper with `PortalS
 
 - [ ] **Step 7: Verify and commit**
 
-Run: `node --test test/portal-shell.test.mjs test/parent-portal.test.mjs`  
+Run: `node --test test/portal-shell.test.mjs test/parent-portal.test.mjs`
 Expected: navigation model tests and existing parent behavior tests pass.
 
-Run: `npm.cmd run build`  
+Run: `npm.cmd run build`
 Expected: successful Vite and static SEO build.
 
 ```powershell
@@ -253,7 +253,7 @@ Also render the client role chooser and assert it contains exactly Parent and Tu
 
 - [ ] **Step 2: Run the test to verify red**
 
-Run: `node --test test/portal-sign-in.test.mjs`  
+Run: `node --test test/portal-sign-in.test.mjs`
 Expected: FAIL because the team route and auth-step state do not exist.
 
 - [ ] **Step 3: Add the unlisted team routes**
@@ -286,10 +286,10 @@ Reset `authStep` to `request_code` on role/email change and logout. Keep all API
 
 - [ ] **Step 5: Verify and commit**
 
-Run: `node --test test/portal-sign-in.test.mjs test/portal-api.test.mjs`  
+Run: `node --test test/portal-sign-in.test.mjs test/portal-api.test.mjs`
 Expected: progressive UI tests and portal API tests pass.
 
-Run: `npm.cmd run test:site`  
+Run: `npm.cmd run test:site`
 Expected: complete site suite passes.
 
 ```powershell
@@ -335,7 +335,7 @@ Use a fixture with an upcoming confirmed session and a released recap. Assert th
 
 - [ ] **Step 2: Run the tests to verify red**
 
-Run: `node --test test/parent-portal.test.mjs`  
+Run: `node --test test/parent-portal.test.mjs`
 Expected: FAIL because the new selectors do not exist.
 
 - [ ] **Step 3: Implement the parent view model**
@@ -388,10 +388,10 @@ Switch `Portal.jsx` parent routing to `home`, `sessions`, `messages`, and `more`
 
 - [ ] **Step 9: Verify and commit**
 
-Run: `node --test test/parent-portal.test.mjs test/portal-material-ui.test.mjs test/progression-payment-state.test.mjs`  
+Run: `node --test test/parent-portal.test.mjs test/portal-material-ui.test.mjs test/progression-payment-state.test.mjs`
 Expected: all parent workflow, material, and payment tests pass.
 
-Run: `npm.cmd run build`  
+Run: `npm.cmd run build`
 Expected: successful build.
 
 Manually verify at 390 × 844 that the next action and session are visible before scrolling, bottom navigation does not cover content, and every current parent operation is reachable.
@@ -465,7 +465,7 @@ Do not render parent feedback, full note history, request history, or the genera
 
 Use `today`, `schedule`, `students`, and `messages` as the tutor destinations in `Portal.jsx`.
 
-Run: `node --test test/tutor-portal-ui.test.mjs test/portal-material-ui.test.mjs test/portal-api.test.mjs`  
+Run: `node --test test/tutor-portal-ui.test.mjs test/portal-material-ui.test.mjs test/portal-api.test.mjs`
 Expected: selectors, secure material rendering, and API tests pass.
 
 Manually verify at 390 × 844: due note and next session appear without scrolling, materials open from the correct session, and availability creation is collapsed by default.
@@ -542,7 +542,7 @@ Initially use the existing dashboard payload. This keeps the UI release independ
 
 - [ ] **Step 6: Verify and commit**
 
-Run: `node --test test/operator-portal-ui.test.mjs test/portal-api.test.mjs test/student-tutor-assignments.test.mjs test/tutor-public-profiles.test.mjs`  
+Run: `node --test test/operator-portal-ui.test.mjs test/portal-api.test.mjs test/student-tutor-assignments.test.mjs test/tutor-public-profiles.test.mjs`
 Expected: queue, search, access, assignment, and profile tests pass.
 
 Manually verify desktop: find a family, assign a tutor, schedule a session, open a payment, reply to a message, and reach test cleanup without returning to a stacked dashboard.
@@ -621,10 +621,10 @@ Each operator destination loads on first open, resets on query change, appends o
 
 - [ ] **Step 5: Verify and commit**
 
-Run: `node --test test/operator-collection-contract.test.mjs test/portal-api.test.mjs`  
+Run: `node --test test/operator-collection-contract.test.mjs test/portal-api.test.mjs`
 Expected: operator authorization, allowlist, page size, cursor, and response-shape tests pass.
 
-Run: `npm.cmd run test:portal`  
+Run: `npm.cmd run test:portal`
 Expected: full portal suite passes.
 
 ```powershell
@@ -691,10 +691,10 @@ Use exactly five sections: hero, problems covered, session method, levels/topics
 
 - [ ] **Step 6: Verify density and commit**
 
-Run: `node --test test/public-page-density.test.mjs test/conversion-links.test.mjs`  
+Run: `node --test test/public-page-density.test.mjs test/conversion-links.test.mjs`
 Expected: structural contracts pass.
 
-Run: `npm.cmd run test:site`  
+Run: `npm.cmd run test:site`
 Expected: build and static checks pass.
 
 At 390 × 844 verify: first request input is visible in the first viewport; home is no more than about 5,100 px; Math and Science are no more than about 5,900 px; no viewport contains three identical request actions.
@@ -739,7 +739,7 @@ State the existing policy as **À partir de 28 $ CA/h, ajusté selon l’expéri
 
 - [ ] **Step 4: Verify and commit**
 
-Run: `node --test test/tutor-marketing-pages.test.mjs test/tutor-public-profiles.test.mjs`  
+Run: `node --test test/tutor-marketing-pages.test.mjs test/tutor-public-profiles.test.mjs`
 Expected: marketing structure and consent/profile tests pass.
 
 At 390 × 844 verify the recruitment page is no more than about 5,100 px and the practical facts appear before the application form.
@@ -796,13 +796,13 @@ Limit generic surface radii to 16, 20, and 24 px. Remove hover motion from non-i
 
 - [ ] **Step 6: Verify and commit**
 
-Run: `node --test test/motion-system.test.mjs`  
+Run: `node --test test/motion-system.test.mjs`
 Expected: tokens, no Framer import, and reduced-motion contract pass.
 
-Run: `npm.cmd install`  
+Run: `npm.cmd install`
 Expected: lockfile removes Framer Motion cleanly.
 
-Run: `npm.cmd run test:site`  
+Run: `npm.cmd run test:site`
 Expected: build and site suite pass.
 
 ```powershell

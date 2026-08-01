@@ -1,7 +1,7 @@
 # Complete Website UX Simplification Audit and Design
 
-**Date:** 2026-08-01  
-**Status:** Recommended design for implementation handoff  
+**Date:** 2026-08-01
+**Status:** Recommended design for implementation handoff
 **Scope:** Public website, request flow, client sign-in, parent portal, tutor portal, owner/team console, visual system, motion, accessibility, performance, and code organization.
 
 ## Executive verdict
