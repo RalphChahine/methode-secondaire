@@ -152,6 +152,7 @@ export default function Accueil() {
             onClick: openMiniAssessment,
             icon: ArrowRight,
           }}
+          artVariant="clarity"
           actionHint={
             <>
               Situation urgente ?{" "}

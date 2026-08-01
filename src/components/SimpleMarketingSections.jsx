@@ -13,13 +13,185 @@ import {
 import LeadForm from "@/components/LeadForm"
 import MotionCard from "@/components/MotionCard"
 import ProgressJourney from "@/components/ProgressJourney"
+import NotebookIllustration from "@/components/art/NotebookIllustration"
+import NotebookReveal from "@/components/art/NotebookReveal"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { DECLIC_REQUEST_URL, DECLIC_REQUEST_URL_EN } from "@/config/booking"
 import { rememberParentIntent } from "@/lib/parentIntent"
 import { siteConfig } from "@/lib/seo"
 
-export function HeroShowcase({
+export function HeroShowcase(props) {
+  if (props.leadForm) {
+    return <FormHero {...props} />
+  }
+
+  return props.journey ? <JourneyHero {...props} /> : <EditorialHero {...props} />
+}
+
+function JourneyHero(props) {
+  return <EditorialHero {...props} />
+}
+
+function EditorialHero({
+  badge,
+  title,
+  description,
+  primaryAction,
+  secondaryAction,
+  stats = [],
+  panelEyebrow,
+  panelTitle,
+  panelItems = [],
+  panelNote,
+  journey,
+  actionHint,
+  artVariant = "clarity",
+}) {
+  return (
+    <section className="relative overflow-hidden rounded-[2rem] border border-ink/10 notebook-paper">
+      <div className="notebook-grid pointer-events-none absolute inset-0 opacity-70" />
+      <div className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-cobalt/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-32 left-1/3 h-80 w-80 rounded-full bg-sun/20 blur-3xl" />
+
+      <div className="relative grid gap-10 px-5 py-6 sm:px-8 sm:py-9 lg:grid-cols-[0.92fr,0.8fr] lg:items-center lg:gap-14 lg:px-10 lg:py-12">
+        <NotebookReveal>
+          <div className="max-w-3xl">
+            {badge ? <div className="editorial-label">{badge}</div> : null}
+            <h1 className="balanced-copy mt-5 max-w-4xl font-display text-[2.7rem] font-semibold leading-[0.94] tracking-[-0.045em] text-ink sm:text-6xl lg:text-[4.4rem]">
+              {title}
+            </h1>
+            <p className="balanced-copy mt-6 max-w-2xl text-base leading-7 text-ink/72 sm:text-lg sm:leading-8">
+              {description}
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+              {primaryAction ? <ActionButton action={primaryAction} /> : null}
+              {secondaryAction ? <ActionButton action={secondaryAction} variant="outline" /> : null}
+            </div>
+
+            {actionHint ? (
+              <p className="mt-5 flex max-w-xl items-start gap-2 text-sm leading-6 text-ink/64">
+                <BadgeCheck className="mt-0.5 h-4 w-4 shrink-0 text-cobalt" />
+                {actionHint}
+              </p>
+            ) : null}
+
+            {journey ? (
+              <div className="mt-7 max-w-2xl border-l-2 border-cobalt pl-4 text-ink/72">
+                <div className="editorial-label text-[0.62rem]">{journey.eyebrow}</div>
+                <p className="mt-2 text-sm leading-7">{journey.text}</p>
+                {journey.action ? (
+                  <div className="mt-3">
+                    <ActionButton action={journey.action} variant="outline" />
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+
+            {stats.length ? (
+              <div className="mt-9 grid gap-2 sm:grid-cols-3">
+                {stats.map((stat) => (
+                  <div key={stat.label} className="border-t border-ink/15 pt-3 text-ink">
+                    <div className="text-[0.64rem] font-extrabold uppercase tracking-[0.16em] text-ink/48">{stat.label}</div>
+                    <div className="mt-1 text-sm font-semibold">{stat.value}</div>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        </NotebookReveal>
+
+        <NotebookReveal className="lg:pt-8">
+          <div className="notebook-ink relative overflow-hidden rounded-[1.75rem] p-4 shadow-[0_24px_70px_rgba(7,26,51,0.24)] sm:p-6">
+            <div className="absolute right-5 top-5 editorial-label text-sun">{panelEyebrow || "Votre prochain pas"}</div>
+            <NotebookIllustration variant={artVariant} className="relative z-10 mt-5 w-full" />
+            {panelTitle ? (
+              <h2 className="relative z-10 mt-5 max-w-md font-display text-2xl font-semibold leading-tight text-white sm:text-3xl">
+                {panelTitle}
+              </h2>
+            ) : null}
+            {panelItems.length ? (
+              <div className="relative z-10 mt-5 space-y-2">
+                {panelItems.slice(0, 3).map((item, index) => (
+                  <div key={item} className="flex items-start gap-3 border-t border-white/15 py-3 text-sm leading-6 text-white/78">
+                    <span className="font-display text-xl text-sun">0{index + 1}</span>
+                    <span>{item}</span>
+                  </div>
+                ))}
+              </div>
+            ) : null}
+            {panelNote ? <p className="relative z-10 mt-3 border-l border-sun pl-3 text-sm leading-6 text-white/68">{panelNote}</p> : null}
+          </div>
+        </NotebookReveal>
+      </div>
+    </section>
+  )
+}
+
+function FormHero({
+  badge,
+  title,
+  description,
+  primaryAction,
+  secondaryAction,
+  panelEyebrow,
+  panelTitle,
+  leadForm,
+  actionHint,
+}) {
+  const onboardingSteps = leadForm?.steps?.length
+    ? leadForm.steps
+    : [{ label: "Describe" }, { label: "Callback" }, { label: "Start" }]
+
+  return (
+    <section id={leadForm.processId || "processus"} className="relative overflow-hidden rounded-[2rem] border border-ink/10 notebook-paper">
+      <div className="notebook-grid pointer-events-none absolute inset-0 opacity-70" />
+      <div className="relative grid gap-8 px-5 py-6 sm:px-8 sm:py-9 lg:grid-cols-[0.82fr,1fr] lg:items-start lg:px-10 lg:py-12">
+        <NotebookReveal>
+          <div className="max-w-2xl">
+            {badge ? <div className="editorial-label">{badge}</div> : null}
+            <h1 className="balanced-copy mt-5 font-display text-[2.65rem] font-semibold leading-[0.95] tracking-[-0.045em] text-ink sm:text-6xl">
+              {title}
+            </h1>
+            <p className="mt-5 max-w-xl text-base leading-7 text-ink/72 sm:text-lg sm:leading-8">{description}</p>
+            <div className="mt-7 flex flex-wrap gap-3">
+              {primaryAction ? <ActionButton action={primaryAction} /> : null}
+              {secondaryAction ? <ActionButton action={secondaryAction} variant="outline" /> : null}
+            </div>
+            {actionHint ? <p className="mt-5 max-w-xl text-sm leading-6 text-ink/64">{actionHint}</p> : null}
+            <div className="mt-8 grid gap-2 sm:grid-cols-3 lg:grid-cols-1">
+              {onboardingSteps.map((step, index) => (
+                <div key={step.label} className="flex items-start gap-3 border-t border-ink/15 py-3 text-sm text-ink/72">
+                  <span className="font-display text-xl text-cobalt">0{index + 1}</span>
+                  <span>{step.mobileLabel || step.title || step.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </NotebookReveal>
+
+        <NotebookReveal className="lg:sticky lg:top-28">
+          <div id={leadForm.id} className="notebook-ink rounded-[1.75rem] p-5 text-white shadow-[0_24px_70px_rgba(7,26,51,0.24)] sm:p-7">
+            <div className="editorial-label text-sun">{panelEyebrow || leadForm.eyebrow}</div>
+            <h2 className="balanced-copy mt-3 max-w-xl font-display text-3xl font-semibold leading-tight text-white">{panelTitle || leadForm.title}</h2>
+            <p className="mt-3 text-sm leading-7 text-white/70">{leadForm.description}</p>
+            <div className="mt-5">
+              <LeadForm locale={leadForm.locale} pageName={leadForm.pageName} variant={leadForm.variant || "hero"} />
+            </div>
+            {leadForm.trustItems?.length ? (
+              <div className="mt-5 grid gap-2 sm:grid-cols-3">
+                {leadForm.trustItems.map((item) => <div key={item} className="border-t border-white/15 pt-2 text-xs leading-5 text-white/66">{item}</div>)}
+              </div>
+            ) : null}
+          </div>
+        </NotebookReveal>
+      </div>
+    </section>
+  )
+}
+
+function LegacyHeroShowcase({
   badge,
   title,
   description,
