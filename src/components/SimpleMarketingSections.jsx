@@ -762,11 +762,11 @@ export function FinalCtaSection({ badge, title, description, primaryAction, seco
 function ActionButton({ action, variant = "default", fullWidth = false }) {
   const baseClass =
     variant === "outline"
-      ? "rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
-      : "rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f] shadow-[0_18px_45px_rgba(245,201,119,0.22)]"
+      ? "notebook-button-secondary"
+      : "notebook-button-primary"
 
   const mobileClass = action.hideOnMobile ? "hidden sm:inline-flex" : ""
-  const className = `${mobileClass} ${baseClass} ${fullWidth ? "w-full py-6" : "px-6 py-6 text-base"}`
+  const className = `${mobileClass} ${baseClass} ${fullWidth ? "w-full px-6 py-6" : "px-6 py-6 text-base"}`
   const content = (
     <>
       {action.icon ? <action.icon className="h-4 w-4" /> : null}

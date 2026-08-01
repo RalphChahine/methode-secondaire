@@ -169,7 +169,7 @@ export default function SiteLayout() {
 
   return (
     <div className={`min-h-screen overflow-x-hidden ${suppressMobileAction || !isStickyActionVisible ? "pb-0" : "pb-24 lg:pb-0"}`}>
-      <header className="sticky top-0 z-50 border-b border-white/10 bg-[#071631]/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-white/10 bg-ink/95 backdrop-blur-xl">
         <div className={`mx-auto flex w-full max-w-7xl items-center justify-between lg:px-8 ${isPortalRoute ? "min-h-16 gap-2 px-3 py-2 sm:gap-3 sm:px-6" : "min-h-[4.75rem] gap-3 px-4 py-3 sm:px-6"}`}>
           <Link to={getLocalizedPath("home", locale)} className={`flex min-w-0 items-center gap-3 ${isPortalRoute ? "flex-1 gap-2" : ""}`}>
             <div className={`grid shrink-0 place-items-center border border-white/15 bg-white/10 ${isPortalRoute ? "h-10 w-10 rounded-[16px] sm:h-11 sm:w-11 sm:rounded-[18px]" : "h-11 w-11 rounded-[18px]"}`}>
@@ -202,7 +202,7 @@ export default function SiteLayout() {
             <LanguageToggle />
             <Button
               asChild
-              className={`${isPortalRoute ? "hidden" : ""} rounded-full bg-[#f5c977] px-5 text-[#071631] shadow-[0_12px_30px_rgba(245,201,119,0.28)] hover:bg-[#f7d38f]`}
+              className={`${isPortalRoute ? "hidden" : ""} notebook-button-primary px-5`}
             >
               <a href={requestUrl}>
                 <CalendarDays className="h-4 w-4" />
@@ -216,7 +216,7 @@ export default function SiteLayout() {
 
             <Button
               asChild
-              className={`${isPortalRoute ? "hidden" : ""} h-10 rounded-full bg-[#f5c977] px-3 text-[#071631] shadow-[0_12px_30px_rgba(245,201,119,0.28)] hover:bg-[#f7d38f]`}
+              className={`${isPortalRoute ? "hidden" : ""} notebook-button-primary h-10 w-10 px-0`}
             >
               <a href={requestUrl} aria-label={copy.book}>
                 <CalendarDays className="h-4 w-4" />
@@ -228,7 +228,7 @@ export default function SiteLayout() {
               <SheetTrigger asChild>
                 <Button
                   variant="outline"
-                  className="h-10 w-10 rounded-full border-white/15 bg-white/5 p-0 text-white hover:bg-white/10 hover:text-white"
+                  className="notebook-button-ghost h-10 w-10 border-white/15 p-0 text-white hover:text-white"
                   aria-label={isEnglish ? "Open menu" : "Ouvrir le menu"}
                 >
                   <Menu className="h-5 w-5" />
@@ -237,7 +237,7 @@ export default function SiteLayout() {
 
               <SheetContent
                 side="right"
-                className="flex h-[100dvh] max-h-[100dvh] flex-col gap-0 overflow-hidden border-white/10 bg-[#071631] text-white"
+                className="flex h-[100dvh] max-h-[100dvh] flex-col gap-0 overflow-hidden border-white/10 bg-ink text-white"
               >
                 <SheetHeader className="shrink-0 pr-10">
                   <SheetTitle className="font-display text-xl text-white">{copy.menuTitle}</SheetTitle>
@@ -277,7 +277,7 @@ export default function SiteLayout() {
                   <SheetClose asChild>
                     <Button
                       asChild
-                      className="mt-3 w-full rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]"
+                      className="notebook-button-primary mt-3 w-full"
                     >
                       <a href={requestUrl}>
                         <CalendarDays className="h-4 w-4" />
@@ -289,7 +289,7 @@ export default function SiteLayout() {
                     <Button
                       asChild
                       variant="outline"
-                      className="mt-2 w-full rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"
+                      className="notebook-button-ghost mt-2 w-full border-white/15 text-white hover:text-white"
                     >
                       <a href={`tel:${siteConfig.phone}`}>
                         <Phone className="h-4 w-4" />
@@ -360,7 +360,7 @@ export default function SiteLayout() {
           <div className="mx-auto w-full max-w-7xl">
             <Button
               asChild
-              className="min-h-12 w-full rounded-full bg-[#f5c977] px-4 text-sm text-[#071631] hover:bg-[#f7d38f]"
+              className="notebook-button-primary min-h-12 w-full px-4 text-sm"
             >
               <a href={mobileAction.href} aria-label={mobileAction.label}>
                 <MobileActionIcon className="h-4 w-4" />

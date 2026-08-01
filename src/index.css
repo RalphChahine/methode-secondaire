@@ -156,6 +156,11 @@
     transform: translateY(0);
   }
 
+  .notebook-button-base {
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
   .notebook-button-primary,
   .notebook-button-secondary,
   .notebook-button-ghost {
