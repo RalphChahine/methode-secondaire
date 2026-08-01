@@ -11,6 +11,7 @@ const PORTAL_ACTIONS = new Set([
   "portal_request_code",
   "portal_verify_code",
   "portal_get_dashboard",
+  "portal_get_operator_collection",
   "portal_get_public_tutor_profiles",
   "portal_create_session",
   "portal_respond_to_session",

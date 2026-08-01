@@ -63,6 +63,17 @@ export async function getPortalDashboard({ role, token }) {
   })
 }
 
+export function getPortalOperatorCollection({ token, collection, query = "", cursor = "", pageSize = 25 }) {
+  return portalRequest({
+    action: "portal_get_operator_collection",
+    token,
+    collection,
+    query,
+    cursor,
+    page_size: pageSize,
+  })
+}
+
 export async function createPortalSession({ token, values }) {
   return portalRequest({
     action: "portal_create_session",

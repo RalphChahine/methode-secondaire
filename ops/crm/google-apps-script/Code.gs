@@ -1739,6 +1739,8 @@ function handlePortalAction_(spreadsheet, payload) {
       return verifyPortalCode_(spreadsheet, payload);
     case "portal_get_dashboard":
       return getPortalDashboard_(spreadsheet, payload);
+    case "portal_get_operator_collection":
+      return getOperatorPortalCollection_(spreadsheet, payload);
     case "portal_get_public_tutor_profiles":
       return getPublicTutorProfiles_(spreadsheet);
     case "portal_create_session":
@@ -2119,6 +2121,66 @@ function getPortalDashboard_(spreadsheet, payload) {
     email: session.access.email,
     dashboard: buildPortalDashboard_(spreadsheet, session.access),
   };
+}
+
+function getOperatorPortalCollection_(spreadsheet, payload) {
+  const session = verifyPortalSession_(spreadsheet, payload.token, "operator");
+  if (!session.ok) {
+    return session;
+  }
+
+  const collection = normalizeValue_(payload.collection).toLowerCase();
+  const supportedCollections = ["families", "tutors", "sessions", "payments", "messages", "requests"];
+  if (!supportedCollections.includes(collection)) {
+    return { ok: false, code: "OPERATOR_COLLECTION_INVALID" };
+  }
+
+  const requestedPageSize = Number(payload.page_size);
+  const pageSize = Math.max(1, Math.min(50, Number.isFinite(requestedPageSize) && requestedPageSize !== 0 ? Math.trunc(requestedPageSize) : (requestedPageSize === 0 ? 1 : 25)));
+  const requestedOffset = Number(payload.cursor);
+  const offset = Number.isFinite(requestedOffset) && requestedOffset > 0 ? Math.trunc(requestedOffset) : 0;
+  const query = normalizeOperatorCollectionText_(payload.query);
+  const dashboard = buildOperatorPortalDashboard_(spreadsheet, session.access, { includeCollections: true });
+  const recordsByCollection = {
+    families: dashboard.parent_candidates || [],
+    tutors: dashboard.tutor_records || dashboard.tutors || [],
+    sessions: dashboard.sessions || [],
+    payments: getSheetRecords_(spreadsheet, CRM_PAYMENT_SHEET_NAME, PAYMENT_COLUMNS)
+      .filter((record) => !isTestRecord_(record))
+      .map(sanitizePaymentForOperator_),
+    messages: dashboard.messages || [],
+    requests: getSheetRecords_(spreadsheet, CRM_PORTAL_REQUEST_SHEET_NAME, PORTAL_REQUEST_COLUMNS)
+      .filter((record) => !isTestRecord_(record))
+      .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))
+      .map(sanitizePortalRequestForPortal_),
+  };
+  const fieldsByCollection = {
+    families: ["parent_name", "student_name", "student_level_subject", "email", "phone", "lead_status", "crm_stage"],
+    tutors: ["tutor_name", "subjects", "levels", "zones", "email", "calendar_email", "status"],
+    sessions: ["session_id", "parent_name", "student_name", "tutor_name", "subject_level", "session_status"],
+    payments: ["payment_id", "session_id", "offer", "payment_status", "invoice_id", "notes"],
+    messages: ["message_id", "sender_name", "message", "subject", "message_status", "session_id"],
+    requests: ["request_id", "subject", "message", "request_type", "status", "owner"],
+  };
+  const filtered = (recordsByCollection[collection] || []).filter((record) => {
+    if (!query) return true;
+    return fieldsByCollection[collection].some((field) => normalizeOperatorCollectionText_(record[field]).includes(query));
+  });
+  const items = filtered.slice(offset, offset + pageSize);
+  return {
+    ok: true,
+    items,
+    next_cursor: offset + pageSize < filtered.length ? String(offset + pageSize) : "",
+    total: filtered.length,
+  };
+}
+
+function normalizeOperatorCollectionText_(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
 }
 
 // Plans track eligibility and cadence; package payment requests receive a unique
@@ -6223,9 +6285,9 @@ function comparePlanEnrollmentForParent_(left, right) {
   return typeOrder || String(right.updated_at).localeCompare(String(left.updated_at));
 }
 
-function buildPortalDashboard_(spreadsheet, access) {
+function buildPortalDashboard_(spreadsheet, access, options) {
   if (access.role === "operator") {
-    return buildOperatorPortalDashboard_(spreadsheet, access);
+    return buildOperatorPortalDashboard_(spreadsheet, access, options);
   }
 
   return access.role === "tutor"
@@ -6424,7 +6486,8 @@ function buildTutorPortalDashboard_(spreadsheet, access) {
   };
 }
 
-function buildOperatorPortalDashboard_(spreadsheet, access) {
+function buildOperatorPortalDashboard_(spreadsheet, access, options) {
+  const includeCollections = options?.includeCollections === true;
   const accessRecords = getSheetRecords_(spreadsheet, CRM_PORTAL_ACCESS_SHEET_NAME, PORTAL_ACCESS_COLUMNS);
   const leadRecords = getSheetRecords_(spreadsheet, CRM_SHEET_NAME, CRM_COLUMNS);
   const tutorSourceRecords = getSheetRecords_(spreadsheet, CRM_TUTOR_SHEET_NAME, TUTOR_COLUMNS);
@@ -6573,6 +6636,16 @@ function buildOperatorPortalDashboard_(spreadsheet, access) {
     messageRecords: liveMessageRecords,
   });
 
+  const collections = includeCollections ? {
+    parent_candidates: parentCandidates,
+    tutors,
+    tutor_records: tutorRecords,
+    sessions,
+    requests,
+    parent_feedback: feedback.slice(0, 30).map(sanitizeParentFeedbackForPortal_),
+    messages: messages.slice(0, 60).map(sanitizePortalMessageForPortal_),
+  } : {};
+
   return {
     profile: {
       role: "operator",
@@ -6594,9 +6667,6 @@ function buildOperatorPortalDashboard_(spreadsheet, access) {
       active_plan_enrollments: planEnrollments.filter((record) => normalizeValue_(record.status) === "active").length,
       credits_remaining: planEnrollments.reduce((total, record) => total + Number(record.credits_remaining || 0), 0),
     },
-    parent_candidates: parentCandidates,
-    tutors,
-    tutor_records: tutorRecords,
     tutor_public_profiles: tutorPublicProfileSourceRecords.map(sanitizeTutorPublicProfileForOperator_),
     plans,
     plan_enrollments: planEnrollments,
@@ -6609,9 +6679,6 @@ function buildOperatorPortalDashboard_(spreadsheet, access) {
       daily_digest_hour: `${TEAM_DAILY_DIGEST_HOUR}:${String(TEAM_DAILY_DIGEST_MINUTE).padStart(2, "0")}`,
       payment_mode: "stripe_checkout",
     },
-    sessions,
-    requests,
-    parent_feedback: feedback.slice(0, 30).map(sanitizeParentFeedbackForPortal_),
     test_data: buildTestDataForOperator_({
       parent_leads: leadRecords,
       tutors: tutorSourceRecords,
@@ -6620,9 +6687,7 @@ function buildOperatorPortalDashboard_(spreadsheet, access) {
       feedback: feedbackRecords,
       requests: requestRecords,
     }),
-    messages: messages
-      .slice(0, 60)
-      .map(sanitizePortalMessageForPortal_),
+    ...collections,
   };
 }
 
