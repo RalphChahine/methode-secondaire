@@ -3,11 +3,9 @@ import { ArrowRight, CalendarDays } from "lucide-react"
 import Seo from "@/components/Seo"
 import { OperationalPromisesSection } from "@/components/ConversionSections"
 import PricingSection from "@/components/PricingSection"
-import {
-  FaqGrid,
-  HeroShowcase,
-  ParentStartingPointsSection,
-} from "@/components/SimpleMarketingSections"
+import { HowItWorksSection } from "@/components/marketing/HowItWorksSection"
+import HomeProofStrip from "@/components/marketing/HomeProofStrip"
+import { FaqGrid, HeroShowcase } from "@/components/SimpleMarketingSections"
 import { DECLIC_REQUEST_URL } from "@/config/booking"
 import {
   buildAlternates,
@@ -173,14 +171,9 @@ export default function Accueil() {
           panelNote="La séance ciblée est une vraie séance de tutorat, pas un appel de vente ni un essai déguisé."
         />
 
-        <ParentStartingPointsSection
-          eyebrow="Peut-être que ça ressemble à chez vous"
-          title="Vous n'avez pas besoin d'un plan parfait pour commencer."
-          description="Choisissez la situation qui vous ressemble. La demande courte donne le contexte à l'équipe sans vous faire choisir un forfait à l'aveugle."
-          items={parentStartingPoints}
-        />
-
-        <OperationalPromisesSection locale="fr" className="pt-20" />
+        <HomeProofStrip locale="fr" />
+        <HowItWorksSection locale="fr" />
+        <OperationalPromisesSection locale="fr" className="pt-12" />
 
         <PricingSection id="offres" locale="fr" />
 

@@ -41,12 +41,21 @@ const copyByLocale = {
   },
 }
 
+const REQUEST_SUBJECTS = ["math", "science", "physics", "chemistry"]
+
+function normalizeRequestedSubject(value) {
+  const normalized = String(value || "").trim().toLowerCase()
+  return REQUEST_SUBJECTS.includes(normalized) ? normalized : ""
+}
+
 export default function FirstSessionRequest() {
   const location = useLocation()
   const navigate = useNavigate()
   const locale = getLocaleFromPath(location.pathname)
   const copy = copyByLocale[locale] || copyByLocale.fr
-  const requestedOffer = resolveRequestedOffer(new URLSearchParams(location.search).get("offer"))
+  const searchParams = new URLSearchParams(location.search)
+  const requestedOffer = resolveRequestedOffer(searchParams.get("offer"))
+  const initialSubject = normalizeRequestedSubject(searchParams.get("subject"))
   const offer = getOffer(requestedOffer)
   const paymentDescription = offer.installmentCount === 1
     ? (locale === "en" ? `one ${formatCadAmount(offer.installmentPriceCad, locale)} payment` : `un paiement de ${formatCadAmount(offer.installmentPriceCad, locale)}`)
@@ -66,10 +75,9 @@ export default function FirstSessionRequest() {
         <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white/85"><BadgeCheck className="h-4 w-4 text-[#f5c977]" />{requestCopy.badge}</div>
         <h1 className="balanced-copy mt-6 font-display text-4xl font-semibold leading-[0.98] text-white sm:text-5xl">{requestCopy.title}</h1><p className="mt-5 max-w-xl text-base leading-8 text-white/72 sm:text-lg">{requestCopy.description}</p>
         <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#f5c977]/25 bg-[#f5c977]/10 px-4 py-2 text-sm font-semibold text-[#f8deb0]"><CalendarCheck className="h-4 w-4" />{requestCopy.price}</div>
-        <div className="mt-8 rounded-[26px] border border-white/10 bg-white/[0.045] p-5"><div className="flex items-center gap-2 text-sm font-semibold text-white"><ShieldCheck className="h-4 w-4 text-[#f5c977]" />{requestCopy.stepsTitle}</div><ol className="mt-4 space-y-3">{requestCopy.steps.map((step, index) => <li key={step} className="flex items-start gap-3 text-sm leading-6 text-white/76"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#f5c977] text-xs font-bold text-[#071631]">{index + 1}</span>{step}</li>)}</ol></div>
         <p className="mt-6 text-sm leading-6 text-white/65">{requestCopy.callPrefix}</p><Button asChild variant="outline" className="mt-3 rounded-full border-white/15 bg-white/5 text-white hover:bg-white/10 hover:text-white"><a href={`tel:${siteConfig.phone}`}><Phone className="h-4 w-4" />{requestCopy.call}</a></Button>
       </section>
-      <MotionCard className="action-surface rounded-[32px] p-5 text-white sm:p-7"><div className="flex items-center gap-2 text-sm font-semibold text-[#f5c977]"><ArrowRight className="h-4 w-4" />{requestCopy.formEyebrow}</div><h2 className="balanced-copy mt-3 font-display text-3xl font-semibold leading-tight">{requestCopy.formTitle}</h2><p className="mt-3 text-sm leading-7 text-white/72">{requestCopy.formDescription}</p><FirstSessionRequestForm className="mt-6" locale={locale} pageName={locale === "en" ? "first-session-request-en" : "first-session-request"} offer={requestedOffer} onSuccess={() => navigate(getLocalizedPath("thankYou", locale))} /></MotionCard>
+      <MotionCard className="action-surface rounded-[32px] p-5 text-white sm:p-7"><div className="flex items-center gap-2 text-sm font-semibold text-[#f5c977]"><ArrowRight className="h-4 w-4" />{requestCopy.formEyebrow}</div><h2 className="balanced-copy mt-3 font-display text-3xl font-semibold leading-tight">{requestCopy.formTitle}</h2><p className="mt-3 text-sm leading-7 text-white/72">{requestCopy.formDescription}</p><FirstSessionRequestForm className="mt-6" locale={locale} pageName={locale === "en" ? "first-session-request-en" : "first-session-request"} offer={requestedOffer} initialSubject={initialSubject} onSuccess={() => navigate(getLocalizedPath("thankYou", locale))} /><details className="mt-6 border-t border-white/10 pt-4"><summary className="cursor-pointer text-sm font-semibold text-white">{requestCopy.stepsTitle}</summary><ol className="mt-4 space-y-3">{requestCopy.steps.map((step, index) => <li key={step} className="flex items-start gap-3 text-sm leading-6 text-white/76"><span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-[#f5c977] text-xs font-bold text-[#071631]">{index + 1}</span>{step}</li>)}</ol></details></MotionCard>
     </div></main>
   </div>
 }

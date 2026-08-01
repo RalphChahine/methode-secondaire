@@ -3,11 +3,9 @@ import { ArrowRight, CalendarDays } from "lucide-react"
 import Seo from "@/components/Seo"
 import { OperationalPromisesSection } from "@/components/ConversionSections"
 import PricingSection from "@/components/PricingSection"
-import {
-  FaqGrid,
-  HeroShowcase,
-  ParentStartingPointsSection,
-} from "@/components/SimpleMarketingSections"
+import { HowItWorksSection } from "@/components/marketing/HowItWorksSection"
+import HomeProofStrip from "@/components/marketing/HomeProofStrip"
+import { FaqGrid, HeroShowcase } from "@/components/SimpleMarketingSections"
 import { DECLIC_REQUEST_URL_EN } from "@/config/booking"
 import { buildAlternates, getLocalizedPath } from "@/lib/i18n"
 import { formatCadAmount, getOffer } from "@/lib/pricing"
@@ -162,14 +160,9 @@ export default function AccueilEn() {
           panelNote="The Targeted session is real tutoring, not a sales call or a disguised trial."
         />
 
-        <ParentStartingPointsSection
-          eyebrow="This may sound familiar"
-          title="You do not need a perfect plan to begin."
-          description="Choose the situation that feels closest. The short request gives the team context without asking you to choose a package blindly."
-          items={parentStartingPoints}
-        />
-
-        <OperationalPromisesSection locale="en" className="pt-20" />
+        <HomeProofStrip locale="en" />
+        <HowItWorksSection locale="en" />
+        <OperationalPromisesSection locale="en" className="pt-12" />
 
         <PricingSection id="offers" locale="en" />
 

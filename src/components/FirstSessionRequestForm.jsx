@@ -145,6 +145,12 @@ const copyByLocale = {
 }
 
 const FIRST_SESSION_PREFILL_KEY = "methode:first-session-prefill"
+const INITIAL_SUBJECTS = ["math", "science", "physics", "chemistry"]
+
+function normalizeInitialSubject(value) {
+  const normalized = String(value || "").trim().toLowerCase()
+  return INITIAL_SUBJECTS.includes(normalized) ? normalized : ""
+}
 
 function getInitialValues() {
   return {
@@ -285,6 +291,7 @@ export default function FirstSessionRequestForm({
   offer: selectedOffer = "targeted_session",
   className = "",
   onSuccess,
+  initialSubject = "",
 }) {
   const copy = copyByLocale[locale] || copyByLocale.fr
   const requestedOffer = resolveRequestedOffer(selectedOffer)
@@ -295,6 +302,7 @@ export default function FirstSessionRequestForm({
   const [values, setValues] = useState(() => ({
     ...getInitialValues(),
     ...prefill.values,
+    subject: normalizeInitialSubject(initialSubject) || prefill.values.subject || "",
   }))
   const [status, setStatus] = useState("idle")
 

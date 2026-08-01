@@ -3,14 +3,12 @@ import { useLocation } from "react-router-dom"
 
 import Seo from "@/components/Seo"
 import {
-  ContactSection,
   FaqGrid,
   FeatureGrid,
   HeroShowcase,
   StepGrid,
 } from "@/components/SimpleMarketingSections"
 import { Button } from "@/components/ui/button"
-import { BOOKING_URL, BOOKING_URL_EN } from "@/config/booking"
 import {
   buildAlternates,
   getAlternateOgLocale,
@@ -226,7 +224,7 @@ export default function Sciences() {
   const locale = getLocaleFromPath(location.pathname)
   const copy = contentByLocale[locale]
   const path = getLocalizedPath("sciences", locale)
-  const requestUrl = locale === "en" ? BOOKING_URL_EN : BOOKING_URL
+  const requestUrl = `${getLocalizedPath("request", locale)}?subject=science`
 
   const schema = {
     "@context": "https://schema.org",
@@ -348,14 +346,6 @@ export default function Sciences() {
           </div>
         </section>
 
-        <ContactSection
-          locale={locale}
-          eyebrow={locale === "en" ? "Contact" : "Contact"}
-          title={copy.contactTitle}
-          description={copy.contactDescription}
-          bullets={copy.contactBullets}
-          pageName={`sciences-${locale}`}
-        />
       </main>
     </div>
   )
