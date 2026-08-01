@@ -15,6 +15,7 @@ export const routeCatalog = {
   request: { fr: "/demande", en: "/en/request" },
   thankYou: { fr: "/demande-recue", en: "/en/request-received" },
   portal: { fr: "/portail", en: "/en/portal" },
+  team: { fr: "/equipe", en: "/en/team" },
   maths: { fr: "/maths", en: "/en/math-tutoring" },
   sciences: { fr: "/sciences", en: "/en/science-tutoring" },
   approche: { fr: "/notre-approche", en: "/en/our-approach" },

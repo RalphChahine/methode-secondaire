@@ -55,6 +55,8 @@ export function AppRoutes() {
             <Route path="/en/request-received" element={<LeadThanks />} />
             <Route path="/portail" element={<Portal />} />
             <Route path="/en/portal" element={<Portal />} />
+            <Route path="/equipe" element={<Portal entryRole="operator" />} />
+            <Route path="/en/team" element={<Portal entryRole="operator" />} />
             <Route path="/maths" element={<Maths />} />
             <Route path="/en/math-tutoring" element={<Maths />} />
             <Route path="/sciences" element={<Sciences />} />

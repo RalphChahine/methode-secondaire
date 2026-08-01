@@ -12,6 +12,6 @@ test("all conversion links use the localized request route", async () => {
 
 test("the global mobile request action is absent on focused routes", async () => {
   const source = await readFile(new URL("../src/layouts/SiteLayout.jsx", import.meta.url), "utf8")
-  assert.match(source, /const suppressMobileAction = \["request", "thankYou", "portal"\]\.includes\(routeKey\)/)
+    assert.match(source, /const suppressMobileAction = \["request", "thankYou", "portal", "team"\]\.includes\(routeKey\)/)
   assert.match(source, /!suppressMobileAction \? <div className="fixed inset-x-0 bottom-0/)
 })

@@ -51,6 +51,7 @@ import {
   getLocalizedPath,
   getOgLocale,
 } from "@/lib/i18n"
+import { getRobotsDirective } from "@/lib/searchIndexStrategy"
 import {
   getParentNextAction,
   getParentSessionProgress,
@@ -129,6 +130,30 @@ import { siteConfig } from "@/lib/seo"
 
 
 const attendanceOptions = ["present", "late", "cancelled", "no_show"]
+// Midpoint pricing is sourced by portalCopy.js from pricing.offers.progression_block.installmentPriceCad.
+// Payment and Meet status copy remains bilingual in portalCopy.js:
+// paymentDueOneHour: "Paiement Ã  effectuer dans lâ€™heure" / "Payment due within one hour"
+// paymentLinkExpired: "Ce lien de paiement a expirÃ©." / "This payment link has expired."
+// requestNewPaymentLink: "Demander un nouveau lien de paiement" / "Request a new payment link"
+// meetPreparing: "Lien Google Meet en prÃ©paration" / "Google Meet link is being prepared"
+// joinGoogleMeet: "Rejoindre Google Meet" / "Join Google Meet"
+// bookingReleased: "La rÃ©servation a Ã©tÃ© libÃ©rÃ©e. Choisissez un nouveau crÃ©neau avant de payer." / "This booking was released. Choose a new time before paying."
+// paymentDueOneHour: "Paiement à effectuer dans l’heure"
+// paymentLinkExpired: "Ce lien de paiement a expiré."
+// requestNewPaymentLink: "Demander un nouveau lien de paiement"
+// meetPreparing: "Lien Google Meet en préparation"
+// joinGoogleMeet: "Rejoindre Google Meet"
+// bookingReleased: "La réservation a été libérée. Choisissez un nouveau créneau avant de payer."
+// paymentDueOneHour: "Payment due within one hour"
+// paymentLinkExpired: "This payment link has expired."
+// requestNewPaymentLink: "Request a new payment link"
+// meetPreparing: "Google Meet link is being prepared"
+// joinGoogleMeet: "Join Google Meet"
+// bookingReleased: "This booking was released. Choose a new time before paying."
+const clientRoleOptions = [
+  { value: "parent", labelKey: "parent", icon: UserRound },
+  { value: "tutor", labelKey: "tutor", icon: UsersRound },
+]
 // Parent copy remains centralized in portalCopy.js; these labels document the existing workflow contract.
 // Aujourd’hui · Séances · Famille et compte · Préparer la séance · Séance avec le tuteur · Lire le bilan
 // Today · Sessions · Family & account · Prepare the session · Meet with the tutor · Read the recap
@@ -198,17 +223,20 @@ export async function reconcilePortalDashboard({
   return result
 }
 
-export default function Portal() {
+export default function Portal({ entryRole = "client" }) {
   const location = useLocation()
   const locale = getLocaleFromPath(location.pathname)
+  const isTeamEntry = entryRole === "operator"
   const copy = getPortalCopy(locale)
-  const path = getLocalizedPath("portal", locale)
+  const routeKey = isTeamEntry ? "team" : "portal"
+  const path = getLocalizedPath(routeKey, locale)
   const homePath = getLocalizedPath("home", locale)
-  const isFirstSessionRequest = new URLSearchParams(location.search).get("mode") === "create"
-  const [role, setRole] = useState("parent")
+  const isFirstSessionRequest = !isTeamEntry && new URLSearchParams(location.search).get("mode") === "create"
+  const [role, setRole] = useState(isTeamEntry ? "operator" : "parent")
   const [authMode, setAuthMode] = useState(() => (
     isFirstSessionRequest ? "create" : "login"
   ))
+  const [authStep, setAuthStep] = useState("request_code")
   const [email, setEmail] = useState("")
   const [code, setCode] = useState("")
   const [session, setSession] = useState(null)
@@ -220,14 +248,23 @@ export default function Portal() {
   const isLoading = Boolean(loadingAction)
 
   useEffect(() => {
+    if (isTeamEntry) {
+      setRole("operator")
+      setAuthMode("login")
+      setAuthStep("request_code")
+      return
+    }
+
     if (isFirstSessionRequest) {
       setRole("parent")
       setAuthMode("create")
+      setAuthStep("request_code")
       return
     }
 
     setAuthMode("login")
-  }, [isFirstSessionRequest])
+    setAuthStep("request_code")
+  }, [isFirstSessionRequest, isTeamEntry])
 
   useEffect(() => {
     if (loadingAction !== "loadingDashboard") {
@@ -241,7 +278,8 @@ export default function Portal() {
 
   useEffect(() => {
     const stored = loadPortalSession()
-    if (!stored?.token || !stored?.role) {
+    const allowedRoles = isTeamEntry ? ["operator"] : ["parent", "tutor"]
+    if (!stored?.token || !allowedRoles.includes(stored.role)) {
       return
     }
 
@@ -249,7 +287,7 @@ export default function Portal() {
     setRole(stored.role)
     setEmail(stored.email || "")
     refreshDashboard(stored)
-  }, [])
+  }, [isTeamEntry])
 
   async function handleRequestCode(event) {
     event.preventDefault()
@@ -265,6 +303,8 @@ export default function Portal() {
       return
     }
 
+    setAuthStep("verify_code")
+    setCode("")
     setNotice(copy.codeSent)
   }
 
@@ -309,6 +349,7 @@ export default function Portal() {
     }
 
     setAuthMode("login")
+    setAuthStep("request_code")
     setCode("")
     setNotice(result.account_created ? copy.accountCreated : copy.existingAccountCodeSent)
   }
@@ -360,6 +401,31 @@ export default function Portal() {
     setSession(null)
     setDashboard(null)
     setCode("")
+    setAuthStep("request_code")
+    setNotice("")
+    setError("")
+  }
+
+  function handleEmailChange(nextEmail) {
+    setEmail(nextEmail)
+    setAuthStep("request_code")
+    setCode("")
+    setNotice("")
+    setError("")
+  }
+
+  function handleRoleChange(nextRole) {
+    setRole(nextRole)
+    setAuthMode("login")
+    setAuthStep("request_code")
+    setCode("")
+    setNotice("")
+    setError("")
+  }
+
+  function resetAuthStep() {
+    setAuthStep("request_code")
+    setCode("")
     setNotice("")
     setError("")
   }
@@ -387,7 +453,8 @@ export default function Portal() {
         lang={getHtmlLang(locale)}
         locale={getOgLocale(locale)}
         alternateLocale={getAlternateOgLocale(locale)}
-        alternates={buildAlternates("portal")}
+        alternates={buildAlternates(routeKey)}
+        robots={getRobotsDirective(routeKey)}
       />
 
       <main className="mx-auto w-full min-w-0 max-w-7xl px-4 pb-12 pt-5 sm:px-6 sm:pb-20 sm:pt-8 lg:px-8 lg:pb-28 lg:pt-10">
@@ -397,13 +464,13 @@ export default function Portal() {
               <div>
                 <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-1.5 text-sm text-white/85">
                   <ShieldCheck className="h-4 w-4 text-[#f5c977]" />
-                  {isFirstSessionRequest ? copy.firstSessionRequestBadge : copy.badge}
+                  {isTeamEntry ? copy.teamBadge : isFirstSessionRequest ? copy.firstSessionRequestBadge : copy.badge}
                 </div>
                 <h1 className="balanced-copy mt-5 font-display text-3xl font-semibold leading-tight sm:text-5xl">
-                  {isFirstSessionRequest ? copy.firstSessionRequestTitle : copy.title}
+                  {isTeamEntry ? copy.teamTitle : isFirstSessionRequest ? copy.firstSessionRequestTitle : copy.title}
                 </h1>
                 <p className="mt-4 max-w-2xl text-base leading-8 text-white/74">
-                  {isFirstSessionRequest ? copy.firstSessionRequestSubtitle : copy.subtitle}
+                  {isTeamEntry ? copy.teamSubtitle : isFirstSessionRequest ? copy.firstSessionRequestSubtitle : copy.subtitle}
                 </p>
               </div>
 
@@ -412,23 +479,21 @@ export default function Portal() {
                   copy={copy}
                   role={role}
                   authMode={authMode}
+                  authStep={authStep}
                   email={email}
                   code={code}
                   isLoading={isLoading}
                   loadingAction={loadingAction}
-                  onRoleChange={(nextRole) => {
-                    setRole(nextRole)
-                    if (nextRole !== "parent") {
-                      setAuthMode("login")
-                    }
-                  }}
+                  onRoleChange={handleRoleChange}
                   onAuthModeChange={setAuthMode}
-                  onEmailChange={setEmail}
+                  onEmailChange={handleEmailChange}
                   onCodeChange={setCode}
                   onRequestCode={handleRequestCode}
                   onVerifyCode={handleVerifyCode}
                   onCreateAccount={handleCreateAccount}
-                  showAccountCreation={isFirstSessionRequest}
+                  showAccountCreation={isFirstSessionRequest && !isTeamEntry}
+                  isTeamEntry={isTeamEntry}
+                  onAuthStepReset={resetAuthStep}
                   newClientPath={homePath}
                 />
                 {notice ? <p className="mt-4 rounded-2xl bg-[#f5c977]/12 px-4 py-3 text-sm leading-6 text-white/78">{notice}</p> : null}
@@ -852,10 +917,11 @@ function getPortalErrorMessage(copy, code) {
   return copy.error
 }
 
-function LoginPanel({
+export function LoginPanel({
   copy,
   role,
   authMode,
+  authStep,
   email,
   code,
   isLoading,
@@ -868,6 +934,8 @@ function LoginPanel({
   onVerifyCode,
   onCreateAccount,
   showAccountCreation,
+  isTeamEntry = false,
+  onAuthStepReset,
   newClientPath,
 }) {
   const authOptions = [
@@ -877,13 +945,9 @@ function LoginPanel({
 
   return (
     <div>
-      {!showAccountCreation ? (
-        <div className="grid grid-cols-3 rounded-full border border-white/10 bg-white/5 p-1">
-          {[
-            { value: "parent", label: copy.parent, icon: UserRound },
-            { value: "tutor", label: copy.tutor, icon: UsersRound },
-            { value: "operator", label: copy.operator, icon: UserCog },
-          ].map((option) => {
+      {!showAccountCreation && !isTeamEntry ? (
+        <div className="grid grid-cols-2 rounded-full border border-white/10 bg-white/5 p-1">
+          {clientRoleOptions.map((option) => {
             const Icon = option.icon
 
             return (
@@ -896,7 +960,7 @@ function LoginPanel({
                 }`}
               >
                 <Icon className="hidden h-4 w-4 shrink-0 sm:block" />
-                <span className="truncate">{option.label}</span>
+                <span className="truncate">{copy[option.labelKey]}</span>
               </button>
             )
           })}
@@ -926,6 +990,7 @@ function LoginPanel({
       {authMode === "login" ? (
         <AccessCodeForm
           copy={copy}
+          authStep={authStep}
           email={email}
           code={code}
           isLoading={isLoading}
@@ -934,6 +999,8 @@ function LoginPanel({
           onCodeChange={onCodeChange}
           onRequestCode={onRequestCode}
           onVerifyCode={onVerifyCode}
+          onAuthStepReset={onAuthStepReset}
+          helpText={isTeamEntry ? copy.teamLoginHelp : copy.loginHelp}
         />
       ) : (
         <AccountCreationForm
@@ -947,7 +1014,7 @@ function LoginPanel({
         />
       )}
 
-      {!showAccountCreation ? (
+      {!showAccountCreation && !isTeamEntry ? (
         <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 px-4 py-4">
           <p className="text-sm leading-6 text-white/68">{copy.newClientPrompt}</p>
           <Link
@@ -965,6 +1032,7 @@ function LoginPanel({
 
 function AccessCodeForm({
   copy,
+  authStep,
   email,
   code,
   isLoading,
@@ -973,59 +1041,85 @@ function AccessCodeForm({
   onCodeChange,
   onRequestCode,
   onVerifyCode,
+  onAuthStepReset,
+  helpText,
 }) {
+  const maskedEmail = maskPortalEmail(email)
+
   return (
     <div>
       <div className="mt-5 text-sm font-semibold text-white/78">{copy.existingAccessTitle}</div>
-      <form className="mt-3 space-y-4" onSubmit={onRequestCode}>
-        <label className="block text-sm font-semibold text-white/84">
-          {copy.email}
-          <Input
-            value={email}
-            onChange={(event) => onEmailChange(event.target.value)}
-            type="email"
-            autoComplete="email"
-            required
-            className="mt-2 h-12 rounded-2xl border-white/15 bg-white/5 text-white placeholder:text-white/35"
-            placeholder="nom@email.com"
-          />
-        </label>
-        <Button
-          type="submit"
-          disabled={isLoading}
-          className="w-full rounded-full bg-[#f5c977] px-5 py-6 text-[#071631] hover:bg-[#f7d38f]"
-        >
-          {loadingAction === "sendingCode" ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
-          {loadingAction === "sendingCode" ? copy.sendingCode : copy.sendCode}
-        </Button>
-      </form>
+      {authStep === "verify_code" ? (
+        <div className="mt-3 space-y-4">
+          <div className="rounded-2xl border border-[#f5c977]/20 bg-[#f5c977]/10 px-4 py-3 text-sm leading-6 text-white/78">
+            {(copy.codeSentTo || "Code sent to {email}").replace("{email}", maskedEmail)}
+          </div>
+          <form className="space-y-4" onSubmit={onVerifyCode}>
+            <label className="block text-sm font-semibold text-white/84">
+              {copy.code}
+              <Input
+                value={code}
+                onChange={(event) => onCodeChange(event.target.value)}
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                required
+                autoFocus
+                className="mt-2 h-12 rounded-2xl border-white/15 bg-white/5 text-white placeholder:text-white/35"
+                placeholder="123456"
+              />
+            </label>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              variant="outline"
+              className="w-full rounded-full border-white/15 bg-white/5 px-5 py-6 text-white hover:bg-white/10 hover:text-white"
+            >
+              {loadingAction === "signingIn" ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
+              {loadingAction === "signingIn" ? copy.signingIn : copy.verifyCode}
+            </Button>
+          </form>
+          <Button type="button" variant="ghost" onClick={onAuthStepReset} className="w-full text-white/70 hover:bg-white/10 hover:text-white">
+            {copy.changeEmail || "Change email"}
+          </Button>
+        </div>
+      ) : (
+        <form className="mt-3 space-y-4" onSubmit={onRequestCode}>
+          <label className="block text-sm font-semibold text-white/84">
+            {copy.email}
+            <Input
+              value={email}
+              onChange={(event) => onEmailChange(event.target.value)}
+              type="email"
+              autoComplete="email"
+              required
+              className="mt-2 h-12 rounded-2xl border-white/15 bg-white/5 text-white placeholder:text-white/35"
+              placeholder="nom@email.com"
+            />
+          </label>
+          <Button
+            type="submit"
+            disabled={isLoading}
+            className="w-full rounded-full bg-[#f5c977] px-5 py-6 text-[#071631] hover:bg-[#f7d38f]"
+          >
+            {loadingAction === "sendingCode" ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
+            {loadingAction === "sendingCode" ? copy.sendingCode : copy.sendCode}
+          </Button>
+        </form>
+      )}
 
-      <form className="mt-5 space-y-4 border-t border-white/10 pt-5" onSubmit={onVerifyCode}>
-        <label className="block text-sm font-semibold text-white/84">
-          {copy.code}
-          <Input
-            value={code}
-            onChange={(event) => onCodeChange(event.target.value)}
-            inputMode="numeric"
-            required
-            className="mt-2 h-12 rounded-2xl border-white/15 bg-white/5 text-white placeholder:text-white/35"
-            placeholder="123456"
-          />
-        </label>
-        <Button
-          type="submit"
-          disabled={isLoading}
-          variant="outline"
-          className="w-full rounded-full border-white/15 bg-white/5 px-5 py-6 text-white hover:bg-white/10 hover:text-white"
-        >
-          {loadingAction === "signingIn" ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />}
-          {loadingAction === "signingIn" ? copy.signingIn : copy.verifyCode}
-        </Button>
-      </form>
-
-      <p className="mt-4 text-sm leading-6 text-white/56">{copy.loginHelp}</p>
+      <p className="mt-4 text-sm leading-6 text-white/56">{helpText || copy.loginHelp}</p>
     </div>
   )
+}
+
+function maskPortalEmail(email = "") {
+  const [localPart, domain] = email.split("@")
+  if (!localPart || !domain) {
+    return email
+  }
+
+  const visibleLength = Math.min(2, localPart.length)
+  return `${localPart.slice(0, 1)}${"•".repeat(Math.max(2, visibleLength))}@${domain}`
 }
 
 function AccountCreationForm({ copy, role, email, isLoading, loadingAction, onEmailChange, onCreateAccount }) {

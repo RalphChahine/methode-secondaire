@@ -8,6 +8,7 @@ const noindexRouteKeys = new Set([
   "request",
   "thankYou",
   "portal",
+  "team",
   "reussites",
   "employmentTutorSecondary",
   "mathTutorMontreal",

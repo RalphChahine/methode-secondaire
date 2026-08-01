@@ -24,9 +24,9 @@ export default function SiteLayout() {
   const locale = getLocaleFromPath(location.pathname)
   const isEnglish = locale === "en"
   const homePath = getLocalizedPath("home", locale)
-  const isPortalRoute = location.pathname === getLocalizedPath("portal", locale)
   const routeKey = getRouteKeyFromPath(location.pathname)
-  const suppressMobileAction = ["request", "thankYou", "portal"].includes(routeKey)
+  const isPortalRoute = ["portal", "team"].includes(routeKey)
+  const suppressMobileAction = ["request", "thankYou", "portal", "team"].includes(routeKey)
   const isTutorRoute = ["devenirTuteur", "employmentTutorSecondary"].includes(routeKey)
   const requestUrl = isEnglish ? DECLIC_REQUEST_URL_EN : DECLIC_REQUEST_URL
 
@@ -290,7 +290,7 @@ export default function SiteLayout() {
         <Outlet />
       </main>
 
-      <footer className="border-t border-white/10 bg-[#04112b]">
+      {!isPortalRoute ? <footer className="border-t border-white/10 bg-[#04112b]">
         <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:px-6 lg:grid-cols-[1.2fr,0.8fr,0.9fr] lg:px-8">
           <div className="max-w-xl">
             <img
@@ -332,7 +332,7 @@ export default function SiteLayout() {
         <div className="border-t border-white/10 px-5 py-5 text-center text-xs text-white/45 sm:px-6 lg:px-8">
           {new Date().getFullYear()} Méthode Secondaire. {copy.rights}
         </div>
-      </footer>
+      </footer> : null}
 
       {!suppressMobileAction ? <div className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#071631]/95 px-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] pt-3 backdrop-blur lg:hidden">
         <div className="mx-auto w-full max-w-7xl">
@@ -349,7 +349,7 @@ export default function SiteLayout() {
       </div> : null}
 
       <TrackingManager />
-      <StudentAssistantWidget locale={locale} />
+      {!isPortalRoute ? <StudentAssistantWidget locale={locale} /> : null}
     </div>
   )
 }

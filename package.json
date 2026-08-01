@@ -11,7 +11,7 @@
     "check:site": "node scripts/check-static-site.mjs",
     "check:pricing": "node scripts/check-pricing-packages.mjs",
     "test:payments": "node --test test/stripe-checkout.test.mjs",
-    "test:portal": "node --test test/portal-shell.test.mjs test/portal-api.test.mjs test/portal-materials.test.mjs test/parent-portal.test.mjs test/student-tutor-assignments.test.mjs test/tutor-public-profiles.test.mjs",
+    "test:portal": "node --test test/portal-shell.test.mjs test/portal-sign-in.test.mjs test/portal-api.test.mjs test/portal-materials.test.mjs test/parent-portal.test.mjs test/student-tutor-assignments.test.mjs test/tutor-public-profiles.test.mjs",
     "test:site": "node --test test/conversion-links.test.mjs && node --test test/site-layout.test.mjs && npm run check:pricing && npm run build && npm run check:site"
   },
   "dependencies": {
