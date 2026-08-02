@@ -29,3 +29,4 @@ dist-ssr
 # Keep only the reviewed, animation-activated QA captures under version control.
 qa/*-[0-9][0-9][0-9][0-9].png
 qa/_*.png
+qa/home-390.png
