@@ -8,6 +8,14 @@
 
 **Tech Stack:** React 18, Vite, React Router, Tailwind CSS, Radix/shadcn primitives, Framer Motion, Vitest/Node contract tests, Playwright/browser screenshots, existing Apps Script/Stripe/Google Calendar integrations.
 
+## Handoff checkpoint — 2026-08-02
+
+- Reference-led tokens, marketing frame, home, Maths, Sciences, secondary public routes, and parent portal entry shell are implemented on `codex/reference-led-redesign`.
+- The public UI uses only project-backed pricing/content; the supplied mockup's fictional tutors, reviews, grades, prices, savings, and student data were not copied.
+- QA captures are committed under `qa/*-activated.png` for 1440 px and 390 px. Captures scroll through each page first so one-time reveal animations are visible.
+- Automated evidence: 13 focused reference tests, site/pricing/build/static checks, 166 routes checked and 136 prerendered, no horizontal overflow or missing images in the capture sweep.
+- The student portal is intentionally not implemented yet. Luna must first obtain an owner decision on identity, parent consent, retention, visible fields, one-time-code/parent-mediated access, and audit logging; no student role or personal data is invented in this checkpoint.
+
 ## Global Constraints
 
 - The supplied image is a visual reference, not a source of facts. Never copy its tutor names, photos, ratings, review counts, universities, testimonials, grades, savings, prices, times, or student names.
