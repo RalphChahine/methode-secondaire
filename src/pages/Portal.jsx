@@ -505,7 +505,7 @@ export default function Portal({ entryRole = "client" }) {
         robots={getRobotsDirective(routeKey)}
       />
 
-      <main className="mx-auto w-full min-w-0 max-w-7xl px-4 pb-12 pt-5 sm:px-6 sm:pb-20 sm:pt-8 lg:px-8 lg:pb-28 lg:pt-10">
+      <div className="portal-reference mx-auto w-full min-w-0 max-w-7xl px-4 pb-12 pt-5 sm:px-6 sm:pb-20 sm:pt-8 lg:px-8 lg:pb-28 lg:pt-10">
         <MotionCard className="section-shell noise-overlay p-4 text-white sm:p-8">
           {!session ? (
             <div className="relative z-10 grid gap-8 lg:grid-cols-[0.95fr,1.05fr] lg:items-start">
@@ -603,7 +603,7 @@ export default function Portal({ entryRole = "client" }) {
             ) : null}
           </PortalShell>
         ) : null}
-      </main>
+      </div>
     </div>
   )
 }

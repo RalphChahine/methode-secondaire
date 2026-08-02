@@ -32,17 +32,17 @@ export default function ParentHome({ copy, locale = "fr", model, onOpenAction, o
     <div className="min-w-0 space-y-5">
       <section className="action-surface min-w-0 rounded-[24px] p-4 text-white sm:p-5">
         <div className="flex min-w-0 items-start gap-3">
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#f5c977] text-[#071631]">
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[var(--brand-blue-600)] text-white">
             <ActionIcon className="h-5 w-5" />
           </div>
           <div className="min-w-0">
             <div className="journey-eyebrow">{copy.parentActionEyebrow}</div>
-            <h2 className="mt-1 font-display text-2xl font-semibold leading-tight sm:text-3xl">{copy[titleKey]}</h2>
+            <h2 className="brand-display mt-1 text-2xl font-extrabold leading-tight tracking-[-0.04em] sm:text-3xl">{copy[titleKey]}</h2>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-white/70">{copy[descriptionKey]}</p>
           </div>
         </div>
         {!isReady ? (
-          <Button type="button" onClick={() => onOpenAction(model.action)} className="mt-4 min-h-11 rounded-full bg-[#f5c977] text-[#071631] hover:bg-[#f7d38f]">
+          <Button type="button" onClick={() => onOpenAction(model.action)} className="mt-4 min-h-11 rounded-full bg-[var(--brand-blue-600)] text-white hover:bg-[var(--brand-blue-500)]">
             {copy.parentActionOpen}
             <ArrowRight className="h-4 w-4" />
           </Button>
@@ -54,7 +54,7 @@ export default function ParentHome({ copy, locale = "fr", model, onOpenAction, o
           <CalendarDays className="h-5 w-5 text-[#f5c977]" />
           <div>
             <div className="journey-eyebrow">{copy.nextSession}</div>
-            <h2 className="font-display text-2xl font-semibold">{nextSession ? formatSessionDate(nextSession, locale) : copy.noNextSession}</h2>
+          <h2 className="brand-display text-2xl font-extrabold tracking-[-0.04em]">{nextSession ? formatSessionDate(nextSession, locale) : copy.noNextSession}</h2>
           </div>
         </div>
         {nextSession ? (
@@ -74,7 +74,7 @@ export default function ParentHome({ copy, locale = "fr", model, onOpenAction, o
             <FileText className="h-5 w-5 text-[#f5c977]" />
             <div>
               <div className="journey-eyebrow">{copy.sessionRecapTitle}</div>
-              <h2 className="font-display text-2xl font-semibold">{recap.session?.student_name || copy.parentSummary}</h2>
+              <h2 className="brand-display text-2xl font-extrabold tracking-[-0.04em]">{recap.session?.student_name || copy.parentSummary}</h2>
             </div>
           </div>
           <p className="mt-3 text-sm leading-7 text-white/70">{recapText || copy.empty}</p>

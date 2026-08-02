@@ -14,8 +14,8 @@ function PortalDestinationButton({ destination, active, onChange, compact = fals
       onClick={() => onChange(destination.key)}
       aria-current={isActive ? "page" : undefined}
       className={isActive
-        ? "flex min-h-11 items-center gap-3 rounded-2xl bg-[#f5c977] px-3 py-2 text-left text-sm font-semibold text-[#071631] shadow-[0_12px_30px_rgba(245,201,119,0.18)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-        : "flex min-h-11 items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-sm font-semibold text-white/78 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#f5c977]"}
+        ? "flex min-h-11 items-center gap-3 rounded-2xl bg-[var(--brand-blue-600)] px-3 py-2 text-left text-sm font-semibold text-white shadow-[0_12px_30px_rgba(36,99,232,0.28)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+        : "flex min-h-11 items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-3 py-2 text-left text-sm font-semibold text-white/78 transition hover:bg-white/10 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--brand-blue-500)]"}
     >
       <Icon className={compact ? "h-4 w-4 shrink-0" : "h-5 w-5 shrink-0"} />
       <span className={compact ? "sr-only" : "truncate"}>{destination.label}</span>
@@ -50,7 +50,7 @@ export default function PortalShell({
   const mobileItems = mobileDestinations || destinations
 
   return (
-    <div className={`min-w-0 ${hasNavigation ? "lg:grid lg:grid-cols-[15rem,minmax(0,1fr)] lg:items-start lg:gap-6" : ""}`}>
+    <div className={`portal-reference min-w-0 ${hasNavigation ? "lg:grid lg:grid-cols-[15rem,minmax(0,1fr)] lg:items-start lg:gap-6" : ""}`}>
       {hasNavigation ? (
         <aside className="sticky top-24 hidden min-w-0 lg:block">
           <div className="panel-soft rounded-[24px] p-3 text-white">
@@ -93,7 +93,7 @@ export default function PortalShell({
       {hasNavigation ? (
         <nav
           aria-label={copy.portalNavLabel || copy.parentNavLabel || "Portal navigation"}
-          className="fixed inset-x-0 bottom-0 z-40 grid gap-1 border-t border-white/10 bg-[#071631]/95 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur lg:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 grid gap-1 border-t border-white/10 bg-[var(--brand-navy-950)]/95 px-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-2 backdrop-blur lg:hidden"
           style={{ gridTemplateColumns: `repeat(${mobileItems.length}, minmax(0, 1fr))` }}
         >
           {mobileItems.map((destination) => (

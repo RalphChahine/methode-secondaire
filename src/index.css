@@ -478,6 +478,72 @@
     box-shadow: 0 16px 42px rgba(3, 11, 30, 0.18), inset 0 1px 0 rgba(255, 247, 220, 0.13);
   }
 
+  /* The authenticated portal keeps its business logic and copy, but uses the
+     reference-led navy/blue hierarchy instead of the legacy gold-first surfaces. */
+  .portal-reference .section-shell {
+    border-color: rgba(255, 255, 255, 0.12);
+    background:
+      radial-gradient(circle at 92% 8%, rgba(36, 99, 232, 0.22), transparent 32%),
+      linear-gradient(145deg, rgba(10, 42, 85, 0.98), rgba(3, 21, 44, 0.98));
+    box-shadow: var(--shadow-portal), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .portal-reference .section-shell::before {
+    background:
+      radial-gradient(circle at top right, rgba(61, 120, 242, 0.18), transparent 34%),
+      radial-gradient(circle at bottom left, rgba(10, 42, 85, 0.32), transparent 36%);
+  }
+
+  .portal-reference .panel-soft,
+  .portal-reference .panel-ink {
+    border-color: rgba(255, 255, 255, 0.12);
+    background: linear-gradient(180deg, rgba(10, 42, 85, 0.86), rgba(6, 29, 60, 0.86));
+    box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  }
+
+  .portal-reference .action-surface {
+    border-color: rgba(61, 120, 242, 0.42);
+    background: linear-gradient(135deg, rgba(36, 99, 232, 0.3), rgba(10, 42, 85, 0.92));
+    box-shadow: var(--shadow-floating), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+
+  .portal-reference .panel-gold {
+    border-color: rgba(61, 120, 242, 0.42);
+    background: linear-gradient(135deg, rgba(36, 99, 232, 0.24), rgba(6, 29, 60, 0.92));
+    box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+
+  .portal-reference .journey-eyebrow,
+  .portal-reference .rule-label {
+    color: var(--brand-blue-500);
+  }
+
+  .portal-reference .journey-track-fill {
+    background: linear-gradient(90deg, var(--brand-blue-700), var(--brand-blue-500));
+    box-shadow: 0 0 18px rgba(61, 120, 242, 0.4);
+  }
+
+  .portal-reference .journey-step-complete {
+    border-color: rgba(61, 120, 242, 0.42);
+    background: rgba(36, 99, 232, 0.16);
+  }
+
+  .portal-reference .journey-step-complete .journey-step-icon {
+    border-color: var(--brand-blue-500);
+    background: var(--brand-blue-600);
+    color: white;
+  }
+
+  .portal-reference .journey-step-current {
+    border-color: rgba(61, 120, 242, 0.72);
+    box-shadow: inset 0 0 0 1px rgba(61, 120, 242, 0.14), var(--shadow-card);
+  }
+
+  .portal-reference .journey-step-current .journey-step-icon {
+    border-color: rgba(61, 120, 242, 0.75);
+    color: var(--brand-blue-500);
+  }
+
   .quiet-row {
     border-top: 1px solid rgba(255, 255, 255, 0.1);
   }
