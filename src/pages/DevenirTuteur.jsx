@@ -565,7 +565,7 @@ export default function DevenirTuteur({ forcedRouteKey }) {
   const hiringSchema = [pageSchema, jobPostingSchema, faqSchema]
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="reference-page relative overflow-hidden">
       <Seo
         title={copy.seoTitle}
         description={copy.seoDescription}

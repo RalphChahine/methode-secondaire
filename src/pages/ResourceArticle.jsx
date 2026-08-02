@@ -106,7 +106,7 @@ export default function ResourceArticle() {
 
   if (!copy || !resourceRouteKeys.includes(routeKey)) {
     return (
-      <div className="relative overflow-hidden">
+      <div className="reference-page relative overflow-hidden">
         <main className="mx-auto w-full max-w-5xl px-5 pb-20 pt-16 sm:px-6 lg:px-8">
           <MotionCard className="rounded-[32px] border-white/10 bg-white/[0.05] p-8 text-white">
             <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">{ui.unavailable}</div>
@@ -171,7 +171,7 @@ export default function ResourceArticle() {
   }
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="reference-page relative overflow-hidden">
       <Seo
         title={copy.seoTitle}
         description={copy.seoDescription}

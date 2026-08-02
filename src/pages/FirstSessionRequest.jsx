@@ -67,7 +67,7 @@ export default function FirstSessionRequest() {
   const path = getLocalizedPath("request", locale)
   const schema = { "@context": "https://schema.org", "@type": "ContactPage", name: requestCopy.seoTitle, description: requestCopy.seoDescription, url: absoluteUrl(path) }
 
-  return <div className="relative overflow-hidden notebook-paper">
+  return <div className="reference-page relative overflow-hidden notebook-paper">
     <Seo title={requestCopy.seoTitle} description={requestCopy.seoDescription} path={path} jsonLd={schema} lang={getHtmlLang(locale)} locale={getOgLocale(locale)} alternateLocale={getAlternateOgLocale(locale)} alternates={buildAlternates("request")} robots={getRobotsDirective("request")} />
     <div className="pointer-events-none absolute inset-0"><div className="absolute -left-24 top-16 h-80 w-80 rounded-full bg-[#6d9fff]/18 blur-3xl" /><div className="absolute right-0 top-24 h-80 w-80 rounded-full bg-[#f5c977]/12 blur-3xl" /></div>
     <main className="relative z-10 mx-auto w-full max-w-6xl px-5 pb-20 pt-8 sm:px-6 lg:px-8 lg:pb-28 lg:pt-14"><div className="grid gap-8 lg:grid-cols-[0.78fr,1.1fr] lg:items-start">

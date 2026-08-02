@@ -180,7 +180,7 @@ export default function ResourcesHub() {
         ]
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="reference-page relative overflow-hidden">
       <Seo
         title={seo.title}
         description={seo.description}

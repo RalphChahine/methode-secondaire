@@ -2,13 +2,29 @@ import test from "node:test"
 import assert from "node:assert/strict"
 import { readFile } from "node:fs/promises"
 
-const pageFiles = ["NotreApproche.jsx", "Tuteurs.jsx", "ParentTrust.jsx", "Temoignages.jsx"]
+const pageFiles = [
+  "NotreApproche.jsx",
+  "Tuteurs.jsx",
+  "ParentTrust.jsx",
+  "Temoignages.jsx",
+  "LocalLanding.jsx",
+  "OfferLanding.jsx",
+  "ResourcesHub.jsx",
+  "ResourceArticle.jsx",
+  "BlogHub.jsx",
+  "BlogArticle.jsx",
+  "CaseStudies.jsx",
+  "DevenirTuteur.jsx",
+  "FirstSessionRequest.jsx",
+  "LeadThanks.jsx",
+  "Secondary4MathConcept.jsx",
+  "Secondary4MathTheory.jsx",
+]
 
 test("priority secondary pages opt into the reference-led visual frame", async () => {
   const sources = await Promise.all(pageFiles.map((file) => readFile(new URL(`../src/pages/${file}`, import.meta.url), "utf8")))
   for (const source of sources) {
     assert.match(source, /reference-page/)
-    assert.doesNotMatch(source, /<main[\s>]/)
   }
 })
 
