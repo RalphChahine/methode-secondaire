@@ -115,7 +115,7 @@ export default function ParentTrust() {
       }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-5 pb-20 pt-8 sm:px-6 lg:px-8 lg:pb-28 lg:pt-12">
+    <div className="reference-page mx-auto w-full max-w-7xl px-5 pb-20 pt-8 sm:px-6 lg:px-8 lg:pb-28 lg:pt-12">
       <Seo
         title={copy.titleSeo}
         description={copy.descriptionSeo}
@@ -220,6 +220,6 @@ export default function ParentTrust() {
           </Button>
         </div>
       </section>
-    </main>
+    </div>
   )
 }

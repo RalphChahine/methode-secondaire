@@ -195,7 +195,7 @@ export default function Tuteurs() {
   }
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="reference-page relative overflow-hidden">
       <Seo
         title={copy.seoTitle}
         description={copy.seoDescription}
@@ -213,7 +213,7 @@ export default function Tuteurs() {
         <div className="absolute right-0 top-24 h-80 w-80 rounded-full bg-[#f5c977]/12 blur-3xl" />
       </div>
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
         <HeroShowcase
           badge={copy.badge}
           title={copy.title}
@@ -253,7 +253,7 @@ export default function Tuteurs() {
             icon: ClipboardList,
           }}
         />
-      </main>
+      </div>
     </div>
   )
 }

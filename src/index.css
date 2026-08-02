@@ -598,3 +598,74 @@
     transform: none !important;
   }
 }
+
+/* Reference-led treatment for secondary marketing pages. This is scoped so
+   the portal and legacy content can keep their own migration cadence. */
+.reference-page .notebook-paper {
+  color: var(--text-dark);
+  border-color: var(--border-soft);
+  background:
+    radial-gradient(circle at 12% 0%, rgba(36, 99, 232, 0.08), transparent 32%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.9), transparent 54%),
+    var(--surface-white);
+  box-shadow: var(--shadow-card);
+}
+
+.reference-page .section-shell {
+  border-color: rgba(255, 255, 255, 0.12);
+  background:
+    radial-gradient(circle at 92% 8%, rgba(36, 99, 232, 0.22), transparent 32%),
+    linear-gradient(145deg, rgba(10, 42, 85, 0.98), rgba(3, 21, 44, 0.98));
+  box-shadow: var(--shadow-portal), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.reference-page .section-shell::before {
+  background:
+    radial-gradient(circle at top right, rgba(61, 120, 242, 0.18), transparent 34%),
+    radial-gradient(circle at bottom left, rgba(10, 42, 85, 0.32), transparent 36%);
+}
+
+.reference-page .panel-soft,
+.reference-page .panel-ink {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: linear-gradient(180deg, rgba(10, 42, 85, 0.86), rgba(6, 29, 60, 0.86));
+  box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.reference-page .action-surface,
+.reference-page .panel-gold {
+  border-color: rgba(61, 120, 242, 0.42);
+  background: linear-gradient(135deg, rgba(36, 99, 232, 0.3), rgba(10, 42, 85, 0.92));
+  box-shadow: var(--shadow-floating), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.reference-page .font-display {
+  font-family: var(--brand-font-display);
+}
+
+.reference-page .journey-eyebrow,
+.reference-page .rule-label {
+  color: var(--brand-blue-500);
+}
+
+.reference-page .notebook-button-primary {
+  color: white !important;
+  background: var(--brand-blue-600) !important;
+  box-shadow: 0 12px 28px rgba(36, 99, 232, 0.28) !important;
+}
+
+.reference-page .notebook-button-primary:hover {
+  background: var(--brand-blue-500) !important;
+  box-shadow: 0 16px 34px rgba(36, 99, 232, 0.34) !important;
+}
+
+.reference-page .notebook-button-secondary {
+  color: var(--brand-navy-950) !important;
+  border-color: var(--border-soft) !important;
+  background: var(--surface-white) !important;
+}
+
+.reference-page .notebook-button-secondary:hover {
+  border-color: var(--brand-blue-500) !important;
+  background: var(--brand-blue-50) !important;
+}

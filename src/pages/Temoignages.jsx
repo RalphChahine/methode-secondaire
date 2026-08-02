@@ -84,7 +84,7 @@ export default function Temoignages() {
   }
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="reference-page relative overflow-hidden">
       <Seo
         title={copy.seoTitle}
         description={copy.seoDescription}
@@ -102,7 +102,7 @@ export default function Temoignages() {
         <div className="absolute right-0 top-36 h-72 w-72 rounded-full bg-[#f5c977]/12 blur-3xl" />
       </div>
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
         <section className="notebook-paper notebook-grid grid gap-6 rounded-[32px] p-5 sm:p-7 lg:grid-cols-[1.02fr,0.98fr] lg:items-center">
           <div className="max-w-3xl">
             <div className="editorial-label inline-flex rounded-full border border-ink/15 bg-white/70 px-4 py-1.5 text-sm text-ink/75">
@@ -191,7 +191,7 @@ export default function Temoignages() {
             </div>
           </div>
         </section>
-      </main>
+      </div>
     </div>
   )
 }

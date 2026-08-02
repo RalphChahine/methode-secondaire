@@ -252,7 +252,7 @@ export default function NotreApproche() {
   }
 
   return (
-    <div className="relative overflow-hidden">
+    <div className="reference-page relative overflow-hidden">
       <Seo
         title={copy.seoTitle}
         description={copy.seoDescription}
@@ -265,7 +265,7 @@ export default function NotreApproche() {
         alternates={buildAlternates("approche")}
       />
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-4 sm:px-6 lg:px-8 lg:pb-28 lg:pt-8">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-4 sm:px-6 lg:px-8 lg:pb-28 lg:pt-8">
         <HeroShowcase
           badge={copy.badge}
           title={copy.title}
@@ -323,7 +323,7 @@ export default function NotreApproche() {
             icon: ShieldCheck,
           }}
         />
-      </main>
+      </div>
     </div>
   )
 }
