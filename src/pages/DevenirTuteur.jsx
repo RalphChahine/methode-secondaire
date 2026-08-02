@@ -584,7 +584,7 @@ export default function DevenirTuteur({ forcedRouteKey }) {
         <div className="absolute right-0 top-20 h-72 w-72 rounded-full bg-[#f5c977]/12 blur-3xl" />
       </div>
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-20 pt-7 sm:px-6 sm:pt-10 lg:px-8 lg:pb-28 lg:pt-16">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-20 pt-7 sm:px-6 sm:pt-10 lg:px-8 lg:pb-28 lg:pt-16">
         <section className="grid gap-6 lg:grid-cols-[0.9fr,1.1fr] lg:items-start lg:gap-10">
           <div className="max-w-3xl">
             <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
@@ -813,7 +813,7 @@ export default function DevenirTuteur({ forcedRouteKey }) {
             </div>
           </MotionCard>
         </section>
-      </main>
+      </div>
     </div>
   )
 }

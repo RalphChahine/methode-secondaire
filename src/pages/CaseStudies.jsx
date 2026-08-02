@@ -334,7 +334,7 @@ export default function CaseStudies() {
         <div className="absolute right-0 top-20 h-80 w-80 rounded-full bg-[#f5c977]/12 blur-3xl" />
       </div>
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
         <section className="grid gap-8 lg:grid-cols-[1.05fr,0.95fr] lg:items-center">
           <div className="max-w-3xl">
             <div className="mb-4 flex flex-wrap items-center gap-2 text-sm text-white/55">
@@ -568,7 +568,7 @@ export default function CaseStudies() {
             </div>
           </MotionCard>
         </section>
-      </main>
+      </div>
     </div>
   )
 }

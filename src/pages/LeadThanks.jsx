@@ -164,7 +164,7 @@ export default function LeadThanks() {
         <div className="absolute right-0 top-24 h-80 w-80 rounded-full bg-[#f5c977]/12 blur-3xl" />
       </div>
 
-      <main className="relative z-10 mx-auto w-full max-w-6xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
+      <div className="relative z-10 mx-auto w-full max-w-6xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
         <MotionCard className="action-surface noise-overlay rounded-[32px] p-6 text-white sm:rounded-[38px] sm:p-10">
           <div className="grid gap-6 lg:grid-cols-[0.95fr,1.05fr] lg:items-center">
             <div>
@@ -281,7 +281,7 @@ export default function LeadThanks() {
             ))}
           </ol>
         </section>
-      </main>
+      </div>
     </div>
   )
 }

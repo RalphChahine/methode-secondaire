@@ -47,7 +47,7 @@ export default function OfferLanding({ forcedRouteKey }) {
   if (!page) {
     return (
       <div className="reference-page relative overflow-hidden">
-        <main className="mx-auto w-full max-w-5xl px-5 pb-20 pt-16 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-5xl px-5 pb-20 pt-16 sm:px-6 lg:px-8">
           <MotionCard className="rounded-[32px] border-white/10 bg-white/[0.05] p-8 text-white">
             <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">
               {locale === "en" ? "Offer unavailable" : "Offre indisponible"}
@@ -65,7 +65,7 @@ export default function OfferLanding({ forcedRouteKey }) {
               </Button>
             </div>
           </MotionCard>
-        </main>
+        </div>
       </div>
     )
   }
@@ -128,7 +128,7 @@ export default function OfferLanding({ forcedRouteKey }) {
         <div className="absolute right-0 top-16 h-80 w-80 rounded-full bg-[#f5c977]/12 blur-3xl" />
       </div>
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
         <HeroShowcase
           badge={page.eyebrow}
           title={page.heroTitle}
@@ -195,7 +195,7 @@ export default function OfferLanding({ forcedRouteKey }) {
           items={page.faq}
           columns="lg:grid-cols-3"
         />
-      </main>
+      </div>
     </div>
   )
 }

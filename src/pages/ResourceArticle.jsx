@@ -107,7 +107,7 @@ export default function ResourceArticle() {
   if (!copy || !resourceRouteKeys.includes(routeKey)) {
     return (
       <div className="reference-page relative overflow-hidden">
-        <main className="mx-auto w-full max-w-5xl px-5 pb-20 pt-16 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-5xl px-5 pb-20 pt-16 sm:px-6 lg:px-8">
           <MotionCard className="rounded-[32px] border-white/10 bg-white/[0.05] p-8 text-white">
             <div className="text-sm uppercase tracking-[0.24em] text-[#f5c977]">{ui.unavailable}</div>
             <h1 className="mt-4 font-display text-4xl font-semibold">{ui.unavailable}</h1>
@@ -127,7 +127,7 @@ export default function ResourceArticle() {
               </Button>
             </div>
           </MotionCard>
-        </main>
+        </div>
       </div>
     )
   }
@@ -190,7 +190,7 @@ export default function ResourceArticle() {
         <div className="absolute right-0 top-16 h-72 w-72 rounded-full bg-[#f5c977]/12 blur-3xl" />
       </div>
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-8 sm:px-6 sm:pt-10 lg:px-8 lg:pb-28 lg:pt-16">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-8 sm:px-6 sm:pt-10 lg:px-8 lg:pb-28 lg:pt-16">
         <section className="grid gap-6 lg:grid-cols-[1.05fr,0.95fr] lg:items-center lg:gap-8">
           <div className="max-w-3xl">
             <Badge className="rounded-full border border-white/15 bg-white/8 px-4 py-1.5 text-white hover:bg-white/10">
@@ -379,7 +379,7 @@ export default function ResourceArticle() {
           description={ui.relatedDescription}
           showHubLink={false}
         />
-      </main>
+      </div>
     </div>
   )
 }

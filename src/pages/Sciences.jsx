@@ -263,7 +263,7 @@ export default function Sciences() {
         <div className="absolute left-0 top-20 h-72 w-72 rounded-full bg-[#f5c977]/12 blur-3xl" />
       </div>
 
-      <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
         <SubjectHero
           variant="science"
           badge={copy.badge}
@@ -347,7 +347,7 @@ export default function Sciences() {
           </div>
         </section>
 
-      </main>
+      </div>
     </div>
   )
 }

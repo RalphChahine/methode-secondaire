@@ -507,6 +507,17 @@
     box-shadow: var(--shadow-floating), inset 0 1px 0 rgba(255, 255, 255, 0.1);
   }
 
+  .portal-reference .notebook-button-primary {
+    color: white !important;
+    background: var(--brand-blue-600) !important;
+    box-shadow: 0 12px 28px rgba(36, 99, 232, 0.28) !important;
+  }
+
+  .portal-reference .notebook-button-primary:hover {
+    background: var(--brand-blue-500) !important;
+    box-shadow: 0 16px 34px rgba(36, 99, 232, 0.34) !important;
+  }
+
   .portal-reference .panel-gold {
     border-color: rgba(61, 120, 242, 0.42);
     background: linear-gradient(135deg, rgba(36, 99, 232, 0.24), rgba(6, 29, 60, 0.92));

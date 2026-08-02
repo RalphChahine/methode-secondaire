@@ -1016,7 +1016,7 @@ export function LoginPanel({
                 type="button"
                 onClick={() => onRoleChange(option.value)}
                 className={`inline-flex min-h-11 min-w-0 items-center justify-center gap-1 rounded-full px-1.5 text-xs font-semibold transition sm:gap-2 sm:px-3 sm:text-sm ${
-                  role === option.value ? "bg-[#f5c977] text-[#071631]" : "text-white/70 hover:bg-white/10 hover:text-white"
+                  role === option.value ? "bg-[var(--brand-blue-600)] text-white shadow-[0_10px_24px_rgba(36,99,232,0.24)]" : "text-white/70 hover:bg-white/10 hover:text-white"
                 }`}
               >
                 <Icon className="hidden h-4 w-4 shrink-0 sm:block" />
@@ -1079,7 +1079,7 @@ export function LoginPanel({
           <p className="text-sm leading-6 text-white/68">{copy.newClientPrompt}</p>
           <Link
             to={newClientPath}
-            className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-[#f5c977] transition hover:text-[#f7d38f]"
+            className="mt-3 inline-flex items-center gap-2 text-sm font-semibold text-[var(--brand-blue-500)] transition hover:text-white"
           >
             {copy.newClientAction}
             <ArrowRight className="h-4 w-4" />
@@ -1111,7 +1111,7 @@ function AccessCodeForm({
       <div className="mt-5 text-sm font-semibold text-white/78">{copy.existingAccessTitle}</div>
       {authStep === "verify_code" ? (
         <div className="mt-3 space-y-4">
-          <div className="rounded-2xl border border-[#f5c977]/20 bg-[#f5c977]/10 px-4 py-3 text-sm leading-6 text-white/78">
+          <div className="rounded-2xl border border-[var(--brand-blue-500)]/25 bg-[var(--brand-blue-600)]/12 px-4 py-3 text-sm leading-6 text-white/78">
             {(copy.codeSentTo || "Code sent to {email}").replace("{email}", maskedEmail)}
           </div>
           <form className="space-y-4" onSubmit={onVerifyCode}>
@@ -1159,7 +1159,7 @@ function AccessCodeForm({
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full rounded-full bg-[#f5c977] px-5 py-6 text-[#071631] hover:bg-[#f7d38f]"
+            className="w-full rounded-full bg-[var(--brand-blue-600)] px-5 py-6 text-white shadow-[0_12px_28px_rgba(36,99,232,0.28)] hover:bg-[var(--brand-blue-500)]"
           >
             {loadingAction === "sendingCode" ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Mail className="h-4 w-4" />}
             {loadingAction === "sendingCode" ? copy.sendingCode : copy.sendCode}
