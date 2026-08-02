@@ -2,10 +2,10 @@ import { CalendarDays, LineChart, Phone, Sigma, Target, Triangle } from "lucide-
 import { useLocation } from "react-router-dom"
 
 import Seo from "@/components/Seo"
+import SubjectHero from "@/components/marketing/SubjectHero"
 import {
   FaqGrid,
   FeatureGrid,
-  HeroShowcase,
   StepGrid,
 } from "@/components/SimpleMarketingSections"
 import { Button } from "@/components/ui/button"
@@ -260,7 +260,8 @@ export default function Maths() {
       </div>
 
       <main className="relative z-10 mx-auto w-full max-w-7xl px-5 pb-20 pt-10 sm:px-6 lg:px-8 lg:pb-28 lg:pt-16">
-        <HeroShowcase
+        <SubjectHero
+          variant="math"
           badge={copy.badge}
           title={copy.title}
           description={copy.description}
@@ -278,7 +279,6 @@ export default function Maths() {
           panelTitle={copy.panelTitle}
           panelItems={copy.panelItems}
           panelNote={copy.panelNote}
-          artVariant="math"
           journey={getParentJourney(locale)}
         />
 

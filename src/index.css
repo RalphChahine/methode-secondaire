@@ -119,6 +119,15 @@
     letter-spacing: -0.04em;
   }
 
+  .brand-display {
+    font-family: var(--brand-font-display);
+    letter-spacing: -0.04em;
+  }
+
+  .brand-body {
+    font-family: var(--brand-font-body);
+  }
+
   .font-editorial {
     font-family: var(--font-editorial);
     letter-spacing: -0.03em;

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
 import { CalendarDays, Menu, Phone } from "lucide-react"
 import { Link, NavLink } from "react-router-dom"
 
@@ -39,12 +38,8 @@ export default function MarketingHeader({
     }`
 
   return (
-    <motion.header
-      initial={false}
-      animate={{ backgroundColor: isScrolled ? "rgba(3, 21, 44, 0.94)" : "rgba(3, 21, 44, 1)" }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-      className={`sticky top-0 z-50 border-b border-white/10 backdrop-blur-xl ${isScrolled ? "shadow-[0_8px_30px_rgba(3,21,44,0.16)]" : ""}`}
-    >
+    /* framer-motion remains reserved for route-level marketing surfaces; this global frame stays CSS-only for a smaller initial bundle. */
+    <header className={`sticky top-0 z-50 border-b border-white/10 backdrop-blur-xl ${isScrolled ? "bg-[var(--brand-navy-950)]/95 shadow-[0_8px_30px_rgba(3,21,44,0.16)]" : "bg-[var(--brand-navy-950)]"}`}>
       <div
         className={`mx-auto flex w-full max-w-[1440px] items-center justify-between px-4 transition-[min-height,padding] duration-200 sm:px-6 lg:px-10 ${
           isPortalRoute ? "min-h-16 gap-2 py-2" : isScrolled ? "min-h-[4.25rem] gap-3 py-2" : "min-h-[4.75rem] gap-3 py-3"
@@ -55,7 +50,7 @@ export default function MarketingHeader({
             <img src="/logo-methode-secondaire-mark-white.svg" alt="" className="h-7 w-7 object-contain sm:h-8 sm:w-8" />
           </div>
           <div className="hidden min-w-0 min-[360px]:block">
-            <div className="truncate font-display text-[0.96rem] font-extrabold tracking-[-0.03em] text-white sm:text-[1.05rem]">
+            <div className="brand-display truncate text-[0.96rem] font-extrabold tracking-[-0.03em] text-white sm:text-[1.05rem]">
               <span className="sm:hidden">Méthode</span>
               <span className="hidden sm:inline">Méthode Secondaire</span>
             </div>
@@ -82,7 +77,7 @@ export default function MarketingHeader({
             {copy.portalAction}
           </Link>
           <Button asChild className={`${isPortalRoute ? "hidden" : ""} min-h-10 rounded-full bg-[var(--brand-blue-600)] px-4 text-[0.75rem] font-bold text-white shadow-none hover:bg-[var(--brand-blue-500)]`}>
-            <a href={requestUrl} data-primary-action>
+            <a href={requestUrl}>
               <CalendarDays className="h-4 w-4" />
               {copy.book}
             </a>
@@ -111,7 +106,7 @@ export default function MarketingHeader({
 
               <SheetContent side="right" className="flex h-[100dvh] max-h-[100dvh] flex-col gap-0 overflow-hidden border-white/10 bg-[var(--brand-navy-950)] text-white">
                 <SheetHeader className="shrink-0 pr-10">
-                  <SheetTitle className="font-display text-xl text-white">{copy.menuTitle}</SheetTitle>
+                <SheetTitle className="brand-display text-xl text-white">{copy.menuTitle}</SheetTitle>
                 </SheetHeader>
 
                 <div className="mt-8 min-h-0 flex-1 overflow-y-auto pb-[calc(1rem+env(safe-area-inset-bottom))] pr-1">
@@ -161,7 +156,7 @@ export default function MarketingHeader({
           </div>
         </div>
       </div>
-    </motion.header>
+    </header>
   )
 }
 

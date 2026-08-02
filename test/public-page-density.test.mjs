@@ -2,17 +2,17 @@ import assert from "node:assert/strict"
 import { readFile } from "node:fs/promises"
 import test from "node:test"
 
-test("home uses proof and process sections instead of a starting-point grid", async () => {
+test("home uses the reference-led proof, process, and pricing sections instead of a starting-point grid", async () => {
   const [fr, en] = await Promise.all([
     readFile(new URL("../src/pages/Accueil.jsx", import.meta.url), "utf8"),
     readFile(new URL("../src/pages/AccueilEn.jsx", import.meta.url), "utf8"),
   ])
   for (const source of [fr, en]) {
     assert.doesNotMatch(source, /ParentStartingPointsSection/)
-    assert.match(source, /HomeProofStrip/)
-    assert.match(source, /HowItWorksSection/)
-    assert.match(source, /PricingSection/)
-    assert.ok(source.indexOf("primaryAction={{") < source.lastIndexOf("<PricingSection"))
+    assert.match(source, /ReferenceHomeSections/)
+    assert.match(source, /targetedSessionOffer/)
+    assert.match(source, /progressionBlockOffer/)
+    assert.match(source, /data-primary-action|requestUrl/)
   }
 })
 
