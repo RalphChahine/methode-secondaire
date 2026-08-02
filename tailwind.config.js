@@ -7,11 +7,20 @@ export default {
   ],
   theme: {
   	extend: {
-  		borderRadius: {
-  			lg: 'var(--radius)',
-  			md: 'calc(var(--radius) - 2px)',
-  			sm: 'calc(var(--radius) - 4px)'
-  		},
+		borderRadius: {
+			lg: 'var(--radius)',
+			md: 'calc(var(--radius) - 2px)',
+			sm: 'calc(var(--radius) - 4px)',
+			card: 'var(--radius-card)',
+			large: 'var(--radius-large)',
+			panel: 'var(--radius-panel)',
+			pill: 'var(--radius-pill)'
+		},
+		boxShadow: {
+			card: 'var(--shadow-card)',
+			floating: 'var(--shadow-floating)',
+			portal: 'var(--shadow-portal)'
+		},
 		colors: {
 			ink: 'var(--color-ink)',
 			paper: 'var(--color-paper)',
@@ -20,6 +29,33 @@ export default {
 			coral: 'var(--color-coral)',
 			mint: 'var(--color-mint)',
 			cloud: 'var(--color-cloud)',
+			brand: {
+				navy: {
+					950: 'var(--brand-navy-950)',
+					900: 'var(--brand-navy-900)',
+					800: 'var(--brand-navy-800)'
+				},
+				blue: {
+					700: 'var(--brand-blue-700)',
+					600: 'var(--brand-blue-600)',
+					500: 'var(--brand-blue-500)',
+					100: 'var(--brand-blue-100)',
+					50: 'var(--brand-blue-50)'
+				},
+				gold: 'var(--brand-gold-500)',
+				green: 'var(--brand-green-500)'
+			},
+			surface: {
+				white: 'var(--surface-white)',
+				soft: 'var(--surface-soft)',
+				blue: 'var(--surface-blue)'
+			},
+			text: {
+				dark: 'var(--text-dark)',
+				body: 'var(--text-body)',
+				muted: 'var(--text-muted)'
+			},
+			'border-soft': 'var(--border-soft)',
 			background: 'hsl(var(--background))',
   			foreground: 'hsl(var(--foreground))',
   			card: {

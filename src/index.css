@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=Instrument+Serif:ital@0;1&family=Inter:opsz,wght@14..32,400..700&family=Manrope:wght@400..800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -13,6 +13,35 @@
     --color-coral: #ff6b57;
     --color-mint: #bfefd2;
     --color-cloud: #e7edff;
+
+    /* Reference-led brand layer. Legacy notebook tokens remain available
+       until their callers are migrated. */
+    --brand-navy-950: #03152c;
+    --brand-navy-900: #061d3c;
+    --brand-navy-800: #0a2a55;
+    --brand-blue-700: #164fc9;
+    --brand-blue-600: #2463e8;
+    --brand-blue-500: #3d78f2;
+    --brand-blue-100: #e9f1ff;
+    --brand-blue-50: #f5f8ff;
+    --brand-gold-500: #f3a712;
+    --brand-green-500: #22a06b;
+    --surface-white: #ffffff;
+    --surface-soft: #f7f9fc;
+    --surface-blue: #f0f5ff;
+    --text-dark: #081427;
+    --text-body: #465267;
+    --text-muted: #718096;
+    --border-soft: #e2e8f0;
+    --radius-card: 14px;
+    --radius-large: 24px;
+    --radius-panel: 30px;
+    --radius-pill: 999px;
+    --shadow-card: 0 8px 24px rgba(3, 21, 44, 0.06);
+    --shadow-floating: 0 20px 60px rgba(3, 21, 44, 0.18);
+    --shadow-portal: 0 28px 80px rgba(3, 21, 44, 0.22);
+    --brand-font-display: "Manrope", ui-sans-serif, system-ui, sans-serif;
+    --brand-font-body: "Inter", ui-sans-serif, system-ui, sans-serif;
     --background: 219 75% 10%;
     --foreground: 210 40% 98%;
     --card: 221 56% 15%;
